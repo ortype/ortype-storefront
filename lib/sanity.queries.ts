@@ -62,3 +62,11 @@ export interface Settings {
     title?: string
   }
 }
+
+export interface Product {
+  _id: string
+  name?: string
+  uid?: string
+  version?: string
+  slug?: string
+}

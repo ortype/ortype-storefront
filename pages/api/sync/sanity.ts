@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { nanoid } from 'nanoid'
 import OpenTypeAPI from '../../../lib/api/OpenTypeAPI.js'
-import Sanity from '../../../lib/api/Sanity'
+import { client, findByUidAndVersion } from 'lib/sanity.write'
 import slugify from 'slugify'
 
 // writing to sanity client
@@ -12,13 +12,37 @@ export default async function handler(
   res: NextApiResponse
 ) {
 
-
-  const sanity = new Sanity()
-
   console.log('Webhook payload:', req.body)
+  const OpenType = await OpenTypeAPI.getInstance()
 
+  /*  ------------------------------ */
+  /*  Begin Sanity Product Sync
+  /*  ------------------------------ */
+
+  for (const font of await OpenType.getFonts()) {
+
+    // @TODO: we may have multiple parent font files within the root of a font family folder (e.g. Regular & Italic)
+
+    const dataObject = {
+      _id: nanoid(),
+      _type: 'product',
+      name: font.familyName,
+      slug: { current: slugify(font.familyName, { lower: true }) },
+      uid: font.getUid(),
+      version: font.version
+    }
+    const product = await findByUidAndVersion(font.getUid(), font.version)
+    if (product && product._id) {
+      console.log('we got a product: ', product._id)
+      dataObject._id = product._id
+    }
+    console.log('dataObject: ', dataObject)
+    client.createOrReplace(dataObject)
+  }
+
+  /*
   // Initiate Sanity transaction to perform the following chained mutations
-  let sanityTransaction = sanity.transaction()
+  let sanityTransaction = client.transaction()
 
   const name = 'font title' // comes from payload
 
@@ -35,43 +59,22 @@ export default async function handler(
     // UUID,
     // etc.
   }
-  const OpenType = await OpenTypeAPI.getInstance()
-  console.log(await OpenType.getFonts())
-  for (const font of await OpenType.getFonts()) {
-    const dataObject = {
-      _id: nanoid(),
-      _type: 'product',
-      name: font.familyName,
-      slug: { current: slugify(font.familyName) },
-      uid: font.getUid(),
-      version: font.version
-    }
-    const product = await sanity.findByUidAndVersion(font.getUid(), font.version)
-    if (product) {
-      dataObject['_id'] = product['_id']
-    }
-    sanity.createOrReplace(dataObject)
-    break
-  }
-
-  /*  ------------------------------ */
-  /*  Begin Sanity Product Sync
-  /*  ------------------------------ */
 
   console.log('Writing product to Sanity...')
 
-  // sanityTransaction = sanityTransaction.createIfNotExists(product)
-  //
-  // // Patch (update) product document with core commerce data
-  // sanityTransaction = sanityTransaction.patch(_id, (patch) => patch.set(productFields))
-  //
-  // const result = await sanityTransaction.commit();
+  sanityTransaction = sanityTransaction.createIfNotExists(product)
 
-  // console.info('Sync complete!');
-  // console.log('Result', result);
+  // Patch (update) product document with core commerce data
+  sanityTransaction = sanityTransaction.patch(_id, (patch) => patch.set(productFields))
+  const result = await sanityTransaction.commit();
+
+  console.info('Sync complete!');
+  console.log('Result', result);
+
+  */
 
   res.statusCode = 200
-  res.json({})
+  res.json({ message: 'Successful' })
 
 }
 

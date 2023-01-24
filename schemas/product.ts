@@ -1,6 +1,8 @@
 import { defineField, defineType } from 'sanity'
 import productImage from './productImage'
 
+// @TODO: Only allow creation via the API (not through the Studio UI)
+
 export default defineType({
   name: 'product',
   title: 'Product',
@@ -13,6 +15,7 @@ export default defineType({
       title: 'Name',
       type: 'string',
       validation: (rule) => rule.required(),
+      readOnly: true
     }),
     defineField({
       name: 'description',
@@ -23,6 +26,7 @@ export default defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
+      readOnly: true
       // validation: (rule) => rule.required(),
     }),
     defineField({
@@ -30,12 +34,14 @@ export default defineType({
       title: 'UID',
       type: 'string',
       validation: (rule) => rule.required(),
+      readOnly: true
     }),
     defineField({
       name: 'version',
       title: 'Version',
       type: 'string',
       validation: (rule) => rule.required(),
+      readOnly: true
     }),
     defineField({
       name: 'images',
