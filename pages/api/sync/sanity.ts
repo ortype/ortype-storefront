@@ -1,5 +1,6 @@
 import sanityClient from '@sanity/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { nanoid } from 'nanoid'
 import OpenTypeAPI from '../../../lib/api/OpenTypeAPI.js'
 import Sanity from '../../../lib/api/Sanity'
 
@@ -20,19 +21,18 @@ export default async function handler(
   // Initiate Sanity transaction to perform the following chained mutations
   let sanityTransaction = sanity.transaction()
 
-  const title = 'font title' // comes from payload
-  const id = 'kjnagkl98298ha'
+  const name = 'font title' // comes from payload
 
   // Define product objects
-  const modelId = `product-${id}`;
+  const _id = nanoid()
   const product = {
     _type: 'product',
-    _id: modelId,
+    _id
   }
 
   // Define product fields
   const productFields = {
-    title,
+    name,
     // UUID,
     // etc.
   }
@@ -46,7 +46,7 @@ export default async function handler(
   sanityTransaction = sanityTransaction.createIfNotExists(product)
 
   // Patch (update) product document with core commerce data
-  sanityTransaction = sanityTransaction.patch(modelId, (patch) => patch.set(productFields))
+  sanityTransaction = sanityTransaction.patch(_id, (patch) => patch.set(productFields))
 
   const result = await sanityTransaction.commit();
 
