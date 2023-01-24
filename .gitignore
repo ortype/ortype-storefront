@@ -44,3 +44,6 @@ yarn-error.log*
 studio/.env.development
 
 .idea
+
+yarn.lock
+package-lock.json
