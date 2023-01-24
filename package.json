@@ -17,6 +17,7 @@
     "@commercelayer/js-auth": "^2.3.0",
     "@commercelayer/sdk": "^4.21.0",
     "@portabletext/react": "^2.0.0",
+    "@sanity/client": "^4.0.1",
     "@sanity/image-url": "^1.0.1",
     "@sanity/vision": "^3.0.6",
     "@vercel/og": "^0.0.21",

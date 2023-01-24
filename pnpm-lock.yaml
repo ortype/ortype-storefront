@@ -4,10 +4,12 @@ specifiers:
   '@commercelayer/js-auth': ^2.3.0
   '@commercelayer/sdk': ^4.21.0
   '@portabletext/react': ^2.0.0
+  '@sanity/client': ^4.0.1
   '@sanity/image-url': ^1.0.1
   '@sanity/vision': ^3.0.6
   '@types/react': ^18.0.26
   '@vercel/og': ^0.0.21
+  '@wakamai-fondue/engine': github:Wakamai-Fondue/wakamai-fondue-engine#50b68ac117a9aa5d907174db1920b4823ed4263e
   autoprefixer: ^10.4.13
   classnames: ^2.3.2
   date-fns: ^2.29.3
@@ -17,6 +19,7 @@ specifiers:
   intl-segmenter-polyfill: ^0.4.4
   next: ^13.0.6
   next-sanity: ^3.1.3
+  opentype.js: ^1.3.4
   postcss: ^8.4.19
   prettier: ^2.8.1
   prettier-plugin-packagejson: ^2.3.0
@@ -27,6 +30,7 @@ specifiers:
   sanity: ^3.0.6
   sanity-plugin-asset-source-unsplash: ^1.0.1
   server-only: ^0.0.1
+  slugify: ^1.6.5
   styled-components: ^5.3.6
   suspend-react: ^0.0.8
   tailwindcss: ^3.2.4
@@ -36,20 +40,24 @@ dependencies:
   '@commercelayer/js-auth': 2.3.0
   '@commercelayer/sdk': 4.21.0
   '@portabletext/react': 2.0.0_react@18.2.0
+  '@sanity/client': 4.0.1
   '@sanity/image-url': 1.0.1
-  '@sanity/vision': 3.0.6_23mhwjhnzfjwvdn7ol54k26zom
+  '@sanity/vision': 3.0.6_icn3n5gbr72r3hwzczin4hjk6e
   '@vercel/og': 0.0.21
+  '@wakamai-fondue/engine': github.com/Wakamai-Fondue/wakamai-fondue-engine/50b68ac117a9aa5d907174db1920b4823ed4263e
   classnames: 2.3.2
   date-fns: 2.29.3
   intl-segmenter-polyfill: 0.4.4
   next: 13.0.6_biqbaboplfbrettd7655fr4n2y
   next-sanity: 3.1.3_6pybodrkbhmd7txvxayx6axkri
+  opentype.js: 1.3.4
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-is: 18.2.0
   sanity: 3.0.6_ph7a4h4zuhs3ikef4sgg5pirqm
   sanity-plugin-asset-source-unsplash: 1.0.1_526llu3n5kiwfu57zut2owdttu
   server-only: 0.0.1
+  slugify: 1.6.5
   styled-components: 5.3.6_7i5myeigehqah43i5u7wbekgba
   suspend-react: 0.0.8_react@18.2.0
 
@@ -980,6 +988,18 @@ packages:
       - supports-color
     dev: false
 
+  /@sanity/client/4.0.1:
+    resolution: {integrity: sha512-Sd/oGzDsZulodtjq54wOFoMSvUrNnXkvevAGmuLmO90givXHzEyMMUFSj/BmG6TV1mKigS0m6gmFDP/dalUHjg==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@sanity/eventsource': 4.0.0
+      get-it: 7.0.2
+      make-error: 1.3.6
+      rxjs: 7.6.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@sanity/color/2.1.20:
     resolution: {integrity: sha512-dHPgiCMf+lwvQls5uPzorfiq9YuU41AzvifA+ugVHmXvq7JBoofoOPUOmdHUQF0l0shSy0nD3zn52j2I+T2ekg==}
     dev: false
@@ -1309,7 +1329,7 @@ packages:
       - supports-color
     dev: false
 
-  /@sanity/vision/3.0.6_23mhwjhnzfjwvdn7ol54k26zom:
+  /@sanity/vision/3.0.6_icn3n5gbr72r3hwzczin4hjk6e:
     resolution: {integrity: sha512-FuEjP4inbPhVvp3VccxcbWA49wto7i3oDq/L1HYWSMH3YHRB5zcfABkjLx/Tp2eSoQA72mA4XTDD9+ZUXR1iPQ==}
     peerDependencies:
       '@sanity/client': ^3.4.1
@@ -1326,6 +1346,7 @@ packages:
       '@juggle/resize-observer': 3.4.0
       '@lezer/highlight': 1.1.3
       '@rexxars/react-json-inspector': 8.0.1_react@18.2.0
+      '@sanity/client': 4.0.1
       '@sanity/color': 2.1.20
       '@sanity/icons': 2.1.0_react@18.2.0
       '@sanity/ui': 1.0.1_23mhwjhnzfjwvdn7ol54k26zom
@@ -3635,6 +3656,31 @@ packages:
       - supports-color
     dev: false
 
+  /get-it/7.0.2:
+    resolution: {integrity: sha512-q4d+ssYtpWzC4/qJ4aJDZ5yWl94BIGmRER7PEvYpiKCBoCoDnl1YygEvNHQ2tHbD3GVZaq3QonKGi6Puh1Hzkw==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@sanity/timed-out': 4.0.2
+      create-error-class: 3.0.2
+      debug: 4.3.4
+      decompress-response: 6.0.0
+      follow-redirects: 1.15.2_debug@2.6.9
+      form-urlencoded: 2.0.9
+      into-stream: 3.1.0
+      is-plain-object: 5.0.0
+      is-retry-allowed: 1.2.0
+      is-stream: 1.1.0
+      nano-pubsub: 2.0.1
+      parse-headers: 2.0.5
+      progress-stream: 2.0.0
+      same-origin: 0.1.1
+      simple-concat: 1.0.1
+      tunnel-agent: 0.6.0
+      url-parse: 1.5.10
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /get-random-values-esm/1.0.0:
     resolution: {integrity: sha512-BVgZ1PZwR5NKDpHpUcPmWcAQpoIOPXaFy6Vni3UdPbOlxO7eknhxsfytxwss16f75EABfnAC+XZjzTurNlPY/g==}
     dependencies:
@@ -4387,6 +4433,10 @@ packages:
       type-check: 0.4.0
     dev: true
 
+  /lib-font/2.4.0:
+    resolution: {integrity: sha512-j2Hyn12JjMLe9JkFDRq40q4+tOeDg276Z9Ezxyhas8HEv0jNLbRXyzG7r7n6QdLbWRtL2RYQtgVlIt3Q4ur6nQ==}
+    dev: false
+
   /lilconfig/2.0.6:
     resolution: {integrity: sha512-9JROoBW7pobfsx+Sq2JsASvCo6Pfo6WWoUW79HuB1BCoBXD4PLWJPqDF6fNj67pqBYTbAHkE57M1kS/+L1neOg==}
     engines: {node: '>=10'}
@@ -4814,6 +4864,15 @@ packages:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+
+  /opentype.js/1.3.4:
+    resolution: {integrity: sha512-d2JE9RP/6uagpQAVtJoF0pJJA/fgai89Cc50Yp0EJHk+eLp6QQ7gBoblsnubRULNY132I0J1QKMJ+JTbMqz4sw==}
+    engines: {node: '>= 8.0.0'}
+    hasBin: true
+    dependencies:
+      string.prototype.codepointat: 0.2.1
+      tiny-inflate: 1.0.3
+    dev: false
 
   /optionator/0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}
@@ -5927,6 +5986,11 @@ packages:
       tiny-warning: 1.0.3
     dev: false
 
+  /slugify/1.6.5:
+    resolution: {integrity: sha512-8mo9bslnBO3tr5PEVFzMPIWwWnipGS0xVbYf65zxDqfNwmzYn1LpiKNrR6DlClusuvo+hDHd1zKpmfAe83NQSQ==}
+    engines: {node: '>=8.0.0'}
+    dev: false
+
   /sort-object-keys/1.1.3:
     resolution: {integrity: sha512-855pvK+VkU7PaKYPc+Jjnmt4EzejQHyhhF33q31qG8x7maDzkeFhAAThdCYay11CISO+qAMwjOBP+fPZe0IPyg==}
     dev: true
@@ -6288,6 +6352,10 @@ packages:
       globalyzer: 0.1.0
       globrex: 0.1.2
     dev: true
+
+  /tiny-inflate/1.0.3:
+    resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
+    dev: false
 
   /tiny-invariant/1.0.6:
     resolution: {integrity: sha512-FOyLWWVjG+aC0UqG76V53yAWdXfH8bO6FNmyZOuUrzDzK8DI3/JRY25UD7+g49JWM1LXwymsKERB+DzI0dTEQA==}
@@ -6765,4 +6833,15 @@ packages:
       archiver-utils: 2.1.0
       compress-commons: 4.1.1
       readable-stream: 3.6.0
+    dev: false
+
+  github.com/Wakamai-Fondue/wakamai-fondue-engine/50b68ac117a9aa5d907174db1920b4823ed4263e:
+    resolution: {tarball: https://codeload.github.com/Wakamai-Fondue/wakamai-fondue-engine/tar.gz/50b68ac117a9aa5d907174db1920b4823ed4263e}
+    name: '@wakamai-fondue/engine'
+    version: 1.0.0
+    engines: {node: '>=12'}
+    prepare: true
+    requiresBuild: true
+    dependencies:
+      lib-font: 2.4.0
     dev: false
