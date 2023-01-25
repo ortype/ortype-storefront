@@ -1,11 +1,12 @@
 import { defineField, defineType } from 'sanity'
-import productImage from './productImage'
+import productImage from '../productImage'
+import variant from './variant'
 
 // @TODO: Only allow creation via the API (not through the Studio UI)
 
 export default defineType({
-  name: 'product',
-  title: 'Product',
+  name: 'font',
+  title: 'Font',
   description: '',
   type: 'document',
   // icon: MdShoppingCart,
@@ -26,8 +27,8 @@ export default defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      readOnly: true
-      // validation: (rule) => rule.required(),
+      readOnly: true,
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'uid',
@@ -55,6 +56,45 @@ export default defineType({
       ],
       // validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: 'variants',
+      title: 'Variants',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          weak: true,
+          to: {type: variant.name },
+        },
+      ],
+      // validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'metafields',
+      title: 'Metafields',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'metafield',
+          title: 'Metafield',
+          fields: [
+            defineField({
+              name: 'key',
+              title: 'Key',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'value',
+              title: 'Value',
+              type: 'string',
+              validation: (rule) => rule.required(),
+            }),
+          ]
+        }
+      ]
+    })
   ],
   preview: {
     select: {

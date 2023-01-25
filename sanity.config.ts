@@ -10,7 +10,7 @@ import { settingsPlugin, settingsStructure } from 'plugins/settings'
 import { defineConfig } from 'sanity'
 import { deskTool } from 'sanity/desk'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
-import productType from 'schemas/product'
+import { fontType, fontVariantType } from 'schemas/font'
 import productImageType from 'schemas/productImage'
 import authorType from 'schemas/author'
 import postType from 'schemas/post'
@@ -29,7 +29,8 @@ export default defineConfig({
     types: [
       authorType,
       postType,
-      productType,
+      fontType,
+      fontVariantType,
       productImageType,
       settingsType
     ],

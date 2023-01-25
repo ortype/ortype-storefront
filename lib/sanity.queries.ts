@@ -63,10 +63,46 @@ export interface Settings {
   }
 }
 
-export interface Product {
+const fontFields = groq`
+  _id,
+  name,
+  "slug": slug.current,
+  uid,
+  version
+`
+
+const fontVariantFields = groq`
+  _id,
+  name,
+  "slug": slug.current,
+  uid,
+  parentUid,
+  version
+`
+
+
+export interface Font {
   _id: string
   name?: string
   uid?: string
   version?: string
   slug?: string
 }
+
+export interface FontVariant {
+  _id: string
+  name?: string
+  uid?: string
+  parentUid?: string
+  version?: string
+}
+
+export const fontsQuery = groq`
+*[_type == "font"] {
+  ${fontFields}
+}`
+
+export const fontVariantsQuery = groq`
+*[_type == "fontVariant"] {
+  ${fontVariantFields}
+}`
