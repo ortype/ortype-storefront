@@ -6,6 +6,13 @@ The Studio connects to Sanity Content Lake, which gives you hosted content APIs 
 
 [![Deploy with Vercel](https://vercel.com/button)][vercel-deploy]
 
+> **Note**
+>
+> This starter uses the `/pages` directory for Next.js routing.
+>
+> The template will be migrated to the currently experimental [/app][app-dir] directory
+> when Vercel announce that it is production ready.
+
 ## Features
 
 - A performant, static blog with editable posts, authors, and site settings
@@ -145,3 +152,4 @@ Go to the serverless function code in `/pages/api/revalidate.ts`. In the code co
 [vercel-isr]: https://nextjs.org/blog/next-12-1#on-demand-incremental-static-regeneration-beta
 [vercel]: https://vercel.com
 [vercel-github]: https://github.com/vercel/next.js/discussions
+[app-dir]: https://beta.nextjs.org/docs/routing/fundamentals#the-app-directory

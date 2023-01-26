@@ -2,11 +2,11 @@ import { Card } from '@sanity/ui'
 import { height, OpenGraphImage, width } from 'components/OpenGraphImage'
 import { createIntlSegmenterPolyfill } from 'intl-segmenter-polyfill'
 import type { Settings } from 'lib/sanity.queries'
-import React, { cache, use, useMemo } from 'react'
-import _satori, { type SatoriOptions } from 'satori'
+import satori, { type SatoriOptions } from 'satori'
 import styled from 'styled-components'
+import useSWR from 'swr/immutable'
 
-const init = cache(async function init(): Promise<SatoriOptions['fonts']> {
+async function init(): Promise<SatoriOptions['fonts']> {
   if (!globalThis?.Intl?.Segmenter) {
     console.debug('Polyfilling Intl.Segmenter')
     //@ts-expect-error
@@ -22,7 +22,10 @@ const init = cache(async function init(): Promise<SatoriOptions['fonts']> {
   ).then((res) => res.arrayBuffer())
 
   return [{ name: 'Inter', data: fontData, style: 'normal', weight: 700 }]
-})
+}
+
+// preload fonts and polyfill
+const fontsPromise = init()
 
 const OpenGraphSvg = styled(Card).attrs({
   radius: 3,
@@ -43,19 +46,23 @@ const OpenGraphSvg = styled(Card).attrs({
   }
 `
 
-const satori = cache(_satori)
-
 export default function OpenGraphPreview(props: Settings['ogImage']) {
-  const fonts = use(init())
+  // we wrap the segmenter setup and font loading in SWR to enable caching
+  const { data: fonts } = useSWR('OpenGraphPreview.init', () => fontsPromise, {
+    suspense: true,
+  })
 
-  const __html = use(
-    satori(
-      useMemo(
-        () => <OpenGraphImage title={props.title || ''} />,
-        [props.title]
-      ),
-      useMemo(() => ({ width, height, fonts }), [fonts])
-    )
+  // Also handle the satori render call in SWR to enable caching and only re-render when the title changes or fonts hot reload
+  const { data: __html } = useSWR(
+    [props.title, fonts satisfies SatoriOptions['fonts']],
+    ([title, fonts]) => {
+      return satori(<OpenGraphImage title={title || ''} />, {
+        width,
+        height,
+        fonts,
+      })
+    },
+    { suspense: true }
   )
 
   return <OpenGraphSvg dangerouslySetInnerHTML={{ __html }} />
