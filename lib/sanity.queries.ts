@@ -80,7 +80,6 @@ const fontVariantFields = groq`
   version
 `
 
-
 export interface Font {
   _id: string
   name?: string

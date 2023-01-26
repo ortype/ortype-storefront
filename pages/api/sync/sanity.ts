@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { nanoid } from 'nanoid'
 import OpenTypeAPI from '../../../lib/api/OpenTypeAPI.js'
-import { client, findByUidAndVersion, findVariantByUid, getAllFonts, getAllFontVariants, findByUid, findByParentUid } from 'lib/sanity.write'
+import { apiClient, findByUidAndVersion, findVariantByUid, getAllFonts, getAllFontVariants, findByUid, findByParentUid } from 'lib/sanity.client'
 import slugify from 'slugify'
 
-// writing to sanity client
-// what's the incoming data?
+// writing to sanity
 
-async function writeFonts(fonts) {
+async function createOrReplaceFonts(fonts) {
   for (const font of fonts) {
     const sanityFont = await findByUidAndVersion(font.uid, font.version)
     // This UID lookup ALSO prevents multiple font documents from being created
@@ -15,13 +14,13 @@ async function writeFonts(fonts) {
       font._id = sanityFont._id // reset the ID
     }
     console.log('font: ', font._id, font.uid)
-    await client.createOrReplace(font)
+    await apiClient.createOrReplace(font)
   }
 }
 
-async function deleteFonts() {
+async function deleteAllFonts() {
   // Without params
-  return await client
+  return await apiClient
     .delete({query: '*[_type == "font"][0...999]'})
     .then(() => {
       console.log('The documents matching *[_type == "font"] were deleted')
@@ -31,9 +30,9 @@ async function deleteFonts() {
     })
 }
 
-async function deleteVariants() {
+async function deleteAllVariants() {
   // Without params
-  return await client
+  return await apiClient
     .delete({query: '*[_type == "fontVariant"][0...999]'})
     .then(() => {
       console.log('The documents matching *[_type == "fontVariant"] were deleted')
@@ -43,25 +42,23 @@ async function deleteVariants() {
     })
 }
 
-async function writeVariants(variants) {
-  console.log('Running writeVariants')
-  // Create or replace variant documents
-
+async function createOrReplaceVariants(variants) {
+  console.log('Running createOrReplaceVariants')
   const fontVariants = await getAllFontVariants()
-  // There are tons of variants, maybe it makes more sense to request all of them, and do an array filter instead of a GROQ query for each one
+  // There are tons of variants, it makes more sense to request all of them, and do an array filter instead of a GROQ query for each one
   console.log(`Got existing variants [${fontVariants.length}]`)
   for (const variant of variants) {
     // The fonts already exist, so we can look them up by parentUid
-    // const sanityFontVariant = await findVariantByUid(variant.uid)
     const sanityFontVariant = fontVariants.find(v => v.uid === variant.uid)
     if (sanityFontVariant && sanityFontVariant._id) {
-      console.log('found sanityFontVariant: ', variant.uid)
       variant._id = sanityFontVariant._id // reset the ID
     }
     console.log('fontVariant: ', variant._id, variant.uid)
-    await client.createOrReplace(variant, { dryRun: false }) // create the variant
+    await apiClient.createOrReplace(variant, { dryRun: false }) // create the variant
   }
+}
 
+async function createFontVariantRefs() {
   // 1 - find all fonts
   const fonts = await getAllFonts()
 
@@ -70,9 +67,10 @@ async function writeVariants(variants) {
     const fontVariants = await findByParentUid(font.uid)
     if (Array.isArray(fontVariants)) {
       console.log(`Found font variants for: ${font.uid} [${fontVariants.length}]`)
-      // 3 - for each font, add its matching variants to the variants array
+      // order fonts by the index from their fVar table
       const ordered = fontVariants.sort((a,b) => a.index - b.index)
-      let tx = client.transaction()
+      // 3 - for each font, add its matching variants in the fontVariants array
+      let tx = apiClient.transaction()
       tx = tx.patch(font._id, patch => patch.set({
         'variants': ordered.map(variant => ({
           _type: 'reference',
@@ -113,23 +111,28 @@ export default async function handler(
   const fontVariants = modifiedFonts.filter(item => item._type === 'fontVariant');
 
   if (parentFonts.length) {
-    await writeFonts(parentFonts)
-    // @TODO: we just got lots of duplicates (not due to font files I think)
-    // ok, it was probably b/c of a timing thing (createOrReplace had no `await`)
+
+    /*  ------------------------------ */
+    /*  Create or replace font docs
+    /*  ------------------------------ */
+
+    await createOrReplaceFonts(parentFonts)
   }
 
   if (fontVariants.length) {
-    const variantsWithAncestors = [] // @TODO: better naming
-    for (const variant of fontVariants) {
-      variantsWithAncestors.push(variant)
-    }
-    await writeVariants(variantsWithAncestors)
+    /*  ------------------------------ */
+    /*  Create or replace variant docs
+    /*  ------------------------------ */
+    await createOrReplaceVariants(fontVariants)
+
+    /*  ------------------------------ */
+    /*  Add font variants as refs
+    /*  ------------------------------ */
+    await createFontVariantRefs()
   }
 
   console.log('Successful')
   res.statusCode = 200
   res.json({ message: 'Successful' })
-
-
 }
 
