@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+
 import productImage from '../productImage'
 import variant from './variant'
 
@@ -16,7 +17,7 @@ export default defineType({
       title: 'Name',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'description',
@@ -31,18 +32,33 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'price',
+      title: 'Family price (cents)',
+      description: 'E.g. 9000 for €90.00',
+      type: 'number',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'compareAt',
+      title: 'Compare at price (cents)',
+      description: 'Calculated by size of family (for display purposes)',
+      type: 'number',
+      readOnly: true,
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'uid',
       title: 'UID',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'version',
       title: 'Version',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'images',
@@ -51,7 +67,7 @@ export default defineType({
       of: [
         {
           type: 'reference',
-          to: {type: productImage.name },
+          to: { type: productImage.name },
         },
       ],
       // validation: (rule) => rule.required(),
@@ -64,7 +80,7 @@ export default defineType({
         {
           type: 'reference',
           weak: true,
-          to: {type: variant.name },
+          to: { type: variant.name },
         },
       ],
       // validation: (rule) => rule.required(),
@@ -91,10 +107,10 @@ export default defineType({
               type: 'string',
               validation: (rule) => rule.required(),
             }),
-          ]
-        }
-      ]
-    })
+          ],
+        },
+      ],
+    }),
   ],
   preview: {
     select: {

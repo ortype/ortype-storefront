@@ -12,14 +12,14 @@ export default defineType({
       title: 'Name',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'optionName',
       title: 'Option name',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'description',
@@ -34,31 +34,39 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'price',
+      title: 'Price (cents)',
+      description: 'E.g. 9000 for €90.00',
+      type: 'number',
+      readOnly: true,
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'uid',
       title: 'UID',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'parentUid',
       title: 'Parent UID',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'version',
       title: 'Version',
       type: 'string',
       validation: (rule) => rule.required(),
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'index',
       title: 'Index',
       type: 'number',
-      readOnly: true
+      readOnly: true,
     }),
     defineField({
       name: 'metafields',
@@ -82,10 +90,10 @@ export default defineType({
               type: 'string',
               validation: (rule) => rule.required(),
             }),
-          ]
-        }
-      ]
-    })
+          ],
+        },
+      ],
+    }),
   ],
   preview: {
     select: {
@@ -95,7 +103,7 @@ export default defineType({
     prepare({ title, subtitle }) {
       return {
         title: title,
-        subtitle: `/${subtitle}`
+        subtitle: `/${subtitle}`,
       }
     },
   },
