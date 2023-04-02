@@ -44,7 +44,6 @@ export default defineType({
       description: 'Calculated by size of family (for display purposes)',
       type: 'number',
       readOnly: true,
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'uid',
@@ -110,6 +109,12 @@ export default defineType({
           ],
         },
       ],
+    }),
+    defineField({
+      name: 'hash',
+      title: 'Hash',
+      type: 'string',
+      readOnly: true,
     }),
   ],
   preview: {

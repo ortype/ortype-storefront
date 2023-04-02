@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getIntegrationToken } from '@commercelayer/js-auth'
-import CommerceLayer from '@commercelayer/sdk'
+import CommerceLayer, { PriceListCreate, SkuCreate, SkuUpdate } from '@commercelayer/sdk'
 
 
 interface ExtendedNextApiRequest extends NextApiRequest {
@@ -10,6 +10,8 @@ interface ExtendedNextApiRequest extends NextApiRequest {
     description: string;
   };
 }
+
+let buffer = 0
 
 export default async function sync(
   req: ExtendedNextApiRequest,
@@ -69,19 +71,26 @@ export default async function sync(
       // UPDATE
       case 'PATCH':
         console.log('UPDATE!')
-        const updateSkus = await cl.skus.list({ filters: { code_eq: req.body._id } })
-        // @TODO: How do I update the `code` programmatically if it is mutable?
-        if (updateSkus.length === 0) {
-          return res.status(405).end(`${req.method} no skus found!`)
+        const virtualShippingCategories = await cl.shipping_categories.list({ filters: { name_eq: 'Virtual' } })
+        const shippingCategory = virtualShippingCategories.shift()
+        console.log(shippingCategory)
+        exit
+        const skus = await cl.skus.list({ filters: { code_eq: req.body._id } })
+        if (skus.length) {
+          await cl.skus.update(<SkuUpdate>{
+            id: skus.shift().id,
+            code: req.body._id,
+            name: req.body.name,
+            shipping_category: shippingCategory
+          })
+        } else {
+          await cl.skus.create(<SkuCreate>{
+            code: req.body._id,
+            name: req.body.name,
+            shipping_category: shippingCategory
+          })
         }
-        console.log('updateSkus: ', updateSkus)
-        const sku = {
-          id: updateSkus[0].id,
-          code: req.body._id,
-          name: req.body.name,
-        }
-        const updatedSku = await cl.skus.update(sku) // updates the SKU on the server
-        return res.status(200).json({ message: 'Successful', data: updatedSku })
+        return res.status(200).json({ message: 'Successful', data: {  } })
 
       // DELETE
       // @TODO: Looks like Deleting in Sanity Studio sends a "UPDATE" not "DELETE"
