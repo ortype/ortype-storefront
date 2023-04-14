@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getIntegrationToken } from '@commercelayer/js-auth'
-import CommerceLayer, { PriceListCreate, SkuCreate, SkuUpdate } from '@commercelayer/sdk'
-
+import CommerceLayer, { Market, PriceListCreate, SkuCreate, SkuOptionCreate, SkuOptionUpdate, SkuUpdate } from '@commercelayer/sdk'
+import settings from '../../../lib/settings.js'
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -47,6 +47,21 @@ export default async function sync(
     // HTTP methods (https://www.sanity.io/docs/webhooks#ead6bd6003d5)
     // CREATE
 
+    const virtualShippingCategories = await cl.shipping_categories.list({ filters: { name_eq: 'Virtual' } })
+    const merchShippingCategories = await cl.shipping_categories.list({ filters: { name_eq: 'Merchandising' } })
+    const VIRTUAL = virtualShippingCategories.shift()
+    const MERCH = merchShippingCategories.shift()
+    const get_sku_id = async code => {
+      const response = await cl.skus.list({ filters: { code_eq: code } })
+      return response.shift().id
+    }
+    const get_market_id = async () => {
+      const markets = await cl.markets.list({ filters: {
+          name_eq: 'Global'
+        } })
+      return markets.shift().id
+    }
+
     switch (req.method) {
       case 'PUT':
         console.log('CREATE!')
@@ -71,24 +86,45 @@ export default async function sync(
       // UPDATE
       case 'PATCH':
         console.log('UPDATE!')
-        const virtualShippingCategories = await cl.shipping_categories.list({ filters: { name_eq: 'Virtual' } })
-        const shippingCategory = virtualShippingCategories.shift()
-        console.log(shippingCategory)
-        exit
-        const skus = await cl.skus.list({ filters: { code_eq: req.body._id } })
-        if (skus.length) {
-          await cl.skus.update(<SkuUpdate>{
-            id: skus.shift().id,
-            code: req.body._id,
-            name: req.body.name,
-            shipping_category: shippingCategory
-          })
-        } else {
-          await cl.skus.create(<SkuCreate>{
-            code: req.body._id,
-            name: req.body.name,
-            shipping_category: shippingCategory
-          })
+        for(const variant of req.body.variants){
+          const sku_id = await get_sku_id(variant._id)
+          if (sku_id) {
+            await cl.skus.update(<SkuUpdate>{
+              id: sku_id,
+              code: variant._id,
+              name: variant.name,
+              shipping_category: VIRTUAL
+            })
+          } else {
+            await cl.skus.create(<SkuCreate>{
+              code: variant._id,
+              name: variant.name,
+              shipping_category: VIRTUAL
+            })
+          }
+          for (const option of settings.sku_options){
+            const options = await cl.sku_options.list({filters:{reference_eq: variant._id + '-' + option.reference}})
+            if (!!options.length){
+              await cl.sku_options.update(<SkuOptionUpdate>{
+                id: options.shift().id,
+                currency_code: settings.currency,
+                reference: variant._id + '-' + option.reference,
+                name: variant.name + ' ' + option.name,
+                sku_code_regex: variant._id,
+                reference_origin: option.reference_origin,
+                price_amount_cents: option.price,
+              })
+            } else {
+              await cl.sku_options.create(<SkuOptionCreate>{
+                currency_code: settings.currency,
+                name: variant.name + ' ' + option.name,
+                sku_code_regex: variant._id,
+                reference: variant._id + '-' + option.reference,
+                reference_origin: option.reference_origin,
+                price_amount_cents: option.price,
+              })
+            }
+          }
         }
         return res.status(200).json({ message: 'Successful', data: {  } })
 

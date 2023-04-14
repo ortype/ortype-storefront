@@ -113,7 +113,7 @@ export default defineType({
     defineField({
       name: 'hash',
       title: 'Hash',
-      type: 'string',
+      type: 'number',
       readOnly: true,
     }),
   ],
