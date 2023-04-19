@@ -67,6 +67,7 @@ const fontFields = groq`
   _id,
   name,
   "slug": slug.current,
+  variants[]->{name, _id},
   uid,
   version
 `
@@ -80,12 +81,17 @@ const fontVariantFields = groq`
   version
 `
 
+export const fontSlugsQuery = groq`
+*[_type == "font" && defined(slug.current)][].slug.current
+`
+
 export interface Font {
   _id: string
   name?: string
   uid?: string
   version?: string
   slug?: string
+  variants?: FontVariant[]
 }
 
 export interface FontVariant {
@@ -104,4 +110,14 @@ export const fontsQuery = groq`
 export const fontVariantsQuery = groq`
 *[_type == "fontVariant"] {
   ${fontVariantFields}
+}`
+
+export const fontAndMoreFontsQuery = groq`
+{
+  "font": *[_type == "font" && slug.current == $slug] | order(_updatedAt desc) [0] {
+    ${fontFields}
+  },
+  "moreFonts": *[_type == "font" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {
+    ${fontFields}
+  }
 }`

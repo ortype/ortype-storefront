@@ -5,11 +5,13 @@ import {
   type Font,
   type FontVariant,
   fontsQuery,
+  fontAndMoreFontsQuery,
   fontVariantsQuery,
   indexQuery,
   postAndMoreStoriesQuery,
   postBySlugQuery,
   postSlugsQuery,
+  fontSlugsQuery,
   settingsQuery,
 } from 'lib/sanity.queries'
 import { createClient } from 'next-sanity'
@@ -22,7 +24,13 @@ const client = projectId
   : null
 
 export const apiClient = projectId
-  ? createClient({ projectId, dataset, apiVersion, token: process.env.SANITY_API_WRITE_TOKEN, useCdn })
+  ? createClient({
+      projectId,
+      dataset,
+      apiVersion,
+      token: process.env.SANITY_API_WRITE_TOKEN,
+      useCdn,
+    })
   : null
 
 export async function getSettings(): Promise<Settings> {
@@ -71,39 +79,42 @@ export async function getPostAndMoreStories(
   return { post: null, morePosts: [] }
 }
 
-
-export async function findByUid(
-  uid: string
-): Promise<{ font: Font; }> {
+export async function findByUid(uid: string): Promise<{ font: Font }> {
   if (client) {
-    return (await client.fetch('*[_type == $type && uid == $uid][0]',{
-      type: 'font',
-      uid
-    })) || ({} as any)
+    return (
+      (await client.fetch('*[_type == $type && uid == $uid][0]', {
+        type: 'font',
+        uid,
+      })) || ({} as any)
+    )
   }
   return {} as any
 }
 
 export async function findByParentUid(
   parentUid: string
-): Promise<{ fontVariant: FontVariant; }> {
+): Promise<{ fontVariant: FontVariant }> {
   if (client) {
-    return (await client.fetch('*[_type == $type && parentUid == $parentUid]',{
-      type: 'fontVariant',
-      parentUid
-    })) || ({} as any)
+    return (
+      (await client.fetch('*[_type == $type && parentUid == $parentUid]', {
+        type: 'fontVariant',
+        parentUid,
+      })) || ({} as any)
+    )
   }
   return {} as any
 }
 
 export async function findVariantByUid(
-  uid: string,
-): Promise<{ fontVariant: FontVariant; }> {
+  uid: string
+): Promise<{ fontVariant: FontVariant }> {
   if (client) {
-    return (await client.fetch('*[_type == $type && uid == $uid][0]',{
-      type: 'fontVariant',
-      uid,
-    })) || ({} as any)
+    return (
+      (await client.fetch('*[_type == $type && uid == $uid][0]', {
+        type: 'fontVariant',
+        uid,
+      })) || ({} as any)
+    )
   }
   return {} as any
 }
@@ -111,13 +122,18 @@ export async function findVariantByUid(
 export async function findByUidAndVersion(
   uid: string,
   version: string
-): Promise<{ font: Font; }> {
+): Promise<{ font: Font }> {
   if (client) {
-    return (await client.fetch('*[_type == $type && uid == $uid && version == $version][0]',{
-      type: 'font',
-      uid,
-      version
-    })) || ({} as any)
+    return (
+      (await client.fetch(
+        '*[_type == $type && uid == $uid && version == $version][0]',
+        {
+          type: 'font',
+          uid,
+          version,
+        }
+      )) || ({} as any)
+    )
   }
   return {} as any
 }
@@ -129,9 +145,34 @@ export async function getAllFonts(): Promise<Font[]> {
   return []
 }
 
+export async function getAllFontsSlugs(): Promise<Pick<Font, 'slug'>[]> {
+  if (client) {
+    const slugs = (await client.fetch<string[]>(fontSlugsQuery)) || []
+    return slugs.map((slug) => ({ slug }))
+  }
+  return []
+}
+
 export async function getAllFontVariants(): Promise<FontVariant[]> {
   if (client) {
     return (await client.fetch(fontVariantsQuery)) || []
   }
   return []
+}
+
+export async function getFontAndMoreFonts(
+  slug: string,
+  token?: string | null
+): Promise<{ font: Font; moreFonts: Font[] }> {
+  if (projectId) {
+    const client = createClient({
+      projectId,
+      dataset,
+      apiVersion,
+      useCdn,
+      token: token || undefined,
+    })
+    return await client.fetch(fontAndMoreFontsQuery, { slug })
+  }
+  return { font: null, moreFonts: [] }
 }

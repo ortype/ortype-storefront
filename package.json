@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@commercelayer/js-auth": "^2.3.0",
+    "@commercelayer/react-components": "^4.3.5",
     "@commercelayer/sdk": "^4.21.0",
     "@portabletext/react": "^2.0.0",
     "@sanity/image-url": "^1.0.2",
@@ -24,6 +25,7 @@
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
     "intl-segmenter-polyfill": "^0.4.4",
+    "js-cookie": "^3.0.1",
     "nanoid": "^4.0.0",
     "next": "^13.1.5",
     "next-sanity": "^4.1.1",

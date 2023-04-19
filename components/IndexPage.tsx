@@ -4,6 +4,7 @@ import Layout from 'components/BlogLayout'
 import HeroPost from 'components/HeroPost'
 import IndexPageHead from 'components/IndexPageHead'
 import MoreStories from 'components/MoreStories'
+import FontList from 'components/FontList'
 import IntroTemplate from 'intro-template'
 import * as demo from 'lib/demo.data'
 import type { Post, Settings } from 'lib/sanity.queries'
@@ -17,7 +18,7 @@ export interface IndexPageProps {
 }
 
 export default function IndexPage(props: IndexPageProps) {
-  const { preview, loading, posts, settings } = props
+  const { preview, loading, posts, fonts, settings } = props
   const [heroPost, ...morePosts] = posts || []
   const { title = demo.title, description = demo.description } = settings || {}
 
@@ -28,20 +29,9 @@ export default function IndexPage(props: IndexPageProps) {
       </Head>
       <Layout preview={preview} loading={loading}>
         <Container>
-          <BlogHeader title={title} description={description} level={1} />
-          {heroPost && (
-            <HeroPost
-              title={heroPost.title}
-              coverImage={heroPost.coverImage}
-              date={heroPost.date}
-              author={heroPost.author}
-              slug={heroPost.slug}
-              excerpt={heroPost.excerpt}
-            />
-          )}
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+          {fonts.length > 0 && <FontList fonts={fonts} />}
+          {/*<BlogHeader title={title} description={description} level={1} />*/}
         </Container>
-        <IntroTemplate />
       </Layout>
     </>
   )
