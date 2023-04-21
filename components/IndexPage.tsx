@@ -7,13 +7,14 @@ import MoreStories from 'components/MoreStories'
 import FontList from 'components/FontList'
 import IntroTemplate from 'intro-template'
 import * as demo from 'lib/demo.data'
-import type { Post, Settings } from 'lib/sanity.queries'
+import type { Post, Font, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
 
 export interface IndexPageProps {
   preview?: boolean
   loading?: boolean
   posts: Post[]
+  fonts: Font[]
   settings: Settings
 }
 
