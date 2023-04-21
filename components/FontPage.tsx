@@ -33,6 +33,8 @@ import {
   CheckoutLink,
 } from '@commercelayer/react-components'
 
+import AddLineItemButton from 'components/AddLineItemButton'
+
 export interface FontPageProps {
   preview?: boolean
   loading?: boolean
@@ -93,7 +95,10 @@ export default function FontPage(props: FontPageProps) {
           <>
             <CommerceLayer accessToken={accessToken} endpoint={endpoint}>
               <OrderStorage persistKey={`order`}>
-                <OrderContainer>
+                <OrderContainer
+                // If you need to set some of the order object attributes at the moment of the order creation, pass to the optional prop attributes to the OrderContainer component.
+                // attributes={{ metadata: {} }}
+                >
                   <article>
                     {font.name}
                     <ul>
@@ -104,6 +109,11 @@ export default function FontPage(props: FontPageProps) {
                             <PricesContainer>
                               <Price skuCode={variant._id} />
                             </PricesContainer>
+                            <AddLineItemButton
+                              skuCode={variant._id}
+                              accessToken={accessToken}
+                              quantity={1}
+                            />
                             <AddToCartButton
                               skuCode={variant._id}
                               label={'Add to cart'}
@@ -127,7 +137,7 @@ export default function FontPage(props: FontPageProps) {
                             {/*<LineItemImage width={50} />*/}
                             <LineItemName />
                             {/*<LineItemQuantity max={10} />*/}
-                            <Errors resource="lineItem" field="quantity" />
+                            <Errors resource="line_items" field="quantity" />
                             <LineItemAmount />
                             <LineItemRemoveLink />
                           </LineItem>
