@@ -46,7 +46,7 @@ const AddLineItemButton: React.FC<Props> = ({
       // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
       // https://docs.commercelayer.io/core/v/api-reference/line_items/create
       const localStorageOrderId = localStorage.getItem('order')
-      let order = await cl.orders.retrieve(orderId || localStorageOrderId)
+      let order
 
       // @TODO: create draft order if none exist
       if (!localStorageOrderId) {
@@ -54,12 +54,14 @@ const AddLineItemButton: React.FC<Props> = ({
         order = await cl.orders.create(newOrderAttrs)
         // @TODO: check if we need to manually add orderId to local storage
         // we don't need to update metadata for the order currently
+        localStorage.setItem('order', order.id)
       } else {
-        const updateOrderAttrs: OrderUpdate = {
-          id: localStorageOrderId,
-          metadata: {},
-        }
-        order = await cl.orders.update(updateOrderAttrs)
+        // const updateOrderAttrs: OrderUpdate = {
+        //   id: localStorageOrderId,
+        //   metadata: {},
+        // }
+        // order = await cl.orders.update(updateOrderAttrs)
+        order = await cl.orders.retrieve(orderId || localStorageOrderId)
       }
 
       // if (localStorageOrderId !== null)
@@ -82,8 +84,8 @@ const AddLineItemButton: React.FC<Props> = ({
         // @TODO: add metadata (any shape) with current configuration options
         metadata: {
           license: {
-            types: ['print', 'web'],
-            size: 'small',
+            types: ['print', 'web', 'app'],
+            size: 'medium',
           },
         },
       }
