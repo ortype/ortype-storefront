@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import CommerceLayer, {
   Order,
+  OrderCreate,
+  OrderUpdate,
   LineItem,
   LineItemCreate,
 } from '@commercelayer/sdk'
@@ -12,7 +14,10 @@ interface Props {
   accessToken: string
 }
 
-// how do I get the "current" orderId?
+// @TODO: If the line item already exists in the cart, remove it
+// https://docs.commercelayer.io/core/v/api-reference/line_items/delete (by ID)
+// to know what has been added to the cart we should store sku_codes and line item IDs
+// in the global context so we can show state and remove by ID
 
 const AddLineItemButton: React.FC<Props> = ({
   accessToken,
@@ -30,6 +35,8 @@ const AddLineItemButton: React.FC<Props> = ({
       organization: 'or-type-mvp',
       accessToken,
     })
+
+    console.log('cl:', cl)
   }
 
   const handleClick = async () => {
@@ -39,10 +46,22 @@ const AddLineItemButton: React.FC<Props> = ({
       // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
       // https://docs.commercelayer.io/core/v/api-reference/line_items/create
       const localStorageOrderId = localStorage.getItem('order')
-      const order = await cl.orders.retrieve(orderId || localStorageOrderId)
-      // @TODO: create order if none exists
-      // @TODO: add metadata with current configuration options to the order
-      console.log('order: ', localStorageOrderId, order)
+      let order = await cl.orders.retrieve(orderId || localStorageOrderId)
+
+      // @TODO: create draft order if none exist
+      if (!localStorageOrderId) {
+        const newOrderAttrs: OrderCreate = {}
+        order = await cl.orders.create(newOrderAttrs)
+        // @TODO: check if we need to manually add orderId to local storage
+        // we don't need to update metadata for the order currently
+      } else {
+        const updateOrderAttrs: OrderUpdate = {
+          id: localStorageOrderId,
+          metadata: {},
+        }
+        order = await cl.orders.update(updateOrderAttrs)
+      }
+
       // if (localStorageOrderId !== null)
       // localStorage has an id looking thing `NDerhpLrje` under the key `order`
       // add to cart component must create an order if one is not in local storage
@@ -58,9 +77,15 @@ const AddLineItemButton: React.FC<Props> = ({
         sku_code: skuCode,
         quantity: 1,
         _external_price: true,
-        _update_quantity: false, // this is an interesting param, maybe for adding multiple items instead of increasing the quantity
+        // _update_quantity: false, // this is an interesting param for adding multiple items instead of increasing the quantity
         // bundle_code: bundleCode,
-        // metadata
+        // @TODO: add metadata (any shape) with current configuration options
+        metadata: {
+          license: {
+            types: ['print', 'web'],
+            size: 'small',
+          },
+        },
       }
 
       // POST https://or-type-mvp.commercelayer.io/api/line_items 422

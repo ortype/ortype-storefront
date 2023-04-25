@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import CommerceLayer, { Order } from '@commercelayer/sdk'
+import CommerceLayer from '@commercelayer/sdk'
 import { getIntegrationToken } from '@commercelayer/js-auth'
 
 type PriceCalculationRequest = {
@@ -8,15 +8,15 @@ type PriceCalculationRequest = {
       sku_code: string
       unit_amount_cents: number
       quantity: number
-    }
-    relationships: {
-      order: Order
+      metadata: object
     }
   }
+  // included: []
 }
 
 type PriceCalculationResponse = {
-  totalPrice: number
+  sku_code: string
+  unit_amount_cents: number
 }
 
 /*
@@ -34,6 +34,8 @@ type PriceCalculationResponse = {
   },
 */
 
+// @TODO: Hardcode license configuration data
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<PriceCalculationResponse>
@@ -42,9 +44,9 @@ export default async function handler(
 
   const {
     data: {
-      attributes: { quantity, sku_code, unit_amount_cents },
-      relationships: { order },
+      attributes: { quantity, sku_code, unit_amount_cents, metadata },
     },
+    // included,
   } = req.body as PriceCalculationRequest
 
   try {
@@ -59,23 +61,17 @@ export default async function handler(
       accessToken: token.accessToken,
     })
 
-    /*
-    const price = await cl.prices.calculate({
-      quantity,
-      sku_code,
-      country: 'DE', // replace with the appropriate country code
-      currency: 'EUR', // replace with the appropriate currency code
-    })
-    */
+    console.log('line item metadata: ', metadata)
 
-    // const totalPrice = price.amount_cents / 100
+    // const includedOrder = included?.find((item) => item.type === 'orders')
+    // const orderMetadata = includedOrder?.attributes?.metadata
+    // console.log('orderMetadata: ', orderMetadata)
 
-    console.log('order relationship: ', order, order.metadata)
+    // @TODO: use sku_code to look up sanity fontVariant by id
 
     const data = {
       sku_code,
       unit_amount_cents: 13000,
-      metadata: {},
     }
 
     console.log('price API route: ', data)

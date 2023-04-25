@@ -89,7 +89,6 @@ export default function FontPage(props: FontPageProps) {
       <Head>
         <title>{font.name}</title>
       </Head>
-
       <Layout preview={preview} loading={loading}>
         <Container>
           <>
@@ -114,13 +113,6 @@ export default function FontPage(props: FontPageProps) {
                               accessToken={accessToken}
                               quantity={1}
                             />
-                            <AddToCartButton
-                              skuCode={variant._id}
-                              label={'Add to cart'}
-                              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm md:text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {AddToCartCustom}
-                            </AddToCartButton>
                           </li>
                         )
                       })}
@@ -128,21 +120,20 @@ export default function FontPage(props: FontPageProps) {
                     <hr />
                     <div>
                       {'Cart:'}
-                      <div>
-                        <LineItemsContainer>
-                          <p className="your-custom-class">
-                            Your shopping cart contains <LineItemsCount /> items
-                          </p>
-                          <LineItem>
-                            {/*<LineItemImage width={50} />*/}
-                            <LineItemName />
-                            {/*<LineItemQuantity max={10} />*/}
-                            <Errors resource="line_items" field="quantity" />
-                            <LineItemAmount />
-                            <LineItemRemoveLink />
-                          </LineItem>
-                        </LineItemsContainer>
-                      </div>
+                      {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
+                      <LineItemsContainer>
+                        <p className="your-custom-class">
+                          Your shopping cart contains <LineItemsCount /> items
+                        </p>
+                        <LineItem>
+                          {/*<LineItemImage width={50} />*/}
+                          <LineItemName />
+                          {/*<LineItemQuantity max={10} />*/}
+                          <Errors resource="line_items" field="quantity" />
+                          <LineItemAmount />
+                          <LineItemRemoveLink />
+                        </LineItem>
+                      </LineItemsContainer>
                     </div>
                     <hr />
                     <div>
