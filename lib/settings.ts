@@ -19,6 +19,9 @@ export default {
   ],
   // "Size of company"
   // @TODO: we create SKU prices from this price list
+  // @TODO: How would we create a 2 part price system with Platform + Company size
+  // - Generate a price list for each combo: e.g. print-small, print-web-small, print-web-medium
+  // - Generate prices for each price list
   price_lists: [
     {
       name: 'Small',
@@ -48,12 +51,13 @@ export default {
   // "Platforms"
   // resource ID (the CSV import uses "market_id" but not sure if this is correct)
   // https://docs.commercelayer.io/core/importing-resources#unique-keys
-  sku_options: [
+  // sku_options: [
+  platforms: [
     {
       market_id: '',
       current: 'EUR',
       name: 'Desktop',
-      reference: 'sku_option_1',
+      reference: 'platform_option_1',
       reference_origin: 'SANITY SYNC',
       price: 9000, // in cents
     },
@@ -63,7 +67,7 @@ export default {
       name: 'Web',
       reference: 'sku_option_2',
       reference_origin: 'SANITY SYNC',
-      price: 9000, // in cents
+      price: 14000, // in cents
     },
     {
       market_id: '', // resource ID
@@ -75,3 +79,66 @@ export default {
     },
   ],
 }
+
+export interface Type {
+  key: string
+  label: string
+  basePrice: number | string
+}
+
+export interface Size {
+  key: string
+  label: string
+  modifier: number
+}
+
+export const types: Type[] = [
+  {
+    key: 'print',
+    label: 'Desktop / Print',
+    basePrice: 9000,
+  },
+  {
+    key: 'web',
+    label: 'Web',
+    basePrice: '13000',
+  },
+  {
+    key: 'app',
+    label: 'App/Game',
+    basePrice: '18000',
+  },
+]
+
+export const sizes: Size[] = [
+  {
+    key: 'small',
+    label: 'Small (1-5 employees)',
+    modifier: 1,
+  },
+  {
+    key: 'medium',
+    label: 'Medium (6-50 employees)',
+    modifier: 2,
+  },
+  {
+    key: 'large',
+    label: 'Large (51-100 employees)',
+    modifier: 3,
+  },
+  {
+    key: 'xlarge',
+    label: 'XLarge (101+ employees)',
+    modifier: 4,
+  },
+  {
+    key: 'student',
+    label: 'Student',
+    modifier: 0.5,
+  },
+  {
+    key: 'non-profit',
+    label: 'Non-Profit Organisation',
+    modifier: 0.75,
+  },
+]

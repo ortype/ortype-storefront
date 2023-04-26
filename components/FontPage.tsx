@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import Container from 'components/BlogContainer'
 import Layout from 'components/BlogLayout'
 import MoreFonts from 'components/MoreFonts'
@@ -34,6 +35,7 @@ import {
 } from '@commercelayer/react-components'
 
 import AddLineItemButton from 'components/AddLineItemButton'
+import { Type, Size, types, sizes } from 'lib/settings'
 
 export interface FontPageProps {
   preview?: boolean
@@ -46,6 +48,104 @@ export interface FontPageProps {
 }
 
 const NO_FONTS: Font[] = []
+
+interface Props {
+  types: Type[]
+  sizes: Size[]
+}
+
+const LicenseSelect: React.FC<Props> = ({
+  types,
+  sizes,
+  skuCode,
+  accessToken,
+}) => {
+  const [selectedType, setSelectedType] = useState<Type | null>(null)
+  const [selectedSize, setSelectedSize] = useState<Size | null>(null)
+
+  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedTypeKey = event.target.value
+    const selectedType = types.find((type) => type.key === selectedTypeKey)
+    setSelectedType(selectedType || null)
+  }
+
+  const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedSizeKey = event.target.value
+    const selectedSize = sizes.find((size) => size.key === selectedSizeKey)
+    setSelectedSize(selectedSize || null)
+  }
+
+  return (
+    <div>
+      <label htmlFor="type-select">Select a type:</label>
+      <select id="type-select" onChange={handleTypeChange}>
+        <option value="">--</option>
+        {types.map((type) => (
+          <option key={type.key} value={type.key}>
+            {type.label}
+          </option>
+        ))}
+      </select>
+
+      <label htmlFor="size-select">Select a size:</label>
+      <select id="size-select" onChange={handleSizeChange}>
+        <option value="">--</option>
+        {sizes.map((size) => (
+          <option key={size.key} value={size.key}>
+            {size.label}
+          </option>
+        ))}
+      </select>
+
+      <p>
+        {selectedType && selectedSize && (
+          <span>
+            <b>
+              Total price:{' '}
+              {(Number(selectedType.basePrice) * selectedSize.modifier) / 100}{' '}
+              EUR
+            </b>
+          </span>
+        )}
+        {selectedSize && selectedType && (
+          <AddLineItemButton
+            skuCode={skuCode}
+            accessToken={accessToken}
+            quantity={1}
+            selectedSize={selectedSize?.key}
+            selectedType={selectedType?.key}
+          />
+        )}
+      </p>
+    </div>
+  )
+}
+
+/*
+
+This component takes in the `types` and `sizes` data as props, and uses the `useState` hook to store the user's selected `type` and `size` in React State. The component also defines two event handlers (`handleTypeChange` and `handleSizeChange`) that update the selected `type` and `size` in State whenever the user selects a new option from the `<select>` menus.
+Finally, the component renders the two `<select>` menus and displays the total price (calculated as `selectedType.basePrice * selectedSize.modifier`) whenever both a `type` and `size` have been selected.
+*/
+
+const FontVariant = ({ variant, accessToken }) => {
+  return (
+    <li>
+      {variant.name}
+      {/*
+      // @TODO: default price is drawn from Sanity Data not the PricesContainer
+      <PricesContainer>
+        <Price skuCode={variant._id} />
+      </PricesContainer>
+      */}
+      <LicenseSelect
+        types={types}
+        sizes={sizes}
+        skuCode={variant._id}
+        accessToken={accessToken}
+      />
+    </li>
+  )
+}
 
 const AddToCartCustom = (props: any) => {
   const { className, label, disabled, handleClick } = props
@@ -101,21 +201,13 @@ export default function FontPage(props: FontPageProps) {
                   <article>
                     {font.name}
                     <ul>
-                      {font.variants?.map((variant) => {
-                        return (
-                          <li key={variant._id}>
-                            {variant.name}:
-                            <PricesContainer>
-                              <Price skuCode={variant._id} />
-                            </PricesContainer>
-                            <AddLineItemButton
-                              skuCode={variant._id}
-                              accessToken={accessToken}
-                              quantity={1}
-                            />
-                          </li>
-                        )
-                      })}
+                      {font.variants?.map((variant) => (
+                        <FontVariant
+                          key={variant._id}
+                          variant={variant}
+                          accessToken={accessToken}
+                        />
+                      ))}
                     </ul>
                     <hr />
                     <div>

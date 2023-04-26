@@ -12,6 +12,8 @@ interface Props {
   skuCode: string
   quantity?: number
   accessToken: string
+  selectedSize: string
+  selectedType: string
 }
 
 // @TODO: If the line item already exists in the cart, remove it
@@ -22,6 +24,8 @@ interface Props {
 const AddLineItemButton: React.FC<Props> = ({
   accessToken,
   orderId,
+  selectedSize,
+  selectedType,
   skuCode,
   name,
   quantity,
@@ -84,8 +88,8 @@ const AddLineItemButton: React.FC<Props> = ({
         // @TODO: add metadata (any shape) with current configuration options
         metadata: {
           license: {
-            types: ['print', 'web', 'app'],
-            size: 'medium',
+            types: [selectedType],
+            size: selectedSize,
           },
         },
       }
@@ -103,7 +107,9 @@ const AddLineItemButton: React.FC<Props> = ({
 
   return (
     <button onClick={handleClick} disabled={isLoading}>
+      {'['}
       {isLoading ? 'Adding...' : 'Add to cart'}
+      {']'}
     </button>
   )
 }

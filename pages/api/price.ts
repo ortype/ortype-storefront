@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import CommerceLayer from '@commercelayer/sdk'
 import { getIntegrationToken } from '@commercelayer/js-auth'
+import { types, sizes } from 'lib/settings'
 
 type PriceCalculationRequest = {
   data: {
@@ -33,71 +34,6 @@ type PriceCalculationResponse = {
     "meta": { ... }
   },
 */
-
-// @TODO: Hardcode license configuration data
-
-interface Type {
-  key: string
-  label: string
-  basePrice: number | string
-}
-
-interface Size {
-  key: string
-  label: string
-  modifier: number
-}
-
-const types: Type[] = [
-  {
-    key: 'print',
-    label: 'Desktop / Print',
-    basePrice: 9000,
-  },
-  {
-    key: 'web',
-    label: 'Web',
-    basePrice: '13000',
-  },
-  {
-    key: 'app',
-    label: 'App/Game',
-    basePrice: '18000',
-  },
-]
-
-const sizes: Size[] = [
-  {
-    key: 'small',
-    label: 'Small (1-5 employees)',
-    modifier: 1,
-  },
-  {
-    key: 'medium',
-    label: 'Medium (6-50 employees)',
-    modifier: 2,
-  },
-  {
-    key: 'large',
-    label: 'Large (51-100 employees)',
-    modifier: 3,
-  },
-  {
-    key: 'xlarge',
-    label: 'XLarge (101+ employees)',
-    modifier: 4,
-  },
-  {
-    key: 'student',
-    label: 'Student',
-    modifier: 0.5,
-  },
-  {
-    key: 'non-profit',
-    label: 'Non-Profit Organisation',
-    modifier: 0.75,
-  },
-]
 
 export default async function handler(
   req: NextApiRequest,
