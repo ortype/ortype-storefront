@@ -4,6 +4,7 @@ import Layout from 'components/BlogLayout'
 import MoreFonts from 'components/MoreFonts'
 import SectionSeparator from 'components/SectionSeparator'
 import * as demo from 'lib/demo.data'
+import Select from 'react-select'
 import type { Font, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
 import { notFound } from 'next/navigation'
@@ -60,60 +61,70 @@ const LicenseSelect: React.FC<Props> = ({
   skuCode,
   accessToken,
 }) => {
-  const [selectedType, setSelectedType] = useState<Type | null>(null)
+  const [selectedTypes, setSelectedTypes] = useState<Type[]>([])
   const [selectedSize, setSelectedSize] = useState<Size | null>(null)
 
-  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedTypeKey = event.target.value
-    const selectedType = types.find((type) => type.key === selectedTypeKey)
-    setSelectedType(selectedType || null)
+  const handleTypeChange = (selectedOptions: any) => {
+    const selectedTypes = selectedOptions.map((option: any) =>
+      types.find((type) => type.key === option.value)
+    )
+    setSelectedTypes(selectedTypes)
   }
 
-  const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedSizeKey = event.target.value
-    const selectedSize = sizes.find((size) => size.key === selectedSizeKey)
+  const handleSizeChange = (selectedOption: object) => {
+    const selectedSize = sizes.find((size) => size.key === selectedOption.value)
     setSelectedSize(selectedSize || null)
   }
+
+  const typeOptions = types.map((type) => ({
+    value: type.key,
+    label: type.label,
+  }))
+
+  const sizeOptions = sizes.map((size) => ({
+    value: size.key,
+    label: size.label,
+  }))
 
   return (
     <div>
       <label htmlFor="type-select">Select a type:</label>
-      <select id="type-select" onChange={handleTypeChange}>
-        <option value="">--</option>
-        {types.map((type) => (
-          <option key={type.key} value={type.key}>
-            {type.label}
-          </option>
-        ))}
-      </select>
+      <Select
+        id="type-select"
+        options={typeOptions}
+        isMulti
+        onChange={handleTypeChange}
+      />
 
       <label htmlFor="size-select">Select a size:</label>
-      <select id="size-select" onChange={handleSizeChange}>
-        <option value="">--</option>
-        {sizes.map((size) => (
-          <option key={size.key} value={size.key}>
-            {size.label}
-          </option>
-        ))}
-      </select>
+      <Select
+        id="size-select"
+        options={sizeOptions}
+        onChange={handleSizeChange}
+      />
 
       <p>
-        {selectedType && selectedSize && (
+        {selectedTypes.length > 0 && selectedSize && (
           <span>
             <b>
               Total price:{' '}
-              {(Number(selectedType.basePrice) * selectedSize.modifier) / 100}{' '}
+              {(selectedTypes.reduce(
+                (total, type) => total + Number(type.basePrice),
+                0
+              ) *
+                selectedSize.modifier) /
+                100}{' '}
               EUR
             </b>
           </span>
         )}
-        {selectedSize && selectedType && (
+        {selectedTypes.length > 0 && selectedSize && (
           <AddLineItemButton
             skuCode={skuCode}
             accessToken={accessToken}
             quantity={1}
             selectedSize={selectedSize?.key}
-            selectedType={selectedType?.key}
+            selectedTypes={selectedTypes.map((type) => type.key)}
           />
         )}
       </p>

@@ -14,9 +14,12 @@
     "singleQuote": true
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.6.0",
     "@commercelayer/js-auth": "^2.3.0",
     "@commercelayer/react-components": "^4.3.5",
     "@commercelayer/sdk": "^4.21.0",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@portabletext/react": "^2.0.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.2.5",
@@ -24,6 +27,7 @@
     "@wakamai-fondue/engine": "github:Wakamai-Fondue/wakamai-fondue-engine#50b68ac117a9aa5d907174db1920b4823ed4263e",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
+    "framer-motion": "^10.12.4",
     "intl-segmenter-polyfill": "^0.4.4",
     "js-cookie": "^3.0.1",
     "nanoid": "^4.0.0",
@@ -33,6 +37,7 @@
     "opentype.js": "^1.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-select": "^5.7.2",
     "sanity": "^3.2.5",
     "sanity-plugin-asset-source-unsplash": "^1.0.6",
     "slugify": "^1.6.5",
