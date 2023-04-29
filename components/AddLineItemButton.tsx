@@ -6,11 +6,14 @@ import CommerceLayer, {
   LineItem,
   LineItemCreate,
 } from '@commercelayer/sdk'
+import { useCustomContext, OrderContext } from '@commercelayer/react-components'
+import { Button } from '@chakra-ui/react'
 
 interface Props {
   orderId?: string
   skuCode: string
   quantity?: number
+  disabled: boolean
   accessToken: string
   selectedSize: string
   selectedTypes: array
@@ -23,7 +26,8 @@ interface Props {
 
 const AddLineItemButton: React.FC<Props> = ({
   accessToken,
-  orderId,
+  endpoint,
+  disabled,
   selectedSize,
   selectedTypes,
   skuCode,
@@ -32,6 +36,17 @@ const AddLineItemButton: React.FC<Props> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
+  const { addToCart, orderId, getOrder, setOrderErrors } = useCustomContext({
+    context: OrderContext,
+    contextComponentName: 'OrderContainer',
+    currentComponentName: 'AddToCartButton',
+    key: 'addToCart',
+  })
+
+  // @TODO: test out `addToCart` and `orderId` from CL context
+
+  console.log('AddLineItemButton orderId: ', orderId, addToCart)
+
   let cl
 
   if (accessToken) {
@@ -39,13 +54,32 @@ const AddLineItemButton: React.FC<Props> = ({
       organization: 'or-type-mvp',
       accessToken,
     })
-
-    console.log('cl:', cl)
   }
 
   const handleClick = async () => {
     setIsLoading(true)
 
+    console.log('skuCode: ', skuCode)
+
+    const res = await addToCart({
+      config: {
+        accessToken,
+        endpoint,
+      },
+      sku_code: skuCode,
+      quantity: 1,
+      _external_price: true,
+      metadata: {
+        license: {
+          types: selectedTypes,
+          size: selectedSize,
+        },
+      },
+    })
+
+    console.log('res: ', res)
+
+    /*
     try {
       // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
       // https://docs.commercelayer.io/core/v/api-reference/line_items/create
@@ -71,13 +105,6 @@ const AddLineItemButton: React.FC<Props> = ({
       // if (localStorageOrderId !== null)
       // localStorage has an id looking thing `NDerhpLrje` under the key `order`
       // add to cart component must create an order if one is not in local storage
-      /*      
-      const lineItem: LineItem = {
-        type: 'line_item',
-        sku, // should this be `sku_code`?
-        quantity: 1, // required
-        _external_price: true,
-      }*/
       const attrs: LineItemCreate = {
         order,
         sku_code: skuCode,
@@ -101,16 +128,20 @@ const AddLineItemButton: React.FC<Props> = ({
     } catch (error) {
       console.error(error)
     }
+    */
 
     setIsLoading(false)
   }
 
   return (
-    <button onClick={handleClick} disabled={isLoading}>
-      {'['}
+    <Button
+      disabled={disabled}
+      variant={'outline'}
+      onClick={handleClick}
+      disabled={isLoading}
+    >
       {isLoading ? 'Adding...' : 'Add to cart'}
-      {']'}
-    </button>
+    </Button>
   )
 }
 

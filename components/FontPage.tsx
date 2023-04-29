@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Container from 'components/BlogContainer'
+// import Container from 'components/BlogContainer'
 import Layout from 'components/BlogLayout'
 import MoreFonts from 'components/MoreFonts'
 import SectionSeparator from 'components/SectionSeparator'
@@ -33,7 +33,20 @@ import {
   GiftCardAmount,
   TotalAmount,
   CheckoutLink,
+  //
+  createOrder,
+  useCustomContext,
+  OrderContext,
 } from '@commercelayer/react-components'
+
+import {
+  Container,
+  Flex,
+  Divider,
+  Heading,
+  Text,
+  Stack,
+} from '@chakra-ui/react'
 
 import AddLineItemButton from 'components/AddLineItemButton'
 import { Type, Size, types, sizes } from 'lib/settings'
@@ -55,14 +68,26 @@ interface Props {
   sizes: Size[]
 }
 
+const CustomContainer: React.FC<Props> = ({}) => {
+  const { addToCart, orderId, getOrder, setOrderErrors } = useCustomContext({
+    context: OrderContext,
+    contextComponentName: 'OrderContainer',
+    currentComponentName: 'AddToCartButton',
+    key: 'addToCart',
+  })
+  return <></>
+}
+
 const LicenseSelect: React.FC<Props> = ({
+  variant,
   types,
   sizes,
   skuCode,
   accessToken,
+  endpoint,
 }) => {
-  const [selectedTypes, setSelectedTypes] = useState<Type[]>([])
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null)
+  const [selectedTypes, setSelectedTypes] = useState<Type[]>([types[0]])
+  const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
 
   const handleTypeChange = (selectedOptions: any) => {
     const selectedTypes = selectedOptions.map((option: any) =>
@@ -87,48 +112,53 @@ const LicenseSelect: React.FC<Props> = ({
   }))
 
   return (
-    <div>
-      <label htmlFor="type-select">Select a type:</label>
-      <Select
-        id="type-select"
-        options={typeOptions}
-        isMulti
-        onChange={handleTypeChange}
-      />
-
-      <label htmlFor="size-select">Select a size:</label>
-      <Select
-        id="size-select"
-        options={sizeOptions}
-        onChange={handleSizeChange}
-      />
-
-      <p>
-        {selectedTypes.length > 0 && selectedSize && (
-          <span>
-            <b>
-              Total price:{' '}
-              {(selectedTypes.reduce(
-                (total, type) => total + Number(type.basePrice),
-                0
-              ) *
-                selectedSize.modifier) /
-                100}{' '}
-              EUR
-            </b>
-          </span>
-        )}
-        {selectedTypes.length > 0 && selectedSize && (
-          <AddLineItemButton
-            skuCode={skuCode}
-            accessToken={accessToken}
-            quantity={1}
-            selectedSize={selectedSize?.key}
-            selectedTypes={selectedTypes.map((type) => type.key)}
-          />
-        )}
-      </p>
-    </div>
+    <React.Fragment>
+      <Stack direction={'row'}>
+        <Text>{variant.name}</Text>
+        <AddToCartButton
+          skuCode={skuCode}
+          quantity={1}
+          externalPrice={true}
+          metadata={{
+            license: {
+              types: selectedTypes.map((type) => type.key),
+              size: selectedSize?.key,
+            },
+          }}
+        />
+      </Stack>
+      <Flex>
+        <Select
+          placeholder={'Select a type'}
+          options={typeOptions}
+          isMulti
+          value={selectedTypes}
+          onChange={handleTypeChange}
+        />
+        <Select
+          placeholder={'Select a size'}
+          options={sizeOptions}
+          value={selectedSize}
+          onChange={handleSizeChange}
+        />
+        <Flex>
+          {selectedTypes.length > 0 && selectedSize && (
+            <Text>
+              <b>
+                {' '}
+                {(selectedTypes.reduce(
+                  (total, type) => total + Number(type.basePrice),
+                  0
+                ) *
+                  selectedSize.modifier) /
+                  100}{' '}
+                EUR
+              </b>
+            </Text>
+          )}
+        </Flex>
+      </Flex>
+    </React.Fragment>
   )
 }
 
@@ -138,10 +168,9 @@ This component takes in the `types` and `sizes` data as props, and uses the `use
 Finally, the component renders the two `<select>` menus and displays the total price (calculated as `selectedType.basePrice * selectedSize.modifier`) whenever both a `type` and `size` have been selected.
 */
 
-const FontVariant = ({ variant, accessToken }) => {
+const FontVariant = ({ endpoint, variant, accessToken }) => {
   return (
-    <li>
-      {variant.name}
+    <Flex direction={'column'} bg={'#EEE'} p={4}>
       {/*
       // @TODO: default price is drawn from Sanity Data not the PricesContainer
       <PricesContainer>
@@ -149,31 +178,14 @@ const FontVariant = ({ variant, accessToken }) => {
       </PricesContainer>
       */}
       <LicenseSelect
+        variant={variant}
         types={types}
         sizes={sizes}
         skuCode={variant._id}
         accessToken={accessToken}
+        endpoint={endpoint}
       />
-    </li>
-  )
-}
-
-const AddToCartCustom = (props: any) => {
-  const { className, label, disabled, handleClick } = props
-  // const { handleAnimation } = useContext(LayoutContext)
-  const customHandleClick = async (e: any) => {
-    const { success } = await handleClick(e)
-    console.log('AddToCartCustom:', success)
-    // if (success && handleAnimation) handleAnimation(e)
-  }
-  return (
-    <button
-      disabled={disabled}
-      className={className}
-      onClick={customHandleClick}
-    >
-      {label}
-    </button>
+    </Flex>
   )
 }
 
@@ -201,7 +213,7 @@ export default function FontPage(props: FontPageProps) {
         <title>{font.name}</title>
       </Head>
       <Layout preview={preview} loading={loading}>
-        <Container>
+        <Container my={8}>
           <>
             <CommerceLayer accessToken={accessToken} endpoint={endpoint}>
               <OrderStorage persistKey={`order`}>
@@ -209,17 +221,19 @@ export default function FontPage(props: FontPageProps) {
                 // If you need to set some of the order object attributes at the moment of the order creation, pass to the optional prop attributes to the OrderContainer component.
                 // attributes={{ metadata: {} }}
                 >
+                  {/*<CustomContainer />*/}
                   <article>
-                    {font.name}
-                    <ul>
+                    <Heading>{font.name}</Heading>
+                    <Stack direction={'column'}>
                       {font.variants?.map((variant) => (
                         <FontVariant
                           key={variant._id}
                           variant={variant}
                           accessToken={accessToken}
+                          endpoint={endpoint}
                         />
                       ))}
-                    </ul>
+                    </Stack>
                     <hr />
                     <div>
                       {'Cart:'}
