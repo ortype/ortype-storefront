@@ -7,6 +7,9 @@ import CommerceLayer, {
   SkuOptionCreate,
   SkuOptionUpdate,
   SkuUpdate,
+  Sku,
+  AttachmentCreate,
+  AttachmentUpdate,
 } from '@commercelayer/sdk'
 import settings from '../../../lib/settings.js'
 
@@ -47,7 +50,13 @@ export default async function sync(
     })
 
     // console.log('cl: ', cl)
-    console.log('req:', req.method, req.body)
+    console.log(
+      'req:',
+      req.method
+      // req.body
+    )
+
+    // return res.status(200).json({ message: 'Successful', data: {} })
 
     // create/update/delete SKUs
     // @TODO: How do we know if it is an create, update, or delete action?
@@ -63,10 +72,6 @@ export default async function sync(
     })
     const VIRTUAL = virtualShippingCategories.shift()
     const MERCH = merchShippingCategories.shift()
-    const get_sku_id = async (code) => {
-      const response = await cl.skus.list({ filters: { code_eq: code } })
-      return response.shift().id
-    }
     const get_market_id = async () => {
       const markets = await cl.markets.list({
         filters: {
@@ -76,10 +81,91 @@ export default async function sync(
       return markets.shift().id
     }
 
+    const getSkuId = async (code) => {
+      const response = await cl.skus.list({ filters: { code_eq: code } })
+      return response.shift()?.id
+    }
+
+    const getAttachmentId = async (reference) => {
+      const response = await cl.attachments.list({
+        filters: { reference_eq: reference },
+      })
+      return response.shift()?.id
+    }
+
+    async function getAttachments(metafields, sku) {
+      const files = metafields.filter(
+        ({ key, value }) =>
+          key === 'otf' ||
+          key === 'woff' ||
+          key === 'woff2' ||
+          key === 'familyFile'
+      )
+      const skuAttachments = []
+      for (const file of files) {
+        const reference = `${sku.code}-${file.key}`
+        const attachmentId = await getAttachmentId(reference)
+        if (attachmentId) {
+          skuAttachments.push(
+            await cl.attachments.update(<AttachmentUpdate>{
+              id: attachmentId,
+              name: file.key,
+              url: file.value,
+              reference,
+              attachable: sku, // @TODO: confirm that the attachment is added to the SKU
+            })
+          )
+        } else {
+          skuAttachments.push(
+            await cl.attachments.create(<AttachmentCreate>{
+              name: file.key,
+              url: file.value,
+              reference,
+              attachable: sku,
+            })
+          )
+        }
+      }
+      return skuAttachments
+    }
+
+    async function updateOrCreateSkus(variants) {
+      const updatedSkus = []
+      for (const variant of variants) {
+        const skuId = await getSkuId(variant._id)
+        if (skuId) {
+          const updatedSku = await cl.skus.update(<SkuUpdate>{
+            id: skuId,
+            code: variant._id,
+            name: variant.name,
+            reference: variant.uid,
+            reference_origin: variant.parentUid,
+          })
+          await getAttachments(variant.metafields, updatedSku)
+          updatedSkus.push(updatedSku)
+        } else {
+          const createdSku = await cl.skus.create(<SkuCreate>{
+            code: variant._id,
+            name: variant.name,
+            shipping_category: VIRTUAL,
+            reference: variant.uid,
+            reference_origin: variant.parentUid,
+            do_not_ship: true,
+            do_not_track: true,
+          })
+          await getAttachments(variant.metafields, createdSku)
+          updatedSkus.push(createdSku)
+        }
+      }
+      return updatedSkus
+    }
+
     switch (req.method) {
       case 'PUT':
         console.log('CREATE!')
+        let newSku = {}
         // selects the shipping category (it's a required relationship for the SKU resource)
+        /*
         const shippingCategories = await cl.shipping_categories.list({
           filters: { name_eq: 'Merchandising' },
         })
@@ -98,55 +184,51 @@ export default async function sync(
         // POST to `${process.env.CL_ENDPOINT}/api/skus`
         // To create a new SKU, send a POST request to the /api/skus endpoint, passing the resource arguments in the request body
         // or use the SDK, ahah!
-        const newSku = await cl.skus.create(attributes)
+        newSku = await cl.skus.create(attributes)
+        */
         return res.status(200).json({ message: 'Successful', data: newSku })
-
       // UPDATE
       case 'PATCH':
-        console.log('UPDATE!')
-        for (const variant of req.body.variants) {
-          const sku_id = await get_sku_id(variant._id)
-          if (sku_id) {
-            await cl.skus.update(<SkuUpdate>{
-              id: sku_id,
-              code: variant._id,
-              name: variant.name,
-              shipping_category: VIRTUAL,
-            })
-          } else {
-            await cl.skus.create(<SkuCreate>{
-              code: variant._id,
-              name: variant.name,
-              shipping_category: VIRTUAL,
-            })
-          }
-          for (const option of settings.sku_options) {
-            const options = await cl.sku_options.list({
-              filters: { reference_eq: variant._id + '-' + option.reference },
-            })
-            if (!!options.length) {
-              await cl.sku_options.update(<SkuOptionUpdate>{
-                id: options.shift().id,
-                currency_code: settings.currency,
-                reference: variant._id + '-' + option.reference,
-                name: variant.name + ' ' + option.name,
-                sku_code_regex: variant._id,
-                reference_origin: option.reference_origin,
-                price_amount_cents: option.price,
-              })
-            } else {
-              await cl.sku_options.create(<SkuOptionCreate>{
-                currency_code: settings.currency,
-                name: variant.name + ' ' + option.name,
-                sku_code_regex: variant._id,
-                reference: variant._id + '-' + option.reference,
-                reference_origin: option.reference_origin,
-                price_amount_cents: option.price,
-              })
-            }
+        console.log(
+          `UPDATE: ${req.body.uid}: ${req.body.variants?.map(
+            (variant) => variant.name
+          )}`
+        )
+        /*
+        console.log(
+          'Metafields: ',
+          req.body.variants.map(({ metafields }) =>
+            metafields.map(({ key, value }) => `${key}: ${value}`)
+          )
+        )
+        */
+
+        if (!req.body.variants)
+          return res.status(405).end(`Payload is missing variants`)
+        const updatedSkus = []
+
+        try {
+          const updatedSkus = await updateOrCreateSkus(req.body.variants)
+          return res
+            .status(200)
+            .json({ message: 'Successful', data: updatedSkus })
+        } catch (error) {
+          console.error(error)
+          return res.status(500).json({ message: 'Internal server error' })
+        }
+
+      /*
+        const allSkus = await cl.skus.list({ filters: { reference_origin_eq: req.body.uid }})
+        console.log(`all SKUs from ${req.body.name}: ${allSkus.map(sku => sku.name)}`)
+        // if skus ARE present in allSkus which ARE NOT present in variants they should be deleted. Compare allSkus with req.body.variants by sku.code === variant._id
+        const filtered = allSkus.filter(({code}) => !req.body.variants.some(({_id}) => _id === code))
+        if (filtered.length > 0) {
+          console.log(`Filter results: ${filtered.map(item => item.name)}`)
+          for (const item of filtered) {
+            updatedSkus.push(await cl.skus.delete(item.id))
           }
         }
-        return res.status(200).json({ message: 'Successful', data: {} })
+        */
 
       // DELETE
       // @TODO: Looks like Deleting in Sanity Studio sends a "UPDATE" not "DELETE"
