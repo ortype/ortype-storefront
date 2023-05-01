@@ -112,7 +112,7 @@ export default async function sync(
               name: file.key,
               url: file.value,
               reference,
-              attachable: sku, // @TODO: confirm that the attachment is added to the SKU
+              attachable: sku,
             })
           )
         } else {

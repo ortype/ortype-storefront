@@ -34,12 +34,14 @@ import {
   TotalAmount,
   CheckoutLink,
   //
+  useOrderContainer,
   createOrder,
   useCustomContext,
   OrderContext,
 } from '@commercelayer/react-components'
 
 import {
+  Box,
   Container,
   Flex,
   Divider,
@@ -86,6 +88,9 @@ const LicenseSelect: React.FC<Props> = ({
   accessToken,
   endpoint,
 }) => {
+  const { order, reloadOrder } = useOrderContainer()
+  console.log(`Order ID: ${order?.id}`)
+
   const [selectedTypes, setSelectedTypes] = useState<Type[]>([types[0]])
   const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
 
@@ -115,6 +120,20 @@ const LicenseSelect: React.FC<Props> = ({
     <React.Fragment>
       <Stack direction={'row'}>
         <Text>{variant.name}</Text>
+        <Text>{variant._id}</Text>
+        <AddLineItemButton
+          skuCode={skuCode}
+          quantity={1}
+          accessToken={accessToken}
+          externalPrice={true}
+          metadata={{
+            license: {
+              types: selectedTypes.map((type) => type.key),
+              size: selectedSize?.key,
+            },
+          }}
+          reloadOrder={reloadOrder}
+        />
         <AddToCartButton
           skuCode={skuCode}
           quantity={1}
@@ -234,9 +253,8 @@ export default function FontPage(props: FontPageProps) {
                         />
                       ))}
                     </Stack>
-                    <hr />
-                    <div>
-                      {'Cart:'}
+                    <Box p={4}>
+                      <Heading>{'Cart'}</Heading>
                       {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
                       <LineItemsContainer>
                         <p className="your-custom-class">
@@ -251,10 +269,9 @@ export default function FontPage(props: FontPageProps) {
                           <LineItemRemoveLink />
                         </LineItem>
                       </LineItemsContainer>
-                    </div>
-                    <hr />
-                    <div>
-                      {'Cart summary: '}
+                    </Box>
+                    <Box bg={'#FFF8D3'} p={4}>
+                      <Heading as={'h3'}>{'Summary: '}</Heading>
                       <div>
                         {'Subtotal: '} <SubTotalAmount />
                       </div>
@@ -267,7 +284,7 @@ export default function FontPage(props: FontPageProps) {
                         <TotalAmount />
                       </div>
                       <CheckoutLink label={'Checkout'} />
-                    </div>
+                    </Box>
                   </article>
                 </OrderContainer>
               </OrderStorage>

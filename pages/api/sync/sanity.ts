@@ -1,7 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { nanoid } from 'nanoid'
 import OpenTypeAPI from '../../../lib/api/OpenTypeAPI.js'
-import { apiClient, findByUidAndVersion, findVariantByUid, getAllFonts, getAllFontVariants, findByUid, findByParentUid } from 'lib/sanity.client'
+import {
+  apiClient,
+  findByUidAndVersion,
+  findVariantByUid,
+  getAllFonts,
+  getAllFontVariants,
+  findByUid,
+  findByParentUid,
+} from 'lib/sanity.client'
 import slugify from 'slugify'
 
 // writing to sanity
@@ -10,9 +18,9 @@ async function createOrReplaceFonts(fonts) {
   for (const font of fonts) {
     const tmp = font
     delete tmp.hash
-    if (hash(tmp) === font.hash){
+    if (hash(tmp) === font.hash) {
       console.log('upddd')
-      return;
+      return
     }
     font.hash = hash(font)
     const sanityFont = await findByUidAndVersion(font.uid, font.version)
@@ -28,7 +36,7 @@ async function createOrReplaceFonts(fonts) {
 async function deleteAllFonts() {
   // Without params
   return await apiClient
-    .delete({query: '*[_type == "font"][0...999]'})
+    .delete({ query: '*[_type == "font"][0...999]' })
     .then(() => {
       console.log('The documents matching *[_type == "font"] were deleted')
     })
@@ -40,9 +48,11 @@ async function deleteAllFonts() {
 async function deleteAllVariants() {
   // Without params
   return await apiClient
-    .delete({query: '*[_type == "fontVariant"][0...999]'})
+    .delete({ query: '*[_type == "fontVariant"][0...999]' })
     .then(() => {
-      console.log('The documents matching *[_type == "fontVariant"] were deleted')
+      console.log(
+        'The documents matching *[_type == "fontVariant"] were deleted'
+      )
     })
     .catch((err) => {
       console.error('Delete failed: ', err.message)
@@ -56,9 +66,11 @@ async function createOrReplaceVariants(variants) {
   console.log(`Got existing variants [${fontVariants.length}]`)
   for (const variant of variants) {
     // The fonts already exist, so we can look them up by parentUid
-    const sanityFontVariant = fontVariants.find(v => v.uid === variant.uid)
+    const sanityFontVariant = fontVariants.find((v) => v.uid === variant.uid)
     if (sanityFontVariant && sanityFontVariant._id) {
       variant._id = sanityFontVariant._id // reset the ID
+      // this is meant to prevent duplicate variants documents from being create
+      // however we seem to be getting doubles rather consistently
     }
     console.log('fontVariant: ', variant._id, variant.uid)
     await apiClient.createOrReplace(variant, { dryRun: false }) // create the variant
@@ -73,61 +85,68 @@ async function createFontVariantRefs() {
   for (const font of fonts) {
     const fontVariants = await findByParentUid(font.uid)
     if (Array.isArray(fontVariants)) {
-      console.log(`Found font variants for: ${font.uid} [${fontVariants.length}]`)
+      console.log(
+        `Found font variants for: ${font.uid} [${fontVariants.length}]`
+      )
       // order fonts by the index from their fVar table
-      const ordered = fontVariants.sort((a,b) => a.index - b.index)
+      const ordered = fontVariants.sort((a, b) => a.index - b.index)
       // 3 - for each font, add its matching variants in the fontVariants array
       let tx = apiClient.transaction()
-      tx = tx.patch(font._id, patch => patch.set({
-        'variants': ordered.map(variant => ({
-          _type: 'reference',
-          _weak: true,
-          _ref: variant._id,
-          _key: variant._id
-        }))
-      }))
+      tx = tx.patch(font._id, (patch) =>
+        patch.set({
+          variants: ordered.map((variant) => ({
+            _type: 'reference',
+            _weak: true,
+            _ref: variant._id,
+            _key: variant._id,
+          })),
+        })
+      )
 
-      console.log(`Adding variant references to ${font.uid} in Sanity`);
+      console.log(`Adding variant references to ${font.uid} in Sanity`)
       const result = await tx.commit({ dryRun: false })
       console.log('Result', result)
     }
   }
 }
 
-const hash = obj => {
-  const ordered = Object.keys(obj).sort().reduce(
-    (obj, key) => {
-      obj[key] = obj[key];
-      return obj;
-    },
-    {}
-  );
+const hash = (obj) => {
+  const ordered = Object.keys(obj)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = obj[key]
+      return obj
+    }, {})
   const serialized = JSON.stringify(ordered)
   return cyrb53(serialized)
 }
 const cyrb53 = (str, seed = 0) => {
   let h1 = 0xdeadbeef ^ seed,
-    h2 = 0x41c6ce57 ^ seed;
+    h2 = 0x41c6ce57 ^ seed
   for (let i = 0, ch; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
+    ch = str.charCodeAt(i)
+    h1 = Math.imul(h1 ^ ch, 2654435761)
+    h2 = Math.imul(h2 ^ ch, 1597334677)
   }
 
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  h1 =
+    Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^
+    Math.imul(h2 ^ (h2 >>> 13), 3266489909)
+  h2 =
+    Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^
+    Math.imul(h1 ^ (h1 >>> 13), 3266489909)
 
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-};
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0)
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-
   // For testing purposes only
-  // await deleteFonts()
-  // await deleteVariants()
+  // await deleteAllFonts()
+  // await deleteAllVariants()
+  // return res.status(200).json({ message: 'Successful' })
 
   console.log('Webhook payload:', req.body)
   const OpenType = await OpenTypeAPI.getInstance()
@@ -140,11 +159,17 @@ export default async function handler(
   for (const font of await OpenType.getFonts()) {
     modifiedFonts.push(...(await font.getReactionProducts(false)))
   }
-  const parentFonts = modifiedFonts.filter(item => item._type === 'font');
-  const fontVariants = modifiedFonts.filter(item => item._type === 'fontVariant');
+  const parentFonts = modifiedFonts.filter((item) => item._type === 'font')
+  const fontVariants = modifiedFonts.filter(
+    (item) => item._type === 'fontVariant'
+  )
+
+  // console.log('parentFonts: ', parentFonts)
+  // console.log('fontVariants: ', fontVariants)
+
+  // return res.status(200).json({ message: 'Successful' })
 
   if (parentFonts.length) {
-
     /*  ------------------------------ */
     /*  Create or replace font docs
     /*  ------------------------------ */
@@ -165,7 +190,5 @@ export default async function handler(
   }
 
   console.log('Successful')
-  res.statusCode = 200
-  res.json({ message: 'Successful' })
+  return res.status(200).json({ message: 'Successful' })
 }
-

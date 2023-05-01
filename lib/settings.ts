@@ -92,6 +92,8 @@ export interface Size {
   modifier: number
 }
 
+export const basePrice = 9000
+
 export const types: Type[] = [
   {
     key: 'print',

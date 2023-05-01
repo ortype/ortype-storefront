@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import CommerceLayer, {
-  Order,
   OrderCreate,
   OrderUpdate,
   LineItem,
   LineItemCreate,
+  type Order,
 } from '@commercelayer/sdk'
 import { useCustomContext, OrderContext } from '@commercelayer/react-components'
 import { Button } from '@chakra-ui/react'
@@ -15,8 +15,8 @@ interface Props {
   quantity?: number
   disabled: boolean
   accessToken: string
-  selectedSize: string
-  selectedTypes: array
+  metadata: any
+  reloadOrder: () => Promise<Order | undefined>
 }
 
 // @TODO: If the line item already exists in the cart, remove it
@@ -30,22 +30,26 @@ const AddLineItemButton: React.FC<Props> = ({
   disabled,
   selectedSize,
   selectedTypes,
+  reloadOrder,
   skuCode,
+  metadata,
+  orderId,
   name,
   quantity,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
+  /*
   const { addToCart, orderId, getOrder, setOrderErrors } = useCustomContext({
     context: OrderContext,
     contextComponentName: 'OrderContainer',
     currentComponentName: 'AddToCartButton',
     key: 'addToCart',
   })
-
-  // @TODO: test out `addToCart` and `orderId` from CL context
-
   console.log('AddLineItemButton orderId: ', orderId, addToCart)
+  */
+
+  // @TODO: test out `addToCart` and `orderId` from CL context (didn't work so far)
 
   let cl
 
@@ -60,7 +64,8 @@ const AddLineItemButton: React.FC<Props> = ({
     setIsLoading(true)
 
     console.log('skuCode: ', skuCode)
-
+    /*
+    // this didn't work..  we got an auth api error (not sure how to correct that)
     const res = await addToCart({
       config: {
         accessToken,
@@ -78,8 +83,8 @@ const AddLineItemButton: React.FC<Props> = ({
     })
 
     console.log('res: ', res)
+  */
 
-    /*
     try {
       // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
       // https://docs.commercelayer.io/core/v/api-reference/line_items/create
@@ -113,22 +118,45 @@ const AddLineItemButton: React.FC<Props> = ({
         // _update_quantity: false, // this is an interesting param for adding multiple items instead of increasing the quantity
         // bundle_code: bundleCode,
         // @TODO: add metadata (any shape) with current configuration options
-        metadata: {
-          license: {
-            types: selectedTypes,
-            size: selectedSize,
-          },
-        },
+        metadata,
       }
 
       // POST https://or-type-mvp.commercelayer.io/api/line_items 422
+      /*
+
+        {
+            "title": "can't be blank",
+            "detail": "unit_amount_cents - can't be blank",
+            "code": "VALIDATION_ERROR",
+            "source": {
+                "pointer": "/data/attributes/unit_amount_cents"
+            },
+            "status": "422",
+            "meta": {
+                "error": "blank"
+            },
+            "resource": "orders"
+        }      
+
+        // why is this? our external price route calculation is running
+
+        price API route:  {
+          sku_code: 'fontVariant-bG67s1bEn8QnLuwXu7eZs',
+          unit_amount_cents: 9000
+        }
+        price API route:  {
+          sku_code: 'fontVariant--DVDoYvyjPsA0pEBIl_zn',
+          unit_amount_cents: 18000
+        }        
+
+      */
       const result = await cl.line_items.create(attrs)
       console.log('result: ', result)
+      reloadOrder()
       // does the lineItems.create with orderId take care of the "relationship", I guess, but need to check
     } catch (error) {
       console.error(error)
     }
-    */
 
     setIsLoading(false)
   }

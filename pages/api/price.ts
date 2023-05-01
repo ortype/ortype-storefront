@@ -39,14 +39,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<PriceCalculationResponse>
 ) {
-  console.log('price API route')
-
   const {
     data: {
       attributes: { quantity, sku_code, unit_amount_cents, metadata },
     },
     // included,
   } = req.body as PriceCalculationRequest
+
+  // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
+  // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
 
   try {
     const token = await getIntegrationToken({
@@ -83,11 +84,13 @@ export default async function handler(
       unit_amount_cents: total,
     }
 
-    console.log('price API route: ', data)
+    console.log('Price API route data: ', data)
 
-    res.status(200).json({ success: true, data })
+    return res.status(200).json({ success: true, data })
   } catch (error) {
     console.error(error)
-    res.status(500).json({ message: 'Internal server error' })
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' })
   }
 }

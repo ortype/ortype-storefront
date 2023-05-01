@@ -99,11 +99,12 @@ export default defineType({
     select: {
       title: `name`,
       subtitle: `optionName`,
+      slug: 'slug.current',
     },
-    prepare({ title, subtitle }) {
+    prepare({ title, subtitle, slug }) {
       return {
         title: title,
-        subtitle: `/${subtitle}`,
+        subtitle: `/${slug}`,
       }
     },
   },
