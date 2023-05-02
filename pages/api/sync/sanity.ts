@@ -102,6 +102,8 @@ async function createOrUpdateFonts(transaction, fonts) {
   for (const font of fonts) {
     const sanityFont = await findByUidAndVersion(font.uid, font.version)
     // @TODO: move to a `hash` method in fonts API e.g. in the `shouldUpdate` where we read from the font file itself
+    // @NOTE: it seems the hashing does not detect differences in the new slug.current
+
     if (hash(font) === sanityFont.hash) {
       console.log('upddd')
       continue
@@ -166,7 +168,7 @@ export default async function handler(
 
   const fonts = []
   for (const font of await OpenType.getFonts()) {
-    fonts.push(await font.getReactionProducts(false))
+    fonts.push(await font.getFontProductData(false))
   }
 
   // Variant duplicate warning
