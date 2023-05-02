@@ -4,6 +4,7 @@ import OpenTypeAPI from '../../../lib/api/OpenTypeAPI.js'
 import {
   apiClient,
   findByUidAndVersion,
+  findFontVariantByUidAndVersion,
   findVariantByUid,
   getAllFonts,
   getAllFontVariants,
@@ -139,6 +140,64 @@ const cyrb53 = (str, seed = 0) => {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0)
 }
 
+async function buildFontDocument(font) {
+  const sanityFont = await findByUidAndVersion(font.uid, font.version)
+  // This UID lookup ALSO prevents multiple font documents from being created
+  if (sanityFont && sanityFont._id) {
+    font._id = sanityFont._id // reset the ID
+  }
+  font.variants = [] // font object has a variants array which we need to replace with an array of refs
+  return font
+}
+
+async function buildVariantDocument(fontVariant) {
+  // @TODO: try single lookup again b/c
+  // const fontVariants = await getAllFontVariants()
+  const sanityFontVariant = await findFontVariantByUidAndVersion(
+    fontVariant.uid,
+    fontVariant.version
+  )
+  if (sanityFontVariant && sanityFontVariant._id) {
+    fontVariant._id = sanityFontVariant._id // reset the ID
+  }
+  return fontVariant
+}
+
+async function createOrUpdateFonts(transaction, fonts) {
+  for (const font of fonts) {
+    // Build Sanity product document
+    const orderedVariants = font.variants.sort((a, b) => a.index - b.index)
+    for (const variant of orderedVariants) {
+      const variantDoc = await buildVariantDocument(variant)
+      // console.log(`variantDoc: ${variantDoc._id} ${variantDoc.name}`)
+      transaction
+        .createIfNotExists(variantDoc)
+        .patch(variantDoc._id, (patch) => patch.set(variantDoc))
+    }
+
+    const fontDoc = await buildFontDocument(font)
+    // console.log(`fontDoc: ${fontDoc._id} ${fontDoc.name}`)
+    // const draftId = `drafts.${document._id}`
+
+    // Create (or update) existing published fontDoc
+    transaction
+      .createIfNotExists(fontDoc)
+      .patch(fontDoc._id, (patch) => patch.set(fontDoc))
+      .patch(fontDoc._id, (patch) =>
+        patch.set({
+          variants: orderedVariants.map((variant) => ({
+            _type: 'reference',
+            _weak: true,
+            _ref: variant._id,
+            _key: variant._id,
+          })),
+        })
+      )
+
+    // @TODO: update drafts as well
+  }
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -155,19 +214,36 @@ export default async function handler(
   /*  Begin Sanity Font Sync
   /*  ------------------------------ */
 
-  const modifiedFonts = []
+  const fonts = []
   for (const font of await OpenType.getFonts()) {
-    modifiedFonts.push(...(await font.getReactionProducts(false)))
+    fonts.push(await font.getReactionProducts(false))
   }
-  const parentFonts = modifiedFonts.filter((item) => item._type === 'font')
-  const fontVariants = modifiedFonts.filter(
-    (item) => item._type === 'fontVariant'
+
+  const variantNames = fonts.flatMap(({ variants }) =>
+    variants.map(({ name }) => name)
   )
+  const duplicates = variantNames.filter(
+    (item, index) => variantNames.indexOf(item) !== index
+  )
+
+  console.log(`Dups: ${duplicates}`)
+
+  return res.status(200).json({ message: 'Successful' })
+
+  try {
+    const transaction = apiClient.transaction()
+    await createOrUpdateFonts(transaction, fonts)
+    const result = await transaction.commit({ dryRun: false })
+    console.log('Result', result)
+    return res.status(200).json({ message: 'Successful' })
+  } catch (error) {
+    return res.status(500).json({
+      error,
+    })
+  }
 
   // console.log('parentFonts: ', parentFonts)
   // console.log('fontVariants: ', fontVariants)
-
-  // return res.status(200).json({ message: 'Successful' })
 
   if (parentFonts.length) {
     /*  ------------------------------ */
