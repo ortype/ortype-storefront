@@ -13,27 +13,6 @@ import {
 } from 'lib/sanity.client'
 import slugify from 'slugify'
 
-// writing to sanity
-
-async function createOrReplaceFonts(fonts) {
-  for (const font of fonts) {
-    const tmp = font
-    delete tmp.hash
-    if (hash(tmp) === font.hash) {
-      console.log('upddd')
-      return
-    }
-    font.hash = hash(font)
-    const sanityFont = await findByUidAndVersion(font.uid, font.version)
-    // This UID lookup ALSO prevents multiple font documents from being created
-    if (sanityFont && sanityFont._id) {
-      font._id = sanityFont._id // reset the ID
-    }
-    console.log('font: ', font._id, font.uid)
-    await apiClient.createOrReplace(font)
-  }
-}
-
 async function deleteAllFonts() {
   // Without params
   return await apiClient
@@ -58,57 +37,6 @@ async function deleteAllVariants() {
     .catch((err) => {
       console.error('Delete failed: ', err.message)
     })
-}
-
-async function createOrReplaceVariants(variants) {
-  console.log('Running createOrReplaceVariants')
-  const fontVariants = await getAllFontVariants()
-  // There are tons of variants, it makes more sense to request all of them, and do an array filter instead of a GROQ query for each one
-  console.log(`Got existing variants [${fontVariants.length}]`)
-  for (const variant of variants) {
-    // The fonts already exist, so we can look them up by parentUid
-    const sanityFontVariant = fontVariants.find((v) => v.uid === variant.uid)
-    if (sanityFontVariant && sanityFontVariant._id) {
-      variant._id = sanityFontVariant._id // reset the ID
-      // this is meant to prevent duplicate variants documents from being create
-      // however we seem to be getting doubles rather consistently
-    }
-    console.log('fontVariant: ', variant._id, variant.uid)
-    await apiClient.createOrReplace(variant, { dryRun: false }) // create the variant
-  }
-}
-
-async function createFontVariantRefs() {
-  // 1 - find all fonts
-  const fonts = await getAllFonts()
-
-  // 2 - find their variants based on parentUid
-  for (const font of fonts) {
-    const fontVariants = await findByParentUid(font.uid)
-    if (Array.isArray(fontVariants)) {
-      console.log(
-        `Found font variants for: ${font.uid} [${fontVariants.length}]`
-      )
-      // order fonts by the index from their fVar table
-      const ordered = fontVariants.sort((a, b) => a.index - b.index)
-      // 3 - for each font, add its matching variants in the fontVariants array
-      let tx = apiClient.transaction()
-      tx = tx.patch(font._id, (patch) =>
-        patch.set({
-          variants: ordered.map((variant) => ({
-            _type: 'reference',
-            _weak: true,
-            _ref: variant._id,
-            _key: variant._id,
-          })),
-        })
-      )
-
-      console.log(`Adding variant references to ${font.uid} in Sanity`)
-      const result = await tx.commit({ dryRun: false })
-      console.log('Result', result)
-    }
-  }
 }
 
 const hash = (obj) => {
@@ -140,8 +68,7 @@ const cyrb53 = (str, seed = 0) => {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0)
 }
 
-async function buildFontDocument(font) {
-  const sanityFont = await findByUidAndVersion(font.uid, font.version)
+async function buildFontDocument(font, sanityFont) {
   // This UID lookup ALSO prevents multiple font documents from being created
   if (sanityFont && sanityFont._id) {
     font._id = sanityFont._id // reset the ID
@@ -150,13 +77,7 @@ async function buildFontDocument(font) {
   return font
 }
 
-async function buildVariantDocument(fontVariant) {
-  // @TODO: try single lookup again b/c
-  // const fontVariants = await getAllFontVariants()
-  const sanityFontVariant = await findFontVariantByUidAndVersion(
-    fontVariant.uid,
-    fontVariant.version
-  )
+async function buildVariantDocument(sanityFontVariant, fontVariant) {
   if (sanityFontVariant && sanityFontVariant._id) {
     fontVariant._id = sanityFontVariant._id // reset the ID
   }
@@ -164,20 +85,49 @@ async function buildVariantDocument(fontVariant) {
 }
 
 async function createOrUpdateFonts(transaction, fonts) {
+  /*
+  // @TODO: This update draft pattern relies on the _id coming from the API
+  // to match the _id that is set in the font document, but we reset that ID below
+  // Extract draft document IDs from current update
+  const draftDocumentUids = fonts.map((font) => {
+    return `drafts.${font._id}`;
+  })
+
+  // Determine if drafts exist for any updated products
+  const existingDrafts = await apiClient.fetch(`*[_id in $ids]._id`, {
+    ids: draftDocumentUids,
+  }) 
+  */
+
   for (const font of fonts) {
-    // Build Sanity product document
+    const sanityFont = await findByUidAndVersion(font.uid, font.version)
+    // @TODO: move to a `hash` method in fonts API e.g. in the `shouldUpdate` where we read from the font file itself
+    if (hash(font) === sanityFont.hash) {
+      console.log('upddd')
+      continue
+    }
+    font.hash = hash(font)
+
+    // Order the variants array
     const orderedVariants = font.variants.sort((a, b) => a.index - b.index)
+    const sanityFontVariants = await getAllFontVariants()
+    console.log(`Got existing variants [${sanityFontVariants.length}]`)
     for (const variant of orderedVariants) {
-      const variantDoc = await buildVariantDocument(variant)
-      // console.log(`variantDoc: ${variantDoc._id} ${variantDoc.name}`)
+      // Find all Sanity Variants and select the first match by uid
+      const sanityFontVariant = sanityFontVariants.find(
+        (v) => v.uid === variant.uid
+      )
+      const variantDoc = await buildVariantDocument(sanityFontVariant, variant)
+      console.log(`variantDoc: ${variantDoc._id} ${variantDoc.name}`)
       transaction
         .createIfNotExists(variantDoc)
         .patch(variantDoc._id, (patch) => patch.set(variantDoc))
     }
 
-    const fontDoc = await buildFontDocument(font)
+    // Build Sanity product document
+    const fontDoc = await buildFontDocument(font, sanityFont)
     // console.log(`fontDoc: ${fontDoc._id} ${fontDoc.name}`)
-    // const draftId = `drafts.${document._id}`
+    // const draftId = `drafts.${fontDoc._id}`
 
     // Create (or update) existing published fontDoc
     transaction
@@ -219,16 +169,14 @@ export default async function handler(
     fonts.push(await font.getReactionProducts(false))
   }
 
+  // Variant duplicate warning
   const variantNames = fonts.flatMap(({ variants }) =>
     variants.map(({ name }) => name)
   )
   const duplicates = variantNames.filter(
     (item, index) => variantNames.indexOf(item) !== index
   )
-
-  console.log(`Dups: ${duplicates}`)
-
-  return res.status(200).json({ message: 'Successful' })
+  console.log(`We have variant dups: ${duplicates.length > 0}`)
 
   try {
     const transaction = apiClient.transaction()
@@ -241,30 +189,4 @@ export default async function handler(
       error,
     })
   }
-
-  // console.log('parentFonts: ', parentFonts)
-  // console.log('fontVariants: ', fontVariants)
-
-  if (parentFonts.length) {
-    /*  ------------------------------ */
-    /*  Create or replace font docs
-    /*  ------------------------------ */
-
-    await createOrReplaceFonts(parentFonts)
-  }
-
-  if (fontVariants.length) {
-    /*  ------------------------------ */
-    /*  Create or replace variant docs
-    /*  ------------------------------ */
-    await createOrReplaceVariants(fontVariants)
-
-    /*  ------------------------------ */
-    /*  Add font variants as refs
-    /*  ------------------------------ */
-    await createFontVariantRefs()
-  }
-
-  console.log('Successful')
-  return res.status(200).json({ message: 'Successful' })
 }
