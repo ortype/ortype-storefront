@@ -24,12 +24,26 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   }
 }
 
-let buffer = 0
+const deliveredIds = new Set<string>()
 
 export default async function sync(
   req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
+  console.log('req:', req.headers, req.method)
+  const idempotencyKey = req.headers['idempotency-key'] as string
+
+  if (deliveredIds.has(idempotencyKey)) {
+    console.log(
+      `Delivery with idempotency key ${idempotencyKey} already received, ignoring...`
+    )
+    res.status(200).end()
+    return
+  }
+
+  console.log(`Received delivery with idempotency key ${idempotencyKey}`)
+  deliveredIds.add(idempotencyKey)
+
   try {
     // @TODO: for security
     // https://medium.com/@fibonacid/syncing-contacts-between-sanity-and-active-campaign-2d42f1184a70
@@ -50,13 +64,7 @@ export default async function sync(
     })
 
     // console.log('cl: ', cl)
-    console.log(
-      'req:',
-      req.method
-      // req.body
-    )
-
-    // return res.status(200).json({ message: 'Successful', data: {} })
+    // return res.status(200).json({ message: 'Successful!!!', data: {} })
 
     // create/update/delete SKUs
     // @TODO: How do we know if it is an create, update, or delete action?
@@ -161,47 +169,14 @@ export default async function sync(
     }
 
     switch (req.method) {
+      // UPDATE OR CREATE
       case 'PUT':
-        console.log('CREATE!')
-        let newSku = {}
-        // selects the shipping category (it's a required relationship for the SKU resource)
-        /*
-        const shippingCategories = await cl.shipping_categories.list({
-          filters: { name_eq: 'Merchandising' },
-        })
-        const attributes = {
-          code: req.body._id,
-          name: req.body.name,
-          reference_origin: 'SANITY',
-          do_not_ship: true,
-          do_not_track: true,
-          // description: req.body.description || '',
-          shipping_category: cl.shipping_categories.relationship(
-            shippingCategories[0].id
-          ), // assigns the relationship
-        }
-
-        // POST to `${process.env.CL_ENDPOINT}/api/skus`
-        // To create a new SKU, send a POST request to the /api/skus endpoint, passing the resource arguments in the request body
-        // or use the SDK, ahah!
-        newSku = await cl.skus.create(attributes)
-        */
-        return res.status(200).json({ message: 'Successful', data: newSku })
-      // UPDATE
       case 'PATCH':
         console.log(
-          `UPDATE: ${req.body.uid}: ${req.body.variants?.map(
+          `CREATE/UPDATE: ${req.body.uid}: ${req.body.variants?.map(
             (variant) => variant.name
           )}`
         )
-        /*
-        console.log(
-          'Metafields: ',
-          req.body.variants.map(({ metafields }) =>
-            metafields.map(({ key, value }) => `${key}: ${value}`)
-          )
-        )
-        */
 
         if (!req.body.variants)
           return res.status(405).end(`Payload is missing variants`)
@@ -209,12 +184,19 @@ export default async function sync(
 
         try {
           const updatedSkus = await updateOrCreateSkus(req.body.variants)
+          console.log(
+            `updatedSkus: ${updatedSkus.map(
+              ({ code, name }) => `${name} | ${code}`
+            )}`
+          )
           return res
             .status(200)
             .json({ message: 'Successful', data: updatedSkus })
         } catch (error) {
-          console.error(error)
-          return res.status(500).json({ message: 'Internal server error' })
+          console.error(
+            `Create/Update status: ${error.status} | errors: ${errors} `
+          )
+          return res.status(error.status).json({ message: errors })
         }
 
       /*
@@ -250,10 +232,4 @@ export default async function sync(
       error,
     })
   }
-
-  // https://docs.commercelayer.io/core/v/api-reference/skus/create
-  // On success, the API responds with a 201 Created status code
-
-  // @TODO: consider checking idempotency-key
-  // https://www.sanity.io/docs/webhooks#3e9b7dac38b7
 }
