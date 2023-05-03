@@ -35,9 +35,6 @@ import {
   CheckoutLink,
   //
   useOrderContainer,
-  createOrder,
-  useCustomContext,
-  OrderContext,
 } from '@commercelayer/react-components'
 
 import {
@@ -68,16 +65,6 @@ const NO_FONTS: Font[] = []
 interface Props {
   types: Type[]
   sizes: Size[]
-}
-
-const CustomContainer: React.FC<Props> = ({}) => {
-  const { addToCart, orderId, getOrder, setOrderErrors } = useCustomContext({
-    context: OrderContext,
-    contextComponentName: 'OrderContainer',
-    currentComponentName: 'AddToCartButton',
-    key: 'addToCart',
-  })
-  return <></>
 }
 
 const LicenseSelect: React.FC<Props> = ({

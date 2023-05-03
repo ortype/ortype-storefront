@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 import CommerceLayer, {
   OrderCreate,
-  OrderUpdate,
   LineItem,
   LineItemCreate,
   type Order,
 } from '@commercelayer/sdk'
-import { useCustomContext, OrderContext } from '@commercelayer/react-components'
 import { Button } from '@chakra-ui/react'
 
 interface Props {
@@ -15,44 +13,30 @@ interface Props {
   disabled: boolean
   accessToken: string
   metadata: any
+  order: Order
   reloadOrder: () => Promise<Order | undefined>
 }
 
 const AddLineItemButton: React.FC<Props> = ({
   accessToken,
-  endpoint,
   disabled,
-  selectedSize,
-  selectedTypes,
   order,
   reloadOrder,
   skuCode,
   metadata,
-  name,
   quantity,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  /*
-  const { addToCart, orderId, getOrder, setOrderErrors } = useCustomContext({
-    context: OrderContext,
-    contextComponentName: 'OrderContainer',
-    currentComponentName: 'AddToCartButton',
-    key: 'addToCart',
-  })
-  console.log('AddLineItemButton orderId: ', orderId, addToCart)
-  */
-
-  // @TODO: test out `addToCart` and `orderId` from CL context (didn't work so far)
-
   let cl
-
   if (accessToken) {
     cl = CommerceLayer({
       organization: 'or-type-mvp',
       accessToken,
     })
   }
+
+  // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
 
   const isLineItem = order?.line_items.find(
     ({ sku_code }) => sku_code === skuCode
