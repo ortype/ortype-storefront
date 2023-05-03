@@ -120,8 +120,6 @@ const LicenseSelect: React.FC<Props> = ({
   return (
     <React.Fragment>
       <Stack direction={'row'}>
-        <Text>{variant.name}</Text>
-        <Text>{variant._id}</Text>
         <AddLineItemButton
           skuCode={skuCode}
           quantity={1}
@@ -136,6 +134,8 @@ const LicenseSelect: React.FC<Props> = ({
           order={order}
           reloadOrder={reloadOrder}
         />
+        <Text>{variant.name}</Text>
+        {/*<Text>{variant._id}</Text>*/}
         {/*<AddToCartButton
           skuCode={skuCode}
           quantity={1}

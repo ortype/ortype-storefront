@@ -18,11 +18,6 @@ interface Props {
   reloadOrder: () => Promise<Order | undefined>
 }
 
-// @TODO: If the line item already exists in the cart, remove it
-// https://docs.commercelayer.io/core/v/api-reference/line_items/delete (by ID)
-// to know what has been added to the cart we should store sku_codes and line item IDs
-// in the global context so we can show state and remove by ID
-
 const AddLineItemButton: React.FC<Props> = ({
   accessToken,
   endpoint,
@@ -59,38 +54,57 @@ const AddLineItemButton: React.FC<Props> = ({
     })
   }
 
+  const isLineItem = order?.line_items.find(
+    ({ sku_code }) => sku_code === skuCode
+  )
+
   const handleClick = async () => {
     setIsLoading(true)
 
-    try {
-      // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
-      // https://docs.commercelayer.io/core/v/api-reference/line_items/create
-
-      let newOrder
-      if (!order) {
-        const newOrderAttrs: OrderCreate = {}
-        newOrder = await cl.orders.create(newOrderAttrs)
+    if (isLineItem) {
+      // If the line item already exists in the cart, remove it
+      // https://docs.commercelayer.io/core/v/api-reference/line_items/delete (by ID)
+      // console.log('lineItem: ', isLineItem)
+      try {
+        await cl.line_items.delete(isLineItem.id)
+        reloadOrder()
+      } catch (error) {
+        console.error(error)
       }
+    } else {
+      try {
+        // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
+        // https://docs.commercelayer.io/core/v/api-reference/line_items/create
 
-      const attrs: LineItemCreate = {
-        order: order || newOrder,
-        sku_code: skuCode,
-        quantity: 1,
-        _external_price: true,
-        // _update_quantity: false, // this is an interesting param for adding multiple items instead of increasing the quantity
-        // bundle_code: bundleCode,
-        metadata,
+        let newOrder
+        if (!order) {
+          const newOrderAttrs: OrderCreate = {}
+          newOrder = await cl.orders.create(newOrderAttrs)
+        }
+
+        const attrs: LineItemCreate = {
+          order: order || newOrder,
+          sku_code: skuCode,
+          quantity: 1,
+          _external_price: true,
+          // _update_quantity: false, // this is an interesting param for adding multiple items instead of increasing the quantity
+          // bundle_code: bundleCode,
+          metadata,
+        }
+
+        const result = await cl.line_items.create(attrs)
+        console.log('result: ', result)
+        reloadOrder()
+      } catch (error) {
+        console.error(error)
       }
-
-      const result = await cl.line_items.create(attrs)
-      console.log('result: ', result)
-      reloadOrder()
-    } catch (error) {
-      console.error(error)
     }
 
     setIsLoading(false)
   }
+
+  const isLoadingString = isLineItem ? 'Removing...' : 'Adding...'
+  const label = isLineItem ? '×' : '+'
 
   return (
     <Button
@@ -99,7 +113,7 @@ const AddLineItemButton: React.FC<Props> = ({
       onClick={handleClick}
       disabled={isLoading}
     >
-      {isLoading ? 'Adding...' : 'Add line item'}
+      {isLoading ? isLoadingString : label}
     </Button>
   )
 }
