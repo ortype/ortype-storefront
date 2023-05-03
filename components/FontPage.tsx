@@ -89,30 +89,31 @@ const LicenseSelect: React.FC<Props> = ({
   endpoint,
 }) => {
   const { order, reloadOrder } = useOrderContainer()
-  console.log(`Order ID: ${order?.id}`)
 
   const [selectedTypes, setSelectedTypes] = useState<Type[]>([types[0]])
   const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
 
   const handleTypeChange = (selectedOptions: any) => {
     const selectedTypes = selectedOptions.map((option: any) =>
-      types.find((type) => type.key === option.value)
+      types.find((type) => type.value === option.value)
     )
     setSelectedTypes(selectedTypes)
   }
 
   const handleSizeChange = (selectedOption: object) => {
-    const selectedSize = sizes.find((size) => size.key === selectedOption.value)
+    const selectedSize = sizes.find(
+      (size) => size.value === selectedOption.value
+    )
     setSelectedSize(selectedSize || null)
   }
 
   const typeOptions = types.map((type) => ({
-    value: type.key,
+    value: type.value,
     label: type.label,
   }))
 
   const sizeOptions = sizes.map((size) => ({
-    value: size.key,
+    value: size.value,
     label: size.label,
   }))
 
@@ -128,23 +129,24 @@ const LicenseSelect: React.FC<Props> = ({
           externalPrice={true}
           metadata={{
             license: {
-              types: selectedTypes.map((type) => type.key),
-              size: selectedSize?.key,
+              types: selectedTypes.map((type) => type.value),
+              size: selectedSize?.value,
             },
           }}
+          order={order}
           reloadOrder={reloadOrder}
         />
-        <AddToCartButton
+        {/*<AddToCartButton
           skuCode={skuCode}
           quantity={1}
           externalPrice={true}
           metadata={{
             license: {
-              types: selectedTypes.map((type) => type.key),
-              size: selectedSize?.key,
+              types: selectedTypes.map((type) => type.value),
+              size: selectedSize?.value,
             },
           }}
-        />
+        />*/}
       </Stack>
       <Flex>
         <Select

@@ -81,13 +81,13 @@ export default {
 }
 
 export interface Type {
-  key: string
+  value: string
   label: string
   basePrice: number | string
 }
 
 export interface Size {
-  key: string
+  value: string
   label: string
   modifier: number
 }
@@ -96,17 +96,17 @@ export const basePrice = 9000
 
 export const types: Type[] = [
   {
-    key: 'print',
+    value: 'print',
     label: 'Desktop / Print',
     basePrice: 9000,
   },
   {
-    key: 'web',
+    value: 'web',
     label: 'Web',
     basePrice: '13000',
   },
   {
-    key: 'app',
+    value: 'app',
     label: 'App/Game',
     basePrice: '18000',
   },
@@ -114,32 +114,32 @@ export const types: Type[] = [
 
 export const sizes: Size[] = [
   {
-    key: 'small',
+    value: 'small',
     label: 'Small (1-5 employees)',
     modifier: 1,
   },
   {
-    key: 'medium',
+    value: 'medium',
     label: 'Medium (6-50 employees)',
     modifier: 2,
   },
   {
-    key: 'large',
+    value: 'large',
     label: 'Large (51-100 employees)',
     modifier: 3,
   },
   {
-    key: 'xlarge',
+    value: 'xlarge',
     label: 'XLarge (101+ employees)',
     modifier: 4,
   },
   {
-    key: 'student',
+    value: 'student',
     label: 'Student',
     modifier: 0.5,
   },
   {
-    key: 'non-profit',
+    value: 'non-profit',
     label: 'Non-Profit Organisation',
     modifier: 0.75,
   },

@@ -71,11 +71,11 @@ export default async function handler(
     // iterate over the types in the metadata.license?.types
     // use their base price and multiply with the size.modifier
 
-    const size = sizes.find(({ key }) => key === metadata.license.size)
-    const selectedTypes = types.filter(({ key }) =>
-      metadata.license.types.find((val) => val === key)
+    const size = sizes.find(({ value }) => value === metadata.license.size)
+    const selectedTypes = types.filter(({ value }) =>
+      metadata.license.types.find((val) => val === value)
     )
-    const total = selectedTypes.reduce((acc, { key, basePrice }) => {
+    const total = selectedTypes.reduce((acc, { value, basePrice }) => {
       return acc + Number(basePrice) * size.modifier
     }, 0)
 
