@@ -94,6 +94,10 @@ export default async function sync(
       return response.shift()?.id
     }
 
+    const getSkusByUid = async (uid) => {
+      return await cl.skus.list({ filters: { reference_origin_eq: uid } })
+    }
+
     const getAttachmentId = async (reference) => {
       const response = await cl.attachments.list({
         filters: { reference_eq: reference },
@@ -111,8 +115,14 @@ export default async function sync(
       )
       const skuAttachments = []
       for (const file of files) {
+        // add a delay of 1 second between loops
+        // there are 2 calls per loop and 4 loops
+        // each sku will take at least 4 seconds to process with the delays
+        console.log('Delay... 0.5 seconds')
+        await new Promise((resolve) => setTimeout(resolve, 500))
         const reference = `${sku.code}-${file.key}`
         const attachmentId = await getAttachmentId(reference)
+        console.log('Attachment ID: ', attachmentId)
         if (attachmentId) {
           skuAttachments.push(
             await cl.attachments.update(<AttachmentUpdate>{
@@ -134,14 +144,26 @@ export default async function sync(
           )
         }
       }
+      console.log('skuAttachments: ', skuAttachments)
       return skuAttachments
     }
 
-    async function updateOrCreateSkus(variants) {
+    async function updateOrCreateSkus(uid, variants) {
       const updatedSkus = []
+      // const skusByUid = await getSkusByUid(uid)
+      // console.log('skusByUid count: ', skusByUid?.length, uid)
+      // skusByUid count:  Rather v2 72 10
+      // and "Rather v2" only finds 10 SKUs... I wonder if its paginated??
+      // ah yes, its paginated https://docs.commercelayer.io/core/pagination
+      // max page size is 25... so we would have to loop through this to get all
+      // also, the the process drops for some reason, we don't enter the variants for loop
+
       for (const variant of variants) {
         const skuId = await getSkuId(variant._id)
+        // console.log('Find SKU by code: ', code)
+        // const sku = skusByUid.find(({ code }) => code === variant._id)
         if (skuId) {
+          console.log('Found SKU... updating: ', skuId, variant.name)
           const updatedSku = await cl.skus.update(<SkuUpdate>{
             id: skuId,
             code: variant._id,
@@ -152,6 +174,7 @@ export default async function sync(
           await getAttachments(variant.metafields, updatedSku)
           updatedSkus.push(updatedSku)
         } else {
+          console.log('Creating SKU...: ', variant._id, variant.name)
           const createdSku = await cl.skus.create(<SkuCreate>{
             code: variant._id,
             name: variant.name,
@@ -172,22 +195,23 @@ export default async function sync(
       // UPDATE OR CREATE
       case 'PUT':
       case 'PATCH':
-        console.log(
-          `CREATE/UPDATE: ${req.body.uid}: ${req.body.variants?.map(
-            (variant) => variant.name
-          )}`
-        )
-
         if (!req.body.variants)
           return res.status(405).end(`Payload is missing variants`)
         const updatedSkus = []
 
+        console.log(
+          `CREATE/UPDATE: ${req.body.uid}: ${
+            req.body.variants.length
+          } SKUS: ${req.body.variants.map((variant) => variant.name)}`
+        )
+
         try {
-          const updatedSkus = await updateOrCreateSkus(req.body.variants)
+          const updatedSkus = await updateOrCreateSkus(
+            req.body.uid,
+            req.body.variants
+          )
           console.log(
-            `updatedSkus: ${updatedSkus.map(
-              ({ code, name }) => `${name} | ${code}`
-            )}`
+            `updatedSkus: ${updatedSkus.map(({ name }) => `${name}`)}`
           )
           return res
             .status(200)
