@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import CommerceLayer, {
   OrderCreate,
+  OrderUpdate,
   LineItem,
   LineItemCreate,
   type Order,
@@ -62,11 +63,25 @@ const AddLineItemButton: React.FC<Props> = ({
         const localStorageOrderId = localStorage.getItem('order')
         let newOrder
         if (!order?.id && !localStorageOrderId) {
-          const newOrderAttrs: OrderCreate = {}
+          const newOrderAttrs: OrderCreate = {
+            metadata: { license: { size: metadata?.license?.size } },
+          }
           newOrder = await cl.orders.create(newOrderAttrs)
           // @TODO: check if we need to manually add orderId to local storage
           localStorage.setItem('order', newOrder.id)
-          console.log('Created new order: ', newOrder.id)
+          console.log('Created new order: ', newOrderAttrs, newOrder.id, order)
+        } else {
+          const updateOrderAttrs: OrderUpdate = {
+            id: order?.id || localStorageOrderId,
+            metadata: { license: { size: metadata?.license?.size } },
+          }
+          const updatedOrder = await cl.orders.update(updateOrderAttrs)
+          console.log(
+            'Updated order: ',
+            updateOrderAttrs,
+            updatedOrder.id,
+            updatedOrder
+          )
         }
 
         const attrs: LineItemCreate = {
