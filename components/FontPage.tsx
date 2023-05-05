@@ -35,6 +35,7 @@ import {
   CheckoutLink,
   //
   useOrderContainer,
+  useLineItemsContainer,
 } from '@commercelayer/react-components'
 
 import {
@@ -44,6 +45,7 @@ import {
   Divider,
   Heading,
   Text,
+  Link,
   Stack,
 } from '@chakra-ui/react'
 
@@ -67,6 +69,23 @@ interface Props {
   sizes: Size[]
 }
 
+const CheckoutButton = ({ accessToken }) => {
+  const { order, reloadOrder } = useOrderContainer()
+  return (
+    <Link
+      href={`http://localhost:3001/${order?.id}?accessToken=${accessToken}`}
+    >
+      {'Checkout'}
+    </Link>
+  )
+}
+
+const LineItemsCustom = () => {
+  const { lineItems } = useLineItemsContainer()
+  console.log('lineItems: ', lineItems)
+  return <div />
+}
+
 const LicenseSelect: React.FC<Props> = ({
   variant,
   types,
@@ -76,6 +95,8 @@ const LicenseSelect: React.FC<Props> = ({
   endpoint,
 }) => {
   const { order, reloadOrder } = useOrderContainer()
+
+  console.log('order: ', order)
 
   const [selectedTypes, setSelectedTypes] = useState<Type[]>([types[0]])
   const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
@@ -226,8 +247,11 @@ export default function FontPage(props: FontPageProps) {
             <CommerceLayer accessToken={accessToken} endpoint={endpoint}>
               <OrderStorage persistKey={`order`}>
                 <OrderContainer
-                // If you need to set some of the order object attributes at the moment of the order creation, pass to the optional prop attributes to the OrderContainer component.
-                // attributes={{ metadata: {} }}
+                  // If you need to set some of the order object attributes at the moment of the order creation, pass to the optional prop attributes to the OrderContainer component.
+                  // attributes={{ metadata: {} }}
+                  attributes={{
+                    checkout_url: 'http://localhost:3001/:order_id', // @TODO: this isn't working as initially expected
+                  }}
                 >
                   {/*<CustomContainer />*/}
                   <article>
@@ -244,6 +268,7 @@ export default function FontPage(props: FontPageProps) {
                     </Stack>
                     <Box p={4}>
                       <Heading>{'Cart'}</Heading>
+                      <LineItemsCustom />
                       {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
                       <LineItemsContainer>
                         <p className="your-custom-class">
@@ -272,7 +297,12 @@ export default function FontPage(props: FontPageProps) {
                         {'Total:'}
                         <TotalAmount />
                       </div>
-                      <CheckoutLink label={'Checkout'} />
+                      <CheckoutButton accessToken={accessToken}>
+                        {'Checkout'}
+                      </CheckoutButton>
+                      {/*
+                      // @TODO: Also this one is not working
+                      <CheckoutLink label={'Checkout'} />*/}
                     </Box>
                   </article>
                 </OrderContainer>

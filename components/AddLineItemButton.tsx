@@ -59,11 +59,14 @@ const AddLineItemButton: React.FC<Props> = ({
       try {
         // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
         // https://docs.commercelayer.io/core/v/api-reference/line_items/create
-
+        const localStorageOrderId = localStorage.getItem('order')
         let newOrder
-        if (!order) {
+        if (!order?.id && !localStorageOrderId) {
           const newOrderAttrs: OrderCreate = {}
           newOrder = await cl.orders.create(newOrderAttrs)
+          // @TODO: check if we need to manually add orderId to local storage
+          localStorage.setItem('order', newOrder.id)
+          console.log('Created new order: ', newOrder.id)
         }
 
         const attrs: LineItemCreate = {
