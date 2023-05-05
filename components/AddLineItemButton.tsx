@@ -3,7 +3,9 @@ import CommerceLayer, {
   OrderCreate,
   OrderUpdate,
   LineItem,
+  SkuOptions,
   LineItemCreate,
+  LineItemOptionCreate,
   type Order,
 } from '@commercelayer/sdk'
 import { Button } from '@chakra-ui/react'
@@ -13,6 +15,7 @@ interface Props {
   quantity?: number
   disabled: boolean
   accessToken: string
+  skuOptions: SkuOptions
   metadata: any
   order: Order
   reloadOrder: () => Promise<Order | undefined>
@@ -20,7 +23,9 @@ interface Props {
 
 const AddLineItemButton: React.FC<Props> = ({
   accessToken,
+  cl,
   disabled,
+  skuOptions,
   order,
   reloadOrder,
   skuCode,
@@ -29,6 +34,7 @@ const AddLineItemButton: React.FC<Props> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
+  /*
   let cl
   if (accessToken) {
     cl = CommerceLayer({
@@ -36,7 +42,7 @@ const AddLineItemButton: React.FC<Props> = ({
       accessToken,
     })
   }
-
+*/
   // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
 
   const isLineItem = order?.line_items.find(
@@ -94,8 +100,20 @@ const AddLineItemButton: React.FC<Props> = ({
           metadata,
         }
 
-        const result = await cl.line_items.create(attrs)
-        console.log('result: ', result)
+        const createdLineItem = await cl.line_items.create(attrs)
+        console.log('createdLineItem: ', createdLineItem)
+
+        const optionAttrs: LineItemOptionCreate = {
+          quantity: 1,
+          line_item: createdLineItem,
+          sku_option: skuOptions.shift(),
+        }
+
+        const createdLineItemOption = await cl.line_item_options.create(
+          optionAttrs
+        )
+        console.log('createdLineItemOption: ', createdLineItemOption)
+
         reloadOrder()
       } catch (error) {
         console.error(error)

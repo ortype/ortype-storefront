@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 // import Container from 'components/BlogContainer'
 import Layout from 'components/BlogLayout'
 import MoreFonts from 'components/MoreFonts'
@@ -8,8 +8,9 @@ import Select from 'react-select'
 import type { Font, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
 import { notFound } from 'next/navigation'
+import CommerceLayer from '@commercelayer/sdk'
 import {
-  CommerceLayer,
+  CommerceLayer as CommerceLayerContainer,
   Price,
   PricesContainer,
   OrderContainer,
@@ -19,6 +20,8 @@ import {
   LineItemsContainer,
   LineItemsCount,
   LineItem,
+  LineItemOptions,
+  LineItemOption,
   LineItemImage,
   LineItemName,
   LineItemQuantity,
@@ -42,9 +45,11 @@ import {
   Box,
   Container,
   Flex,
+  SimpleGrid,
   Divider,
   Heading,
   Text,
+  Button,
   Link,
   Stack,
 } from '@chakra-ui/react'
@@ -69,14 +74,14 @@ interface Props {
   sizes: Size[]
 }
 
-const CheckoutButton = ({ accessToken }) => {
-  const { order, reloadOrder } = useOrderContainer()
+const CheckoutButton = ({ order, accessToken }) => {
   return (
-    <Link
+    <Button
+      as={Link}
       href={`http://localhost:3001/${order?.id}?accessToken=${accessToken}`}
     >
       {'Checkout'}
-    </Link>
+    </Button>
   )
 }
 
@@ -86,17 +91,48 @@ const LineItemsCustom = () => {
   return <div />
 }
 
+/*
+This component takes in the `types` and `sizes` data as props, and uses the `useState` hook to store the user's selected `type` and `size` in React State. The component also defines two event handlers (`handleTypeChange` and `handleSizeChange`) that update the selected `type` and `size` in State whenever the user selects a new option from the `<select>` menus.
+Finally, the component renders the two `<select>` menus and displays the total price (calculated as `selectedType.basePrice * selectedSize.modifier`) whenever both a `type` and `size` have been selected.
+*/
+
 const LicenseSelect: React.FC<Props> = ({
   variant,
+  cl,
   types,
   sizes,
+  skuOptions,
   skuCode,
   accessToken,
   endpoint,
 }) => {
   const { order, reloadOrder } = useOrderContainer()
 
-  console.log('order: ', order)
+  console.log('skuCode: ', skuCode)
+
+  const [sku, setSku] = useState([])
+
+  useEffect(() => {
+    ;(async () => {
+      if (cl) {
+        const sku = await cl.skus.list({
+          filters: {
+            code_eq: skuCode,
+          },
+          include: ['sku_options'],
+        })
+        setSku(sku.shift())
+      }
+    })()
+
+    return () => {}
+  }, [cl])
+
+  console.log('sku: ', sku)
+
+  // @TODO: we got sku_options! Let's use them in the type select
+  // @TODO: let's move the size select up to the page level and call create/update order in the
+  // change handler... then we still store this value in the metadata of the line_item for price calc
 
   const [selectedTypes, setSelectedTypes] = useState<Type[]>([types[0]])
   const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
@@ -129,10 +165,12 @@ const LicenseSelect: React.FC<Props> = ({
     <React.Fragment>
       <Stack direction={'row'}>
         <AddLineItemButton
+          cl={cl}
           skuCode={skuCode}
           quantity={1}
           accessToken={accessToken}
           externalPrice={true}
+          skuOptions={skuOptions}
           metadata={{
             license: {
               types: selectedTypes.map((type) => type.value),
@@ -191,30 +229,119 @@ const LicenseSelect: React.FC<Props> = ({
   )
 }
 
-/*
+const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
+  const [skuOptions, setSkuOptions] = useState([])
+  const { order, reloadOrder } = useOrderContainer()
+  console.log('order: ', order)
+  console.log(accessToken)
+  useEffect(() => {
+    ;(async () => {
+      if (cl) {
+        const options = await cl.sku_options.list()
+        setSkuOptions(options)
+      }
+    })()
 
-This component takes in the `types` and `sizes` data as props, and uses the `useState` hook to store the user's selected `type` and `size` in React State. The component also defines two event handlers (`handleTypeChange` and `handleSizeChange`) that update the selected `type` and `size` in State whenever the user selects a new option from the `<select>` menus.
-Finally, the component renders the two `<select>` menus and displays the total price (calculated as `selectedType.basePrice * selectedSize.modifier`) whenever both a `type` and `size` have been selected.
-*/
+    return () => {}
+  }, [cl])
 
-const FontVariant = ({ endpoint, variant, accessToken }) => {
+  console.log('skuOptions: ', skuOptions)
+
+  // @TODO: format skuOptions into label/value array for react-select
+  // name = label, value = reference, basePrice = price_amount_cents (?)
+  // pass down as types
+
+  // line_item_option[0.total_amount_cents = sku_option[0].price_amount_cents
+
   return (
-    <Flex direction={'column'} bg={'#EEE'} p={4}>
-      {/*
-      // @TODO: default price is drawn from Sanity Data not the PricesContainer
-      <PricesContainer>
-        <Price skuCode={variant._id} />
-      </PricesContainer>
-      */}
-      <LicenseSelect
-        variant={variant}
-        types={types}
-        sizes={sizes}
-        skuCode={variant._id}
-        accessToken={accessToken}
-        endpoint={endpoint}
-      />
-    </Flex>
+    <article>
+      <Heading>{font.name}</Heading>
+      <Stack direction={'column'}>
+        {font.variants?.map((variant) => (
+          <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>
+            <LicenseSelect
+              cl={cl}
+              variant={variant}
+              skuOptions={skuOptions}
+              types={types}
+              sizes={sizes}
+              skuCode={variant._id}
+              accessToken={accessToken}
+              endpoint={endpoint}
+            />
+          </Flex>
+        ))}
+      </Stack>
+      <Box bg={'#FFF8D3'} my={4} p={4} borderRadius={20}>
+        <Heading
+          as={'h5'}
+          fontSize={20}
+          textTransform={'uppercase'}
+          fontWeight={'normal'}
+        >
+          {'Summary'}
+        </Heading>
+        <LineItemsCustom />
+        {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
+        <LineItemsContainer>
+          <SimpleGrid
+            columns={3}
+            spacing={4}
+            borderTop={'1px solid #EEE'}
+            borderBottom={'1px solid #EEE'}
+          >
+            <Box></Box>
+            <Box>
+              {
+                sizes.find(
+                  ({ value }) => value === order?.metadata?.license?.size
+                )?.label
+              }
+            </Box>
+            <Box></Box>
+          </SimpleGrid>
+          <LineItem>
+            <SimpleGrid columns={3} spacing={4} borderBottom={'1px solid #EEE'}>
+              {/*<LineItemImage width={50} />*/}
+              <LineItemName />
+              <Box>
+                <LineItemOptions showName showAll>
+                  <LineItemOption />
+                </LineItemOptions>
+              </Box>
+              <Box textAlign={'right'}>
+                <LineItemAmount />
+              </Box>
+              {/*<LineItemQuantity max={10} />*/}
+              {/*<Errors resource="line_items" field="quantity" />*/}
+              {/*<LineItemRemoveLink />*/}
+            </SimpleGrid>
+          </LineItem>
+        </LineItemsContainer>
+        <SimpleGrid columns={3} spacing={4}>
+          <Box
+            fontSize={20}
+            textTransform={'uppercase'}
+            fontWeight={'normal'}
+            textDecoration={'underline'}
+          >
+            {'Total'}
+          </Box>
+          <Box></Box>
+          <Box textAlign={'right'}>
+            <TotalAmount />
+          </Box>
+        </SimpleGrid>
+      </Box>
+      <Box>
+        <CheckoutButton order={order} accessToken={accessToken}>
+          {'Checkout'}
+        </CheckoutButton>
+        {/*
+          // @TODO: Also this one is not working
+          <CheckoutLink label={'Checkout'} />*/}
+      </Box>
+    </article>
   )
 }
 
@@ -236,6 +363,14 @@ export default function FontPage(props: FontPageProps) {
     notFound()
   }
 
+  let cl
+  if (accessToken) {
+    cl = CommerceLayer({
+      organization: 'or-type-mvp',
+      accessToken,
+    })
+  }
+
   return (
     <>
       <Head>
@@ -243,74 +378,26 @@ export default function FontPage(props: FontPageProps) {
       </Head>
       <Layout preview={preview} loading={loading}>
         <Container my={8}>
-          <>
-            <CommerceLayer accessToken={accessToken} endpoint={endpoint}>
-              <OrderStorage persistKey={`order`}>
-                <OrderContainer
-                  // If you need to set some of the order object attributes at the moment of the order creation, pass to the optional prop attributes to the OrderContainer component.
-                  // attributes={{ metadata: {} }}
-                  attributes={{
-                    checkout_url: 'http://localhost:3001/:order_id', // @TODO: this isn't working as initially expected
-                  }}
-                >
-                  {/*<CustomContainer />*/}
-                  <article>
-                    <Heading>{font.name}</Heading>
-                    <Stack direction={'column'}>
-                      {font.variants?.map((variant) => (
-                        <FontVariant
-                          key={variant._id}
-                          variant={variant}
-                          accessToken={accessToken}
-                          endpoint={endpoint}
-                        />
-                      ))}
-                    </Stack>
-                    <Box p={4}>
-                      <Heading>{'Cart'}</Heading>
-                      <LineItemsCustom />
-                      {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
-                      <LineItemsContainer>
-                        <p className="your-custom-class">
-                          Your shopping cart contains <LineItemsCount /> items
-                        </p>
-                        <LineItem>
-                          {/*<LineItemImage width={50} />*/}
-                          <LineItemName />
-                          {/*<LineItemQuantity max={10} />*/}
-                          <Errors resource="line_items" field="quantity" />
-                          <LineItemAmount />
-                          <LineItemRemoveLink />
-                        </LineItem>
-                      </LineItemsContainer>
-                    </Box>
-                    <Box bg={'#FFF8D3'} p={4}>
-                      <Heading as={'h3'}>{'Summary: '}</Heading>
-                      <div>
-                        {'Subtotal: '} <SubTotalAmount />
-                      </div>
-                      {/*<DiscountAmount />*/}
-                      {/*<ShippingAmount />*/}
-                      {/*<TaxesAmount />*/}
-                      {/*<GiftCardAmount />*/}
-                      <div>
-                        {'Total:'}
-                        <TotalAmount />
-                      </div>
-                      <CheckoutButton accessToken={accessToken}>
-                        {'Checkout'}
-                      </CheckoutButton>
-                      {/*
-                      // @TODO: Also this one is not working
-                      <CheckoutLink label={'Checkout'} />*/}
-                    </Box>
-                  </article>
-                </OrderContainer>
-              </OrderStorage>
-            </CommerceLayer>
-            <SectionSeparator />
-            {/* moreFonts?.length > 0 && <MoreFonts fonts={moreFonts} /> */}
-          </>
+          <CommerceLayerContainer accessToken={accessToken} endpoint={endpoint}>
+            <OrderStorage persistKey={`order`}>
+              <OrderContainer
+                // If you need to set some of the order object attributes at the moment of the order creation, pass to the optional prop attributes to the OrderContainer component.
+                // attributes={{ metadata: {} }}
+                attributes={{
+                  checkout_url: 'http://localhost:3001/:order_id', // @TODO: this isn't working as initially expected
+                }}
+              >
+                <FontWrapper
+                  cl={cl}
+                  font={font}
+                  accessToken={accessToken}
+                  endpoint={endpoint}
+                />
+              </OrderContainer>
+            </OrderStorage>
+          </CommerceLayerContainer>
+          <SectionSeparator />
+          {/* moreFonts?.length > 0 && <MoreFonts fonts={moreFonts} /> */}
         </Container>
       </Layout>
     </>
