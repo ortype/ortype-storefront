@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import CommerceLayer from '@commercelayer/sdk'
 import { getIntegrationToken } from '@commercelayer/js-auth'
-import { types, sizes } from 'lib/settings'
+import { sizes } from 'lib/settings'
 
 type PriceCalculationRequest = {
   data: {
@@ -13,6 +13,10 @@ type PriceCalculationRequest = {
     }
   }
   // included: []
+  // @TODO: consider including skus resource to pull sku_options from
+  // and consider including the order resource to pull license size metadata from
+  // although both of these data points we can access via the line_items metadata
+  // and via the sku_options.list (although this isn't specific to the line_item, it works)
 }
 
 type PriceCalculationResponse = {
@@ -39,6 +43,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<PriceCalculationResponse>
 ) {
+  console.log('Price req.body: ', req.body)
   const {
     data: {
       attributes: { quantity, sku_code, unit_amount_cents, metadata },
@@ -72,11 +77,14 @@ export default async function handler(
     // use their base price and multiply with the size.modifier
 
     const size = sizes.find(({ value }) => value === metadata.license.size)
-    const selectedTypes = types.filter(({ value }) =>
-      metadata.license.types.find((val) => val === value)
+
+    const skuOptions = await cl.sku_options.list()
+
+    const selectedTypes = skuOptions.filter(({ reference }) =>
+      metadata.license.types.find((val) => val === reference)
     )
-    const total = selectedTypes.reduce((acc, { value, basePrice }) => {
-      return acc + Number(basePrice) * size.modifier
+    const total = selectedTypes.reduce((acc, { price_amount_cents }) => {
+      return acc + Number(price_amount_cents) * size.modifier
     }, 0)
 
     const data = {

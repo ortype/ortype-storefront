@@ -15,8 +15,9 @@ interface Props {
   quantity?: number
   disabled: boolean
   accessToken: string
+  licenseSize: string
   skuOptions: SkuOptions
-  metadata: any
+  selectedSkuOptions: SkuOptions
   order: Order
   reloadOrder: () => Promise<Order | undefined>
 }
@@ -26,10 +27,11 @@ const AddLineItemButton: React.FC<Props> = ({
   cl,
   disabled,
   skuOptions,
+  licenseSize,
+  selectedSkuOptions,
   order,
   reloadOrder,
   skuCode,
-  metadata,
   quantity,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -70,7 +72,7 @@ const AddLineItemButton: React.FC<Props> = ({
         let newOrder
         if (!order?.id && !localStorageOrderId) {
           const newOrderAttrs: OrderCreate = {
-            metadata: { license: { size: metadata?.license?.size } },
+            metadata: { license: { size: licenseSize } },
           }
           newOrder = await cl.orders.create(newOrderAttrs)
           // @TODO: check if we need to manually add orderId to local storage
@@ -79,7 +81,7 @@ const AddLineItemButton: React.FC<Props> = ({
         } else {
           const updateOrderAttrs: OrderUpdate = {
             id: order?.id || localStorageOrderId,
-            metadata: { license: { size: metadata?.license?.size } },
+            metadata: { license: { size: licenseSize } },
           }
           const updatedOrder = await cl.orders.update(updateOrderAttrs)
           console.log(
@@ -97,22 +99,28 @@ const AddLineItemButton: React.FC<Props> = ({
           _external_price: true,
           // _update_quantity: false, // this is an interesting param for adding multiple items instead of increasing the quantity
           // bundle_code: bundleCode,
-          metadata,
+          metadata: {
+            license: {
+              size: licenseSize,
+              types: selectedSkuOptions.map((option) => option.reference),
+            },
+          },
         }
 
         const createdLineItem = await cl.line_items.create(attrs)
         console.log('createdLineItem: ', createdLineItem)
 
-        const optionAttrs: LineItemOptionCreate = {
-          quantity: 1,
-          line_item: createdLineItem,
-          sku_option: skuOptions.shift(),
+        for (const skuOption of selectedSkuOptions) {
+          const optionAttrs: LineItemOptionCreate = {
+            quantity: 1,
+            line_item: createdLineItem,
+            sku_option: skuOption,
+          }
+          const createdLineItemOption = await cl.line_item_options.create(
+            optionAttrs
+          )
+          console.log('createdLineItemOption: ', createdLineItemOption)
         }
-
-        const createdLineItemOption = await cl.line_item_options.create(
-          optionAttrs
-        )
-        console.log('createdLineItemOption: ', createdLineItemOption)
 
         reloadOrder()
       } catch (error) {

@@ -8,7 +8,12 @@ import Select from 'react-select'
 import type { Font, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
 import { notFound } from 'next/navigation'
-import CommerceLayer from '@commercelayer/sdk'
+import CommerceLayer, {
+  OrderCreate,
+  OrderUpdate,
+  SkuOption,
+  LineItemUpdate,
+} from '@commercelayer/sdk'
 import {
   CommerceLayer as CommerceLayerContainer,
   Price,
@@ -74,6 +79,30 @@ interface Props {
   sizes: Size[]
 }
 
+// @TODO: currently only called from license size handler, should we generalize this?
+async function createOrUpdateOrder({ cl, order, reloadOrder, licenseSize }) {
+  const localStorageOrderId = localStorage.getItem('order')
+  let newOrder
+  if (!order?.id && !localStorageOrderId) {
+    const newOrderAttrs: OrderCreate = {
+      metadata: { license: { size: licenseSize.value } },
+    }
+    newOrder = await cl.orders.create(newOrderAttrs)
+    // @TODO: check if we need to manually add orderId to local storage
+    localStorage.setItem('order', newOrder.id)
+    console.log('Created new order: ', newOrderAttrs, newOrder.id, order)
+  } else {
+    const updateOrderAttrs: OrderUpdate = {
+      id: order?.id || localStorageOrderId,
+      metadata: { license: { size: licenseSize.value } },
+    }
+    newOrder = await cl.orders.update(updateOrderAttrs)
+    console.log('Updated order: ', updateOrderAttrs, newOrder.id, newOrder)
+  }
+  reloadOrder()
+  return newOrder
+}
+
 const CheckoutButton = ({ order, accessToken }) => {
   return (
     <Button
@@ -99,18 +128,18 @@ Finally, the component renders the two `<select>` menus and displays the total p
 const LicenseSelect: React.FC<Props> = ({
   variant,
   cl,
-  types,
-  sizes,
-  skuOptions,
+  order,
+  reloadOrder,
   skuCode,
+  selectedSize,
+  skuOptions,
   accessToken,
   endpoint,
 }) => {
-  const { order, reloadOrder } = useOrderContainer()
-
   console.log('skuCode: ', skuCode)
 
-  const [sku, setSku] = useState([])
+  /*
+  const [skuOptions, setSkuOptions] = useState([{}])
 
   useEffect(() => {
     ;(async () => {
@@ -121,67 +150,88 @@ const LicenseSelect: React.FC<Props> = ({
           },
           include: ['sku_options'],
         })
-        setSku(sku.shift())
+        setSkuOptions(
+          sku[0]?.sku_options.sort(
+            (a, b) =>
+              parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
+          )
+        )
       }
     })()
 
     return () => {}
-  }, [cl])
+  }, [cl, order])
+*/
 
-  console.log('sku: ', sku)
+  // console.log('skuOptions: ', skuOptions)
+
+  // @TODO: format skuOptions into label/value array for react-select
+  // name = label, value = reference, basePrice = price_amount_cents (?)
+  // pass down as types
+
+  // line_item_option[0.total_amount_cents = sku_option[0].price_amount_cents
 
   // @TODO: we got sku_options! Let's use them in the type select
   // @TODO: let's move the size select up to the page level and call create/update order in the
   // change handler... then we still store this value in the metadata of the line_item for price calc
 
-  const [selectedTypes, setSelectedTypes] = useState<Type[]>([types[0]])
-  const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
+  const typeOptions = skuOptions
+    .sort(
+      (a, b) =>
+        parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
+    )
+    ?.map(
+      ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
+        value,
+        label,
+        basePrice,
+      })
+    )
+
+  const [selectedTypes, setSelectedTypes] = useState<Type[]>([typeOptions[0]])
+  const [selectedSkuOptions, setSelectedSkuOptions] = useState<SkuOption[]>([
+    skuOptions[0],
+  ])
+
+  console.log('typeOptions: ', typeOptions, [typeOptions[0]])
+  console.log('selectedTypes: ', selectedTypes)
 
   const handleTypeChange = (selectedOptions: any) => {
-    const selectedTypes = selectedOptions.map((option: any) =>
-      types.find((type) => type.value === option.value)
+    console.log('selectedOptions: ', selectedOptions)
+    // @TODO: review this logic
+    // this is only interesting if we want to select skuOptions
+    const selectedSkuOptions = selectedOptions.map((option: any) =>
+      skuOptions.find((type) => type.reference === option.value)
     )
-    setSelectedTypes(selectedTypes)
+    setSelectedSkuOptions(selectedSkuOptions)
+    setSelectedTypes(selectedOptions)
   }
 
-  const handleSizeChange = (selectedOption: object) => {
-    const selectedSize = sizes.find(
-      (size) => size.value === selectedOption.value
-    )
-    setSelectedSize(selectedSize || null)
-  }
+  // 1. update line item with new metadata
+  // 2. loop through `selectedSkuOptions` and update or create
+  // ...actually, this functionality is in a little bit of a different scope
+  // consider first splitting up the "Buy" and "Cart" design before continuing
 
-  const typeOptions = types.map((type) => ({
-    value: type.value,
-    label: type.label,
-  }))
-
-  const sizeOptions = sizes.map((size) => ({
-    value: size.value,
-    label: size.label,
-  }))
+  console.log('selectedSkuOptions: ', selectedSkuOptions)
 
   return (
     <React.Fragment>
-      <Stack direction={'row'}>
-        <AddLineItemButton
-          cl={cl}
-          skuCode={skuCode}
-          quantity={1}
-          accessToken={accessToken}
-          externalPrice={true}
-          skuOptions={skuOptions}
-          metadata={{
-            license: {
-              types: selectedTypes.map((type) => type.value),
-              size: selectedSize?.value,
-            },
-          }}
-          order={order}
-          reloadOrder={reloadOrder}
-        />
-        <Text>{variant.name}</Text>
-        {/*<Text>{variant._id}</Text>*/}
+      <SimpleGrid columns={2} spacing={4}>
+        <Stack direction={'row'} spacing={2}>
+          <AddLineItemButton
+            cl={cl}
+            skuCode={skuCode}
+            quantity={1}
+            accessToken={accessToken}
+            externalPrice={true}
+            skuOptions={skuOptions}
+            selectedSkuOptions={selectedSkuOptions}
+            licenseSize={selectedSize?.value}
+            order={order}
+            reloadOrder={reloadOrder}
+          />
+          <Text>{variant.name}</Text>
+        </Stack>
         {/*<AddToCartButton
           skuCode={skuCode}
           quantity={1}
@@ -193,39 +243,127 @@ const LicenseSelect: React.FC<Props> = ({
             },
           }}
         />*/}
-      </Stack>
-      <Flex>
-        <Select
-          placeholder={'Select a type'}
-          options={typeOptions}
-          isMulti
-          value={selectedTypes}
-          onChange={handleTypeChange}
-        />
-        <Select
-          placeholder={'Select a size'}
-          options={sizeOptions}
-          value={selectedSize}
-          onChange={handleSizeChange}
-        />
-        <Flex>
-          {selectedTypes.length > 0 && selectedSize && (
-            <Text>
-              <b>
-                {' '}
-                {(selectedTypes.reduce(
-                  (total, type) => total + Number(type.basePrice),
-                  0
-                ) *
-                  selectedSize.modifier) /
-                  100}{' '}
-                EUR
-              </b>
-            </Text>
-          )}
-        </Flex>
-      </Flex>
+        <Stack direction={'row'} spacing={2}>
+          <Select
+            placeholder={'Select a type'}
+            options={typeOptions}
+            isMulti
+            value={selectedTypes}
+            onChange={handleTypeChange}
+          />
+          <Flex>
+            {selectedSkuOptions.length > 0 && selectedSize && (
+              <Text>
+                <b>
+                  {' '}
+                  {(selectedSkuOptions.reduce(
+                    (total, { price_amount_cents }) =>
+                      total + Number(price_amount_cents),
+                    0
+                  ) *
+                    selectedSize.modifier) /
+                    100}{' '}
+                  EUR
+                </b>
+              </Text>
+            )}
+          </Flex>
+        </Stack>
+      </SimpleGrid>
     </React.Fragment>
+  )
+}
+
+const BuyWrapper: React.FC<Props> = ({
+  font,
+  cl,
+  order,
+  reloadOrder,
+  skuOptions,
+  accessToken,
+  endpoint,
+}) => {
+  // *************************************
+  // License size select logic
+  // @TODO: consider storing the size object in metadata instead of just the value
+
+  const initialSize = sizes.find(
+    ({ value }) => value === order?.metadata?.license?.size
+  )
+  const [selectedSize, setSelectedSize] = useState<Size | null>(initialSize)
+
+  const handleSizeChange = async (selectedOption: object) => {
+    const selectedSize = sizes.find(
+      (size) => size.value === selectedOption.value
+    )
+    setSelectedSize(selectedSize || null)
+    // call API to set order metadata
+    const updatedOrder = await createOrUpdateOrder({
+      cl,
+      order,
+      reloadOrder,
+      licenseSize: selectedSize,
+    })
+
+    // order from state is not updated within this handler so fetch a fresh copy
+    const retrievedOrder = await cl.orders.retrieve(updatedOrder.id, {
+      include: ['line_items'],
+    })
+
+    // loop through the line_items on the order and update with new metadata
+    for (const lineItem of retrievedOrder.line_items) {
+      console.log('retrievedOrder lineItem: ', lineItem)
+      const updateLineItemsAttrs: LineItemUpdate = {
+        id: lineItem.id,
+        quantity: 1,
+        _external_price: true,
+        metadata: {
+          license: {
+            size: selectedSize.value,
+            types: lineItem.metadata?.license?.types,
+          },
+        },
+      }
+      await cl.line_items.update(updateLineItemsAttrs)
+      reloadOrder()
+    }
+  }
+
+  const sizeOptions = sizes.map((size) => ({
+    value: size.value,
+    label: size.label,
+  }))
+
+  // *************************************
+
+  return (
+    <>
+      <Select
+        placeholder={'Select a size'}
+        options={sizeOptions}
+        value={selectedSize}
+        onChange={handleSizeChange}
+      />
+      <Stack direction={'column'}>
+        {font.variants?.map((variant) => (
+          <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>
+            {skuOptions && (
+              <LicenseSelect
+                cl={cl}
+                order={order}
+                selectedSize={selectedSize}
+                reloadOrder={reloadOrder}
+                variant={variant}
+                skuOptions={skuOptions}
+                skuCode={variant._id}
+                accessToken={accessToken}
+                endpoint={endpoint}
+              />
+            )}
+          </Flex>
+        ))}
+      </Stack>
+    </>
   )
 }
 
@@ -245,33 +383,22 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
     return () => {}
   }, [cl])
 
-  console.log('skuOptions: ', skuOptions)
-
-  // @TODO: format skuOptions into label/value array for react-select
-  // name = label, value = reference, basePrice = price_amount_cents (?)
-  // pass down as types
-
-  // line_item_option[0.total_amount_cents = sku_option[0].price_amount_cents
+  // console.log('skuOptions: ', skuOptions)
 
   return (
     <article>
       <Heading>{font.name}</Heading>
-      <Stack direction={'column'}>
-        {font.variants?.map((variant) => (
-          <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>
-            <LicenseSelect
-              cl={cl}
-              variant={variant}
-              skuOptions={skuOptions}
-              types={types}
-              sizes={sizes}
-              skuCode={variant._id}
-              accessToken={accessToken}
-              endpoint={endpoint}
-            />
-          </Flex>
-        ))}
-      </Stack>
+      {order && (
+        <BuyWrapper
+          order={order}
+          skuOptions={skuOptions}
+          reloadOrder={reloadOrder}
+          accessToken={accessToken}
+          endpoint={endpoint}
+          cl={cl}
+          font={font}
+        />
+      )}
       <Box bg={'#FFF8D3'} my={4} p={4} borderRadius={20}>
         <Heading
           as={'h5'}
