@@ -8,6 +8,7 @@ import Select from 'react-select'
 import type { Font, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
 import { notFound } from 'next/navigation'
+import { getCustomerToken } from '@commercelayer/js-auth'
 import CommerceLayer, {
   OrderCreate,
   OrderUpdate,
@@ -57,6 +58,10 @@ import {
   Button,
   Link,
   Stack,
+  Input,
+  chakra,
+  forwardRef,
+  InputProps,
 } from '@chakra-ui/react'
 
 import AddLineItemButton from 'components/AddLineItemButton'
@@ -107,7 +112,7 @@ const CheckoutButton = ({ order, accessToken }) => {
   return (
     <Button
       as={Link}
-      href={`http://localhost:3001/${order?.id}?accessToken=${accessToken}`}
+      href={`http://localhost:3002/${order?.id}?accessToken=${accessToken}`}
     >
       {'Checkout'}
     </Button>
@@ -136,7 +141,7 @@ const LicenseSelect: React.FC<Props> = ({
   accessToken,
   endpoint,
 }) => {
-  console.log('skuCode: ', skuCode)
+  // console.log('skuCode: ', skuCode)
 
   /*
   const [skuOptions, setSkuOptions] = useState([{}])
@@ -193,8 +198,8 @@ const LicenseSelect: React.FC<Props> = ({
     skuOptions[0],
   ])
 
-  console.log('typeOptions: ', typeOptions, [typeOptions[0]])
-  console.log('selectedTypes: ', selectedTypes)
+  // console.log('typeOptions: ', typeOptions, [typeOptions[0]])
+  // console.log('selectedTypes: ', selectedTypes)
 
   const handleTypeChange = (selectedOptions: any) => {
     console.log('selectedOptions: ', selectedOptions)
@@ -212,7 +217,7 @@ const LicenseSelect: React.FC<Props> = ({
   // ...actually, this functionality is in a little bit of a different scope
   // consider first splitting up the "Buy" and "Cart" design before continuing
 
-  console.log('selectedSkuOptions: ', selectedSkuOptions)
+  // console.log('selectedSkuOptions: ', selectedSkuOptions)
 
   return (
     <React.Fragment>
@@ -371,7 +376,6 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
   const [skuOptions, setSkuOptions] = useState([])
   const { order, reloadOrder } = useOrderContainer()
   console.log('order: ', order)
-  console.log(accessToken)
   useEffect(() => {
     ;(async () => {
       if (cl) {
@@ -474,12 +478,13 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
 
 export default function FontPage(props: FontPageProps) {
   const {
+    cl,
     preview,
     loading,
     moreFonts = NO_FONTS,
     font,
-    endpoint,
     settings,
+    endpoint,
     accessToken,
   } = props
   const { title = demo.title } = settings || {}
@@ -488,14 +493,6 @@ export default function FontPage(props: FontPageProps) {
 
   if (!slug && !preview) {
     notFound()
-  }
-
-  let cl
-  if (accessToken) {
-    cl = CommerceLayer({
-      organization: 'or-type-mvp',
-      accessToken,
-    })
   }
 
   return (

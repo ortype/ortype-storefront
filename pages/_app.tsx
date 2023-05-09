@@ -5,6 +5,9 @@ import { AppProps } from 'next/app'
 import chakraTheme from '@chakra-ui/theme'
 
 const {
+  FormControl,
+  FormLabel,
+  Input,
   Heading,
   Text,
   Divider,
@@ -18,11 +21,15 @@ const {
   Stack,
   VStack,
   HStack,
+  Switch,
 } = chakraTheme.components
 
 const theme = extendBaseTheme({
   components: {
     Button,
+    Input,
+    FormControl,
+    FormLabel,
     Heading,
     Text,
     Divider,
@@ -35,6 +42,7 @@ const theme = extendBaseTheme({
     Stack,
     VStack,
     HStack,
+    Switch,
   },
 })
 

@@ -1,5 +1,4 @@
 import { PreviewSuspense } from '@sanity/preview-kit'
-import FontPage from 'components/FontPage'
 import {
   getAllFontsSlugs,
   getFontAndMoreFonts,
@@ -8,7 +7,7 @@ import {
 import { Font, Settings } from 'lib/sanity.queries'
 import { GetStaticProps } from 'next'
 import { lazy } from 'react'
-import { useGetToken } from 'hooks/GetToken'
+import TokenWrapper from 'components/TokenWrapper'
 
 const PreviewFontPage = lazy(() => import('components/PreviewFontPage'))
 
@@ -41,12 +40,6 @@ export default function FontSlugRoute(props: PageProps) {
   } = props
   console.log('font: ', font)
 
-  const accessToken = useGetToken({
-    clientId,
-    endpoint,
-    scope: marketId,
-  })
-
   // 401 error on prices
   // or-type-mvp.commercelayer.io/api/prices?page[size]=10&filter[q][sku_code_in]=fontVariant-MZx7wg6SOhLFDN2ktJPDF
   // TOKEN: eyJhbGciOiJIUzUxMiJ9.eyJvcmdhbml6YXRpb24iOnsiaWQiOiJleVdveEZ4bU55Iiwic2x1ZyI6Im9yLXR5cGUtbXZwIiwiZW50ZXJwcmlzZSI6ZmFsc2V9LCJhcHBsaWNhdGlvbiI6eyJpZCI6ImJwQVJxaUthbE4iLCJraW5kIjoic2FsZXNfY2hhbm5lbCIsInB1YmxpYyI6dHJ1ZX0sInRlc3QiOnRydWUsImV4cCI6MTY4MTgzODAxMywicmFuZCI6MC45NzM0NDQyNTM4NTEwMTIzfQ.UYx5OXednIDK1X25aduTLZwzWTx3ZynQYqlipG9kUM2Gvp2humb7Uv1PKGg9L4bIV0rkSrNBZWTDUCLw8EwBJA
@@ -58,12 +51,13 @@ export default function FontSlugRoute(props: PageProps) {
     return (
       <PreviewSuspense
         fallback={
-          <FontPage
+          <TokenWrapper
             loading
             preview
             font={font}
+            clientId={clientId}
+            marketId={marketId}
             endpoint={endpoint}
-            accessToken={accessToken}
             moreFonts={moreFonts}
             settings={settings}
           />
@@ -80,12 +74,13 @@ export default function FontSlugRoute(props: PageProps) {
   }
 
   return (
-    <FontPage
+    <TokenWrapper
       font={font}
       moreFonts={moreFonts}
       settings={settings}
+      clientId={clientId}
+      marketId={marketId}
       endpoint={endpoint}
-      accessToken={accessToken}
     />
   )
 }

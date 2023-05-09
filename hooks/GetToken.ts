@@ -23,6 +23,7 @@ type UseGetToken = {
     clientId: string
     endpoint: string
     scope?: string
+    customer: object
     // countryCode: string
   }): string
 }
@@ -30,30 +31,43 @@ type UseGetToken = {
 export const useGetToken: UseGetToken = ({
   clientId,
   endpoint,
+  customer,
+  userMode = false,
   scope = 'market:12213',
 }) => {
   const [token, setToken] = useState('')
+  const user = userMode
+    ? {
+        username: customer.username,
+        password: customer.password,
+      }
+    : undefined
+
+  console.log('user: ', user)
   useEffect(() => {
     const getCookieToken = Cookies.get(`clAccessToken`)
     if (!getCookieToken && clientId && endpoint) {
-      const getToken = async () => {
-        const auth = await getSalesChannelToken({
-          clientId,
-          endpoint,
-          scope,
-        })
+      const getToken = async (): Promise<void> => {
+        const auth = await getSalesChannelToken(
+          {
+            clientId,
+            endpoint,
+            scope,
+          },
+          user
+        )
+        console.log('getToken: ', user, auth)
         setToken(auth?.accessToken as string) // TODO: add to LocalStorage
         Cookies.set(`clAccessToken`, auth?.accessToken as string, {
           // @ts-ignore
           expires: auth?.expires,
         })
-        console.log('My access token: ', auth?.accessToken)
-        console.log('Expiration date: ', auth?.expires)
       }
-      getToken()
+      void getToken()
     } else {
       setToken(getCookieToken || '')
     }
-  })
+  }, [])
+  console.log('My access token: ', token)
   return token
 }
