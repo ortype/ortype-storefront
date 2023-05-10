@@ -43,7 +43,6 @@ export const useGetToken: UseGetToken = ({
       }
     : undefined
 
-  console.log('user: ', user)
   useEffect(() => {
     const getCookieToken = Cookies.get(`clAccessToken`)
     if (!getCookieToken && clientId && endpoint) {
@@ -56,7 +55,6 @@ export const useGetToken: UseGetToken = ({
           },
           user
         )
-        console.log('getToken: ', user, auth)
         setToken(auth?.accessToken as string) // TODO: add to LocalStorage
         Cookies.set(`clAccessToken`, auth?.accessToken as string, {
           // @ts-ignore

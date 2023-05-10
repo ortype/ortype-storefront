@@ -47,7 +47,7 @@ const AddLineItemButton: React.FC<Props> = ({
 */
   // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
 
-  const isLineItem = order?.line_items.find(
+  const isLineItem = order?.line_items?.find(
     ({ sku_code }) => sku_code === skuCode
   )
 

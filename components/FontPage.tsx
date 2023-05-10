@@ -85,33 +85,57 @@ interface Props {
 }
 
 // @TODO: currently only called from license size handler, should we generalize this?
-async function createOrUpdateOrder({ cl, order, reloadOrder, licenseSize }) {
+async function createOrUpdateOrder({
+  cl,
+  order,
+  createOrder,
+  updateOrder,
+  reloadOrder,
+  licenseSize,
+}) {
+  console.log('order: ', order)
   const localStorageOrderId = localStorage.getItem('order')
   let newOrder
+  // create a new order
   if (!order?.id && !localStorageOrderId) {
-    const newOrderAttrs: OrderCreate = {
+    // const newOrderAttrs: OrderCreate = {
+    //   metadata: { license: { size: licenseSize.value } },
+    // }
+    // newOrder = await cl.orders.create(newOrderAttrs)
+
+    newOrder = await createOrder({
+      persistKey: 'order',
       metadata: { license: { size: licenseSize.value } },
-    }
-    newOrder = await cl.orders.create(newOrderAttrs)
+    })
+
     // @TODO: check if we need to manually add orderId to local storage
-    localStorage.setItem('order', newOrder.id)
-    console.log('Created new order: ', newOrderAttrs, newOrder.id, order)
+    // localStorage.setItem('order', newOrder.id)
+    console.log('Created new order: ', order)
   } else {
-    const updateOrderAttrs: OrderUpdate = {
+    // const updateOrderAttrs: OrderUpdate = {
+    //   id: order?.id || localStorageOrderId,
+    //   metadata: { license: { size: licenseSize.value } },
+    // }
+    // newOrder = await cl.orders.update(updateOrderAttrs)
+
+    newOrder = await updateOrder({
       id: order?.id || localStorageOrderId,
-      metadata: { license: { size: licenseSize.value } },
-    }
-    newOrder = await cl.orders.update(updateOrderAttrs)
-    console.log('Updated order: ', updateOrderAttrs, newOrder.id, newOrder)
+      attributes: { metadata: { license: { size: licenseSize.value } } },
+      // there is an `include` param
+    })
+
+    console.log('Updated order: ', newOrder)
   }
-  reloadOrder()
+  const reloadedOrder = await reloadOrder()
+  console.log('reloadedOrder: ', reloadedOrder)
   return newOrder
 }
 
-const CheckoutButton = ({ order, accessToken }) => {
+const CheckoutButton = ({ isDisabled, order, accessToken }) => {
   return (
     <Button
       as={Link}
+      disabled={isDisabled}
       href={`http://localhost:3002/${order?.id}?accessToken=${accessToken}`}
     >
       {'Checkout'}
@@ -217,7 +241,7 @@ const LicenseSelect: React.FC<Props> = ({
   // ...actually, this functionality is in a little bit of a different scope
   // consider first splitting up the "Buy" and "Cart" design before continuing
 
-  // console.log('selectedSkuOptions: ', selectedSkuOptions)
+  console.log('selectedSkuOptions: ', selectedSkuOptions)
 
   return (
     <React.Fragment>
@@ -237,13 +261,13 @@ const LicenseSelect: React.FC<Props> = ({
           />
           <Text>{variant.name}</Text>
         </Stack>
-        {/*<AddToCartButton
+        {/*        <AddToCartButton
           skuCode={skuCode}
           quantity={1}
           externalPrice={true}
           metadata={{
             license: {
-              types: selectedTypes.map((type) => type.value),
+              types: selectedSkuOptions.map((option) => option.reference),
               size: selectedSize?.value,
             },
           }}
@@ -284,6 +308,8 @@ const BuyWrapper: React.FC<Props> = ({
   cl,
   order,
   reloadOrder,
+  createOrder,
+  updateOrder,
   skuOptions,
   accessToken,
   endpoint,
@@ -291,11 +317,18 @@ const BuyWrapper: React.FC<Props> = ({
   // *************************************
   // License size select logic
   // @TODO: consider storing the size object in metadata instead of just the value
+  const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
 
-  const initialSize = sizes.find(
-    ({ value }) => value === order?.metadata?.license?.size
-  )
-  const [selectedSize, setSelectedSize] = useState<Size | null>(initialSize)
+  useEffect(() => {
+    if (order?.metadata) {
+      const initialSize = sizes.find(
+        ({ value }) => value === order.metadata.license?.size?.value
+      )
+      setSelectedSize(initialSize)
+    }
+  }, [order?.updatedAt])
+
+  console.log('selectedSize: ', selectedSize)
 
   const handleSizeChange = async (selectedOption: object) => {
     const selectedSize = sizes.find(
@@ -303,17 +336,26 @@ const BuyWrapper: React.FC<Props> = ({
     )
     setSelectedSize(selectedSize || null)
     // call API to set order metadata
-    const updatedOrder = await createOrUpdateOrder({
+    const updatedOrderId = await createOrUpdateOrder({
       cl,
       order,
+      createOrder,
+      updateOrder,
       reloadOrder,
       licenseSize: selectedSize,
     })
 
     // order from state is not updated within this handler so fetch a fresh copy
-    const retrievedOrder = await cl.orders.retrieve(updatedOrder.id, {
-      include: ['line_items'],
-    })
+    let retrievedOrder
+    try {
+      retrievedOrder = await cl.orders.retrieve(updatedOrderId, {
+        include: ['line_items'],
+      })
+    } catch (e) {
+      console.log('retrievedOrder error: ', e)
+    }
+
+    console.log('retrievedOrder: ', retrievedOrder)
 
     // loop through the line_items on the order and update with new metadata
     for (const lineItem of retrievedOrder.line_items) {
@@ -330,7 +372,7 @@ const BuyWrapper: React.FC<Props> = ({
         },
       }
       await cl.line_items.update(updateLineItemsAttrs)
-      reloadOrder()
+      await reloadOrder()
     }
   }
 
@@ -374,7 +416,7 @@ const BuyWrapper: React.FC<Props> = ({
 
 const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
   const [skuOptions, setSkuOptions] = useState([])
-  const { order, reloadOrder } = useOrderContainer()
+  const { order, reloadOrder, createOrder, updateOrder } = useOrderContainer()
   console.log('order: ', order)
   useEffect(() => {
     ;(async () => {
@@ -387,91 +429,123 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
     return () => {}
   }, [cl])
 
-  // console.log('skuOptions: ', skuOptions)
+  /*
+  // the reloaded order does not have line_items either
+  const [orderPlus, setOrderPlus] = useState({})
+  console.log('orderPlus: ', orderPlus)
+  useEffect(() => {
+    ;(async () => {
+      if (order?.updated_at) {
+        const reloadedOrder = await reloadOrder()
+        console.log('order changed...', order?.updated_at, reloadedOrder)
+        setOrderPlus(reloadedOrder)
+      }
+    })()
+
+    return () => {}
+  }, [order?.updated_at])
+  */
+
+  console.log('skuOptions: ', skuOptions)
 
   return (
     <article>
       <Heading>{font.name}</Heading>
-      {order && (
+      {cl && skuOptions?.length > 0 && (
         <BuyWrapper
           order={order}
           skuOptions={skuOptions}
           reloadOrder={reloadOrder}
+          createOrder={createOrder}
+          updateOrder={createOrder}
           accessToken={accessToken}
           endpoint={endpoint}
           cl={cl}
           font={font}
         />
       )}
-      <Box bg={'#FFF8D3'} my={4} p={4} borderRadius={20}>
-        <Heading
-          as={'h5'}
-          fontSize={20}
-          textTransform={'uppercase'}
-          fontWeight={'normal'}
-        >
-          {'Summary'}
-        </Heading>
-        <LineItemsCustom />
-        {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
-        <LineItemsContainer>
-          <SimpleGrid
-            columns={3}
-            spacing={4}
-            borderTop={'1px solid #EEE'}
-            borderBottom={'1px solid #EEE'}
-          >
-            <Box></Box>
-            <Box>
-              {
-                sizes.find(
-                  ({ value }) => value === order?.metadata?.license?.size
-                )?.label
-              }
-            </Box>
-            <Box></Box>
-          </SimpleGrid>
-          <LineItem>
-            <SimpleGrid columns={3} spacing={4} borderBottom={'1px solid #EEE'}>
-              {/*<LineItemImage width={50} />*/}
-              <LineItemName />
-              <Box>
-                <LineItemOptions showName showAll>
-                  <LineItemOption />
-                </LineItemOptions>
-              </Box>
-              <Box textAlign={'right'}>
-                <LineItemAmount />
-              </Box>
-              {/*<LineItemQuantity max={10} />*/}
-              {/*<Errors resource="line_items" field="quantity" />*/}
-              {/*<LineItemRemoveLink />*/}
-            </SimpleGrid>
-          </LineItem>
-        </LineItemsContainer>
-        <SimpleGrid columns={3} spacing={4}>
-          <Box
+      <LineItemsCustom />
+      {
+        <Box bg={'#FFF8D3'} my={4} p={4} borderRadius={20}>
+          <Heading
+            as={'h5'}
             fontSize={20}
             textTransform={'uppercase'}
             fontWeight={'normal'}
-            textDecoration={'underline'}
           >
-            {'Total'}
-          </Box>
-          <Box></Box>
-          <Box textAlign={'right'}>
-            <TotalAmount />
-          </Box>
-        </SimpleGrid>
-      </Box>
-      <Box>
-        <CheckoutButton order={order} accessToken={accessToken}>
-          {'Checkout'}
-        </CheckoutButton>
-        {/*
+            {'Summary'}
+          </Heading>
+          {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
+          <LineItemsContainer>
+            <SimpleGrid
+              columns={3}
+              spacing={4}
+              borderTop={'1px solid #EEE'}
+              borderBottom={'1px solid #EEE'}
+            >
+              <Box></Box>
+              <Box>
+                {
+                  sizes.find(
+                    ({ value }) => value === order?.metadata?.license?.size
+                  )?.label
+                }
+              </Box>
+              <Box></Box>
+            </SimpleGrid>
+            <LineItem>
+              <SimpleGrid
+                columns={3}
+                spacing={4}
+                borderBottom={'1px solid #EEE'}
+              >
+                {/*<LineItemImage width={50} />*/}
+                <LineItemName />
+                <Box>
+                  <LineItemOptions showName showAll>
+                    <LineItemOption />
+                    <LineItemRemoveLink />
+                  </LineItemOptions>
+                </Box>
+                <Box textAlign={'right'}>
+                  <LineItemAmount />
+                </Box>
+                {/*<LineItemQuantity max={10} />*/}
+                {/*<Errors resource="line_items" field="quantity" />*/}
+              </SimpleGrid>
+            </LineItem>
+          </LineItemsContainer>
+
+          <SimpleGrid columns={3} spacing={4}>
+            <Box
+              fontSize={20}
+              textTransform={'uppercase'}
+              fontWeight={'normal'}
+              textDecoration={'underline'}
+            >
+              {'Total'}
+            </Box>
+            <Box></Box>
+            <Box textAlign={'right'}>
+              <TotalAmount />
+            </Box>
+          </SimpleGrid>
+        </Box>
+      }
+      {order?.line_items?.length > 0 && (
+        <Box>
+          <CheckoutButton
+            // isDisabled={order?.line_items?.length === 0}
+            order={order}
+            accessToken={accessToken}
+          >
+            {'Checkout'}
+          </CheckoutButton>
+          {/*
           // @TODO: Also this one is not working
           <CheckoutLink label={'Checkout'} />*/}
-      </Box>
+        </Box>
+      )}
     </article>
   )
 }
@@ -505,10 +579,8 @@ export default function FontPage(props: FontPageProps) {
           <CommerceLayerContainer accessToken={accessToken} endpoint={endpoint}>
             <OrderStorage persistKey={`order`}>
               <OrderContainer
-                // If you need to set some of the order object attributes at the moment of the order creation, pass to the optional prop attributes to the OrderContainer component.
-                // attributes={{ metadata: {} }}
                 attributes={{
-                  checkout_url: 'http://localhost:3001/:order_id', // @TODO: this isn't working as initially expected
+                  metadata: { license: { size: sizes[0] } },
                 }}
               >
                 <FontWrapper

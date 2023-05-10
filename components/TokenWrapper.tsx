@@ -28,10 +28,9 @@ const LoginForm = ({
       fieldEvent: 'blur',
     })
 
-  // 1. input username and password
-  // 2. call customers.create with credentials
-  // 3. Pass user credentials to getCustomerToken
-  // 4. update the access token we pass down to the order
+  // @TODO:
+  // - Validate fields (e.g. password longer than 6 characters)
+  // - Add error messages (e.g. username already taken)
 
   const handleOnBlur = async (value): Promise<void> => {}
 
@@ -90,7 +89,7 @@ const LoginForm = ({
           {userMode && (
             <Button
               as={Link}
-              href={`http://localhost:3001/orders?accessToken=${accessToken}`}
+              href={`http://localhost:3002/orders?accessToken=${accessToken}`}
               isExternal
             >
               {'My account'}
@@ -125,7 +124,7 @@ const TokenWrapper = ({
   clientId,
   marketId,
 }) => {
-  const [userMode, setUserMode] = useState(false)
+  const [userMode, setUserMode] = useState(true)
   const [customer, setCustomer] = useState({})
 
   useEffect(() => {
