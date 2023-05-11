@@ -26,6 +26,7 @@ const AddLineItemButton: React.FC<Props> = ({
   accessToken,
   cl,
   disabled,
+  addToCart,
   skuOptions,
   licenseSize,
   selectedSkuOptions,
@@ -65,6 +66,36 @@ const AddLineItemButton: React.FC<Props> = ({
         console.error(error)
       }
     } else {
+      try {
+        // for (const skuOption of selectedSkuOptions) {
+        const attrs = {
+          skuCode,
+          lineItemOptions: selectedSkuOptions.map(({ id }) => ({
+            skuOptionId: id,
+            options: {},
+            quantity: 1,
+          })),
+          /*lineItemOption: {
+            skuOptionId: selectedSkuOptions[0]?.id,
+            options: {},
+            quantity: 1,
+          },*/
+          orderMetadata: { license: { size: licenseSize } },
+          externalPrice: true,
+          quantity: 1,
+          metadata: {
+            license: {
+              size: licenseSize,
+              types: selectedSkuOptions.map((option) => option.reference),
+            },
+          },
+        }
+        await addToCart(attrs)
+        setIsLoading(false)
+      } catch (e) {
+        console.log('addToCart error: ', e)
+      }
+      /*
       try {
         // https://docs.commercelayer.io/core/external-resources/external-prices#fetching-external-prices
         // https://docs.commercelayer.io/core/v/api-reference/line_items/create
@@ -122,10 +153,12 @@ const AddLineItemButton: React.FC<Props> = ({
           console.log('createdLineItemOption: ', createdLineItemOption)
         }
 
+        // @TODO: if we try again to use the OrderReducer/Container `addToCart` we need to pass an skuOption ID
+
         reloadOrder()
       } catch (error) {
         console.error(error)
-      }
+      }*/
     }
 
     setIsLoading(false)

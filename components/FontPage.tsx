@@ -159,6 +159,7 @@ const LicenseSelect: React.FC<Props> = ({
   cl,
   order,
   reloadOrder,
+  addToCart,
   skuCode,
   selectedSize,
   skuOptions,
@@ -241,8 +242,6 @@ const LicenseSelect: React.FC<Props> = ({
   // ...actually, this functionality is in a little bit of a different scope
   // consider first splitting up the "Buy" and "Cart" design before continuing
 
-  console.log('selectedSkuOptions: ', selectedSkuOptions)
-
   return (
     <React.Fragment>
       <SimpleGrid columns={2} spacing={4}>
@@ -252,6 +251,7 @@ const LicenseSelect: React.FC<Props> = ({
             skuCode={skuCode}
             quantity={1}
             accessToken={accessToken}
+            addToCart={addToCart}
             externalPrice={true}
             skuOptions={skuOptions}
             selectedSkuOptions={selectedSkuOptions}
@@ -261,7 +261,7 @@ const LicenseSelect: React.FC<Props> = ({
           />
           <Text>{variant.name}</Text>
         </Stack>
-        {/*        <AddToCartButton
+        {/*<AddToCartButton
           skuCode={skuCode}
           quantity={1}
           externalPrice={true}
@@ -307,6 +307,7 @@ const BuyWrapper: React.FC<Props> = ({
   font,
   cl,
   order,
+  addToCart,
   reloadOrder,
   createOrder,
   updateOrder,
@@ -399,6 +400,7 @@ const BuyWrapper: React.FC<Props> = ({
                 cl={cl}
                 order={order}
                 selectedSize={selectedSize}
+                addToCart={addToCart}
                 reloadOrder={reloadOrder}
                 variant={variant}
                 skuOptions={skuOptions}
@@ -416,7 +418,8 @@ const BuyWrapper: React.FC<Props> = ({
 
 const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
   const [skuOptions, setSkuOptions] = useState([])
-  const { order, reloadOrder, createOrder, updateOrder } = useOrderContainer()
+  const { order, reloadOrder, createOrder, updateOrder, addToCart } =
+    useOrderContainer()
   console.log('order: ', order)
   useEffect(() => {
     ;(async () => {
@@ -446,7 +449,7 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
   }, [order?.updated_at])
   */
 
-  console.log('skuOptions: ', skuOptions)
+  // console.log('skuOptions: ', skuOptions)
 
   return (
     <article>
@@ -457,7 +460,8 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
           skuOptions={skuOptions}
           reloadOrder={reloadOrder}
           createOrder={createOrder}
-          updateOrder={createOrder}
+          updateOrder={updateOrder}
+          addToCart={addToCart}
           accessToken={accessToken}
           endpoint={endpoint}
           cl={cl}
@@ -487,7 +491,8 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
               <Box>
                 {
                   sizes.find(
-                    ({ value }) => value === order?.metadata?.license?.size
+                    ({ value }) =>
+                      value === order?.metadata?.license?.size?.value
                   )?.label
                 }
               </Box>
@@ -504,11 +509,11 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
                 <Box>
                   <LineItemOptions showName showAll>
                     <LineItemOption />
-                    <LineItemRemoveLink />
                   </LineItemOptions>
                 </Box>
                 <Box textAlign={'right'}>
                   <LineItemAmount />
+                  <Box as={LineItemRemoveLink} ml={2} />
                 </Box>
                 {/*<LineItemQuantity max={10} />*/}
                 {/*<Errors resource="line_items" field="quantity" />*/}

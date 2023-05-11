@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 import {
   Container,
   Button,
+  SimpleGrid,
   Link,
   Input,
   FormControl,
@@ -14,6 +15,15 @@ import {
 import { useGetToken } from 'hooks/GetToken'
 import FontPage from 'components/FontPage'
 import { useRapidForm } from 'rapid-form'
+
+// @TODO:
+
+// Login / logout
+// Register
+
+const RegisterForm = ({}) => {
+  return <div />
+}
 
 const LoginForm = ({
   customer,
@@ -89,7 +99,7 @@ const LoginForm = ({
           {userMode && (
             <Button
               as={Link}
-              href={`http://localhost:3002/orders?accessToken=${accessToken}`}
+              href={`http://localhost:3001/orders?accessToken=${accessToken}`}
               isExternal
             >
               {'My account'}
@@ -104,7 +114,7 @@ const LoginForm = ({
             id="user-mode"
             isChecked={userMode}
             onChange={(e) => {
-              // Cookies.remove('clAccessToken')
+              Cookies.remove('clAccessToken')
               setUserMode(e.target.checked)
             }}
           />
@@ -124,7 +134,7 @@ const TokenWrapper = ({
   clientId,
   marketId,
 }) => {
-  const [userMode, setUserMode] = useState(true)
+  const [userMode, setUserMode] = useState(false)
   const [customer, setCustomer] = useState({})
 
   useEffect(() => {
@@ -137,6 +147,8 @@ const TokenWrapper = ({
         : {}
     )
   }, [userMode])
+
+  // @TODO: how to call this based on user action
 
   const accessToken = useGetToken({
     clientId,
@@ -156,6 +168,7 @@ const TokenWrapper = ({
 
   return (
     <>
+      <RegisterForm />
       <LoginForm
         cl={cl}
         customer={customer}
