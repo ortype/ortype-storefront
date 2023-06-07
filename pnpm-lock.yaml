@@ -14,6 +14,7 @@ specifiers:
   '@types/react': ^18.0.27
   '@vercel/og': ^0.0.27
   '@wakamai-fondue/engine': github:Wakamai-Fondue/wakamai-fondue-engine#50b68ac117a9aa5d907174db1920b4823ed4263e
+  async-retry: ^1.3.3
   autoprefixer: ^10.4.13
   classnames: ^2.3.2
   date-fns: ^2.29.3
@@ -23,6 +24,7 @@ specifiers:
   framer-motion: ^10.12.4
   intl-segmenter-polyfill: ^0.4.4
   js-cookie: ^3.0.1
+  jwt-decode: ^3.1.2
   nanoid: ^4.0.0
   next: ^13.1.5
   next-sanity: ^4.1.1
@@ -58,11 +60,13 @@ dependencies:
   '@sanity/vision': 3.2.5_2zpt4ilzykmne4yndyzrqd4gdm
   '@vercel/og': 0.0.27
   '@wakamai-fondue/engine': github.com/Wakamai-Fondue/wakamai-fondue-engine/50b68ac117a9aa5d907174db1920b4823ed4263e
+  async-retry: 1.3.3
   classnames: 2.3.2
   date-fns: 2.29.3
   framer-motion: 10.12.4_biqbaboplfbrettd7655fr4n2y
   intl-segmenter-polyfill: 0.4.4
   js-cookie: 3.0.1
+  jwt-decode: 3.1.2
   nanoid: 4.0.0
   next: 13.1.5_biqbaboplfbrettd7655fr4n2y
   next-sanity: 4.1.1_smwq2asma2eozsnvqepo55esoq
@@ -3240,6 +3244,12 @@ packages:
     resolution: {integrity: sha512-eBvWn1lvIApYMhzQMsu9ciLfkBY499mFZlNqG+/9WR7PVlroQw0vG30cOQQbaKz3sCEc44TAOu2ykzqXSNnwag==}
     dev: true
 
+  /async-retry/1.3.3:
+    resolution: {integrity: sha512-wfr/jstw9xNi/0teMHrRW7dsz3Lt5ARhYNZ2ewpadnhaIp5mbALhOAP+EAdsC7t4Z6wqsDVv9+W6gm1Dk9mEyw==}
+    dependencies:
+      retry: 0.13.1
+    dev: false
+
   /async/3.2.4:
     resolution: {integrity: sha512-iAB+JbDEGXhyIUavoDl9WP/Jj106Kz9DEn1DPgYw5ruDn0e3Wgi3sKFm55sASdGBNOQB8F59d9qQ7deqrHA8wQ==}
     dev: false
@@ -5494,6 +5504,10 @@ packages:
       object.assign: 4.1.4
     dev: true
 
+  /jwt-decode/3.1.2:
+    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
+    dev: false
+
   /language-subtag-registry/0.3.22:
     resolution: {integrity: sha512-tN0MCzyWnoz/4nHS6uxdlFWoUZT7ABptwKPQ52Ea7URk6vll88bWBVhodtnlfEuCcKWNGoc+uGbw1cwa9IKh/w==}
     dev: true
@@ -6856,6 +6870,11 @@ packages:
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
     dev: true
+
+  /retry/0.13.1:
+    resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
+    engines: {node: '>= 4'}
+    dev: false
 
   /reusify/1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   // to create a market, we need an existing merchant, inventory model, and price list resource ID
   // https://docs.commercelayer.io/core/welcome/manual-configuration#market

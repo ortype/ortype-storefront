@@ -1,71 +1,69 @@
-import React, { useState, useEffect } from 'react'
+import {
+  Box,
+  Button,
+  chakra,
+  Container,
+  Divider,
+  Flex,
+  forwardRef,
+  Heading,
+  Input,
+  InputProps,
+  Link,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { getCustomerToken } from '@commercelayer/js-auth'
+import {
+  AddToCartButton,
+  CheckoutLink,
+  CommerceLayer as CommerceLayerContainer,
+  DiscountAmount,
+  Errors,
+  GiftCardAmount,
+  LineItem,
+  LineItemAmount,
+  LineItemImage,
+  LineItemName,
+  LineItemOption,
+  LineItemOptions,
+  LineItemQuantity,
+  LineItemRemoveLink,
+  // Cart
+  LineItemsContainer,
+  LineItemsCount,
+  OrderContainer,
+  OrderStorage,
+  Price,
+  PricesContainer,
+  ShippingAmount,
+  // Cart summary
+  SubTotalAmount,
+  TaxesAmount,
+  TotalAmount,
+  useLineItemsContainer,
+  //
+  useOrderContainer,
+} from '@commercelayer/react-components'
+import CommerceLayer, {
+  LineItemUpdate,
+  OrderCreate,
+  OrderUpdate,
+  SkuOption,
+} from '@commercelayer/sdk'
+import AddLineItemButton from 'components/AddLineItemButton'
 // import Container from 'components/BlogContainer'
 import Layout from 'components/BlogLayout'
 import MoreFonts from 'components/MoreFonts'
 import SectionSeparator from 'components/SectionSeparator'
 import * as demo from 'lib/demo.data'
-import Select from 'react-select'
 import type { Font, Settings } from 'lib/sanity.queries'
+import { Size, sizes, Type, types } from 'lib/settings'
 import Head from 'next/head'
 import { notFound } from 'next/navigation'
-import { getCustomerToken } from '@commercelayer/js-auth'
-import CommerceLayer, {
-  OrderCreate,
-  OrderUpdate,
-  SkuOption,
-  LineItemUpdate,
-} from '@commercelayer/sdk'
-import {
-  CommerceLayer as CommerceLayerContainer,
-  Price,
-  PricesContainer,
-  OrderContainer,
-  AddToCartButton,
-  OrderStorage,
-  // Cart
-  LineItemsContainer,
-  LineItemsCount,
-  LineItem,
-  LineItemOptions,
-  LineItemOption,
-  LineItemImage,
-  LineItemName,
-  LineItemQuantity,
-  LineItemAmount,
-  LineItemRemoveLink,
-  Errors,
-  // Cart summary
-  SubTotalAmount,
-  DiscountAmount,
-  ShippingAmount,
-  TaxesAmount,
-  GiftCardAmount,
-  TotalAmount,
-  CheckoutLink,
-  //
-  useOrderContainer,
-  useLineItemsContainer,
-} from '@commercelayer/react-components'
-
-import {
-  Box,
-  Container,
-  Flex,
-  SimpleGrid,
-  Divider,
-  Heading,
-  Text,
-  Button,
-  Link,
-  Stack,
-  Input,
-  chakra,
-  forwardRef,
-  InputProps,
-} from '@chakra-ui/react'
-
-import AddLineItemButton from 'components/AddLineItemButton'
-import { Type, Size, types, sizes } from 'lib/settings'
+import React, { useEffect, useState } from 'react'
+import Select from 'react-select'
 
 export interface FontPageProps {
   preview?: boolean
@@ -74,7 +72,7 @@ export interface FontPageProps {
   endpoint?: string
   accessToken?: string
   moreFonts: Font[]
-  settings: Settings
+  siteSettings: Settings
 }
 
 const NO_FONTS: Font[] = []
@@ -358,6 +356,7 @@ const BuyWrapper: React.FC<Props> = ({
 
     console.log('retrievedOrder: ', retrievedOrder)
 
+    // @TODO: check for retrievedOrder is existing
     // loop through the line_items on the order and update with new metadata
     for (const lineItem of retrievedOrder.line_items) {
       console.log('retrievedOrder lineItem: ', lineItem)
@@ -581,22 +580,20 @@ export default function FontPage(props: FontPageProps) {
       </Head>
       <Layout preview={preview} loading={loading}>
         <Container my={8}>
-          <CommerceLayerContainer accessToken={accessToken} endpoint={endpoint}>
-            <OrderStorage persistKey={`order`}>
-              <OrderContainer
-                attributes={{
-                  metadata: { license: { size: sizes[0] } },
-                }}
-              >
-                <FontWrapper
-                  cl={cl}
-                  font={font}
-                  accessToken={accessToken}
-                  endpoint={endpoint}
-                />
-              </OrderContainer>
-            </OrderStorage>
-          </CommerceLayerContainer>
+          <OrderStorage persistKey={`order`}>
+            <OrderContainer
+              attributes={{
+                metadata: { license: { size: sizes[0] } },
+              }}
+            >
+              <FontWrapper
+                cl={cl}
+                font={font}
+                accessToken={accessToken}
+                endpoint={endpoint}
+              />
+            </OrderContainer>
+          </OrderStorage>
           <SectionSeparator />
           {/* moreFonts?.length > 0 && <MoreFonts fonts={moreFonts} /> */}
         </Container>

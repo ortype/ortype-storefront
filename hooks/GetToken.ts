@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import Cookies from 'js-cookie'
 import { getSalesChannelToken } from '@commercelayer/js-auth'
+import Cookies from 'js-cookie'
+import { useEffect, useState } from 'react'
 
 // NOTE: sales channel applications can read resource lists only for SKUs, SKU options, prices, promotions, and bundles
 /*
@@ -24,6 +24,7 @@ type UseGetToken = {
     endpoint: string
     scope?: string
     customer: object
+    userMode: boolean
     // countryCode: string
   }): string
 }
@@ -32,23 +33,17 @@ export const useGetToken: UseGetToken = ({
   clientId,
   endpoint,
   customer,
-  userMode = false,
   scope = 'market:12213',
+  userMode,
 }) => {
-  const [token, setToken] = useState('')
-  /*  const user = {
-    username: customer.username,
-    password: customer.password,
-  }
-  */
   const user = userMode
     ? {
         username: customer.username,
         password: customer.password,
       }
     : undefined
-
-  console.log('useGetToken: ', userMode, clientId, endpoint, scope, user)
+  const [token, setToken] = useState('')
+  console.log('useGetToken: ', clientId, endpoint, scope, customer, user)
 
   useEffect(() => {
     const getCookieToken = Cookies.get(`clAccessToken`)
@@ -77,7 +72,6 @@ export const useGetToken: UseGetToken = ({
     } else {
       setToken(getCookieToken || '')
     }
-  }, [userMode, user])
-  console.log('My access token: ', token)
+  }, [user])
   return token
 }

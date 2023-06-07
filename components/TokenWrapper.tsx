@@ -1,42 +1,126 @@
-import React, { useState, useEffect } from 'react'
-import CommerceLayer, { CustomerCreate } from '@commercelayer/sdk'
-import Cookies from 'js-cookie'
 import {
-  Container,
+  Box,
   Button,
-  SimpleGrid,
-  Link,
-  Input,
+  Container,
   FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Link,
+  SimpleGrid,
   Stack,
   Switch,
-  FormLabel,
 } from '@chakra-ui/react'
-import { useGetToken } from 'hooks/GetToken'
+import CommerceLayer, { CustomerCreate } from '@commercelayer/sdk'
 import FontPage from 'components/FontPage'
+import Cookies from 'js-cookie'
+import { getInfoFromJwt } from 'lib/utils/getInfoFromJwt'
+import { AppContext } from 'providers/AppProvider'
+import { SettingsContext } from 'providers/SettingsProvider'
 import { useRapidForm } from 'rapid-form'
+import React, { useContext, useEffect, useState } from 'react'
 
 // @TODO:
 
 // Login / logout
 // Register
 
-const RegisterForm = ({}) => {
-  return <div />
+const LogoutForm = ({ customer, handleLogout }) => {
+  const { handleSubmit, submitValidation, validation, values, errors } =
+    useRapidForm()
+
+  const s = async (values, err, e) => {
+    console.log('s: ', values, err)
+    Cookies.remove('clAccessToken')
+    handleLogout()
+  }
+
+  return (
+    <form
+      as={Box}
+      ref={submitValidation}
+      autoComplete="off"
+      onSubmit={handleSubmit(s)}
+    >
+      <Heading
+        as={'h5'}
+        fontSize={20}
+        textTransform={'uppercase'}
+        fontWeight={'normal'}
+      >
+        {'Exisiting User'}
+      </Heading>
+      <Stack my={4} direction={'row'} spacing={4}>
+        Logged in as {customer?.username}
+        <Button type={'submit'}>Logout</Button>
+      </Stack>
+    </form>
+  )
 }
 
-const LoginForm = ({
-  customer,
-  cl,
-  accessToken,
-  setCustomer,
-  userMode,
-  setUserMode,
-}) => {
+const LoginForm = ({ customer, handleLogin }) => {
   const { handleSubmit, submitValidation, validation, values, errors } =
-    useRapidForm({
-      fieldEvent: 'blur',
-    })
+    useRapidForm()
+
+  const s = async (values, err, e) => {
+    console.log('s: ', values, err)
+    /*    if (_.isEmpty(err)) {
+      reset(e)
+    }*/
+    Cookies.remove('clAccessToken')
+    const email = values['email'].value
+    const password = values['password'].value
+    handleLogin({ username: email, password })
+  }
+
+  return (
+    <form
+      as={Box}
+      ref={submitValidation}
+      autoComplete="off"
+      onSubmit={handleSubmit(s)}
+    >
+      <Heading
+        as={'h5'}
+        fontSize={20}
+        textTransform={'uppercase'}
+        fontWeight={'normal'}
+      >
+        {'Exisiting User'}
+      </Heading>
+      <FormControl>
+        <FormLabel>{'Email'}</FormLabel>
+        <Input
+          // placeholder={customer.username}
+          name={'email'}
+          type={'email'}
+          // onBlur={handleOnBlur}
+          ref={validation}
+          size={'lg'}
+          // value={values['email']?.value}
+        />
+      </FormControl>
+      <FormControl>
+        <FormLabel>{'Password'}</FormLabel>
+        <Input
+          // placeholder={customer.password}
+          name={'password'}
+          // onBlur={handleOnBlur}
+          ref={validation}
+          size={'lg'}
+          // value={values['password']?.value}
+        />
+      </FormControl>
+      <Stack my={4} direction={'row'} spacing={4}>
+        <Button type={'submit'}>Login</Button>
+      </Stack>
+    </form>
+  )
+}
+
+const RegisterForm = ({ cl, handleRegister }) => {
+  const { handleSubmit, submitValidation, validation, values, errors } =
+    useRapidForm()
 
   // @TODO:
   // - Validate fields (e.g. password longer than 6 characters)
@@ -59,68 +143,52 @@ const LoginForm = ({
         password,
       }
       const customer = await cl.customers.create(attrs)
-      setCustomer({ username: email, password })
+      console.log('Register Customer: ', customer)
+      handleRegister({ username: email, password })
     }
   }
-
   return (
-    <Container my={8}>
-      <form
-        ref={submitValidation}
-        autoComplete="off"
-        onSubmit={handleSubmit(s)}
+    <form
+      as={Box}
+      ref={submitValidation}
+      autoComplete="off"
+      onSubmit={handleSubmit(s)}
+    >
+      <Heading
+        as={'h5'}
+        fontSize={20}
+        textTransform={'uppercase'}
+        fontWeight={'normal'}
       >
-        <FormControl>
-          <FormLabel>{'Email'}</FormLabel>
-          <Input
-            placeholder={customer.username}
-            name={'email'}
-            type={'email'}
-            onBlur={handleOnBlur}
-            ref={validation}
-            size={'lg'}
-            // value={values['email']?.value}
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>{'Password'}</FormLabel>
-          <Input
-            placeholder={customer.password}
-            name={'password'}
-            onBlur={handleOnBlur}
-            ref={validation}
-            size={'lg'}
-            // value={values['password']?.value}
-          />
-        </FormControl>
-
-        <Stack my={4} direction={'row'} spacing={4}>
-          {!userMode && <Button type={'submit'}>Sign up</Button>}
-          {userMode && (
-            <Button
-              as={Link}
-              href={`http://localhost:3001/orders?accessToken=${accessToken}`}
-              isExternal
-            >
-              {'My account'}
-            </Button>
-          )}
-        </Stack>
-        <FormControl display="flex" alignItems="center">
-          <FormLabel htmlFor="user-mode" mb="0">
-            Enable "logged in" user
-          </FormLabel>
-          <Switch
-            id="user-mode"
-            isChecked={userMode}
-            onChange={(e) => {
-              Cookies.remove('clAccessToken')
-              setUserMode(e.target.checked)
-            }}
-          />
-        </FormControl>
-      </form>
-    </Container>
+        {'New User'}
+      </Heading>
+      <FormControl>
+        <FormLabel>{'Email'}</FormLabel>
+        <Input
+          // placeholder={customer.username}
+          name={'email'}
+          type={'email'}
+          onBlur={handleOnBlur}
+          ref={validation}
+          size={'lg'}
+          // value={values['email']?.value}
+        />
+      </FormControl>
+      <FormControl>
+        <FormLabel>{'Password'}</FormLabel>
+        <Input
+          // placeholder={customer.password}
+          name={'password'}
+          onBlur={handleOnBlur}
+          ref={validation}
+          size={'lg'}
+          // value={values['password']?.value}
+        />
+      </FormControl>
+      <Stack my={4} direction={'row'} spacing={4}>
+        <Button type={'submit'}>Sign up</Button>
+      </Stack>
+    </form>
   )
 }
 
@@ -129,63 +197,59 @@ const TokenWrapper = ({
   loading,
   moreFonts,
   font,
-  settings,
   endpoint,
   clientId,
   marketId,
+  siteSettings,
 }) => {
-  const [userMode, setUserMode] = useState(false)
-  const [customer, setCustomer] = useState({})
-
-  useEffect(() => {
-    setCustomer(
-      userMode
-        ? {
-            username: 'newww@owenhoskins.com',
-            password: '123456',
-          }
-        : {}
-    )
-  }, [userMode])
-
-  // @TODO: how to call this based on user action
-
-  const accessToken = useGetToken({
-    clientId,
-    endpoint,
-    scope: marketId,
-    customer,
-    userMode,
-  })
+  const appCtx = useContext(AppContext)
+  // @TODO: get customer data from appCtx is missing something currently
+  const settingsCtx = useContext(SettingsContext)
+  const handleLogin = (customer) => settingsCtx?.handleLogin(customer)
+  const handleLogout = () => settingsCtx?.handleLogout()
+  const handleRegister = (customer) => settingsCtx?.handleRegister(customer)
+  const isGuest = settingsCtx?.settings?.isGuest
 
   let cl
-  if (accessToken) {
+  if (appCtx?.accessToken) {
     cl = CommerceLayer({
       organization: 'or-type-mvp',
-      accessToken,
+      accessToken: appCtx?.accessToken,
     })
   }
 
   return (
     <>
-      <RegisterForm />
-      <LoginForm
-        cl={cl}
-        customer={customer}
-        setCustomer={setCustomer}
-        userMode={userMode}
-        setUserMode={setUserMode}
-        accessToken={accessToken}
-      />
+      <Container py={8}>
+        <SimpleGrid columns={2} spacing={8}>
+          <RegisterForm cl={cl} handleRegister={handleRegister} />
+          {isGuest ? (
+            <LoginForm customer={{}} handleLogin={handleLogin} />
+          ) : (
+            <LogoutForm handleLogout={handleLogout} customer={{}} />
+          )}
+        </SimpleGrid>
+        <Stack my={4} direction={'row'} spacing={4}>
+          {!isGuest && (
+            <Button
+              as={Link}
+              href={`http://localhost:3001/orders?accessToken=${appCtx?.accessToken}`}
+              isExternal
+            >
+              {'My account'}
+            </Button>
+          )}
+        </Stack>
+      </Container>
       <FontPage
         // loading
         // preview
         cl={cl}
         font={font}
         moreFonts={moreFonts}
-        settings={settings}
+        siteSettings={siteSettings}
         endpoint={endpoint}
-        accessToken={accessToken}
+        accessToken={appCtx?.accessToken}
       />
     </>
   )

@@ -77,7 +77,7 @@ export default function FontSlugRoute(props: PageProps) {
     <TokenWrapper
       font={font}
       moreFonts={moreFonts}
-      settings={settings}
+      siteSettings={settings}
       clientId={clientId}
       marketId={marketId}
       endpoint={endpoint}
