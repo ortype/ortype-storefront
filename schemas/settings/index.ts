@@ -55,7 +55,7 @@ export default defineType({
       ],
       validation: (rule) => rule.max(155).required(),
     }),
-    defineField({
+    /*defineField({
       name: 'ogImage',
       title: 'Open Graph Image',
       description:
@@ -72,6 +72,6 @@ export default defineType({
           initialValue: demo.ogImageTitle,
         }),
       ],
-    }),
+    }),*/
   ],
 })
