@@ -15,7 +15,7 @@ import CommerceLayer, { CustomerCreate } from '@commercelayer/sdk'
 import FontPage from 'components/FontPage'
 import Cookies from 'js-cookie'
 import { getInfoFromJwt } from 'lib/utils/getInfoFromJwt'
-import { AppContext } from 'providers/AppProvider'
+import { CustomerContext } from 'providers/CustomerProvider'
 import { SettingsContext } from 'providers/SettingsProvider'
 import { useRapidForm } from 'rapid-form'
 import React, { useContext, useEffect, useState } from 'react'
@@ -202,7 +202,7 @@ const TokenWrapper = ({
   marketId,
   siteSettings,
 }) => {
-  const appCtx = useContext(AppContext)
+  const appCtx = useContext(CustomerContext)
   // @TODO: get customer data from appCtx is missing something currently
   const settingsCtx = useContext(SettingsContext)
   const handleLogin = (customer) => settingsCtx?.handleLogin(customer)

@@ -5,7 +5,7 @@ import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { GetInitialProps } from 'next'
 import { AppProps } from 'next/app'
-import { AppProvider } from 'providers/AppProvider'
+import { CustomerProvider } from 'providers/CustomerProvider'
 import { SettingsProvider } from 'providers/SettingsProvider'
 
 const {
@@ -64,14 +64,14 @@ export default function App({ Component, pageProps, props }: AppProps) {
               accessToken={settings.accessToken}
               endpoint={props.endpoint}
             >
-              <AppProvider
+              <CustomerProvider
                 customerId={settings.customerId}
                 accessToken={settings.accessToken}
                 domain={props.endpoint}
                 {...props}
               >
                 <Component {...pageProps} />
-              </AppProvider>
+              </CustomerProvider>
             </CommerceLayer>
           )
         }}

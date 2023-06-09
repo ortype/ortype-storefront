@@ -1,5 +1,5 @@
 import CommerceLayer from '@commercelayer/sdk'
-import type { Settings, InvalidSettings } from 'CustomApp'
+import type { InvalidSettings, Settings } from 'CustomApp'
 
 import { getInfoFromJwt } from 'lib/utils/getInfoFromJwt'
 import { getOrganizations } from 'lib/utils/getOrganizations'
@@ -94,7 +94,11 @@ export const getSettings = async ({
 
   return {
     accessToken,
+    kind,
+    isTest,
     endpoint: `https://${slug}.${domain}`,
+    domain,
+    slug,
     isGuest: !customerId,
     customerId: customerId as string,
     isValid: true,
@@ -103,6 +107,8 @@ export const getSettings = async ({
     primaryColor:
       (organization?.primary_color as string) || defaultSettings.primaryColor,
     logoUrl: organization?.logo_url || '',
+    supportEmail: organization.support_email,
+    supportPhone: organization.support_phone,
     faviconUrl: organization?.favicon_url || defaultSettings.faviconUrl,
     gtmId: isTest ? organization?.gtm_id_test : organization?.gtm_id,
   }

@@ -9,7 +9,6 @@ import {
   Heading,
   Input,
   InputProps,
-  Link,
   SimpleGrid,
   Stack,
   Text,
@@ -61,6 +60,7 @@ import * as demo from 'lib/demo.data'
 import type { Font, Settings } from 'lib/sanity.queries'
 import { Size, sizes, Type, types } from 'lib/settings'
 import Head from 'next/head'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
@@ -134,7 +134,8 @@ const CheckoutButton = ({ isDisabled, order, accessToken }) => {
     <Button
       as={Link}
       disabled={isDisabled}
-      href={`http://localhost:3002/${order?.id}?accessToken=${accessToken}`}
+      // href={`http://localhost:3002/${order?.id}?accessToken=${accessToken}`}
+      href={`/checkout/${order?.id}`}
     >
       {'Checkout'}
     </Button>
@@ -542,9 +543,7 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
             // isDisabled={order?.line_items?.length === 0}
             order={order}
             accessToken={accessToken}
-          >
-            {'Checkout'}
-          </CheckoutButton>
+          />
           {/*
           // @TODO: Also this one is not working
           <CheckoutLink label={'Checkout'} />*/}

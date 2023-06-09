@@ -4,7 +4,7 @@ import { getCustomerDetails } from 'lib/utils/getCustomerDetails'
 import { getInfoFromJwt } from 'lib/utils/getInfoFromJwt'
 import { createContext, useEffect, useState } from 'react'
 
-type AppProviderData = Pick<
+type CustomerProviderData = Pick<
   Settings,
   'customerId' | 'accessToken' | 'endpoint'
 > & {
@@ -30,9 +30,9 @@ const initialState: AppStateData = {
   hasPassword: false,
 }
 
-export const AppContext = createContext<AppProviderData | null>(null)
+export const CustomerContext = createContext<CustomerProviderData | null>(null)
 
-type AppProviderProps = Pick<
+type CustomerProviderProps = Pick<
   Settings,
   'customerId' | 'accessToken' | 'endpoint'
 > & {
@@ -40,13 +40,13 @@ type AppProviderProps = Pick<
   children: React.ReactNode
 }
 
-export function AppProvider({
+export function CustomerProvider({
   children,
   customerId,
   accessToken,
   endpoint,
   domain,
-}: AppProviderProps): JSX.Element {
+}: CustomerProviderProps): JSX.Element {
   const [state, setState] = useState(initialState)
 
   const fetchCustomerHandle = async (
@@ -89,7 +89,7 @@ export function AppProvider({
   }, [customerId, accessToken])
 
   return (
-    <AppContext.Provider
+    <CustomerContext.Provider
       value={{
         ...state,
         customerId,
@@ -102,6 +102,6 @@ export function AppProvider({
       }}
     >
       {children}
-    </AppContext.Provider>
+    </CustomerContext.Provider>
   )
 }
