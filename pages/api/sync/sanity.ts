@@ -12,6 +12,7 @@ import {
   findByParentUid,
 } from 'lib/sanity.client'
 import slugify from 'slugify'
+import font from '../../../schemas/font/font'
 
 async function deleteAllFonts() {
   // Without params
@@ -39,6 +40,7 @@ async function deleteAllVariants() {
     })
 }
 
+// maybe check nesting for hash
 const hash = (obj) => {
   const ordered = Object.keys(obj)
     .sort()
@@ -84,7 +86,7 @@ async function buildVariantDocument(sanityFontVariant, fontVariant) {
   return fontVariant
 }
 
-async function createOrUpdateFonts(transaction, fonts) {
+async function createOrUpdateFonts(fonts) {
   /*
   // @TODO: This update draft pattern relies on the _id coming from the API
   // to match the _id that is set in the font document, but we reset that ID below
@@ -100,18 +102,20 @@ async function createOrUpdateFonts(transaction, fonts) {
   */
 
   for (const font of fonts) {
+    const transaction = apiClient.transaction()
     const sanityFont = await findByUidAndVersion(font.uid, font.version)
     // @TODO: move to a `hash` method in fonts API e.g. in the `shouldUpdate` where we read from the font file itself
     // @NOTE: it seems the hashing does not detect differences in the new slug.current
 
-    if (hash(font) === sanityFont.hash) {
-      console.log('upddd')
-      continue
-    }
-    font.hash = hash(font)
+    console.log('retrieved', sanityFont.slug)
+    // if (hash(font) === sanityFont.hash) {
+    //   console.log('already up to date', font.name)
+    //   continue
+    // }
+    // font.hash = hash(font)
 
     // Order the variants array
-    const orderedVariants = font.variants.sort((a, b) => a.index - b.index)
+    let orderedVariants = font.variants.sort((a, b) => a.index - b.index)
     const sanityFontVariants = await getAllFontVariants()
     console.log(`Got existing variants [${sanityFontVariants.length}]`)
     for (const variant of orderedVariants) {
@@ -131,22 +135,33 @@ async function createOrUpdateFonts(transaction, fonts) {
     // console.log(`fontDoc: ${fontDoc._id} ${fontDoc.name}`)
     // const draftId = `drafts.${fontDoc._id}`
 
+    const merge_variants = orderedVariants.map((variant) => ({
+      _type: 'reference',
+      _weak: true,
+      _ref: variant._id,
+      _key: variant._id,
+    }))
+    // this shoudl work in theory
+    // if (sanityFont) {
+    //   for (const sanityVariant of sanityFont.variants) {
+    //     if (!merge_variants.find(v => v._key == sanityVariant._id)){
+    //       merge_variants.push(sanityVariant)
+    //     }
+    //   }
+    //   console.log(merge_variants, merge_variants.length)
+    // }
     // Create (or update) existing published fontDoc
     transaction
       .createIfNotExists(fontDoc)
       .patch(fontDoc._id, (patch) => patch.set(fontDoc))
       .patch(fontDoc._id, (patch) =>
         patch.set({
-          variants: orderedVariants.map((variant) => ({
-            _type: 'reference',
-            _weak: true,
-            _ref: variant._id,
-            _key: variant._id,
-          })),
+          variants: merge_variants,
         })
       )
-
-    // @TODO: update drafts as well
+    const result = await transaction.commit({ dryRun: true })
+    console.log('commit')
+    // @TODO: update drafts as well.
   }
 }
 
@@ -166,10 +181,11 @@ export default async function handler(
   /*  Begin Sanity Font Sync
   /*  ------------------------------ */
 
-  const fonts = []
+  let fonts = []
   for (const font of await OpenType.getFonts()) {
     fonts.push(await font.getFontProductData(false))
   }
+  fonts = fonts.filter(f => f.name == 'La Pontaise')
 
   // Variant duplicate warning
   const variantNames = fonts.flatMap(({ variants }) =>
@@ -181,10 +197,7 @@ export default async function handler(
   console.log(`We have variant dups: ${duplicates.length > 0}`)
 
   try {
-    const transaction = apiClient.transaction()
-    await createOrUpdateFonts(transaction, fonts)
-    const result = await transaction.commit({ dryRun: false })
-    console.log('Result', result)
+    await createOrUpdateFonts(fonts)
     return res.status(200).json({ message: 'Successful' })
   } catch (error) {
     return res.status(500).json({
