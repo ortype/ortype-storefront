@@ -10,6 +10,7 @@ interface UseActiveStep {
   steps: SingleStepEnum[]
 }
 
+// @TODO: "Cart", "Email", "Address", "License", "Payment"
 const STEPS: SingleStepEnum[] = ['Customer', 'Shipping', 'Payment']
 
 export function checkIfCannotGoNext(

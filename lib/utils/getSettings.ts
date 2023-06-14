@@ -47,7 +47,7 @@ export const getSettings = async ({
   const domain = config.domain
   const { slug, kind, customerId, isTest } = getInfoFromJwt(accessToken)
 
-  console.log('getSettings: ', accessToken, customerId, kind)
+  console.log('getSettings: ', config, accessToken, customerId, kind)
 
   if (!slug) {
     return makeInvalidSettings()

@@ -96,6 +96,8 @@ export const getSettings = async ({
   paymentReturn?: boolean
   // subdomain: string
 }) => {
+  // const domain = process.env.NEXT_PUBLIC_DOMAIN || "commercelayer.io"
+
   function invalidateCheckout(retry?: boolean): InvalidCheckoutSettings {
     console.log('access token:')
     console.log(accessToken)
@@ -183,7 +185,7 @@ export const getSettings = async ({
     return invalidateCheckout()
   }
 
-  const appSettings: CheckoutSettings = {
+  const checkoutSettings: CheckoutSettings = {
     accessToken,
     endpoint,
     domain,
@@ -205,5 +207,7 @@ export const getSettings = async ({
     privacyUrl: order.privacy_url,
   }
 
-  return appSettings
+  console.log('checkoutSettings: ', checkoutSettings)
+
+  return checkoutSettings
 }

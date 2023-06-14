@@ -3,7 +3,9 @@ import 'tailwindcss/tailwind.css'
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
 import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
+import 'components/data/i18n'
 import { GetInitialProps } from 'next'
+import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
 import { CustomerProvider } from 'providers/CustomerProvider'
 import { SettingsProvider } from 'providers/SettingsProvider'
@@ -50,7 +52,7 @@ const theme = extendBaseTheme({
   },
 })
 
-export default function App({ Component, pageProps, props }: AppProps) {
+function App({ Component, pageProps, props }: AppProps) {
   return (
     <ChakraBaseProvider theme={theme}>
       <SettingsProvider config={{ ...props }}>
@@ -87,6 +89,9 @@ App.getInitialProps = async (ctx) => {
       clientId: process.env.CL_CLIENT_ID,
       endpoint: process.env.CL_ENDPOINT,
       marketId: process.env.CL_SCOPE_GLOBAL,
+      domain: process.env.CL_DOMAIN,
     },
   }
 }
+
+export default appWithTranslation(App)

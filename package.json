@@ -14,6 +14,7 @@
     "singleQuote": true
   },
   "dependencies": {
+    "@adyen/adyen-web": "5.43.0",
     "@chakra-ui/next-js": "^2.1.3",
     "@chakra-ui/react": "^2.6.0",
     "@commercelayer/js-auth": "^2.3.0",
@@ -21,46 +22,59 @@
     "@commercelayer/sdk": "^4.21.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@headlessui/react": "1.7.14",
     "@portabletext/react": "^2.0.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.2.5",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@vercel/og": "^0.0.27",
     "@wakamai-fondue/engine": "github:Wakamai-Fondue/wakamai-fondue-engine#50b68ac117a9aa5d907174db1920b4823ed4263e",
     "async-retry": "^1.3.3",
+    "babel-plugin-macros": "^2.8.0",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
     "framer-motion": "^10.12.4",
+    "i18next": "^22.5.1",
     "intl-segmenter-polyfill": "^0.4.4",
     "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
     "nanoid": "^4.0.0",
     "next": "^13.1.5",
+    "next-i18next": "^13.3.0",
     "next-sanity": "^4.1.1",
     "nodemailer": "^6.9.1",
     "opentype.js": "^1.3.4",
     "rapid-form": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^12.3.1",
     "react-select": "^5.7.2",
     "sanity": "^3.2.5",
     "sanity-plugin-asset-source-unsplash": "^1.0.6",
     "slugify": "^1.6.5",
     "styled-components": "^5.3.6",
     "suspend-react": "^0.0.9",
-    "swr": "^2.0.1"
+    "swr": "^2.0.1",
+    "twin.macro": "^2.8.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
-    "autoprefixer": "^10.4.13",
+    "autoprefixer": "^10.4.14",
     "eslint": "^8.32.0",
     "eslint-config-next": "^13.1.5",
     "eslint-plugin-simple-import-sort": "^9.0.0",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.24",
     "prettier": "^2.8.3",
     "prettier-plugin-packagejson": "^2.4.0",
     "prettier-plugin-tailwindcss": "^0.2.2",
-    "tailwindcss": "^3.2.4",
+    "tailwindcss": "^3.3.2",
     "typescript": "^4.9.4"
+  },
+  "babelMacros": {
+    "twin": {
+      "preset": "styled-components"
+    }
   },
   "engines": {
     "node": ">=16"

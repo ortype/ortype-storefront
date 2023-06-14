@@ -1,6 +1,6 @@
 import CommerceLayer, { LineItem } from '@commercelayer/sdk'
-import { createContext, useEffect, useContext } from 'react'
-import TagManager from 'react-gtm-module'
+import { createContext, useContext, useEffect } from 'react'
+// import TagManager from 'react-gtm-module'
 
 import { CheckoutContext } from 'components/data/CheckoutProvider'
 import type { TypeAccepted } from 'components/data/CheckoutProvider/utils'
@@ -44,19 +44,19 @@ export const GTMProvider: React.FC<GTMProviderProps> = ({
 
   useEffect(() => {
     if (gtmId) {
-      TagManager.initialize({ gtmId: gtmId })
+      // TagManager.initialize({ gtmId: gtmId })
       fireBeginCheckout()
     }
   }, [])
 
   const pushDataLayer = ({ eventName, dataLayer }: DataLayerProps) => {
     try {
-      TagManager.dataLayer({
+      /*TagManager.dataLayer({
         dataLayer: {
           event: eventName,
           ecommerce: dataLayer,
         },
-      })
+      })*/
     } catch (error) {
       console.log(error)
     }

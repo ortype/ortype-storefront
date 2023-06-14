@@ -202,8 +202,8 @@ const TokenWrapper = ({
   marketId,
   siteSettings,
 }) => {
-  const appCtx = useContext(CustomerContext)
-  // @TODO: get customer data from appCtx is missing something currently
+  const checkoutCtx = useContext(CustomerContext)
+  // @TODO: get customer data from checkoutCtx is missing something currently
   const settingsCtx = useContext(SettingsContext)
   const handleLogin = (customer) => settingsCtx?.handleLogin(customer)
   const handleLogout = () => settingsCtx?.handleLogout()
@@ -211,10 +211,10 @@ const TokenWrapper = ({
   const isGuest = settingsCtx?.settings?.isGuest
 
   let cl
-  if (appCtx?.accessToken) {
+  if (checkoutCtx?.accessToken) {
     cl = CommerceLayer({
       organization: 'or-type-mvp',
-      accessToken: appCtx?.accessToken,
+      accessToken: checkoutCtx?.accessToken,
     })
   }
 
@@ -233,7 +233,7 @@ const TokenWrapper = ({
           {!isGuest && (
             <Button
               as={Link}
-              href={`http://localhost:3001/orders?accessToken=${appCtx?.accessToken}`}
+              href={`http://localhost:3001/orders?accessToken=${checkoutCtx?.accessToken}`}
               isExternal
             >
               {'My account'}
@@ -249,7 +249,7 @@ const TokenWrapper = ({
         moreFonts={moreFonts}
         siteSettings={siteSettings}
         endpoint={endpoint}
-        accessToken={appCtx?.accessToken}
+        accessToken={checkoutCtx?.accessToken}
       />
     </>
   )

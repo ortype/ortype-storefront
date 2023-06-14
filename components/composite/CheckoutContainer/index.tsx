@@ -22,7 +22,8 @@ const CheckoutContainer = ({ settings, children }: Props): JSX.Element => {
           slug={settings.slug}
           domain={settings.domain}
         >
-          {/*<GTMProvider gtmId={settings.gtmId}>{children}</GTMProvider>*/}
+          {/*<GTMProvider gtmId={settings.gtmId}></GTMProvider>*/}
+          {children}
         </CheckoutProvider>
       </CommerceLayer>
     </div>
