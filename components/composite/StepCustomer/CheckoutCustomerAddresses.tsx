@@ -1,32 +1,32 @@
-import AddressesContainer from "@commercelayer/react-components/addresses/AddressesContainer"
-import BillingAddressContainer from "@commercelayer/react-components/addresses/BillingAddressContainer"
-import BillingAddressForm from "@commercelayer/react-components/addresses/BillingAddressForm"
-import SaveAddressesButton from "@commercelayer/react-components/addresses/SaveAddressesButton"
-import ShippingAddressContainer from "@commercelayer/react-components/addresses/ShippingAddressContainer"
-import ShippingAddressForm from "@commercelayer/react-components/addresses/ShippingAddressForm"
-import type { Address, Order } from "@commercelayer/sdk"
-import { Transition } from "@headlessui/react"
-import { useState, Fragment, useEffect, Dispatch, SetStateAction } from "react"
-import { useTranslation } from "react-i18next"
-import styled from "styled-components"
+import AddressesContainer from '@commercelayer/react-components/addresses/AddressesContainer'
+import BillingAddressContainer from '@commercelayer/react-components/addresses/BillingAddressContainer'
+import BillingAddressForm from '@commercelayer/react-components/addresses/BillingAddressForm'
+import SaveAddressesButton from '@commercelayer/react-components/addresses/SaveAddressesButton'
+import ShippingAddressContainer from '@commercelayer/react-components/addresses/ShippingAddressContainer'
+import ShippingAddressForm from '@commercelayer/react-components/addresses/ShippingAddressForm'
+import type { Address, Order } from '@commercelayer/sdk'
+import { Transition } from '@headlessui/react'
+import { useState, Fragment, useEffect, Dispatch, SetStateAction } from 'react'
+import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import {
   evaluateShippingToggle,
   ShippingToggleProps,
-} from "components/composite/StepCustomer"
-import { AddButton } from "components/ui/AddButton"
-import { ButtonCss, ButtonWrapper } from "components/ui/Button"
-import { CustomerAddressCard } from "components/ui/CustomerAddressCard"
-import { GridContainer } from "components/ui/GridContainer"
-import { SpinnerIcon } from "components/ui/SpinnerIcon"
-import { Toggle } from "components/ui/Toggle"
+} from 'components/composite/StepCustomer'
+import { AddButton } from 'components/ui/AddButton'
+import { ButtonCss, ButtonWrapper } from 'components/ui/Button'
+import { CustomerAddressCard } from 'components/ui/CustomerAddressCard'
+import { GridContainer } from 'components/ui/GridContainer'
+import { SpinnerIcon } from 'components/ui/SpinnerIcon'
+import { Toggle } from 'components/ui/Toggle'
 
-import { AddressFormBottom } from "./AddressFormBottom"
-import { AddressSectionEmail } from "./AddressSectionEmail"
-import { AddressSectionSaveForm } from "./AddressSectionSaveForm"
-import { AddressSectionTitle } from "./AddressSectionTitle"
-import { BillingAddressFormNew } from "./BillingAddressFormNew"
-import { ShippingAddressFormNew } from "./ShippingAddressFormNew"
+import { AddressFormBottom } from './AddressFormBottom'
+import { AddressSectionEmail } from './AddressSectionEmail'
+import { AddressSectionSaveForm } from './AddressSectionSaveForm'
+import { AddressSectionTitle } from './AddressSectionTitle'
+import { BillingAddressFormNew } from './BillingAddressFormNew'
+import { ShippingAddressFormNew } from './ShippingAddressFormNew'
 
 interface Props {
   billingAddress?: Address
@@ -46,7 +46,7 @@ interface Props {
   handleSave: (params: { success: boolean; order?: Order }) => void
 }
 
-type AddressTypeEnum = "shipping" | "billing"
+type AddressTypeEnum = 'shipping' | 'billing'
 
 export const CheckoutCustomerAddresses: React.FC<Props> = ({
   billingAddress,
@@ -102,14 +102,14 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
     // temp fix to resolve flag bug
     if (showBillingAddressForm) {
       localStorage.setItem(
-        "_save_billing_address_to_customer_address_book",
-        "false"
+        '_save_billing_address_to_customer_address_book',
+        'false'
       )
     }
     if (showShippingAddressForm) {
       localStorage.setItem(
-        "_save_shipping_address_to_customer_address_book",
-        "false"
+        '_save_shipping_address_to_customer_address_book',
+        'false'
       )
     }
     // --
@@ -121,19 +121,19 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
       ?.getBoundingClientRect()
     const top = window.scrollY + (tab?.top as number)
     const left = window.scrollX + (tab?.left as number)
-    window.scrollTo({ left, top: top, behavior: "smooth" })
+    window.scrollTo({ left, top: top, behavior: 'smooth' })
   }
 
   const handleShowBillingForm = () => {
     setBillingAddressFill(undefined)
     setShowBillingAddressForm(!showBillingAddressForm)
-    handleScroll("billing")
+    handleScroll('billing')
   }
 
   const handleShowShippingForm = () => {
     setShippingAddressFill(undefined)
     setShowShippingAddressForm(!showShippingAddressForm)
-    handleScroll("shipping")
+    handleScroll('shipping')
   }
 
   const handleToggle = () => {
@@ -158,14 +158,14 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
     }
 
     localStorage.setItem(
-      "_save_billing_address_to_customer_address_book",
-      "false"
+      '_save_billing_address_to_customer_address_book',
+      'false'
     )
   }
 
   return (
     <Fragment>
-      <AddressSectionEmail readonly emailAddress={emailAddress as string} />
+      {/*<AddressSectionEmail readonly emailAddress={emailAddress as string} />*/}
       <AddressesContainer shipToDifferentAddress={shipToDifferentAddress}>
         <AddressSectionTitle data-testid="billing-address">
           {t(`addressForm.billing_address_title`)}
@@ -239,7 +239,7 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
               checked={shipToDifferentAddress}
               onChange={handleToggle}
             />
-            <div className={`${shipToDifferentAddress ? "" : "hidden"} mb-2`}>
+            <div className={`${shipToDifferentAddress ? '' : 'hidden'} mb-2`}>
               <AddressSectionTitle data-testid="shipping-address">
                 {t(`addressForm.shipping_address_title`)}
               </AddressSectionTitle>
@@ -247,8 +247,8 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
             <div
               className={`${
                 shipToDifferentAddress && hasCustomerAddresses
-                  ? "mb-4"
-                  : "hidden"
+                  ? 'mb-4'
+                  : 'hidden'
               }`}
             >
               <Transition
@@ -262,8 +262,8 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
                       deselect={showShippingAddressForm}
                       onSelect={() =>
                         localStorage.setItem(
-                          "_save_shipping_address_to_customer_address_book",
-                          "false"
+                          '_save_shipping_address_to_customer_address_book',
+                          'false'
                         )
                       }
                     />
@@ -320,8 +320,8 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
                 <>
                   {isLocalLoader && <SpinnerIcon />}
                   {isShipmentRequired
-                    ? t("stepCustomer.continueToDelivery")
-                    : t("stepShipping.continueToPayment")}
+                    ? t('stepCustomer.continueToDelivery')
+                    : t('stepAddress.continueToLicense')}
                 </>
               }
               data-testid="save-customer-button"
@@ -335,21 +335,21 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
 }
 
 const addressesTransition = {
-  enter: "transition duration-400 ease-in",
-  enterFrom: "opacity-0  -translate-y-full",
-  enterTo: "opacity-100 translate-y-0",
-  leave: "duration-200 transition ease-out absolute top-0 w-full",
-  leaveFrom: "opacity-100 translate-y-0 ",
-  leaveTo: "opacity-0 -translate-y-full",
+  enter: 'transition duration-400 ease-in',
+  enterFrom: 'opacity-0  -translate-y-full',
+  enterTo: 'opacity-100 translate-y-0',
+  leave: 'duration-200 transition ease-out absolute top-0 w-full',
+  leaveFrom: 'opacity-100 translate-y-0 ',
+  leaveTo: 'opacity-0 -translate-y-full',
 }
 
 const formTransition = {
-  enter: "transition duration-400 ease-in",
-  enterFrom: "opacity-0 translate-y-full",
-  enterTo: "opacity-100 translate-y-0",
-  leave: "duration-400 transition ease-out absolute top-0 w-full",
-  leaveFrom: "opacity-100 translate-y-0",
-  leaveTo: "opacity-0 translate-y-full",
+  enter: 'transition duration-400 ease-in',
+  enterFrom: 'opacity-0 translate-y-full',
+  enterTo: 'opacity-100 translate-y-0',
+  leave: 'duration-400 transition ease-out absolute top-0 w-full',
+  leaveFrom: 'opacity-100 translate-y-0',
+  leaveTo: 'opacity-0 translate-y-full',
 }
 
 const StyledSaveAddressesButton = styled(SaveAddressesButton)`

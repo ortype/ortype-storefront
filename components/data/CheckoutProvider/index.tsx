@@ -64,6 +64,8 @@ const initialState: AppStateData = {
   shippingAddress: undefined,
   hasShippingMethod: false,
   hasShippingAddress: false,
+  hasLicenseOwner: false,
+  isLicenseForClient: false,
   shipments: [],
   customerAddresses: [],
   paymentMethod: undefined,

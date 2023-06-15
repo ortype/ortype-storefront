@@ -14,7 +14,6 @@ import {
 import CommerceLayer, { CustomerCreate } from '@commercelayer/sdk'
 import FontPage from 'components/FontPage'
 import Cookies from 'js-cookie'
-import { getInfoFromJwt } from 'lib/utils/getInfoFromJwt'
 import { CustomerContext } from 'providers/CustomerProvider'
 import { SettingsContext } from 'providers/SettingsProvider'
 import { useRapidForm } from 'rapid-form'
@@ -202,8 +201,8 @@ const TokenWrapper = ({
   marketId,
   siteSettings,
 }) => {
-  const checkoutCtx = useContext(CustomerContext)
-  // @TODO: get customer data from checkoutCtx is missing something currently
+  const customerContext = useContext(CustomerContext)
+  // @TODO: get customer data from customerContext is missing something currently
   const settingsCtx = useContext(SettingsContext)
   const handleLogin = (customer) => settingsCtx?.handleLogin(customer)
   const handleLogout = () => settingsCtx?.handleLogout()
@@ -211,10 +210,10 @@ const TokenWrapper = ({
   const isGuest = settingsCtx?.settings?.isGuest
 
   let cl
-  if (checkoutCtx?.accessToken) {
+  if (customerContext?.accessToken) {
     cl = CommerceLayer({
       organization: 'or-type-mvp',
-      accessToken: checkoutCtx?.accessToken,
+      accessToken: customerContext?.accessToken,
     })
   }
 
@@ -233,7 +232,7 @@ const TokenWrapper = ({
           {!isGuest && (
             <Button
               as={Link}
-              href={`http://localhost:3001/orders?accessToken=${checkoutCtx?.accessToken}`}
+              href={`http://localhost:3001/orders?accessToken=${customerContext?.accessToken}`}
               isExternal
             >
               {'My account'}
@@ -249,7 +248,7 @@ const TokenWrapper = ({
         moreFonts={moreFonts}
         siteSettings={siteSettings}
         endpoint={endpoint}
-        accessToken={checkoutCtx?.accessToken}
+        accessToken={customerContext?.accessToken}
       />
     </>
   )

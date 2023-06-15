@@ -1,22 +1,21 @@
-import AddressesContainer from "@commercelayer/react-components/addresses/AddressesContainer"
-import BillingAddressForm from "@commercelayer/react-components/addresses/BillingAddressForm"
-import SaveAddressesButton from "@commercelayer/react-components/addresses/SaveAddressesButton"
-import ShippingAddressForm from "@commercelayer/react-components/addresses/ShippingAddressForm"
-import type { Address, Order } from "@commercelayer/sdk"
-import { useState, Fragment, useEffect, Dispatch, SetStateAction } from "react"
-import { useTranslation } from "react-i18next"
-import styled from "styled-components"
+import AddressesContainer from '@commercelayer/react-components/addresses/AddressesContainer'
+import BillingAddressForm from '@commercelayer/react-components/addresses/BillingAddressForm'
+import SaveAddressesButton from '@commercelayer/react-components/addresses/SaveAddressesButton'
+import ShippingAddressForm from '@commercelayer/react-components/addresses/ShippingAddressForm'
+import type { Address, Order } from '@commercelayer/sdk'
+import { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
-import { ShippingToggleProps } from "components/composite/StepCustomer"
-import { ButtonCss, ButtonWrapper } from "components/ui/Button"
-import { SpinnerIcon } from "components/ui/SpinnerIcon"
-import { Toggle } from "components/ui/Toggle"
+import { ShippingToggleProps } from 'components/composite/StepCustomer'
+import { ButtonCss, ButtonWrapper } from 'components/ui/Button'
+import { SpinnerIcon } from 'components/ui/SpinnerIcon'
+import { Toggle } from 'components/ui/Toggle'
 
-import { AddressSectionEmail } from "./AddressSectionEmail"
-import { AddressSectionSaveForm } from "./AddressSectionSaveForm"
-import { AddressSectionTitle } from "./AddressSectionTitle"
-import { BillingAddressFormNew } from "./BillingAddressFormNew"
-import { ShippingAddressFormNew } from "./ShippingAddressFormNew"
+import { AddressSectionSaveForm } from './AddressSectionSaveForm'
+import { AddressSectionTitle } from './AddressSectionTitle'
+import { BillingAddressFormNew } from './BillingAddressFormNew'
+import { ShippingAddressFormNew } from './ShippingAddressFormNew'
 
 interface Props {
   billingAddress?: Address
@@ -68,10 +67,6 @@ export const CheckoutAddresses: React.FC<Props> = ({
 
   return (
     <Fragment>
-      <AddressSectionEmail
-        emailAddress={emailAddress}
-        setCustomerEmail={setCustomerEmail}
-      />
       <AddressesContainer shipToDifferentAddress={shipToDifferentAddress}>
         <div className="mt-4">
           <AddressSectionTitle>
@@ -119,8 +114,8 @@ export const CheckoutAddresses: React.FC<Props> = ({
                 <>
                   {isLocalLoader && <SpinnerIcon />}
                   {isShipmentRequired
-                    ? t("stepCustomer.continueToDelivery")
-                    : t("stepShipping.continueToPayment")}
+                    ? t('stepCustomer.continueToDelivery')
+                    : t('stepShipping.continueToPayment')}
                 </>
               }
               data-testid="save-customer-button"

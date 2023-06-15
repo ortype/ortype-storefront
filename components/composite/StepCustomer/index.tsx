@@ -7,9 +7,6 @@ import { StepContainer } from 'components/ui/StepContainer'
 import { StepHeader } from 'components/ui/StepHeader'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { AddressSectionEmail } from './AddressSectionEmail'
-import { CheckoutAddresses } from './CheckoutAddresses'
 import { CheckoutCustomerAddresses } from './CheckoutCustomerAddresses'
 
 interface Props {
@@ -40,7 +37,7 @@ export const StepHeaderCustomer: React.FC<Props> = ({ step }) => {
     ) {
       return (
         <>
-          <p>{t('stepCustomer.notSet')}</p>
+          <p>{t('stepAddress.notSet')}</p>
         </>
       )
     }
@@ -56,7 +53,7 @@ export const StepHeaderCustomer: React.FC<Props> = ({ step }) => {
     <StepHeader
       stepNumber={step}
       status={accordionCtx.status}
-      label={t('stepCustomer.title')}
+      label={t('stepAddress.title')}
       info={recapText()}
       onEditRequest={accordionCtx.setStep}
     />
@@ -86,6 +83,8 @@ export const StepCustomer: React.FC<Props> = () => {
     setAddresses,
     setCustomerEmail,
   } = checkoutCtx
+
+  console.log('checkoutCtx: ', checkoutCtx)
 
   const [shipToDifferentAddress, setShipToDifferentAddress] = useState(
     !hasSameAddresses
@@ -127,6 +126,9 @@ export const StepCustomer: React.FC<Props> = () => {
     window.scrollTo({ left, top, behavior: 'smooth' })
 
     setIsLocalLoader(false)
+
+    // @TODO: proceed to License tab on click (is it something to do with these tabs?)
+    console.log('tab: ', tab) // is undefined
   }
 
   return (
@@ -141,57 +143,23 @@ export const StepCustomer: React.FC<Props> = () => {
         <>
           {accordionCtx.isActive && (
             <>
-              {/*<AddressSectionEmail
+              <CheckoutCustomerAddresses
+                shippingAddress={shippingAddress}
+                billingAddress={billingAddress}
                 emailAddress={emailAddress}
-                setCustomerEmail={setCustomerEmail}
-              />*/}
-              {/*
-                - look up customer via email address (how exactly?)
-                  - probably can call an API route with sales channel/app creds to list customers
-                  and check for matches against the entered email address
-                  - https://docs.commercelayer.io/core/v/api-reference/customers/list
-                - if it exists show a login-in form
-                - otherwise show a sign-up form
-                  - remove guest checkout route, require an authenticated user
-              */}
-              {isGuest ? (
-                <CheckoutAddresses
-                  shippingAddress={shippingAddress}
-                  billingAddress={billingAddress}
-                  emailAddress={emailAddress}
-                  hasSameAddresses={hasSameAddresses}
-                  setCustomerEmail={setCustomerEmail}
-                  isShipmentRequired={isShipmentRequired}
-                  isLocalLoader={isLocalLoader}
-                  openShippingAddress={openShippingAddress}
-                  shipToDifferentAddress={shipToDifferentAddress}
-                  setShipToDifferentAddress={setShipToDifferentAddress}
-                  disabledShipToDifferentAddress={
-                    disabledShipToDifferentAddress
-                  }
-                  handleSave={handleSave}
-                />
-              ) : (
-                <CheckoutCustomerAddresses
-                  shippingAddress={shippingAddress}
-                  billingAddress={billingAddress}
-                  emailAddress={emailAddress}
-                  hasCustomerAddresses={hasCustomerAddresses}
-                  isShipmentRequired={isShipmentRequired}
-                  isUsingNewShippingAddress={isUsingNewShippingAddress}
-                  isUsingNewBillingAddress={isUsingNewBillingAddress}
-                  hasSameAddresses={hasSameAddresses}
-                  isLocalLoader={isLocalLoader}
-                  shippingCountryCodeLock={shippingCountryCodeLock}
-                  openShippingAddress={openShippingAddress}
-                  shipToDifferentAddress={shipToDifferentAddress}
-                  setShipToDifferentAddress={setShipToDifferentAddress}
-                  disabledShipToDifferentAddress={
-                    disabledShipToDifferentAddress
-                  }
-                  handleSave={handleSave}
-                />
-              )}
+                hasCustomerAddresses={hasCustomerAddresses}
+                isShipmentRequired={isShipmentRequired}
+                isUsingNewShippingAddress={isUsingNewShippingAddress}
+                isUsingNewBillingAddress={isUsingNewBillingAddress}
+                hasSameAddresses={hasSameAddresses}
+                isLocalLoader={isLocalLoader}
+                shippingCountryCodeLock={shippingCountryCodeLock}
+                openShippingAddress={openShippingAddress}
+                shipToDifferentAddress={shipToDifferentAddress}
+                setShipToDifferentAddress={setShipToDifferentAddress}
+                disabledShipToDifferentAddress={disabledShipToDifferentAddress}
+                handleSave={handleSave}
+              />
             </>
           )}
         </>

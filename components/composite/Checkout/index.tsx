@@ -14,6 +14,11 @@ import {
   StepCustomer,
   StepHeaderCustomer,
 } from 'components/composite/StepCustomer'
+import { StepEmail, StepHeaderEmail } from 'components/composite/StepEmail'
+import {
+  StepHeaderLicense,
+  StepLicense,
+} from 'components/composite/StepLicense'
 import { StepNav } from 'components/composite/StepNav'
 import {
   StepHeaderPayment,
@@ -113,14 +118,31 @@ const Checkout: React.FC<Props> = ({
                   activeStep={activeStep}
                   lastActivableStep={lastActivableStep}
                   setActiveStep={setActiveStep}
-                  step="Customer"
+                  step="Email"
+                  steps={steps}
+                  isStepDone={ctx.hasEmailAddress}
+                >
+                  <AccordionItem
+                    index={1}
+                    header={<StepHeaderEmail step={getStepNumber('Email')} />}
+                  >
+                    <StepEmail className="mb-6" step={1} />
+                  </AccordionItem>
+                </AccordionProvider>
+              </Accordion>
+              <Accordion>
+                <AccordionProvider
+                  activeStep={activeStep}
+                  lastActivableStep={lastActivableStep}
+                  setActiveStep={setActiveStep}
+                  step="Address"
                   steps={steps}
                   isStepDone={ctx.hasShippingAddress && ctx.hasBillingAddress}
                 >
                   <AccordionItem
                     index={1}
                     header={
-                      <StepHeaderCustomer step={getStepNumber('Customer')} />
+                      <StepHeaderCustomer step={getStepNumber('Address')} />
                     }
                   >
                     <StepCustomer className="mb-6" step={1} />
@@ -150,6 +172,27 @@ const Checkout: React.FC<Props> = ({
                     </AccordionProvider>
                   )}
                 </>
+              </Accordion>
+              <Accordion>
+                <AccordionProvider
+                  activeStep={activeStep}
+                  lastActivableStep={lastActivableStep}
+                  setActiveStep={setActiveStep}
+                  step="License"
+                  steps={steps}
+                  isStepDone={ctx.hasLicenseOwner}
+                >
+                  <AccordionItem
+                    index={1}
+                    header={
+                      <StepHeaderLicense step={getStepNumber('License')} />
+                    }
+                  >
+                    <StepLicense className="mb-6" step={1} />
+                  </AccordionItem>
+                </AccordionProvider>
+              </Accordion>
+              <Accordion>
                 <AccordionProvider
                   activeStep={activeStep}
                   lastActivableStep={lastActivableStep}
