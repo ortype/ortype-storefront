@@ -1,11 +1,14 @@
 import { Order, PaymentMethod, ShippingMethod } from '@commercelayer/sdk'
 
-import { AppStateData } from 'components/data/CheckoutProvider'
 import {
-  prepareShipments,
+  AppStateData,
+  type LicenseOwner,
+} from 'components/data/CheckoutProvider'
+import {
   checkPaymentMethod,
   creditCardPayment,
   hasShippingMethodSet,
+  prepareShipments,
 } from 'components/data/CheckoutProvider/utils'
 
 export enum ActionType {
@@ -19,6 +22,8 @@ export enum ActionType {
   SET_PAYMENT = 'SET_PAYMENT',
   CHANGE_COUPON_OR_GIFTCARD = 'CHANGE_COUPON_OR_GIFTCARD',
   PLACE_ORDER = 'PLACE_ORDER',
+  SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
+  SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
 }
 
 export type Action =
@@ -82,6 +87,20 @@ export type Action =
       type: ActionType.PLACE_ORDER
       payload: {
         order: Order
+      }
+    }
+  | {
+      type: ActionType.SET_LICENSE_OWNER
+      payload: {
+        order: Order
+        licenseOwner: LicenseOwner
+      }
+    }
+  | {
+      type: ActionType.SET_LICENSE_SIZE
+      payload: {
+        order: Order
+        licenseSize: string
       }
     }
 
@@ -173,6 +192,26 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
       return {
         ...state,
         ...checkPaymentMethod(action.payload.order),
+        isLoading: false,
+      }
+    }
+    case ActionType.SET_LICENSE_OWNER: {
+      console.log('SET_LICENSE_OWNER: action.payload: ', action.payload)
+      return {
+        ...state,
+        order: action.payload.order,
+        licenseOwner: action.payload.licenseOwner,
+        hasLicenseOwner: true,
+        isLicenseForClient: action.payload.licenseOwner.is_client,
+        isLoading: false,
+      }
+    }
+    case ActionType.SET_LICENSE_SIZE: {
+      console.log('SET_LICENSE_SIZE: action.payload: ', action.payload)
+      return {
+        ...state,
+        order: action.payload.order,
+        licenseSize: action.payload.licenseSize,
         isLoading: false,
       }
     }

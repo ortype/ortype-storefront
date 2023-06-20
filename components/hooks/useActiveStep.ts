@@ -50,7 +50,8 @@ export const useActiveStep = (): UseActiveStep => {
 
   const { isFirstLoading, isLoading } = ctx
 
-  console.log('Steps: Checkout Context: ', ctx)
+  // @TODO: Add <StepCart /> and 'cart'
+  // and a condition
 
   useEffect(() => {
     if (ctx && (isFirstLoading || !ctx.isLoading)) {
@@ -69,15 +70,28 @@ export const useActiveStep = (): UseActiveStep => {
       const canSelectShippingMethod =
         canSelectCustomerAddress &&
         (ctx.hasShippingAddress || !ctx.isShipmentRequired)
+      const canSelectLicenseOwner =
+        canSelectCustomerAddress && canSelectShippingMethod // !ctx.isGuest && ctx.hasBillingAddress
       const canSelectPayment =
         canSelectCustomerAddress &&
         canSelectShippingMethod &&
-        ctx.hasShippingMethod // && ctx.hasLicenseOwner
+        ctx.hasShippingMethod &&
+        ctx.hasLicenseOwner
       const canPlaceOrder =
         canSelectCustomerAddress &&
         canSelectShippingMethod &&
         canSelectPayment &&
         ctx.hasPaymentMethod
+      const canSetEmail = ctx.isGuest || !ctx.hasEmailAddress
+
+      console.log('Steps: Checkout Context: ', ctx, ctx.hasLicenseOwner)
+      console.log('canSelectCustomerAddress', canSelectCustomerAddress)
+      console.log('canSelectShippingMethod', canSelectShippingMethod)
+      console.log('canSelectLicenseOwner: ', canSelectLicenseOwner)
+      console.log('canSelectPayment', canSelectPayment)
+      console.log('canPlaceOrder', canPlaceOrder)
+      console.log('canSetEmail', canSetEmail)
+
       if (canPlaceOrder) {
         setActiveStep('Complete')
         setLastActivableStep('Complete')
@@ -89,7 +103,8 @@ export const useActiveStep = (): UseActiveStep => {
       } else if (canSelectShippingMethod) {
         setActiveStep('Shipping')
         setLastActivableStep('Shipping')
-      } else if (!ctx.hasLicenseOwner) {
+        // } else if (!ctx.hasLicenseOwner) {
+      } else if (canSelectLicenseOwner) {
         setActiveStep('License')
         setLastActivableStep('License')
       } else if (!ctx.isGuest) {
@@ -98,6 +113,10 @@ export const useActiveStep = (): UseActiveStep => {
       } else if (ctx.isGuest || !ctx.hasEmailAddress) {
         setActiveStep('Email')
         setLastActivableStep('Email')
+      } else {
+        console.log('Steps: Cart')
+        setActiveStep('Cart')
+        setLastActivableStep('Cart')
       }
     }
   }, [isFirstLoading, isLoading])

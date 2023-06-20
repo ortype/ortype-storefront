@@ -1,12 +1,28 @@
-import { Box } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Radio,
+  RadioGroup,
+  Stack,
+  Switch,
+} from '@chakra-ui/react'
+import { useOrderContainer } from '@commercelayer/react-components'
+// @TODO: Look at exporting this from package
+// import { getCountries } from '@commercelayer/react-components/utils/countryStateCity'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import { AccordionContext } from 'components/data/AccordionProvider'
-import { CheckoutContext } from 'components/data/CheckoutProvider'
+import { CheckoutContext, LicenseOwner } from 'components/data/CheckoutProvider'
 import { StepContainer } from 'components/ui/StepContainer'
 import { StepHeader } from 'components/ui/StepHeader'
+import { useRapidForm } from 'rapid-form'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SelectLicenseSize } from './SelectLicenseSize'
 
 interface Props {
   className?: string
@@ -59,19 +75,71 @@ export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
 export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
+  const { updateOrder } = useOrderContainer()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
+
+  const { handleSubmit, submitValidation, validation, values, errors } =
+    useRapidForm()
+
+  const {
+    orderId,
+    order,
+    getOrderFromRef,
+    billingAddress,
+    setLicenseOwner,
+    isLicenseForClient,
+  } = checkoutCtx
+
+  const [isClient, setIsClient] = useState(isLicenseForClient)
+
+  useEffect(() => {
+    setIsClient(isLicenseForClient)
+  }, [isLicenseForClient])
+
+  // @TODO: store is_client param in state
+
+  const handleSetIsClient = (value) => {
+    const isTrueSet = value === 'true'
+    setIsClient(isTrueSet)
+  }
+
+  const s = async (values, err, e) => {
+    // @TODO: How to declare type "LicenseOwner" here
+    const owner = isClient
+      ? Object.assign(
+          { is_client: isClient },
+          ...Object.keys(values).map((key) => ({ [key]: values[key].value }))
+        )
+      : { is_client: isClient, name: billingAddress.name }
+
+    try {
+      const { order: updatedOrder } = await updateOrder({
+        id: orderId,
+        attributes: {
+          metadata: {
+            license: {
+              ...order.metadata?.license,
+              owner,
+            },
+          },
+        },
+        // there is an `include` param
+      })
+      console.log('updatedOrder: ', updatedOrder)
+
+      setLicenseOwner({
+        order: updatedOrder,
+        licenseOwner: updatedOrder?.metadata?.license?.owner,
+      })
+    } catch (e) {
+      console.log('License updateOrder error: ', e)
+    }
+  }
 
   if (!checkoutCtx || !accordionCtx) {
     return null
   }
-  const { isGuest, emailAddress, hasEmailAddress, setCustomerEmail } =
-    checkoutCtx
-
-  // @TODO: reference shipping/billing address forms for this
-  // we don't need an address book or seperate shipping billing addresses
-  // we just need to store `isLicenseForClient` and `licenseOwner` in the metadata of the
-  // order... and if it's for "yourself" we do not show a form
 
   return (
     <StepContainer
@@ -82,7 +150,154 @@ export const StepLicense: React.FC<Props> = () => {
       })}
     >
       <Box>
-        <>{accordionCtx.isActive && <>{'License form...'}</>}</>
+        <>
+          {accordionCtx.isActive && (
+            <>
+              <FormControl>
+                <FormLabel>
+                  {'The typeface is being used in a project for'}
+                </FormLabel>
+                <RadioGroup
+                  // ref={validation}
+                  onChange={handleSetIsClient}
+                  name={'is_client'}
+                  defaultValue={isClient && isClient.toString()}
+                >
+                  <Stack direction="row">
+                    <Radio
+                      size={'lg'}
+                      value={'false'}
+                      defaultChecked={!isClient?.toString()}
+                    >
+                      Yourself
+                    </Radio>
+                    <Radio
+                      size={'lg'}
+                      value={'true'}
+                      defaultChecked={isClient?.toString()}
+                    >
+                      Your client
+                    </Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
+              <FormControl>
+                <FormLabel>{'Company size of the license owner'}</FormLabel>
+                <SelectLicenseSize />
+              </FormControl>
+              <form
+                as={Box}
+                ref={submitValidation}
+                autoComplete="off"
+                onSubmit={handleSubmit(s)}
+              >
+                {isClient && (
+                  <>
+                    <FormControl>
+                      <FormLabel>{'License Owner/Company*'}</FormLabel>
+                      <Input
+                        name={'company'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={order?.metadata?.license?.owner?.company}
+                      />
+                    </FormControl>
+                    {/*
+                    <FormControl>
+                      <FormLabel>{'Name'}</FormLabel>
+                      <Input
+                        name={'name'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={order?.metadata?.license?.owner?.name}
+                      />
+                    </FormControl>*/}
+                    <FormControl>
+                      <FormLabel>{'First name'}</FormLabel>
+                      <Input
+                        name={'first_name'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={
+                          order?.metadata?.license?.owner?.first_name
+                        }
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>{'Last name'}</FormLabel>
+                      <Input
+                        name={'last_name'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={
+                          order?.metadata?.license?.owner?.last_name
+                        }
+                      />
+                    </FormControl>
+
+                    <FormControl>
+                      <FormLabel>{'Address'}</FormLabel>
+                      <Input
+                        name={'line_1'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={order?.metadata?.license?.owner?.line_1}
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>{'Apartment, suite, etc.'}</FormLabel>
+                      <Input
+                        name={'line_2'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={order?.metadata?.license?.owner?.line_2}
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>{'City*'}</FormLabel>
+                      <Input
+                        name={'city'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={order?.metadata?.license?.owner?.city}
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>{'Zip Code*'}</FormLabel>
+                      <Input
+                        name={'zip_code'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={order?.metadata?.license?.owner?.zip_code}
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>{'Country'}</FormLabel>
+                      <Input
+                        name={'country_code'}
+                        type={'text'}
+                        ref={validation}
+                        size={'lg'}
+                        defaultValue={
+                          order?.metadata?.license?.owner?.country_code
+                        }
+                      />
+                    </FormControl>
+                  </>
+                )}
+                <Button type={'submit'}>Save & proceed</Button>
+              </form>
+            </>
+          )}
+        </>
       </Box>
     </StepContainer>
   )

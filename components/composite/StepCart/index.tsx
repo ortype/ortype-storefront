@@ -7,8 +7,6 @@ import { StepContainer } from 'components/ui/StepContainer'
 import { StepHeader } from 'components/ui/StepHeader'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LoginForm, RegisterForm } from './Account'
-import { Email } from './Email'
 
 interface Props {
   className?: string
@@ -20,7 +18,7 @@ export interface ShippingToggleProps {
   disableToggle: boolean
 }
 
-export const StepHeaderEmail: React.FC<Props> = ({ step }) => {
+export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
   if (!checkoutCtx || !accordionCtx) {
@@ -35,7 +33,7 @@ export const StepHeaderEmail: React.FC<Props> = ({ step }) => {
     if (!hasEmailAddress || accordionCtx.status === 'edit') {
       return (
         <>
-          <p>{t('stepEmail.notSet')}</p>
+          <p>{t('stepLicense.notSet')}</p>
         </>
       )
     }
@@ -51,16 +49,14 @@ export const StepHeaderEmail: React.FC<Props> = ({ step }) => {
     <StepHeader
       stepNumber={step}
       status={accordionCtx.status}
-      label={t('stepEmail.title')}
+      label={t('stepLicense.title')}
       info={recapText()}
       onEditRequest={accordionCtx.setStep}
     />
   )
 }
 
-const customers = ['newww@owenhoskins.com', 'owen.hoskins@gmail.com']
-
-export const StepEmail: React.FC<Props> = () => {
+export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
 
@@ -72,7 +68,10 @@ export const StepEmail: React.FC<Props> = () => {
   const { isGuest, emailAddress, hasEmailAddress, setCustomerEmail } =
     checkoutCtx
 
-  const customerExists = true
+  // @TODO: reference shipping/billing address forms for this
+  // we don't need an address book or seperate shipping billing addresses
+  // we just need to store `isLicenseForClient` and `licenseOwner` in the metadata of the
+  // order... and if it's for "yourself" we do not show a form
 
   return (
     <StepContainer
@@ -83,36 +82,7 @@ export const StepEmail: React.FC<Props> = () => {
       })}
     >
       <Box>
-        <>
-          {accordionCtx.isActive && (
-            <>
-              {hasEmailAddress ? (
-                <>
-                  {customerExists ? (
-                    <LoginForm emailAddress={emailAddress} />
-                  ) : (
-                    <RegisterForm emailAddress={emailAddress} />
-                  )}
-                </>
-              ) : (
-                <Email
-                  emailAddress={emailAddress}
-                  setCustomerEmail={setCustomerEmail}
-                />
-              )}
-              {/*
-                - look up Email via email address (how exactly?)
-                  - probably can call an API route with sales channel/app creds to list Emails
-                  and check for matches against the entered email address
-                  - https://docs.commercelayer.io/core/v/api-reference/Emails/list
-                - if it exists show a login-in form
-                - otherwise show a sign-up form
-                  - remove guest checkout route, require an authenticated user
-                - require `!isGuest` before allowing the next step
-              */}
-            </>
-          )}
-        </>
+        <>{accordionCtx.isActive && <>{'License form...'}</>}</>
       </Box>
     </StepContainer>
   )

@@ -1,21 +1,22 @@
 import {
-  Order,
   Address,
-  CustomerAddress,
-  PaymentMethod,
-  CommerceLayerClient,
-  OrderUpdate,
-  StripePayment,
-  WireTransfer,
   AdyenPayment,
   BraintreePayment,
   CheckoutComPayment,
+  CommerceLayerClient,
+  CustomerAddress,
+  LineItemUpdate,
+  Order,
+  OrderUpdate,
+  PaymentMethod,
   PaypalPayment,
-  ShippingMethod,
   Shipment,
+  ShippingMethod,
+  StripePayment,
+  WireTransfer,
 } from '@commercelayer/sdk'
 
-import { AppStateData } from 'components/data/CheckoutProvider'
+import { AppStateData, LicenseOwner } from 'components/data/CheckoutProvider'
 import { LINE_ITEMS_SHIPPABLE } from 'components/utils/constants'
 
 export type LineItemType =
@@ -42,6 +43,12 @@ interface CheckAndSetDefaultAddressForOrderProps {
   cl: CommerceLayerClient
   order: Order
   customerAddresses?: Array<CustomerAddress>
+}
+
+interface UpdateLineItemsLicenseSize {
+  cl: CommerceLayerClient
+  order: Order
+  licenseSize: string
 }
 
 interface PaymentSourceProps {
@@ -87,6 +94,10 @@ export interface FetchOrderByIdResponse {
   isCreditCard: boolean
   taxIncluded?: boolean
   shippingMethodName?: string
+  licenseOwner: LicenseOwner
+  hasLicenseOwner?: boolean
+  isLicenseForClient?: boolean
+  licenseSize: string
 }
 
 function isNewAddress({
@@ -122,6 +133,30 @@ function isNewAddress({
     return false
   }
   return !hasAddressIntoAddresses
+}
+
+export async function updateLineItemsLicenseSize({
+  cl,
+  order,
+  licenseSize,
+}: UpdateLineItemsLicenseSize) {
+  for (const lineItem of order?.line_items) {
+    console.log('retrievedOrder lineItem: ', lineItem)
+    const updateLineItemsAttrs: LineItemUpdate = {
+      id: lineItem.id,
+      quantity: 1,
+      _external_price: true,
+      metadata: {
+        license: {
+          ...lineItem.metadata?.license,
+          types: lineItem.metadata.types || ['1-licenseType-desktop'], // @TEMP
+          size: licenseSize,
+        },
+      },
+    }
+    console.log('updateLineItemsAttrs: ', updateLineItemsAttrs)
+    await cl.line_items.update(updateLineItemsAttrs)
+  }
 }
 
 export async function checkAndSetDefaultAddressForOrder({
@@ -263,6 +298,7 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
         'payment_method',
         'payment_source',
         'customer',
+        'metadata',
       ],
       shipments: ['shipping_method', 'available_shipping_methods'],
       customer: ['customer_addresses'],
@@ -348,6 +384,8 @@ export function calculateSettings(
   isShipmentRequired: boolean,
   customerAddress?: CustomerAddress[]
 ) {
+  console.log('calculateSettings order: ', order)
+
   // FIX saving customerAddresses because we don't receive
   // them from fetchORder
   const calculatedAddresses = calculateAddresses(
@@ -359,6 +397,10 @@ export function calculateSettings(
     isGuest: Boolean(order.guest),
     shippingCountryCodeLock: order.shipping_country_code_lock,
     hasEmailAddress: Boolean(order.customer_email),
+    hasLicenseOwner: Boolean(order.metadata?.license?.owner),
+    isLicenseForClient: order.metadata?.license?.owner?.is_client,
+    licenseOwner: order.metadata?.license?.owner,
+    licenseSize: order.metadata?.license?.size,
     emailAddress: order.customer_email,
     ...calculatedAddresses,
     ...(isShipmentRequired

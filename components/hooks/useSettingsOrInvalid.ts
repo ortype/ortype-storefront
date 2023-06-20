@@ -21,6 +21,8 @@ export const useSettingsOrInvalid = (): UseSettingsOrInvalid => {
   } = useRouter()
   // const paymentReturn = searchParams.get('paymentReturn')
   // const redirectResult = searchParams.get('redirectResult')
+  // In the Checkout App these params are being parsed from the URL params
+  // like the accessToken, which my Buy/Cart page generates
   const { settings: settingsCtx } = useContext(SettingsContext)
   const {
     accessToken,

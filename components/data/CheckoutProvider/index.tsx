@@ -13,7 +13,27 @@ import {
   checkIfShipmentRequired,
   fetchOrder,
   FetchOrderByIdResponse,
+  updateLineItemsLicenseSize,
 } from 'components/data/CheckoutProvider/utils'
+
+type AddressType = 'addresses'
+export type LicenseOwner = {
+  readonly type: AddressType
+  is_client: boolean | null
+  first_name?: string | null
+  last_name?: string | null
+  full_name?: string | null
+  company?: string | null
+  line_1: string
+  line_2?: string | null
+  city: string
+  zip_code?: string | null
+  state_code: string
+  country_code: string
+  full_address?: string | null
+  name?: string | null
+  email?: string | null
+}
 
 export interface CheckoutProviderData extends FetchOrderByIdResponse {
   isLoading: boolean
@@ -22,6 +42,8 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   slug: string
   domain: string
   isFirstLoading: boolean
+  hasLicenseOwner: boolean
+  isLicenseForClient: boolean
   getOrder: (order: Order) => void
   getOrderFromRef: () => Promise<Order>
   setCustomerEmail: (email: string) => void
@@ -38,6 +60,11 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     order?: Order
   }) => Promise<void>
   autoSelectShippingMethod: (order?: Order) => Promise<void>
+  setLicenseOwner: (params: {
+    order?: Order
+    licenseOwner?: LicenseOwner
+  }) => void
+  setLicenseSize: (params: { order?: Order; licenseSize?: string }) => void
 }
 
 export interface AppStateData extends FetchOrderByIdResponse {
@@ -66,6 +93,8 @@ const initialState: AppStateData = {
   hasShippingAddress: false,
   hasLicenseOwner: false,
   isLicenseForClient: false,
+  licenseOwner: {},
+  licenseSize: '',
   shipments: [],
   customerAddresses: [],
   paymentMethod: undefined,
@@ -124,6 +153,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
 
     const others = calculateSettings(order, isShipmentRequired)
+
+    console.log('fetchInitialOrder settings: ', others)
 
     dispatch({
       type: ActionType.SET_ORDER,
@@ -282,6 +313,35 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
   }
 
+  const setLicenseOwner = async (params: {
+    licenseOwner?: LicenseOwner
+    order?: Order
+  }) => {
+    dispatch({ type: ActionType.START_LOADING })
+    const currentOrder = params.order ?? (await getOrderFromRef())
+    dispatch({
+      type: ActionType.SET_LICENSE_OWNER,
+      payload: { licenseOwner: params.licenseOwner, order: currentOrder },
+    })
+  }
+
+  const setLicenseSize = async (params: {
+    licenseSize?: string
+    order?: Order
+  }) => {
+    dispatch({ type: ActionType.START_LOADING })
+    const currentOrder = params.order ?? (await getOrderFromRef())
+    await updateLineItemsLicenseSize({
+      cl,
+      order: currentOrder,
+      licenseSize: params.licenseSize,
+    })
+    dispatch({
+      type: ActionType.SET_LICENSE_SIZE,
+      payload: { licenseSize: params.licenseSize, order: currentOrder },
+    })
+  }
+
   const getOrderFromRef = async () => {
     return orderRef.current || (await fetchOrder(cl, orderId))
   }
@@ -311,6 +371,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         placeOrder,
         setCustomerEmail,
         autoSelectShippingMethod,
+        setLicenseOwner,
+        setLicenseSize,
       }}
     >
       {children}

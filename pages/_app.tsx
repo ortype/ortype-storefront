@@ -11,6 +11,8 @@ import { CustomerProvider } from 'providers/CustomerProvider'
 import { SettingsProvider } from 'providers/SettingsProvider'
 
 const {
+  RadioGroup,
+  Radio,
   FormControl,
   FormLabel,
   Input,
@@ -32,6 +34,8 @@ const {
 
 const theme = extendBaseTheme({
   components: {
+    RadioGroup,
+    Radio,
     Button,
     Input,
     FormControl,
