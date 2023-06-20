@@ -97,17 +97,17 @@ export const basePrice = 9000
 
 export const types: Type[] = [
   {
-    value: 'print',
+    value: '1-licenseType-desktop',
     label: 'Desktop / Print',
     basePrice: 9000,
   },
   {
-    value: 'web',
+    value: '2-licenseType-web',
     label: 'Web',
     basePrice: '13000',
   },
   {
-    value: 'app',
+    value: '3-licenseType-app',
     label: 'App/Game',
     basePrice: '18000',
   },

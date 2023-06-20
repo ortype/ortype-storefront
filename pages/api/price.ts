@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import CommerceLayer from '@commercelayer/sdk'
 import { getIntegrationToken } from '@commercelayer/js-auth'
+import CommerceLayer from '@commercelayer/sdk'
 import { sizes } from 'lib/settings'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 type PriceCalculationRequest = {
   data: {
@@ -43,7 +43,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<PriceCalculationResponse>
 ) {
-  console.log('Price req.body: ', req.body)
+  // console.log('Price req.body: ', req.body)
   const {
     data: {
       attributes: { quantity, sku_code, unit_amount_cents, metadata },
@@ -72,17 +72,27 @@ export default async function handler(
 
     // @TODO: use sku_code to look up sanity fontVariant by id
 
-    // console.log('line item metadata: ', metadata)
+    console.log(
+      'line item metadata: ',
+      metadata.license.size,
+      metadata.license.types
+    )
     // iterate over the types in the metadata.license?.types
     // use their base price and multiply with the size.modifier
 
-    const size = sizes.find(({ value }) => value === metadata.license.size)
+    const size = sizes.find(
+      ({ value }) => value === metadata.license.size.value
+    )
+
+    console.log('price: found size: ', size)
 
     const skuOptions = await cl.sku_options.list()
 
     const selectedTypes = skuOptions.filter(({ reference }) =>
       metadata.license.types.find((val) => val === reference)
     )
+    console.log('skuOptions: ', skuOptions) // reference: '1-licenseType-desktop',
+    console.log('selectedTypes: ', selectedTypes)
     const total = selectedTypes.reduce((acc, { price_amount_cents }) => {
       return acc + Number(price_amount_cents) * size.modifier
     }, 0)
