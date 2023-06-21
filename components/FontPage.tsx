@@ -93,17 +93,17 @@ async function createOrUpdateOrder({
 }) {
   console.log('order: ', order)
   const localStorageOrderId = localStorage.getItem('order')
-  let newOrder
+  let result
   // create a new order
   if (!order?.id && !localStorageOrderId) {
-    // const newOrderAttrs: OrderCreate = {
+    // const resultAttrs: OrderCreate = {
     //   metadata: { license: { size: licenseSize.value } },
     // }
     // newOrder = await cl.orders.create(newOrderAttrs)
 
-    newOrder = await createOrder({
+    result = await createOrder({
       persistKey: 'order',
-      metadata: { license: { size: licenseSize.value } },
+      metadata: { license: { size: licenseSize } },
     })
 
     // @TODO: check if we need to manually add orderId to local storage
@@ -116,17 +116,17 @@ async function createOrUpdateOrder({
     // }
     // newOrder = await cl.orders.update(updateOrderAttrs)
 
-    newOrder = await updateOrder({
+    result = await updateOrder({
       id: order?.id || localStorageOrderId,
-      attributes: { metadata: { license: { size: licenseSize.value } } },
+      attributes: { metadata: { license: { size: licenseSize } } },
       // there is an `include` param
     })
 
-    console.log('Updated order: ', newOrder)
+    console.log('Updated order: ', result)
   }
   const reloadedOrder = await reloadOrder()
   console.log('reloadedOrder: ', reloadedOrder)
-  return newOrder
+  return result.order.id
 }
 
 const CheckoutButton = ({ isDisabled, order, accessToken }) => {
@@ -254,7 +254,7 @@ const LicenseSelect: React.FC<Props> = ({
             externalPrice={true}
             skuOptions={skuOptions}
             selectedSkuOptions={selectedSkuOptions}
-            licenseSize={selectedSize?.value}
+            licenseSize={selectedSize}
             order={order}
             reloadOrder={reloadOrder}
           />
@@ -352,7 +352,7 @@ const BuyWrapper: React.FC<Props> = ({
         include: ['line_items'],
       })
     } catch (e) {
-      console.log('retrievedOrder error: ', e)
+      console.log('retrievedOrder error: ', updatedOrderId, e)
     }
 
     console.log('retrievedOrder: ', retrievedOrder)
@@ -367,7 +367,7 @@ const BuyWrapper: React.FC<Props> = ({
         _external_price: true,
         metadata: {
           license: {
-            size: selectedSize.value,
+            size: selectedSize,
             types: lineItem.metadata?.license?.types,
           },
         },

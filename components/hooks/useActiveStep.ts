@@ -100,9 +100,9 @@ export const useActiveStep = (): UseActiveStep => {
         // this condition breaks things, oddly
         setActiveStep('Payment')
         setLastActivableStep('Payment')
-      } else if (canSelectShippingMethod) {
-        setActiveStep('Shipping')
-        setLastActivableStep('Shipping')
+        // } else if (canSelectShippingMethod) {
+        //   setActiveStep('Shipping')
+        //   setLastActivableStep('Shipping')
         // } else if (!ctx.hasLicenseOwner) {
       } else if (canSelectLicenseOwner) {
         setActiveStep('License')

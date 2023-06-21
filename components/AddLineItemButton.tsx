@@ -1,21 +1,21 @@
-import React, { useState } from 'react'
+import { Button } from '@chakra-ui/react'
 import CommerceLayer, {
-  OrderCreate,
-  OrderUpdate,
   LineItem,
-  SkuOptions,
   LineItemCreate,
   LineItemOptionCreate,
+  OrderCreate,
+  OrderUpdate,
+  SkuOptions,
   type Order,
 } from '@commercelayer/sdk'
-import { Button } from '@chakra-ui/react'
+import React, { useState } from 'react'
 
 interface Props {
   skuCode: string
   quantity?: number
   disabled: boolean
   accessToken: string
-  licenseSize: string
+  licenseSize: object
   skuOptions: SkuOptions
   selectedSkuOptions: SkuOptions
   order: Order

@@ -91,20 +91,22 @@ export const StepLicense: React.FC<Props> = () => {
     isLicenseForClient,
   } = checkoutCtx
 
-  const [isClient, setIsClient] = useState(isLicenseForClient)
+  console.log('StepLicense: ', checkoutCtx)
+
+  const [isClient, setIsClient] = useState(isLicenseForClient.toString())
 
   useEffect(() => {
-    setIsClient(isLicenseForClient)
+    setIsClient(isLicenseForClient.toString())
   }, [isLicenseForClient])
 
   // @TODO: store is_client param in state
 
   const handleSetIsClient = (value) => {
-    const isTrueSet = value === 'true'
-    setIsClient(isTrueSet)
+    setIsClient(value)
   }
 
   const s = async (values, err, e) => {
+    setIsLocalLoader(true)
     // @TODO: How to declare type "LicenseOwner" here
     const owner = isClient
       ? Object.assign(
@@ -135,6 +137,7 @@ export const StepLicense: React.FC<Props> = () => {
     } catch (e) {
       console.log('License updateOrder error: ', e)
     }
+    setIsLocalLoader(false)
   }
 
   if (!checkoutCtx || !accordionCtx) {
@@ -161,21 +164,17 @@ export const StepLicense: React.FC<Props> = () => {
                   // ref={validation}
                   onChange={handleSetIsClient}
                   name={'is_client'}
-                  defaultValue={isClient && isClient.toString()}
+                  defaultValue={isClient}
                 >
                   <Stack direction="row">
                     <Radio
                       size={'lg'}
                       value={'false'}
-                      defaultChecked={!isClient?.toString()}
+                      defaultChecked={!isClient}
                     >
                       Yourself
                     </Radio>
-                    <Radio
-                      size={'lg'}
-                      value={'true'}
-                      defaultChecked={isClient?.toString()}
-                    >
+                    <Radio size={'lg'} value={'true'} defaultChecked={isClient}>
                       Your client
                     </Radio>
                   </Stack>
@@ -191,7 +190,7 @@ export const StepLicense: React.FC<Props> = () => {
                 autoComplete="off"
                 onSubmit={handleSubmit(s)}
               >
-                {isClient && (
+                {isClient === 'true' && (
                   <>
                     <FormControl>
                       <FormLabel>{'License Owner/Company*'}</FormLabel>

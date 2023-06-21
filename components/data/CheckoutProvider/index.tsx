@@ -87,7 +87,7 @@ const initialState: AppStateData = {
   hasBillingAddress: false,
   billingAddress: undefined,
   requiresBillingInfo: false,
-  isShipmentRequired: true,
+  isShipmentRequired: false,
   shippingAddress: undefined,
   hasShippingMethod: false,
   hasShippingAddress: false,
