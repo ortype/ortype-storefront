@@ -13,6 +13,7 @@ import {
 } from 'lib/sanity.client'
 import slugify from 'slugify'
 import font from '../../../schemas/font/font'
+import { getFontProductData } from '../../../lib/api/font'
 
 async function deleteAllFonts() {
   // Without params
@@ -179,7 +180,7 @@ export default async function handler(
 
   let fonts = []
   for (const font of await OpenType.getFonts()) {
-    fonts.push(await font.getFontProductData(false))
+    fonts.push(await getFontProductData(font, false))
   }
 
   // Variant duplicate warning
