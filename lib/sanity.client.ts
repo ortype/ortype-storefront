@@ -138,6 +138,28 @@ export async function findByUidAndVersion(
   return {} as any
 }
 
+export async function findByUidAndVersionWithVariants(
+  uid: string,
+  version: string
+): Promise<{ font: Font }> {
+  if (client) {
+    return (
+      (await client.fetch(
+        `*[_type == $type && uid == $uid && version == $version][0]{
+          ...,
+          variants[]-> {...}
+        }`,
+        {
+          type: 'font',
+          uid,
+          version,
+        }
+      )) || ({} as any)
+    )
+  }
+  return {} as any
+}
+
 export async function findFontVariantByUidAndVersion(
   uid: string,
   version: string
