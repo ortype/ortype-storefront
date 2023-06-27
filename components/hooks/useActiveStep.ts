@@ -11,6 +11,7 @@ interface UseActiveStep {
 
 // @TODO: "Cart", "Email", "Address", "License", "Payment"
 const STEPS: SingleStepEnum[] = [
+  'Cart',
   'Email',
   'Address',
   'License',
@@ -32,9 +33,9 @@ export function checkIfCannotGoNext(
 }
 
 export const useActiveStep = (): UseActiveStep => {
-  const [activeStep, setActiveStep] = useState<SingleStepEnum>('Email')
+  const [activeStep, setActiveStep] = useState<SingleStepEnum>('Cart')
   const [lastActivableStep, setLastActivableStep] =
-    useState<SingleStepEnum>('Email')
+    useState<SingleStepEnum>('Cart')
   const [steps, setSteps] = useState<SingleStepEnum[]>(STEPS)
 
   const ctx = useContext(CheckoutContext)
@@ -57,9 +58,9 @@ export const useActiveStep = (): UseActiveStep => {
     if (ctx && (isFirstLoading || !ctx.isLoading)) {
       // Use it to alter steps of checkout
       if (ctx.isShipmentRequired) {
-        setSteps(['Email', 'Address', 'Shipping', 'Payment'])
+        setSteps(['Cart', 'Email', 'Address', 'Shipping', 'Payment'])
       } else {
-        setSteps(['Email', 'Address', 'License', 'Payment'])
+        setSteps(['Cart', 'Email', 'Address', 'License', 'Payment'])
       }
 
       const canSelectCustomerAddress =
@@ -84,7 +85,12 @@ export const useActiveStep = (): UseActiveStep => {
         ctx.hasPaymentMethod
       const canSetEmail = ctx.isGuest || !ctx.hasEmailAddress
 
-      console.log('Steps: Checkout Context: ', ctx, ctx.hasLicenseOwner)
+      console.log(
+        'Steps: Checkout Context: ',
+        ctx.hasLicenseOwner,
+        ctx.licenseOwner,
+        ctx
+      )
       console.log('canSelectCustomerAddress', canSelectCustomerAddress)
       console.log('canSelectShippingMethod', canSelectShippingMethod)
       console.log('canSelectLicenseOwner: ', canSelectLicenseOwner)
@@ -96,8 +102,6 @@ export const useActiveStep = (): UseActiveStep => {
         setActiveStep('Complete')
         setLastActivableStep('Complete')
       } else if (canSelectPayment) {
-        // && ctx.hasLicenseOwner
-        // this condition breaks things, oddly
         setActiveStep('Payment')
         setLastActivableStep('Payment')
         // } else if (canSelectShippingMethod) {

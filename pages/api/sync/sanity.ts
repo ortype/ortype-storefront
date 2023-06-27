@@ -1,17 +1,17 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { nanoid } from 'nanoid'
-import OpenTypeAPI from '../../../lib/api/OpenTypeAPI.js'
 import {
   apiClient,
+  findByParentUid,
+  findByUid,
   findByUidAndVersion,
   findFontVariantByUidAndVersion,
   findVariantByUid,
   getAllFonts,
   getAllFontVariants,
-  findByUid,
-  findByParentUid,
 } from 'lib/sanity.client'
+import { nanoid } from 'nanoid'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import slugify from 'slugify'
+import OpenTypeAPI from '../../../lib/api/OpenTypeAPI.js'
 import font from '../../../schemas/font/font'
 
 async function deleteAllFonts() {
@@ -135,9 +135,10 @@ async function createOrUpdateFonts(fonts) {
 
     // WHAT this code does is upsert variants
     // in combination with patch.set variants later on
+    // @TODO: look into using `set` with GROQ style array filter instead of this "merge" logic
     if (sanityFont) {
       for (const sanityVariant of sanityFont.variants) {
-        const found = merge_variants.find(v => v._key == sanityVariant._key)
+        const found = merge_variants.find((v) => v._key == sanityVariant._key)
         if (!found) {
           merge_variants.push(sanityVariant)
         }
@@ -149,6 +150,7 @@ async function createOrUpdateFonts(fonts) {
     // Create (or update) existing published fontDoc
     transaction
       .createIfNotExists(font)
+      // @TODO: look into using `setIfMissing` to preven the slug from being updated by different font files
       .patch(font._id, (patch) => patch.set(font))
       .patch(font._id, (patch) =>
         patch.set({

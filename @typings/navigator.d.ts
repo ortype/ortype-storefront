@@ -1,4 +1,5 @@
 type SingleStepEnum =
+  | 'Cart'
   | 'Email'
   | 'Address'
   | 'License'

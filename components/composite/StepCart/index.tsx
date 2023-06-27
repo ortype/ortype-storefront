@@ -1,10 +1,22 @@
-import { Box } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+} from '@chakra-ui/react'
+import { useOrderContainer } from '@commercelayer/react-components'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
+import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
 import { AccordionContext } from 'components/data/AccordionProvider'
 import { CheckoutContext } from 'components/data/CheckoutProvider'
 import { StepContainer } from 'components/ui/StepContainer'
 import { StepHeader } from 'components/ui/StepHeader'
+import { useRapidForm } from 'rapid-form'
+
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -13,12 +25,7 @@ interface Props {
   step: number
 }
 
-export interface ShippingToggleProps {
-  forceShipping?: boolean
-  disableToggle: boolean
-}
-
-export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
+export const StepHeaderCart: React.FC<Props> = ({ step }) => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
   if (!checkoutCtx || !accordionCtx) {
@@ -33,7 +40,7 @@ export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
     if (!hasEmailAddress || accordionCtx.status === 'edit') {
       return (
         <>
-          <p>{t('stepLicense.notSet')}</p>
+          <p>{t('stepCart.notSet')}</p>
         </>
       )
     }
@@ -49,29 +56,63 @@ export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
     <StepHeader
       stepNumber={step}
       status={accordionCtx.status}
-      label={t('stepLicense.title')}
+      label={t('stepCart.title')}
       info={recapText()}
       onEditRequest={accordionCtx.setStep}
     />
   )
 }
 
-export const StepLicense: React.FC<Props> = () => {
+export const StepCart: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
+  const { updateOrder } = useOrderContainer()
+
+  const { handleSubmit, submitValidation, validation, values, errors } =
+    useRapidForm()
+
+  const {
+    orderId,
+    order,
+    isGuest,
+    licenseOwner,
+    billingAddress,
+    setLicenseOwner,
+  } = checkoutCtx
+
+  const s = async (values, err, e) => {
+    setIsLocalLoader(true)
+    const owner = { is_client: false, company: values['company'].value }
+    try {
+      const { order: updatedOrder } = await updateOrder({
+        id: orderId,
+        attributes: {
+          metadata: {
+            license: {
+              ...order.metadata?.license,
+              owner,
+            },
+          },
+        },
+        // there is an `include` param
+      })
+      console.log('updatedOrder: ', updatedOrder)
+
+      setLicenseOwner({
+        order: updatedOrder,
+        licenseOwner: updatedOrder?.metadata?.license?.owner,
+      })
+    } catch (e) {
+      console.log('License updateOrder error: ', e)
+    }
+    setIsLocalLoader(false)
+  }
 
   if (!checkoutCtx || !accordionCtx) {
     return null
   }
-  const { isGuest, emailAddress, hasEmailAddress, setCustomerEmail } =
-    checkoutCtx
-
-  // @TODO: reference shipping/billing address forms for this
-  // we don't need an address book or seperate shipping billing addresses
-  // we just need to store `isLicenseForClient` and `licenseOwner` in the metadata of the
-  // order... and if it's for "yourself" we do not show a form
 
   return (
     <StepContainer
@@ -82,7 +123,34 @@ export const StepLicense: React.FC<Props> = () => {
       })}
     >
       <Box>
-        <>{accordionCtx.isActive && <>{'License form...'}</>}</>
+        <>
+          {accordionCtx.isActive && (
+            <>
+              <form
+                as={Box}
+                ref={submitValidation}
+                autoComplete="off"
+                onSubmit={handleSubmit(s)}
+              >
+                <FormControl>
+                  <FormLabel>{'License Owner/Company*'}</FormLabel>
+                  <Input
+                    name={'company'}
+                    type={'text'}
+                    ref={validation}
+                    size={'lg'}
+                    defaultValue={order?.metadata?.license?.owner?.company}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>{'Company size of the license owner'}</FormLabel>
+                  <SelectLicenseSize />
+                </FormControl>
+                <Button type={'submit'}>Save & proceed</Button>
+              </form>
+            </>
+          )}
+        </>
       </Box>
     </StepContainer>
   )

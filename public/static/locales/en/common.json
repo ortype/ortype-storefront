@@ -73,6 +73,9 @@
     "closeForm": "Choose address",
     "continueToLicense": "Continue to license"
   },
+  "stepCart": {
+    "title": "Cart"
+  },
   "stepLicense": {
     "title": "License"
   },

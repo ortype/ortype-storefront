@@ -85,7 +85,6 @@ export const StepLicense: React.FC<Props> = () => {
   const {
     orderId,
     order,
-    getOrderFromRef,
     billingAddress,
     setLicenseOwner,
     isLicenseForClient,
@@ -113,7 +112,7 @@ export const StepLicense: React.FC<Props> = () => {
           { is_client: isClient },
           ...Object.keys(values).map((key) => ({ [key]: values[key].value }))
         )
-      : { is_client: isClient, name: billingAddress.name }
+      : { is_client: isClient, company: billingAddress.company }
 
     try {
       const { order: updatedOrder } = await updateOrder({
