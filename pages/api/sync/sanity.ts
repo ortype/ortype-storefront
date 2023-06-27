@@ -178,22 +178,25 @@ export default async function handler(
   /*  Begin Sanity Font Sync
   /*  ------------------------------ */
 
-  let fonts = []
-  for (const font of await OpenType.getFonts()) {
-    fonts.push(await getFontProductData(font, false))
-  }
-
-  // Variant duplicate warning
-  const variantNames = fonts.flatMap(({ variants }) =>
-    variants.map(({ name }) => name)
-  )
-  const duplicates = variantNames.filter(
-    (item, index) => variantNames.indexOf(item) !== index
-  )
-  console.log(`We have variant dups: ${duplicates.length > 0}`)
+  // let fonts = []
+  // for (const font of await OpenType.getFonts()) {
+  //   fonts.push(await getFontProductData(font, false))
+  // }
+  //
+  // // Variant duplicate warning
+  // const variantNames = fonts.flatMap(({ variants }) =>
+  //   variants.map(({ name }) => name)
+  // )
+  // const duplicates = variantNames.filter(
+  //   (item, index) => variantNames.indexOf(item) !== index
+  // )
+  // console.log(`We have variant dups: ${duplicates.length > 0}`)
 
   try {
-    await createOrUpdateFonts(fonts)
+    // await createOrUpdateFonts(fonts)
+    for (const font of await OpenType.getFonts()) {
+      await font.maybeUpsert()
+    }
     return res.status(200).json({ message: 'Successful' })
   } catch (error) {
     return res.status(500).json({
