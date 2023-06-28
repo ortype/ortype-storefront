@@ -7,7 +7,11 @@ import {
   Input,
   Stack,
 } from '@chakra-ui/react'
-import { useOrderContainer } from '@commercelayer/react-components'
+import {
+  LineItem,
+  LineItemsContainer,
+  useOrderContainer,
+} from '@commercelayer/react-components'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
@@ -16,6 +20,7 @@ import { CheckoutContext } from 'components/data/CheckoutProvider'
 import { StepContainer } from 'components/ui/StepContainer'
 import { StepHeader } from 'components/ui/StepHeader'
 import { useRapidForm } from 'rapid-form'
+import { CartItem } from './CartItem'
 
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -142,12 +147,16 @@ export const StepCart: React.FC<Props> = () => {
                     defaultValue={order?.metadata?.license?.owner?.company}
                   />
                 </FormControl>
-                <FormControl>
-                  <FormLabel>{'Company size of the license owner'}</FormLabel>
-                  <SelectLicenseSize />
-                </FormControl>
-                <Button type={'submit'}>Save & proceed</Button>
+                <Button type={'submit'}>Save</Button>
               </form>
+              <FormControl>
+                <FormLabel>{'Company size of the license owner'}</FormLabel>
+                <SelectLicenseSize />
+              </FormControl>
+              {order.line_items &&
+                order.line_items.map((lineItem) => (
+                  <CartItem key={lineItem.id} lineItem={lineItem} />
+                ))}
             </>
           )}
         </>

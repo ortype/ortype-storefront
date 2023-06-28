@@ -1,4 +1,10 @@
-import { Order, PaymentMethod, ShippingMethod } from '@commercelayer/sdk'
+import {
+  Order,
+  PaymentMethod,
+  ShippingMethod,
+  LineItem,
+  SkuOption,
+} from '@commercelayer/sdk'
 
 import {
   AppStateData,
@@ -24,6 +30,8 @@ export enum ActionType {
   PLACE_ORDER = 'PLACE_ORDER',
   SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
+  SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
+  SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
 }
 
 export type Action =
@@ -101,6 +109,21 @@ export type Action =
       payload: {
         order: Order
         licenseSize: string
+      }
+    }
+  | {
+      type: ActionType.SET_LICENSE_TYPES
+      payload: {
+        order: Order
+        // lineItem: LineItem
+        // skuOptions: SkuOption[]
+        // licenseTypes: string[]
+      }
+    }
+  | {
+      type: ActionType.SET_SKU_OPTIONS
+      payload: {
+        skuOptions: SkuOption[]
       }
     }
 
@@ -212,6 +235,24 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         ...state,
         order: action.payload.order,
         licenseSize: action.payload.licenseSize,
+        isLoading: false,
+      }
+    }
+    case ActionType.SET_LICENSE_TYPES: {
+      console.log('SET_LICENSE_TYPES: action.payload: ', action.payload)
+      return {
+        ...state,
+        order: action.payload.order,
+        // licenseTypes: action.payload.licenseTypes,
+        // skuOptions: action.payload.skuOptions,
+        // lineItem: action.payload.lineItem,
+        isLoading: false,
+      }
+    }
+    case ActionType.SET_SKU_OPTIONS: {
+      return {
+        ...state,
+        skuOptions: action.payload.skuOptions,
         isLoading: false,
       }
     }

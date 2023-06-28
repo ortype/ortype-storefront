@@ -1,7 +1,9 @@
 import CommerceLayer, {
+  type LineItem,
   type Order,
   type PaymentMethod,
   type ShippingMethod as ShippingMethodCollection,
+  type SkuOption,
 } from '@commercelayer/sdk'
 // import { changeLanguage } from "i18next"
 import { createContext, useEffect, useReducer, useRef } from 'react'
@@ -13,6 +15,7 @@ import {
   checkIfShipmentRequired,
   fetchOrder,
   FetchOrderByIdResponse,
+  updateLineItemLicenseTypes,
   updateLineItemsLicenseSize,
 } from 'components/data/CheckoutProvider/utils'
 
@@ -33,6 +36,12 @@ export type LicenseOwner = {
   full_address?: string | null
   name?: string | null
   email?: string | null
+}
+
+export type LicenseSize = {
+  label: string
+  value: string
+  modifier: number
 }
 
 export interface CheckoutProviderData extends FetchOrderByIdResponse {
@@ -64,11 +73,18 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     order?: Order
     licenseOwner?: LicenseOwner
   }) => void
-  setLicenseSize: (params: { order?: Order; licenseSize?: string }) => void
+  setLicenseSize: (params: { order?: Order; licenseSize?: LicenseSize }) => void
+  setLicenseTypes: (params: {
+    order?: Order
+    lineItem: LineItem
+    selectedSkuOptions: SkuOption[]
+  }) => void
+  skuOptions: SkuOption[]
 }
 
 export interface AppStateData extends FetchOrderByIdResponse {
   order?: Order
+  skuOptions: SkuOption[]
   isLoading: boolean
   isFirstLoading: boolean
 }
@@ -94,7 +110,7 @@ const initialState: AppStateData = {
   hasLicenseOwner: false,
   isLicenseForClient: false,
   licenseOwner: {},
-  licenseSize: '',
+  licenseSize: {},
   shipments: [],
   customerAddresses: [],
   paymentMethod: undefined,
@@ -169,6 +185,21 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
 
     // await changeLanguage(order.language_code)
+  }
+
+  // @TODO: follow getOrder/setOrder pattern for sku_options
+  const fetchSkuOptions = async () => {
+    dispatch({ type: ActionType.START_LOADING })
+
+    const skuOptions = await cl.sku_options.list()
+    console.log('fetchSkuOptions: ', skuOptions)
+
+    dispatch({
+      type: ActionType.SET_SKU_OPTIONS,
+      payload: {
+        skuOptions,
+      },
+    })
   }
 
   const setCustomerEmail = (email: string) => {
@@ -326,7 +357,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }
 
   const setLicenseSize = async (params: {
-    licenseSize?: string
+    licenseSize?: LicenseSize
     order?: Order
   }) => {
     dispatch({ type: ActionType.START_LOADING })
@@ -338,9 +369,33 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
     dispatch({
       type: ActionType.SET_LICENSE_SIZE,
-      payload: { licenseSize: params.licenseSize, order: currentOrder },
+      payload: {
+        licenseSize: params.licenseSize,
+        order: await fetchOrder(cl, orderId),
+      },
     })
   }
+
+  const setLicenseTypes = async (params: {
+    lineItem: LineItem
+    selectedSkuOptions: SkuOption[]
+    order?: Order
+  }) => {
+    dispatch({ type: ActionType.START_LOADING })
+    const currentOrder = params.order ?? (await getOrderFromRef())
+    await updateLineItemLicenseTypes({
+      cl,
+      order: currentOrder,
+      selectedSkuOptions: params.selectedSkuOptions,
+      lineItem: params.lineItem,
+    })
+    dispatch({
+      type: ActionType.SET_LICENSE_TYPES,
+      payload: { order: await fetchOrder(cl, orderId) },
+    })
+  }
+
+  // @TODO: Delete line_item
 
   const getOrderFromRef = async () => {
     return orderRef.current || (await fetchOrder(cl, orderId))
@@ -348,6 +403,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   useEffect(() => {
     const unsubscribe = () => {
+      fetchSkuOptions()
       fetchInitialOrder(orderId, accessToken)
     }
     return unsubscribe()
@@ -373,6 +429,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         autoSelectShippingMethod,
         setLicenseOwner,
         setLicenseSize,
+        setLicenseTypes,
       }}
     >
       {children}

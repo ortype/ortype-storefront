@@ -5,18 +5,25 @@ import {
   CheckoutComPayment,
   CommerceLayerClient,
   CustomerAddress,
-  LineItemUpdate,
+  LineItem,
+  LineItemOptionCreate,
   Order,
   OrderUpdate,
   PaymentMethod,
   PaypalPayment,
   Shipment,
   ShippingMethod,
+  SkuOption,
   StripePayment,
   WireTransfer,
+  type LineItemUpdate,
 } from '@commercelayer/sdk'
 
-import { AppStateData, LicenseOwner } from 'components/data/CheckoutProvider'
+import {
+  AppStateData,
+  LicenseOwner,
+  LicenseSize,
+} from 'components/data/CheckoutProvider'
 import { LINE_ITEMS_SHIPPABLE } from 'components/utils/constants'
 
 export type LineItemType =
@@ -48,7 +55,14 @@ interface CheckAndSetDefaultAddressForOrderProps {
 interface UpdateLineItemsLicenseSize {
   cl: CommerceLayerClient
   order: Order
-  licenseSize: string
+  licenseSize: LicenseSize
+}
+
+interface UpdateLineItemLicenseTypes {
+  cl: CommerceLayerClient
+  order: Order
+  lineItem: LineItem
+  selectedSkuOptions: SkuOption[]
 }
 
 interface PaymentSourceProps {
@@ -97,7 +111,7 @@ export interface FetchOrderByIdResponse {
   licenseOwner: LicenseOwner
   hasLicenseOwner?: boolean
   isLicenseForClient?: boolean
-  licenseSize: string
+  licenseSize: LicenseSize
 }
 
 function isNewAddress({
@@ -156,6 +170,69 @@ export async function updateLineItemsLicenseSize({
     }
     console.log('updateLineItemsAttrs: ', updateLineItemsAttrs)
     await cl.line_items.update(updateLineItemsAttrs)
+  }
+}
+
+export async function updateLineItemLicenseTypes({
+  cl,
+  order,
+  lineItem,
+  selectedSkuOptions,
+}: UpdateLineItemLicenseTypes) {
+  const updateLineItemAttrs: LineItemUpdate = {
+    id: lineItem.id,
+    quantity: 1,
+    _external_price: true,
+    metadata: {
+      license: {
+        ...lineItem.metadata?.license,
+        types: selectedSkuOptions.map((option) => option.reference),
+      },
+    },
+  }
+  console.log('updateLineItemAttrs: ', updateLineItemAttrs)
+  await cl.line_items.update(updateLineItemAttrs)
+
+  // Line Item Options and SKU Options
+  const existingSkuOptionIds = lineItem.line_item_options.map(
+    ({ sku_option }) => sku_option.id
+  )
+  const newSkuOptionIds = selectedSkuOptions.map(({ id }) => id)
+  const skuOptionsToAdd = selectedSkuOptions.filter(
+    (option) => !existingSkuOptionIds.includes(option.id)
+  )
+  const lineItemOptionsToDelete = lineItem.line_item_options.filter(
+    (option) => !newSkuOptionIds.includes(option.sku_option.id)
+  )
+
+  // @TODO: this creates duplicate line_item_options
+  // we also need to DELETE existing lineItemOptions that are not present in selectedSkuOptions
+
+  // lineItem.line_item_options
+  // we have the options on the lineItem, we can then check if an sku_option.id is present in this array
+  // which is not found in selectedSkuOptions, and delete that line_item
+
+  if (skuOptionsToAdd && skuOptionsToAdd.length > 0) {
+    console.log('skuOptionsToAdd:', skuOptionsToAdd)
+    const lineItemRel = await cl.line_items.relationship(lineItem.id)
+    for (const skuOption of skuOptionsToAdd) {
+      const skuOptionRel = await cl.sku_options.relationship(skuOption.id)
+      const lineItemOptionsAttributes: LineItemOptionCreate = {
+        quantity: 1,
+        options: [],
+        sku_option: skuOptionRel,
+        line_item: lineItemRel,
+      }
+      console.log('lineItemOptionsAttributes: ', lineItemOptionsAttributes)
+      await cl.line_item_options.create(lineItemOptionsAttributes)
+    }
+  }
+
+  if (lineItemOptionsToDelete && lineItemOptionsToDelete.length > 0) {
+    console.log('lineItemOptionsToDelete: ', lineItemOptionsToDelete)
+    for (const lineItemOption of lineItemOptionsToDelete) {
+      await cl.line_item_options.delete(lineItemOption.id)
+    }
   }
 }
 
@@ -293,6 +370,7 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
         'total_amount_with_taxes_float',
         'language_code',
         'shipping_address',
+        'line_items',
         'billing_address',
         'shipments',
         'payment_method',
@@ -305,6 +383,8 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
       customer_addresses: ['address'],
     },
     include: [
+      'line_items',
+      'line_items.line_item_options.sku_option',
       'shipping_address',
       'billing_address',
       'shipments',
