@@ -110,12 +110,6 @@ export default defineType({
         },
       ],
     }),
-    defineField({
-      name: 'hash',
-      title: 'Hash',
-      type: 'number',
-      readOnly: true,
-    }),
   ],
   preview: {
     select: {

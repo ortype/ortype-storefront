@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import {
   apiClient,
 } from 'lib/sanity.client'
-import { getFonts } from '../../../lib/api/font'
+import { getFonts, maybeUpsert } from '../../../lib/api/font'
 
 async function deleteAllFonts() {
   // Without params
@@ -56,10 +56,11 @@ export default async function handler(
 
   try {
     for (const font of await getFonts()) {
-      await font.maybeUpsert()
+      await maybeUpsert(font, true)
     }
     return res.status(200).json({ message: 'Successful' })
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       error,
     })
