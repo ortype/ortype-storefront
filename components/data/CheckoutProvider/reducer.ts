@@ -32,6 +32,7 @@ export enum ActionType {
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
   SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
+  DELETE_LINE_ITEM = 'DELETE_LINE_ITEM',
 }
 
 export type Action =
@@ -124,6 +125,12 @@ export type Action =
       type: ActionType.SET_SKU_OPTIONS
       payload: {
         skuOptions: SkuOption[]
+      }
+    }
+  | {
+      type: ActionType.DELETE_LINE_ITEM
+      payload: {
+        order: Order
       }
     }
 
@@ -253,6 +260,13 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
       return {
         ...state,
         skuOptions: action.payload.skuOptions,
+        isLoading: false,
+      }
+    }
+    case ActionType.DELETE_LINE_ITEM: {
+      return {
+        ...state,
+        order: action.payload.order,
         isLoading: false,
       }
     }

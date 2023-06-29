@@ -1,4 +1,12 @@
-import { Box, Button, Flex, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Flex,
+  Link,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
 import { useOrderContainer } from '@commercelayer/react-components'
 import CommerceLayer, {
   LineItemUpdate,
@@ -21,7 +29,8 @@ interface CartItemProps {
 
 export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   const checkoutCtx = useContext(CheckoutContext)
-  const { skuOptions, licenseSize, setLicenseTypes } = checkoutCtx
+  const { skuOptions, licenseSize, setLicenseTypes, deleteLineItem } =
+    checkoutCtx
 
   const typeOptions = skuOptions
     .sort(
@@ -75,23 +84,35 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   }
 
   // @TODO: prevent all the select from removing the last option or completely clearing the selected options
-  // @TODO: `remove` button
+
+  const handleRemove = () => {
+    if (deleteLineItem && lineItem.id) {
+      deleteLineItem({ lineItemId: lineItem.id })
+    }
+  }
 
   return (
     <>
       <SimpleGrid columns={2} spacing={4}>
         <Stack direction={'row'} spacing={2}>
           <Text>{lineItem.name}</Text>
+          <Text>
+            <Link onClick={handleRemove} cursor={'pointer'}>
+              {'(Remove)'}
+            </Link>
+          </Text>
         </Stack>
-        <Stack direction={'row'} spacing={2}>
-          <Select
-            placeholder={'Select a type'}
-            options={typeOptions}
-            isMulti
-            value={selectedTypes}
-            onChange={handleTypeChange}
-          />
-          <Flex>
+        <Flex direction={'row'}>
+          <Box flexGrow={1}>
+            <Select
+              placeholder={'Select a type'}
+              options={typeOptions}
+              isMulti
+              value={selectedTypes}
+              onChange={handleTypeChange}
+            />
+          </Box>
+          <Box minW={24} textAlign={'right'}>
             {selectedSkuOptions?.length > 0 && licenseSize && (
               <Text>
                 <b>
@@ -107,8 +128,8 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
                 </b>
               </Text>
             )}
-          </Flex>
-        </Stack>
+          </Box>
+        </Flex>
       </SimpleGrid>
     </>
   )

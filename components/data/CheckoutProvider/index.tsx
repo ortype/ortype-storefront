@@ -79,6 +79,7 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     lineItem: LineItem
     selectedSkuOptions: SkuOption[]
   }) => void
+  deleteLineItem: (params: { order?: Order; lineItemId: string }) => void
   skuOptions: SkuOption[]
 }
 
@@ -397,6 +398,23 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   // @TODO: Delete line_item
 
+  const deleteLineItem = async (params: {
+    lineItemId: string
+    order?: Order
+  }) => {
+    dispatch({ type: ActionType.START_LOADING })
+    const currentOrder = params.order ?? (await getOrderFromRef())
+    try {
+      await cl.line_items.delete(params.lineItemId)
+      dispatch({
+        type: ActionType.DELETE_LINE_ITEM,
+        payload: { order: await fetchOrder(cl, orderId) },
+      })
+    } catch (error: any) {
+      console.log('deleteLineItem error: ', error)
+    }
+  }
+
   const getOrderFromRef = async () => {
     return orderRef.current || (await fetchOrder(cl, orderId))
   }
@@ -430,6 +448,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         setLicenseOwner,
         setLicenseSize,
         setLicenseTypes,
+        deleteLineItem,
       }}
     >
       {children}
