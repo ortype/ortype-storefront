@@ -89,7 +89,7 @@ export const StepCart: React.FC<Props> = () => {
 
   const s = async (values, err, e) => {
     setIsLocalLoader(true)
-    const owner = { is_client: false, company: values['company'].value }
+    const owner = { is_client: false, full_name: values['full_name'].value }
     try {
       const { order: updatedOrder } = await updateOrder({
         id: orderId,
@@ -140,11 +140,11 @@ export const StepCart: React.FC<Props> = () => {
                 <FormControl>
                   <FormLabel>{'License Owner/Company*'}</FormLabel>
                   <Input
-                    name={'company'}
+                    name={'full_name'}
                     type={'text'}
                     ref={validation}
                     size={'lg'}
-                    defaultValue={order?.metadata?.license?.owner?.company}
+                    defaultValue={order?.metadata?.license?.owner?.full_name}
                   />
                 </FormControl>
                 <Button type={'submit'}>Save</Button>

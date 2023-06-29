@@ -107,12 +107,16 @@ export const StepLicense: React.FC<Props> = () => {
   const s = async (values, err, e) => {
     setIsLocalLoader(true)
     // @TODO: How to declare type "LicenseOwner" here
-    const owner = isClient
+    const isTrueSet = isClient?.toLowerCase?.() === 'true'
+    const owner = isTrueSet
       ? Object.assign(
           { is_client: isClient },
           ...Object.keys(values).map((key) => ({ [key]: values[key].value }))
         )
-      : { is_client: isClient, company: billingAddress.company }
+      : {
+          is_client: isClient,
+          full_name: billingAddress.full_name,
+        }
 
     try {
       const { order: updatedOrder } = await updateOrder({
