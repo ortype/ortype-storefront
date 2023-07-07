@@ -1,4 +1,4 @@
-import { getInfoFromJwt } from 'lib/utils/getInfoFromJwt'
+import { getInfoFromJwt } from 'utils/getInfoFromJwt'
 
 /**
  * Gets the subdomain from a full hostname

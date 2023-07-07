@@ -1,7 +1,7 @@
 import CommerceLayer from '@commercelayer/sdk'
 import type { Settings } from 'CustomApp'
-import { getCustomerDetails } from 'lib/utils/getCustomerDetails'
-import { getInfoFromJwt } from 'lib/utils/getInfoFromJwt'
+import { getCustomerDetails } from 'utils/getCustomerDetails'
+import { getInfoFromJwt } from 'utils/getInfoFromJwt'
 import { createContext, useEffect, useState } from 'react'
 
 type CustomerProviderData = Pick<
@@ -58,6 +58,7 @@ export function CustomerProvider({
     }
     setState({ ...state, isLoading: true })
 
+    // @TODO: we have the slug in the SettingsProvider
     const { slug } = getInfoFromJwt(accessToken)
     if (!slug) {
       return

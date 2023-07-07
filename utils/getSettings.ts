@@ -1,213 +1,115 @@
-import CommerceLayer, {
-  CommerceLayerClient,
-  CommerceLayerStatic,
-  Order,
-  Organization,
-} from '@commercelayer/sdk'
-import { TypeAccepted } from 'components/data/CheckoutProvider/utils'
-import { LINE_ITEMS_SHOPPABLE } from 'components/utils/constants'
-import jwt_decode from 'jwt-decode'
-import { retryCall } from 'lib/utils/retryCall'
+import CommerceLayer from '@commercelayer/sdk'
+import type { InvalidSettings, Settings } from 'CustomApp'
 
-const BLACK_COLOR = '#000'
-const RETRIES = 2
+import { getInfoFromJwt } from 'utils/getInfoFromJwt'
+import { getOrganizations } from 'utils/getOrganizations'
+import { isValidHost } from 'utils/isValidHost'
 
-interface JWTProps {
-  organization: {
-    slug: string
-    id: string
-  }
-  application: {
-    kind: string
-  }
-  test: boolean
+// default settings are by their nature not valid to show My Account data
+// they will be used as fallback for errors or 404 page
+export const defaultSettings: InvalidSettings = {
+  isValid: false,
+  primaryColor: '#000000',
+  language: 'en',
+  faviconUrl:
+    'https://data.commercelayer.app/assets/images/favicons/favicon-32x32.png',
+  companyName: 'Or Type',
+  retryable: false,
 }
 
-interface FetchResource<T> {
-  object: T | undefined
-  success: boolean
+const makeInvalidSettings = (retryable?: boolean): InvalidSettings => ({
+  ...defaultSettings,
+  retryable: !!retryable,
+})
+
+interface CommerceLayerAppConfig {
+  clientId: string
+  endpoint: string
+  marketId: string
 }
 
-function isProduction(): boolean {
-  return process.env.NODE_ENV === 'production'
+type GetSettingsProps = Pick<Settings, 'accessToken'> & {
+  config: CommerceLayerAppConfig
 }
 
-async function getOrder(
-  cl: CommerceLayerClient,
-  orderId: string
-): Promise<FetchResource<Order> | undefined> {
-  return retryCall<Order>(() =>
-    cl.orders.retrieve(orderId, {
-      fields: {
-        orders: [
-          'id',
-          'autorefresh',
-          'status',
-          'number',
-          'guest',
-          'language_code',
-          'terms_url',
-          'privacy_url',
-          'line_items',
-        ],
-        line_items: ['item_type'],
-      },
-      include: ['line_items'],
-    })
-  )
-}
-
-function getTokenInfo(accessToken: string) {
-  try {
-    const {
-      organization: { slug },
-      application: { kind },
-      test,
-    } = jwt_decode(accessToken) as JWTProps
-
-    return { slug, kind, isTest: test }
-  } catch (e) {
-    console.log(`error decoding access token: ${e}`)
-    return {}
-  }
-}
-
+/**
+ * Retrieves a list of `Settings` required to show the my account app
+ *
+ * @param accessToken - Access Token for a sales channel API credentials to be used to authenticate all Commerce Layer API requests.
+ * Read more at {@link https://docs.commercelayer.io/developers/authentication/client-credentials#sales-channel}, {@link https://docs.commercelayer.io/core/authentication/password}
+ *
+ * @returns an union type of `Settings` or `InvalidSettings`
+ */
 export const getSettings = async ({
-  // from getSettings (getCustomerSettings?)
   accessToken,
-  endpoint,
-  domain,
-  slug,
-  subdomain,
-  companyName,
-  language,
-  primaryColor,
-  logoUrl,
-  faviconUrl: favicon,
-  gtmId,
-  supportEmail,
-  supportPhone,
-  // from useSettingsOrInvalid
-  orderId,
-  paymentReturn,
-}: {
-  // accessToken: string
-  orderId: string
-  paymentReturn?: boolean
-  // subdomain: string
-}) => {
-  // const domain = process.env.NEXT_PUBLIC_DOMAIN || "commercelayer.io"
+  config,
+}: GetSettingsProps): Promise<Settings | InvalidSettings> => {
+  const domain = config.domain
+  const { slug, kind, customerId, isTest } = getInfoFromJwt(accessToken)
 
-  function invalidateCheckout(retry?: boolean): InvalidCheckoutSettings {
-    console.log('access token:')
-    console.log(accessToken)
-    console.log('orderId')
-    console.log(orderId)
-    return {
-      validCheckout: false,
-      retryOnError: !!retry,
-    } as InvalidCheckoutSettings
-  }
-
-  if (!accessToken || !orderId) {
-    return invalidateCheckout()
-  }
-
-  const kind = 'sales_channel'
-  const isTest = true
-  // const { slug, kind, isTest } = getTokenInfo(accessToken)
-  // @TODO: I think these come from the CustomerContext
+  console.log('getSettings: ', config, accessToken, customerId, kind)
 
   if (!slug) {
-    return invalidateCheckout()
+    return makeInvalidSettings()
   }
 
-  if (isProduction() && (subdomain !== slug || kind !== 'sales_channel')) {
-    return invalidateCheckout()
-  } else if (kind !== 'sales_channel') {
-    return invalidateCheckout()
+  if (kind !== 'sales_channel') {
+    return makeInvalidSettings()
+  }
+  /*
+  // We can have guest users in the App but not in the Account
+  if (!customerId) {
+    return makeInvalidSettings()
+  }
+  */
+
+  const hostname = typeof window && window.location.hostname
+  if (
+    !isValidHost({
+      hostname,
+      accessToken,
+      selfHostedSlug: config.selfHostedSlug,
+    })
+  ) {
+    return makeInvalidSettings()
   }
 
-  const cl = CommerceLayer({
+  const client = CommerceLayer({
     organization: slug,
     accessToken,
     domain,
   })
 
-  /*
-  const organizationResource = await getOrganization(cl)
+  const [organizationResponse] = await Promise.all([
+    getOrganizations({
+      client,
+    }),
+  ])
 
-  const organization = organizationResource?.object
-
-  if (!organizationResource?.success || !organization?.id) {
-    console.log("Invalid: organization")
-    return invalidateCheckout(true)
-  }
-  */
-
-  const orderResource = await getOrder(cl, orderId)
-  const order = orderResource?.object
-
-  if (!orderResource?.success || !order?.id) {
-    console.log('Invalid: order')
-    return invalidateCheckout(true)
+  // validating organization
+  const organization = organizationResponse?.object
+  if (!organization) {
+    return makeInvalidSettings(!organizationResponse?.bailed)
   }
 
-  const lineItemsShoppable = order.line_items?.filter((line_item) => {
-    return LINE_ITEMS_SHOPPABLE.includes(line_item.item_type as TypeAccepted)
-  })
-
-  // If there are no shoppable items we redirect to the invalid page
-  if ((lineItemsShoppable || []).length === 0) {
-    console.log('Invalid: No shoppable line items')
-    return invalidateCheckout()
-  }
-
-  if (order.status === 'draft' || order.status === 'pending') {
-    // If returning from payment (PayPal) skip order refresh and payment_method reset
-    console.log(
-      !paymentReturn ? 'refresh order' : 'return from external payment'
-    )
-    if (!paymentReturn) {
-      const _refresh = !paymentReturn
-      try {
-        await cl.orders.update({
-          id: order.id,
-          _refresh,
-          payment_method: cl.payment_methods.relationship(null),
-          ...(!order.autorefresh && { autorefresh: true }),
-        })
-      } catch {
-        console.log('error refreshing order')
-      }
-    }
-  } else if (order.status !== 'placed') {
-    return invalidateCheckout()
-  }
-
-  const checkoutSettings: CheckoutSettings = {
+  return {
     accessToken,
-    endpoint,
+    kind,
+    isTest,
+    endpoint: `https://${slug}.${domain}`,
     domain,
     slug,
-    // unique?
-    orderNumber: order.number || 0,
-    orderId: order.id,
-    validCheckout: true,
-    // shared...
-    logoUrl,
-    companyName,
-    language,
-    primaryColor,
-    favicon,
-    gtmId,
-    supportEmail,
-    supportPhone,
-    termsUrl: order.terms_url,
-    privacyUrl: order.privacy_url,
+    isGuest: !customerId,
+    customerId: customerId as string,
+    isValid: true,
+    companyName: organization?.name || defaultSettings.companyName,
+    language: defaultSettings.language,
+    primaryColor:
+      (organization?.primary_color as string) || defaultSettings.primaryColor,
+    logoUrl: organization?.logo_url || '',
+    supportEmail: organization.support_email,
+    supportPhone: organization.support_phone,
+    faviconUrl: organization?.favicon_url || defaultSettings.faviconUrl,
+    gtmId: isTest ? organization?.gtm_id_test : organization?.gtm_id,
   }
-
-  console.log('checkoutSettings: ', checkoutSettings)
-
-  return checkoutSettings
 }

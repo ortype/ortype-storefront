@@ -1,7 +1,7 @@
 import type { CommerceLayerClient } from '@commercelayer/sdk'
 import type { Settings } from 'CustomApp'
 
-import { retryCall } from 'lib/utils/retryCall'
+import { retryCall } from 'utils/retryCall'
 
 type GetCustomerDetailsConfig = Pick<Settings, 'customerId'> & {
   client: CommerceLayerClient

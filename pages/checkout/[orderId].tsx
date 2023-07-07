@@ -23,7 +23,6 @@ const DynamicCheckout: any = dynamic(
 
 const Order: NextPage = () => {
   const { settings, retryOnError, isLoading } = useSettingsOrInvalid()
-  // Here we can use CustomerContext or const settingsCtx = useContext(SettingsContext)
 
   if (isLoading || (!settings && !retryOnError)) return <div />
 

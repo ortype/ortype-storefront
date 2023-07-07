@@ -1,6 +1,6 @@
 import type { InvalidSettings, Settings } from 'CustomApp'
 import { useGetToken } from 'hooks/GetToken'
-import { defaultSettings, getSettings } from 'lib/utils/getSettings'
+import { defaultSettings, getSettings } from 'utils/getSettings'
 import { createContext, useContext, useEffect, useState } from 'react'
 
 interface SettingsProviderValue {

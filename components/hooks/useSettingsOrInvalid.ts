@@ -1,11 +1,11 @@
 // import { getSubdomain } from 'utils/getSubdomain'
-import { SettingsContext } from 'providers/SettingsProvider'
+import { SettingsContext } from 'components/data/SettingsProvider'
 import { useContext, useEffect, useState } from 'react'
 // import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 // import { useParams } from 'next/navigation' // only avaiable with /app directory
 import { useRouter } from 'next/router'
-import { getSettings } from 'utils/getSettings'
+import { getCheckoutSettings } from 'utils/getCheckoutSettings'
 
 import { useLocalStorageToken } from './useLocalStorageToken'
 
@@ -23,6 +23,7 @@ export const useSettingsOrInvalid = (): UseSettingsOrInvalid => {
   // const redirectResult = searchParams.get('redirectResult')
   // In the Checkout App these params are being parsed from the URL params
   // like the accessToken, which my Buy/Cart page generates
+  // Here we can use CustomerContext or const settingsCtx = useContext(SettingsContext)
   const { settings: settingsCtx } = useContext(SettingsContext)
   const {
     accessToken,
@@ -48,6 +49,7 @@ export const useSettingsOrInvalid = (): UseSettingsOrInvalid => {
   >(undefined)
   const [isFetching, setIsFetching] = useState(true)
 
+  // this bit checks the accessToken localStorage and updates it if not synced
   const [savedAccessToken, setAccessToken] = useLocalStorageToken(
     // @TODO: use the same localstorage key as the rest of the app (?)
     'checkoutAccessToken',
@@ -68,8 +70,8 @@ export const useSettingsOrInvalid = (): UseSettingsOrInvalid => {
   useEffect(() => {
     if (syncedAccessToken) {
       setIsFetching(true)
-      getSettings({
-        // accessToken: savedAccessToken, // maybe we can get the accessToken inside this getSettings
+      getCheckoutSettings({
+        // accessToken: savedAccessToken, // maybe we can get the accessToken inside this getCheckoutSettings
         accessToken,
         endpoint,
         domain,

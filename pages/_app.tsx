@@ -1,14 +1,13 @@
-import 'tailwindcss/tailwind.css'
-
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
 import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
+import { CustomerProvider } from 'components/data/CustomerProvider'
 import 'components/data/i18n'
+import { SettingsProvider } from 'components/data/SettingsProvider'
 import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
-import { CustomerProvider } from 'providers/CustomerProvider'
-import { SettingsProvider } from 'providers/SettingsProvider'
+import 'tailwindcss/tailwind.css'
 
 const {
   RadioGroup,

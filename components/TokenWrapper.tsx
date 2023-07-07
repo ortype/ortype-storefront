@@ -12,10 +12,10 @@ import {
   Switch,
 } from '@chakra-ui/react'
 import CommerceLayer, { CustomerCreate } from '@commercelayer/sdk'
+import { CustomerContext } from 'components/data/CustomerProvider'
+import { SettingsContext } from 'components/data/SettingsProvider'
 import FontPage from 'components/FontPage'
 import Cookies from 'js-cookie'
-import { CustomerContext } from 'providers/CustomerProvider'
-import { SettingsContext } from 'providers/SettingsProvider'
 import { useRapidForm } from 'rapid-form'
 import React, { useContext, useEffect, useState } from 'react'
 
