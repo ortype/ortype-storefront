@@ -4,6 +4,7 @@ import { CommerceLayer } from '@commercelayer/react-components'
 import { CustomerProvider } from 'components/data/CustomerProvider'
 import 'components/data/i18n'
 import { SettingsProvider } from 'components/data/SettingsProvider'
+import { GlobalHeader } from 'components/GlobalHeader'
 import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
@@ -29,6 +30,13 @@ const {
   VStack,
   HStack,
   Switch,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } = chakraTheme.components
 
 const theme = extendBaseTheme({
@@ -52,6 +60,13 @@ const theme = extendBaseTheme({
     VStack,
     HStack,
     Switch,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
   },
 })
 
@@ -75,6 +90,7 @@ function App({ Component, pageProps, props }: AppProps) {
                 domain={props.endpoint}
                 {...props}
               >
+                <GlobalHeader settings={settings} />
                 <Component {...pageProps} />
               </CustomerProvider>
             </CommerceLayer>

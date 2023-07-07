@@ -32,6 +32,7 @@ function isProduction(): boolean {
   return process.env.NODE_ENV === 'production'
 }
 
+// @TODO: consider using /utils/getOrderDetails.ts
 async function getOrder(
   cl: CommerceLayerClient,
   orderId: string

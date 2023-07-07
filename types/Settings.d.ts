@@ -1,4 +1,49 @@
+import { type LineItem, type Order } from '@commercelayer/sdk'
+
 declare module 'CustomApp' {
+  export type CartSettings = {
+    /**
+     * Access Token for a sales channel API credentials to be used to authenticate all Commerce Layer API requests.
+     * Read more at {@link https://docs.commercelayer.io/developers/authentication/client-credentials#sales-channel}
+     */
+    accessToken: string
+    /**
+     * Order Id used to show cart info and items.
+     * Read more at {@link https://docs.commercelayer.io/developers/v/how-tos/shopping-cart/create-a-shopping-cart}.
+     */
+    orderId: string
+    /**
+     * URL found in order, to be used as go-back link (Example: "Continue shopping").
+     */
+    returnUrl?: string
+    /**
+     * Current cart URL found in the order object.
+     */
+    cartUrl?: string
+    /**
+     * This flag allows TypeScript to discriminate between `Settings` and `InvalidSettings` union type.
+     */
+    isValid: true
+    /**
+     * Total items found in current order.
+     */
+    itemsCount: number
+    lineItems: LineItem[]
+    order: Order
+  }
+
+  export type InvalidCartSettings = Pick<CartSettings> & {
+    /**
+     * This flag allows TypeScript to discriminate between `Settings` and `InvalidSettings` union type.
+     */
+    isValid: false
+    /**
+     * When `true`, it indicates the encountered error might be temporary (eg. connectivity error)
+     * and the user can manually retry by refreshing browser tab.
+     */
+    retryable: boolean
+  }
+
   /**
    * Settings are all the settings used by the My Account application:
    * Starting from @accessToken we can get all the settings needed
@@ -7,6 +52,8 @@ declare module 'CustomApp' {
    */
 
   export interface Settings {
+    domain: string
+    slug: string
     /**
      * Access Token for a sales channel API credentials to be used to authenticate all Commerce Layer API requests.
      * Read more at {@link https://docs.commercelayer.io/core/authentication/client-credentials#sales-channel}, {@link https://docs.commercelayer.io/core/authentication/password}

@@ -93,6 +93,8 @@ export const getSettings = async ({
   }
 
   return {
+    // config: { accessToekn, endpoint, slug, domain, etc... }
+    // consider grouping these into an config object
     accessToken,
     kind,
     isTest,
@@ -102,6 +104,8 @@ export const getSettings = async ({
     isGuest: !customerId,
     customerId: customerId as string,
     isValid: true,
+    // organization @consider passing the below contained in an object
+    // organization: { companyName, language, primaryColor, logoUrl, faviconUrl, gtmId }
     companyName: organization?.name || defaultSettings.companyName,
     language: defaultSettings.language,
     primaryColor:
