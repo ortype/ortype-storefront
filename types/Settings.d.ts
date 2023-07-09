@@ -32,7 +32,7 @@ declare module 'CustomApp' {
     order: Order
   }
 
-  export type InvalidCartSettings = Pick<CartSettings> & {
+  export type UseCartSettingsOrInvalid = Pick<CartSettings> & {
     /**
      * This flag allows TypeScript to discriminate between `Settings` and `InvalidSettings` union type.
      */
@@ -42,6 +42,11 @@ declare module 'CustomApp' {
      * and the user can manually retry by refreshing browser tab.
      */
     retryable: boolean
+  }
+
+  export type InvalidCartSettings = {
+    validCheckout: false
+    retryOnError: boolean
   }
 
   /**

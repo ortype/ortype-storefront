@@ -29,9 +29,7 @@ interface CartItemProps {
 }
 
 export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
-  const { settings: cartSettings } = useCart()
-  const { skuOptions, licenseSize, setLicenseTypes, deleteLineItem } =
-    cartSettings
+  const { skuOptions, licenseSize, setLicenseTypes, deleteLineItem } = useCart()
 
   const typeOptions = skuOptions
     .sort(

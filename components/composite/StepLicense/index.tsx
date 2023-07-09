@@ -185,7 +185,7 @@ export const StepLicense: React.FC<Props> = () => {
               </FormControl>
               <FormControl>
                 <FormLabel>{'Company size of the license owner'}</FormLabel>
-                <SelectLicenseSize />
+                <SelectLicenseSize ctx={checkoutCtx} />
               </FormControl>
               <form
                 as={Box}

@@ -151,7 +151,7 @@ export const StepCart: React.FC<Props> = () => {
               </form>
               <FormControl>
                 <FormLabel>{'Company size of the license owner'}</FormLabel>
-                <SelectLicenseSize />
+                <SelectLicenseSize ctx={checkoutCtx} />
               </FormControl>
               {order.line_items &&
                 order.line_items.map((lineItem) => (

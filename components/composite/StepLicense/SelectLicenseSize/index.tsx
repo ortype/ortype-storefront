@@ -1,27 +1,32 @@
 import { Box } from '@chakra-ui/react'
 import { useOrderContainer } from '@commercelayer/react-components'
 import CommerceLayer, { LineItemUpdate } from '@commercelayer/sdk'
-import { CheckoutContext } from 'components/data/CheckoutProvider'
 import { Size, sizes, Type, types } from 'lib/settings'
 import React, { useContext, useEffect, useState } from 'react'
 import Select from 'react-select'
+import { type CartProviderData } from 'components/data/CartProvider'
+import { type CheckoutProviderData } from 'components/data/CheckoutProvider'
 
 interface Props {
   types: Type[]
   sizes: Size[]
 }
 
-interface SelectLicenseSizeProps {}
+interface SelectLicenseSizeProps {
+  ctx: CartProviderData | CheckoutProviderData
+  // @TODO: add type
+}
 
-export const SelectLicenseSize: React.FC<SelectLicenseSizeProps> = ({}) => {
+export const SelectLicenseSize: React.FC<SelectLicenseSizeProps> = ({
+  ctx,
+}) => {
   // *************************************
   // License size select logic
   // @TODO: consider storing the size object in metadata instead of just the value
   const [selectedSize, setSelectedSize] = useState<Size | null>(sizes[0])
   const { updateOrder } = useOrderContainer()
-  const checkoutCtx = useContext(CheckoutContext)
 
-  const { orderId, order, setLicenseSize } = checkoutCtx
+  const { orderId, order, setLicenseSize } = ctx
 
   useEffect(() => {
     if (order?.metadata) {

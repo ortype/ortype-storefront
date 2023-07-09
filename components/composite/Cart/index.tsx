@@ -23,27 +23,20 @@ import {
 import type { Order } from '@commercelayer/sdk'
 import { CartItem } from 'components/composite/Cart/CartItem'
 import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
-import { useCart } from 'components/data/CartProvider'
+import { CartContext, useCart } from 'components/data/CartProvider'
 import { useRapidForm } from 'rapid-form'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 
-export const Cart = () => {
+const Cart = () => {
   const [isLocalLoader, setIsLocalLoader] = useState(false)
   const { handleSubmit, submitValidation, validation, values, errors } =
     useRapidForm()
   const { updateOrder } = useOrderContainer()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { settings } = useCart()
-  const {
-    isValid,
-    orderId,
-    order,
-    isGuest,
-    licenseOwner,
-    billingAddress,
-    setLicenseOwner,
-  } = settings
-  console.log('cart settings: ', settings)
+  const cartCtx = useContext(CartContext)
+  const { orderId, order, itemsCount, licenseOwner, setLicenseOwner } =
+    useCart()
+  console.log('useCart(): ', order)
 
   const s = async (values, err, e) => {
     setIsLocalLoader(true)
@@ -74,14 +67,14 @@ export const Cart = () => {
   }
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
-  if (!orderId || !isValid) {
+  if (!orderId) {
     return <div>{'No items in your cart'}</div>
   }
 
   return (
     <>
-      <Button onClick={onOpen}>{`Cart (${settings.itemsCount})`}</Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Button onClick={onOpen}>{`Cart (${itemsCount})`}</Button>
+      <Modal isOpen={isOpen} onClose={onClose} size={'full'}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Cart or Bag Or Basket</ModalHeader>
@@ -107,12 +100,15 @@ export const Cart = () => {
             </form>
             <FormControl>
               <FormLabel>{'Company size of the license owner'}</FormLabel>
-              {/*<SelectLicenseSize />*/}
+              <SelectLicenseSize ctx={cartCtx} />
             </FormControl>
-            {order.line_items &&
-              order.line_items.map((lineItem) => (
-                <CartItem key={lineItem.id} lineItem={lineItem} />
-              ))}
+            {
+              // @TODO: this check for order being defined shouldn't be needed
+              order?.line_items &&
+                order.line_items.map((lineItem) => (
+                  <CartItem key={lineItem.id} lineItem={lineItem} />
+                ))
+            }
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
@@ -124,3 +120,5 @@ export const Cart = () => {
     </>
   )
 }
+
+export default Cart
