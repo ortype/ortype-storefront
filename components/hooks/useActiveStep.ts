@@ -11,7 +11,7 @@ interface UseActiveStep {
 
 // @TODO: "Cart", "Email", "Address", "License", "Payment"
 const STEPS: SingleStepEnum[] = [
-  'Cart',
+  // 'Cart',
   'Email',
   'Address',
   'License',
@@ -33,9 +33,9 @@ export function checkIfCannotGoNext(
 }
 
 export const useActiveStep = (): UseActiveStep => {
-  const [activeStep, setActiveStep] = useState<SingleStepEnum>('Cart')
+  const [activeStep, setActiveStep] = useState<SingleStepEnum>('Email')
   const [lastActivableStep, setLastActivableStep] =
-    useState<SingleStepEnum>('Cart')
+    useState<SingleStepEnum>('Email')
   const [steps, setSteps] = useState<SingleStepEnum[]>(STEPS)
 
   const ctx = useContext(CheckoutContext)
@@ -58,9 +58,11 @@ export const useActiveStep = (): UseActiveStep => {
     if (ctx && (isFirstLoading || !ctx.isLoading)) {
       // Use it to alter steps of checkout
       if (ctx.isShipmentRequired) {
-        setSteps(['Cart', 'Email', 'Address', 'Shipping', 'Payment'])
+        // setSteps(['Cart', 'Email', 'Address', 'Shipping', 'Payment'])
+        setSteps(['Email', 'Address', 'Shipping', 'Payment'])
       } else {
-        setSteps(['Cart', 'Email', 'Address', 'License', 'Payment'])
+        // setSteps(['Cart', 'Email', 'Address', 'License', 'Payment'])
+        setSteps(['Email', 'Address', 'License', 'Payment'])
       }
 
       const canSelectCustomerAddress =
@@ -117,11 +119,11 @@ export const useActiveStep = (): UseActiveStep => {
       } else if (ctx.isGuest || !ctx.hasEmailAddress) {
         setActiveStep('Email')
         setLastActivableStep('Email')
-      } else {
+      } /* else {
         console.log('Steps: Cart')
         setActiveStep('Cart')
         setLastActivableStep('Cart')
-      }
+      }*/
     }
   }, [isFirstLoading, isLoading])
 

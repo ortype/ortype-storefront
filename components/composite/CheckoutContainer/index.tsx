@@ -12,6 +12,11 @@ const CheckoutContainer = ({ settings, children }: Props): JSX.Element => {
   return (
     <div>
       {/*<CheckoutHead title={settings.companyName} favicon={settings.favicon} />*/}
+      {/*
+        // We wrap CommerceLayer at the _app level with a different import `import { CommerceLayer } from '@commercelayer/react-components'
+        // without `@commercelayer/react-components/auth/CommerceLayer` we get an error from the SDK
+        // what's the difference?
+      */}
       <CommerceLayer
         accessToken={settings.accessToken}
         endpoint={settings.endpoint}

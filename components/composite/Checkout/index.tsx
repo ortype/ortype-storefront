@@ -114,7 +114,7 @@ const Checkout: React.FC<Props> = ({
                 onStepChange={setActiveStep}
                 lastActivable={lastActivableStep}
               />
-              <Accordion>
+              {/*              <Accordion>
                 <AccordionProvider
                   activeStep={activeStep}
                   lastActivableStep={lastActivableStep}
@@ -131,7 +131,7 @@ const Checkout: React.FC<Props> = ({
                     <StepCart className="mb-6" step={1} />
                   </AccordionItem>
                 </AccordionProvider>
-              </Accordion>
+              </Accordion>*/}
               <Accordion>
                 <AccordionProvider
                   activeStep={activeStep}
