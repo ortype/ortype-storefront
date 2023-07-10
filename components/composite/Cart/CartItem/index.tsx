@@ -31,7 +31,7 @@ interface CartItemProps {
 export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   const { skuOptions, licenseSize, setLicenseTypes, deleteLineItem } = useCart()
 
-  const typeOptions = skuOptions
+  const formattedTypeOptions = skuOptions
     .sort(
       (a, b) =>
         parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
@@ -59,14 +59,14 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     }
   )
 
-  // const initialTypeOption = typeOptions.find((option) => option.value === lineItem.line_item_options.)
+  // const initialTypeOption = formattedTypeOptions.find((option) => option.value === lineItem.line_item_options.)
 
   const initialSelectedSkuOptions = lineItem.line_item_options?.map(
     ({ sku_option }) => sku_option
   )
-  const [selectedTypes, setSelectedTypes] = useState<Type[]>(
-    initialLineItemOptions
-  )
+  const [selectedTypeOptionValues, setSelectedTypeOptionValues] = useState<
+    Type[]
+  >(initialLineItemOptions)
   const [selectedSkuOptions, setSelectedSkuOptions] = useState<SkuOption[]>(
     initialSelectedSkuOptions
   )
@@ -75,9 +75,9 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     const selectedSkuOptions = selectedOptions.map((option: any) =>
       skuOptions.find((type) => type.reference === option.value)
     )
-    setSelectedSkuOptions(selectedSkuOptions)
-    setSelectedTypes(selectedOptions)
-    setLicenseTypes({ lineItem, selectedSkuOptions })
+    setSelectedSkuOptions(selectedSkuOptions) // Update price calculation
+    setSelectedTypeOptionValues(selectedOptions) // Update Select
+    setLicenseTypes({ lineItem, selectedSkuOptions }) // Call API and update Provider state
 
     // @TODO: loading indicator?
   }
@@ -105,9 +105,9 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
           <Box flexGrow={1}>
             <Select
               placeholder={'Select a type'}
-              options={typeOptions}
+              options={formattedTypeOptions}
               isMulti
-              value={selectedTypes}
+              value={selectedTypeOptionValues}
               onChange={handleTypeChange}
             />
           </Box>

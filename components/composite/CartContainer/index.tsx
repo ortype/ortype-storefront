@@ -1,4 +1,4 @@
-import { OrderContainer } from '@commercelayer/react-components'
+import { OrderContainer, OrderStorage } from '@commercelayer/react-components'
 import CommerceLayer from '@commercelayer/react-components/auth/CommerceLayer'
 import Cart from 'components/composite/Cart'
 import { CartProvider, useCart } from 'components/data/CartProvider'
@@ -15,13 +15,8 @@ const CartContainer = ({ settings, children }: Props): JSX.Element => {
     isLoading,
     retryOnError,
   } = useCartSettingsOrInvalid(settings)
-  console.log(
-    'useCartSettingsOrInvalid(settings): ',
-    useCartSettingsOrInvalid(settings),
-    cartSettings
-  )
 
-  console.log('isLoading: ', isLoading, cartSettings)
+  console.log('useCartSettings isLoading: ', isLoading, cartSettings)
   if (isLoading || (!cartSettings && !retryOnError))
     return <>{'Cart: Loading... or no orderId'}</>
 
@@ -34,7 +29,9 @@ const CartContainer = ({ settings, children }: Props): JSX.Element => {
 
   return (
     <CartProvider {...settings} {...cartSettings}>
-      <OrderContainer>{children}</OrderContainer>
+      <OrderStorage persistKey={`order`}>
+        <OrderContainer>{children}</OrderContainer>
+      </OrderStorage>
     </CartProvider>
   )
 }

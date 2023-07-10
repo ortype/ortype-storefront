@@ -27,32 +27,33 @@ import { CartContext, useCart } from 'components/data/CartProvider'
 import { useRapidForm } from 'rapid-form'
 import { useContext, useState } from 'react'
 
-const Cart = () => {
+const LicenseOwnerInput = () => {
   const [isLocalLoader, setIsLocalLoader] = useState(false)
   const { handleSubmit, submitValidation, validation, values, errors } =
     useRapidForm()
   const { updateOrder } = useOrderContainer()
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const cartCtx = useContext(CartContext)
-  const { orderId, order, itemsCount, licenseOwner, setLicenseOwner } =
-    useCart()
-  console.log('useCart(): ', order)
+  const { order, orderId, licenseOwner, setLicenseOwner } = useCart()
 
+  console.log('useOrderContainer(): ', useOrderContainer())
   const s = async (values, err, e) => {
     setIsLocalLoader(true)
+    console.log('LicenseOwnerInput: ', order, licenseOwner)
     const owner = { is_client: false, full_name: values['full_name'].value }
     try {
+      // @TODO: updateOrder returns an order object without `line_items`
+      // consider using the CartProvider reducer with utils to update the order directly
+      // we pass the `owner` and `orderId` and call the API and re-fetch the order
       const { order: updatedOrder } = await updateOrder({
         id: orderId,
         attributes: {
           metadata: {
             license: {
-              ...order.metadata?.license,
+              ...order?.metadata?.license,
               owner,
             },
           },
         },
-        // there is an `include` param
+        // @TODO: there is an `include` param, maybe this can pass the `line_items` back
       })
       console.log('updatedOrder: ', updatedOrder)
 
@@ -66,8 +67,37 @@ const Cart = () => {
     setIsLocalLoader(false)
   }
 
+  return (
+    <form
+      as={Box}
+      ref={submitValidation}
+      autoComplete="off"
+      onSubmit={handleSubmit(s)}
+    >
+      <FormControl>
+        <FormLabel>{'License Owner/Company*'}</FormLabel>
+        <Input
+          name={'full_name'}
+          type={'text'}
+          ref={validation}
+          size={'lg'}
+          defaultValue={order?.metadata?.license?.owner?.full_name}
+        />
+      </FormControl>
+      <Button type={'submit'}>Save</Button>
+    </form>
+  )
+}
+
+const Cart = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cartCtx = useContext(CartContext)
+  const { orderId, order, itemsCount, licenseOwner, setLicenseOwner } =
+    useCart()
+  console.log('useCart(): order', order)
+
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
-  if (!orderId) {
+  if (!orderId || !order) {
     return <div>{'No items in your cart'}</div>
   }
 
@@ -80,31 +110,14 @@ const Cart = () => {
           <ModalHeader>Cart or Bag Or Basket</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <form
-              as={Box}
-              ref={submitValidation}
-              autoComplete="off"
-              onSubmit={handleSubmit(s)}
-            >
-              <FormControl>
-                <FormLabel>{'License Owner/Company*'}</FormLabel>
-                <Input
-                  name={'full_name'}
-                  type={'text'}
-                  ref={validation}
-                  size={'lg'}
-                  defaultValue={order?.metadata?.license?.owner?.full_name}
-                />
-              </FormControl>
-              <Button type={'submit'}>Save</Button>
-            </form>
+            <LicenseOwnerInput />
             <FormControl>
               <FormLabel>{'Company size of the license owner'}</FormLabel>
               <SelectLicenseSize ctx={cartCtx} />
             </FormControl>
             {
               // @TODO: this check for order being defined shouldn't be needed
-              order?.line_items &&
+              order.line_items &&
                 order.line_items.map((lineItem) => (
                   <CartItem key={lineItem.id} lineItem={lineItem} />
                 ))

@@ -24,6 +24,8 @@ import {
   updateLineItemsLicenseSize,
 } from 'components/data/CheckoutProvider/utils'
 
+import { calculateSettings } from 'components/data/CartProvider/utils'
+
 export type LicenseOwner = {
   full_name?: string | null
 }
@@ -39,6 +41,7 @@ export interface CartProviderData {
    * When `true` it means that app is fetching content from API and is not ready to return the `Settings` object.
    * It can be used to control the UI state.
    */
+  order: Order
   licenseOwner: LicenseOwner
   licenseSize: LicenseSize
   itemsCount: number
@@ -76,6 +79,7 @@ interface CartProviderProps {
 
 export interface AppStateData {
   order?: Order
+  itemsCount: number
   licenseOwner: LicenseOwner
   hasLicenseOwner?: boolean
   licenseSize: LicenseSize
@@ -86,6 +90,7 @@ export interface AppStateData {
 
 const initialState: AppStateData = {
   order: undefined,
+  itemsCount: 0,
   isLoading: true,
   isFirstLoading: true,
   hasLicenseOwner: false,
@@ -100,7 +105,7 @@ export const useCart = (): CartProviderData => {
   console.log('useCart provider: ', ctx, ctx.isLoading, !!ctx.isLoading)
   return {
     ...ctx,
-    // isLoading: !!ctx.isLoading,
+    isLoading: !!ctx.isLoading,
   }
 }
 
@@ -133,11 +138,16 @@ export const CartProvider: FC<CartProviderProps> = ({
 
     console.log('fetchInitialOrder settings: ', order)
 
+    const others = calculateSettings(order)
+
     dispatch({
       type: ActionType.SET_ORDER,
       payload: {
         order,
-        others: {},
+        others: {
+          itemsCount: (order.line_items || []).length,
+          ...others,
+        },
       },
     })
   }
@@ -162,7 +172,9 @@ export const CartProvider: FC<CartProviderProps> = ({
     order?: Order
   }) => {
     dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = params.order ?? (await getOrderFromRef())
+    // const currentOrder = params.order ?? (await getOrderFromRef())
+    // @TODO: The order returned from `useOrderContainer.updateOrder` doesn't contain line_items
+    const currentOrder = await fetchOrder(cl, orderId)
     dispatch({
       type: ActionType.SET_LICENSE_OWNER,
       payload: { licenseOwner: params.licenseOwner, order: currentOrder },
@@ -174,7 +186,9 @@ export const CartProvider: FC<CartProviderProps> = ({
     order?: Order
   }) => {
     dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = params.order ?? (await getOrderFromRef())
+    // const currentOrder = params.order ?? (await getOrderFromRef())
+    // @TODO: The order returned from `useOrderContainer.updateOrder` doesn't contain line_items
+    const currentOrder = await fetchOrder(cl, orderId)
     await updateLineItemsLicenseSize({
       cl,
       order: currentOrder,
@@ -219,6 +233,7 @@ export const CartProvider: FC<CartProviderProps> = ({
       dispatch({
         type: ActionType.DELETE_LINE_ITEM,
         payload: { order: await fetchOrder(cl, orderId) },
+        // @TODO: maybe need to update `state.itemsCount` here
       })
     } catch (error: any) {
       console.log('deleteLineItem error: ', error)
@@ -245,7 +260,6 @@ export const CartProvider: FC<CartProviderProps> = ({
     <CartContext.Provider
       value={{
         ...state,
-        itemsCount: (orderRef?.current?.line_items || []).length,
         orderId,
         accessToken,
         slug,

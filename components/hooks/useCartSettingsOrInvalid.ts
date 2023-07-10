@@ -87,8 +87,6 @@ export const useCartSettingsOrInvalid = ({
     return { settings: undefined, retryOnError: true, isLoading: false }
   }
 
-  console.log('useCartSettingsOrInvalid: ', settings)
-
   return {
     settings,
     isLoading: false,
