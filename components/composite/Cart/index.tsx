@@ -5,6 +5,7 @@ import {
   FormLabel,
   Heading,
   Input,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -89,12 +90,20 @@ const LicenseOwnerInput = () => {
   )
 }
 
+const CheckoutButton = ({ isDisabled, order }) => {
+  return (
+    <Button as={Link} disabled={isDisabled} href={`/checkout/${order?.id}`}>
+      {'Checkout'}
+    </Button>
+  )
+}
+
 const Cart = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cartCtx = useContext(CartContext)
   const { orderId, order, itemsCount, licenseOwner, setLicenseOwner } =
     useCart()
-  console.log('useCart(): order', order)
+  // console.log('useCart(): order', order)
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
   if (!orderId || !order) {
@@ -124,9 +133,7 @@ const Cart = () => {
             }
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
+            <CheckoutButton order={order} isDisabled={false} />
           </ModalFooter>
         </ModalContent>
       </Modal>

@@ -102,7 +102,7 @@ export const CartContext = createContext<CartProviderData | null>(null)
 
 export const useCart = (): CartProviderData => {
   const ctx = useContext(CartContext)
-  console.log('useCart provider: ', ctx, ctx.isLoading, !!ctx.isLoading)
+  // console.log('useCart provider: ', ctx, ctx.isLoading, !!ctx.isLoading)
   return {
     ...ctx,
     isLoading: !!ctx.isLoading,
@@ -136,7 +136,7 @@ export const CartProvider: FC<CartProviderProps> = ({
     dispatch({ type: ActionType.START_LOADING })
     const order = await getOrderFromRef()
 
-    console.log('fetchInitialOrder settings: ', order)
+    // console.log('fetchInitialOrder settings: ', order)
 
     const others = calculateSettings(order)
 
@@ -157,7 +157,7 @@ export const CartProvider: FC<CartProviderProps> = ({
     dispatch({ type: ActionType.START_LOADING })
 
     const skuOptions = await cl.sku_options.list()
-    console.log('fetchSkuOptions: ', skuOptions)
+    // console.log('fetchSkuOptions: ', skuOptions)
 
     dispatch({
       type: ActionType.SET_SKU_OPTIONS,
@@ -251,8 +251,6 @@ export const CartProvider: FC<CartProviderProps> = ({
     }
     return unsubscribe()
   }, [orderId, accessToken])
-
-  console.log('state.isLoading: ', state.isLoading, state.order)
 
   // @TODO: Why is isLoading false when `order` is undefined
 

@@ -16,7 +16,7 @@ const CartContainer = ({ settings, children }: Props): JSX.Element => {
     retryOnError,
   } = useCartSettingsOrInvalid(settings)
 
-  console.log('useCartSettings isLoading: ', isLoading, cartSettings)
+  // console.log('useCartSettings isLoading: ', isLoading, cartSettings)
   if (isLoading || (!cartSettings && !retryOnError))
     return <>{'Cart: Loading... or no orderId'}</>
 

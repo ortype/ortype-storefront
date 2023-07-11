@@ -326,7 +326,7 @@ const BuyWrapper: React.FC<Props> = ({
       )
       setSelectedSize(initialSize)
     }
-  }, [order?.updatedAt])
+  }, [])
 
   console.log('selectedSize: ', selectedSize)
 
@@ -537,18 +537,16 @@ const FontWrapper = ({ cl, font, accessToken, endpoint }) => {
           </SimpleGrid>
         </Box>
       }
-      {order?.line_items?.length > 0 && (
+      {/*
+      order?.line_items?.length > 0 && (
         <Box>
           <CheckoutButton
             // isDisabled={order?.line_items?.length === 0}
             order={order}
             accessToken={accessToken}
           />
-          {/*
-          // @TODO: Also this one is not working
-          <CheckoutLink label={'Checkout'} />*/}
         </Box>
-      )}
+      )*/}
     </article>
   )
 }
@@ -581,9 +579,9 @@ export default function FontPage(props: FontPageProps) {
         <Container my={8}>
           <OrderStorage persistKey={`order`}>
             <OrderContainer
-              attributes={{
-                metadata: { license: { size: sizes[0] } },
-              }}
+            // attributes={{
+            //   metadata: { license: { size: sizes[0] } },
+            // }}
             >
               <FontWrapper
                 cl={cl}
