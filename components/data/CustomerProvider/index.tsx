@@ -1,8 +1,8 @@
 import CommerceLayer from '@commercelayer/sdk'
 import type { Settings } from 'CustomApp'
+import { createContext, useEffect, useState } from 'react'
 import { getCustomerDetails } from 'utils/getCustomerDetails'
 import { getInfoFromJwt } from 'utils/getInfoFromJwt'
-import { createContext, useEffect, useState } from 'react'
 
 type CustomerProviderData = Pick<
   Settings,
@@ -36,6 +36,7 @@ type CustomerProviderProps = Pick<
   Settings,
   'customerId' | 'accessToken' | 'endpoint'
 > & {
+  slug: string
   domain: string
   children: React.ReactNode
 }
@@ -43,6 +44,7 @@ type CustomerProviderProps = Pick<
 export function CustomerProvider({
   children,
   customerId,
+  slug,
   accessToken,
   endpoint,
   domain,
@@ -59,7 +61,7 @@ export function CustomerProvider({
     setState({ ...state, isLoading: true })
 
     // @TODO: we have the slug in the SettingsProvider
-    const { slug } = getInfoFromJwt(accessToken)
+    // const { slug } = getInfoFromJwt(accessToken)
     if (!slug) {
       return
     }

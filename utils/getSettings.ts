@@ -26,6 +26,8 @@ interface CommerceLayerAppConfig {
   clientId: string
   endpoint: string
   marketId: string
+  domain: string
+  selfHostedSlug: string
 }
 
 type GetSettingsProps = Pick<Settings, 'accessToken'> & {
@@ -45,9 +47,10 @@ export const getSettings = async ({
   config,
 }: GetSettingsProps): Promise<Settings | InvalidSettings> => {
   const domain = config.domain
-  const { slug, kind, customerId, isTest } = getInfoFromJwt(accessToken)
+  const slug = config.selfHostedSlug
+  const { kind, customerId, isTest } = getInfoFromJwt(accessToken)
 
-  console.log('getSettings: ', config, accessToken, customerId, kind)
+  console.log('getSettings: ', config, slug, accessToken, customerId, kind)
 
   if (!slug) {
     return makeInvalidSettings()
@@ -75,7 +78,7 @@ export const getSettings = async ({
   }
 
   const client = CommerceLayer({
-    organization: slug,
+    organization: 'or-type-mvp',
     accessToken,
     domain,
   })
@@ -95,17 +98,32 @@ export const getSettings = async ({
   return {
     // config: { accessToekn, endpoint, slug, domain, etc... }
     // consider grouping these into an config object
+    config: {
+      ...config,
+      accessToken,
+      slug,
+    },
+    ...config,
+    slug,
+    // domain,
     accessToken,
     kind,
     isTest,
-    endpoint: `https://${slug}.${domain}`,
-    domain,
-    slug,
     isGuest: !customerId,
     customerId: customerId as string,
     isValid: true,
     // organization @consider passing the below contained in an object
     // organization: { companyName, language, primaryColor, logoUrl, faviconUrl, gtmId }
+    organization: {
+      language: defaultSettings.language,
+      primaryColor:
+        (organization?.primary_color as string) || defaultSettings.primaryColor,
+      logoUrl: organization?.logo_url || '',
+      supportEmail: organization.support_email,
+      supportPhone: organization.support_phone,
+      faviconUrl: organization?.favicon_url || defaultSettings.faviconUrl,
+      gtmId: isTest ? organization?.gtm_id_test : organization?.gtm_id,
+    },
     companyName: organization?.name || defaultSettings.companyName,
     language: defaultSettings.language,
     primaryColor:

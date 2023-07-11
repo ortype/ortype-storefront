@@ -15,6 +15,8 @@ interface CommerceLayerAppConfig {
   clientId: string
   endpoint: string
   marketId: string
+  domain: string
+  selfHostedSlug: string
 }
 
 interface SettingsProviderProps {

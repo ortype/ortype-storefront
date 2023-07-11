@@ -20,6 +20,7 @@ const {
   Text,
   Divider,
   Button,
+  ButtonGroup,
   Box,
   Container,
   Flex,
@@ -44,6 +45,7 @@ const theme = extendBaseTheme({
     RadioGroup,
     Radio,
     Button,
+    ButtonGroup,
     Input,
     FormControl,
     FormLabel,
@@ -104,7 +106,8 @@ function App({ Component, pageProps, props }: AppProps) {
 App.getInitialProps = async (ctx) => {
   return {
     props: {
-      selfHostedSlug: 'ortype-mvp',
+      slug: 'or-type-mvp',
+      selfHostedSlug: 'or-type-mvp',
       clientId: process.env.CL_CLIENT_ID,
       endpoint: process.env.CL_ENDPOINT,
       marketId: process.env.CL_SCOPE_GLOBAL,

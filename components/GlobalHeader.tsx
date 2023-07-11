@@ -4,7 +4,8 @@
 // We also want to use the Customer context in the header for Account
 // import Cart from 'components/composite/Cart'
 // import CartContainer from 'components/composite/CartContainer'
-import { Box, Flex, Link as ChakraLink } from '@chakra-ui/react'
+import { Box, ButtonGroup, Flex, Link as ChakraLink } from '@chakra-ui/react'
+import { Account } from 'components/composite/Account'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
@@ -33,11 +34,12 @@ export const GlobalHeader: React.FC<Props> = ({ settings }) => {
         <ChakraLink as={Link} href={'/'}>
           {'Or Type'}
         </ChakraLink>
-        <Box>
+        <ButtonGroup gap={'2'}>
+          <Account />
           <DynamicCartContainer settings={settings}>
             <DynamicCart />
           </DynamicCartContainer>
-        </Box>
+        </ButtonGroup>
       </Flex>
     </>
   )
