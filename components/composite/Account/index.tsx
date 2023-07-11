@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Container,
   FormControl,
   FormLabel,
@@ -43,8 +44,6 @@ export const Account = () => {
   const settingsCtx = useContext(SettingsContext)
 
   const handleLogout = () => {
-    // @TODO: Logout is actually just a state change in the SettingsProvider
-    // seems we may need to clear `checkoutAccessToken`
     Cookies.remove('clAccessToken')
     settingsCtx?.handleLogout()
   }
@@ -65,14 +64,16 @@ export const Account = () => {
 
   return (
     <>
-      <Button onClick={onLoginOpen}>{`Login`}</Button>
+      <Button onClick={onLoginOpen}>
+        {customerCtx.customerId ? `Account` : `Login`}
+      </Button>
       <Modal isOpen={isRegisterOpen} onClose={onRegisterClose} size={'lg'}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Register</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <RegisterForm emailAddress={''} />
+            <RegisterForm />
           </ModalBody>
           <ModalFooter>
             <Button size={'sm'} onClick={handleLoginClick}>
@@ -87,18 +88,25 @@ export const Account = () => {
           <ModalHeader>Login</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <LoginForm emailAddress={''} />
+            <LoginForm />
           </ModalBody>
           <ModalFooter>
-            {customerCtx?.email ? (
-              <Button size={'sm'} onClick={handleLogout}>
-                {'Logout'}
-              </Button>
-            ) : (
-              <Button size={'sm'} onClick={handleRegisterClick}>
-                {'Register'}
-              </Button>
-            )}
+            <ButtonGroup gap={2}>
+              {customerCtx?.customerId && (
+                <Button
+                  as={Link}
+                  href={`http://localhost:3001/orders?accessToken=${customerCtx?.accessToken}`}
+                  isExternal
+                >
+                  {'My account'}
+                </Button>
+              )}
+              {customerCtx?.email ? (
+                <Button onClick={handleLogout}>{'Logout'}</Button>
+              ) : (
+                <Button onClick={handleRegisterClick}>{'Register'}</Button>
+              )}
+            </ButtonGroup>
           </ModalFooter>
         </ModalContent>
       </Modal>

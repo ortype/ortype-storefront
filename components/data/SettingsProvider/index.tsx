@@ -80,9 +80,7 @@ export function SettingsProvider({
   )
   const [isLoading, setIsLoading] = useState(true)
 
-  // const accessToken = getAccessTokenFromUrl()
   // useGetToken gets a cookie with the token if present, otherwise it requests a token with these params
-  console.log('userState: ', userState)
   const accessToken = useGetToken({
     clientId: config.clientId,
     endpoint: config.endpoint,

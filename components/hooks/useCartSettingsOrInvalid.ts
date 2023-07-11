@@ -9,7 +9,8 @@ import { getCartSettings } from 'utils/getCartSettings'
 import { getOrderDetails } from 'utils/getOrderDetails'
 import { isValidOrderIdFormat } from 'utils/isValidOrderIdFormat'
 import { isValidStatus } from 'utils/isValidStatus'
-import { useLocalStorageToken } from './useLocalStorageToken'
+// import { useLocalStorageToken } from './useLocalStorageToken'
+import Cookies from 'js-cookie'
 
 // default settings are by their nature not valid to show a full cart
 // they will be used as fallback for errors or 404 page
@@ -43,6 +44,7 @@ export const useCartSettingsOrInvalid = ({
   const [isFetching, setIsFetching] = useState(true)
 
   // this bit checks the accessToken localStorage and updates it if not synced
+  /*
   const [savedAccessToken, setAccessToken] = useLocalStorageToken(
     // @TODO: use the same localstorage key as the rest of the app (?)
     'checkoutAccessToken',
@@ -54,9 +56,15 @@ export const useCartSettingsOrInvalid = ({
       setAccessToken(accessToken)
     }
   }, [accessToken])
-
+  
   const syncedAccessToken =
     accessToken === savedAccessToken || (!accessToken && savedAccessToken)
+  
+  */
+
+  const getCookieToken = Cookies.get(`clAccessToken`)
+  const syncedAccessToken =
+    accessToken === getCookieToken || (!accessToken && getCookieToken)
 
   const orderId = localStorage.getItem('order')
 

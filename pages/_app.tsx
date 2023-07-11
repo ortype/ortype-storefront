@@ -73,6 +73,7 @@ const theme = extendBaseTheme({
 })
 
 function App({ Component, pageProps, props }: AppProps) {
+  // @TODO: Don't show GlobalHeader on /studio route
   return (
     <ChakraBaseProvider theme={theme}>
       <SettingsProvider config={{ ...props }}>

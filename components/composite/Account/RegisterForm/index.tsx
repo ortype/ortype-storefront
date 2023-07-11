@@ -18,11 +18,9 @@ import Cookies from 'js-cookie'
 import { useRapidForm } from 'rapid-form'
 import React, { useContext, useEffect, useState } from 'react'
 
-interface Props {
-  emailAddress: string
-}
+interface Props {}
 
-export const RegisterForm: React.FC<Props> = ({ emailAddress }) => {
+export const RegisterForm: React.FC<Props> = () => {
   const customerContext = useContext(CustomerContext)
   const settingsCtx = useContext(SettingsContext)
   const handleRegister = (customer) => settingsCtx?.handleRegister(customer)
@@ -86,7 +84,7 @@ export const RegisterForm: React.FC<Props> = ({ emailAddress }) => {
           onBlur={handleOnBlur}
           ref={validation}
           size={'lg'}
-          defaultValue={emailAddress}
+          defaultValue={customerContext.email}
         />
       </FormControl>
       <FormControl>

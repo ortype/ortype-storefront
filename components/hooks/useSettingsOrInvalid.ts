@@ -7,7 +7,8 @@ import { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { getCheckoutSettings } from 'utils/getCheckoutSettings'
 
-import { useLocalStorageToken } from './useLocalStorageToken'
+import Cookies from 'js-cookie'
+// import { useLocalStorageToken } from './useLocalStorageToken'
 
 interface UseSettingsOrInvalid {
   settings?: CheckoutSettings
@@ -49,23 +50,12 @@ export const useSettingsOrInvalid = (): UseSettingsOrInvalid => {
   >(undefined)
   const [isFetching, setIsFetching] = useState(true)
 
-  // this bit checks the accessToken localStorage and updates it if not synced
-  const [savedAccessToken, setAccessToken] = useLocalStorageToken(
-    // @TODO: use the same localstorage key as the rest of the app (?)
-    'checkoutAccessToken',
-    accessToken as string
-  )
+  const getCookieToken = Cookies.get(`clAccessToken`)
 
   const isPaymentReturn = paymentReturn === 'true' || !!redirectResult
 
-  useEffect(() => {
-    if (accessToken && accessToken !== savedAccessToken) {
-      setAccessToken(accessToken)
-    }
-  }, [accessToken])
-
   const syncedAccessToken =
-    accessToken === savedAccessToken || (!accessToken && savedAccessToken)
+    accessToken === getCookieToken || (!accessToken && getCookieToken)
 
   useEffect(() => {
     if (syncedAccessToken) {

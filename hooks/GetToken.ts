@@ -1,6 +1,7 @@
 import { getSalesChannelToken } from '@commercelayer/js-auth'
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
+import { useLocalStorageToken } from './useLocalStorageToken'
 
 // NOTE: sales channel applications can read resource lists only for SKUs, SKU options, prices, promotions, and bundles
 /*
@@ -58,7 +59,7 @@ export const useGetToken: UseGetToken = ({
             },
             user // @TODO: with user active the token seems to expire / throw an error by the next day
           )
-          setToken(auth?.accessToken as string) // TODO: add to LocalStorage
+          setToken(auth?.accessToken as string)
           console.log('auth: ', auth)
           Cookies.set(`clAccessToken`, auth?.accessToken as string, {
             // @ts-ignore
