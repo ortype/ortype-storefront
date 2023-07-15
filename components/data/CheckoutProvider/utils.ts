@@ -205,9 +205,6 @@ export async function updateLineItemLicenseTypes({
     (option) => !newSkuOptionIds.includes(option.sku_option.id)
   )
 
-  // @TODO: this creates duplicate line_item_options
-  // we also need to DELETE existing lineItemOptions that are not present in selectedSkuOptions
-
   // lineItem.line_item_options
   // we have the options on the lineItem, we can then check if an sku_option.id is present in this array
   // which is not found in selectedSkuOptions, and delete that line_item
