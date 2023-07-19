@@ -56,7 +56,8 @@ export default async function handler(
 
   try {
     for (const font of await getFonts()) {
-      await maybeUpsert(font, true)
+        // await maybeUpsert(font, font.name.includes('Rather'))
+        await maybeUpsert(font)
     }
     return res.status(200).json({ message: 'Successful' })
   } catch (error) {
