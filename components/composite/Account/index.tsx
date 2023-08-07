@@ -1,24 +1,24 @@
 import {
-  Box,
-  Button,
-  ButtonGroup,
-  Container,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Link,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  SimpleGrid,
-  Stack,
-  Switch,
-  useDisclosure,
+    Box,
+    Button,
+    ButtonGroup,
+    Container,
+    FormControl,
+    FormLabel,
+    Heading,
+    Input,
+    Link,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    SimpleGrid,
+    Stack,
+    Switch,
+    useDisclosure
 } from '@chakra-ui/react'
 import CommerceLayer, { CustomerCreate } from '@commercelayer/sdk'
 import { CustomerContext } from 'components/data/CustomerProvider'
@@ -26,6 +26,7 @@ import { SettingsContext } from 'components/data/SettingsProvider'
 import Cookies from 'js-cookie'
 import { useRapidForm } from 'rapid-form'
 import React, { useContext, useEffect, useState } from 'react'
+
 import { LoginForm } from './LoginForm'
 import { RegisterForm } from './RegisterForm'
 
@@ -95,8 +96,9 @@ export const Account = () => {
               {customerCtx?.customerId && (
                 <Button
                   as={Link}
-                  href={`http://localhost:3001/orders?accessToken=${customerCtx?.accessToken}`}
-                  isExternal
+                  href={`/account`}
+                  // href={`http://localhost:3001/orders?accessToken=${customerCtx?.accessToken}`}
+                  // isExternal
                 >
                   {'My account'}
                 </Button>

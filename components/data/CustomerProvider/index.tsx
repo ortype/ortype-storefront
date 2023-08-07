@@ -2,7 +2,7 @@ import CommerceLayer from '@commercelayer/sdk'
 import type { Settings } from 'CustomApp'
 import { createContext, useEffect, useState } from 'react'
 import { getCustomerDetails } from 'utils/getCustomerDetails'
-import { getInfoFromJwt } from 'utils/getInfoFromJwt'
+// import { getInfoFromJwt } from 'utils/getInfoFromJwt'
 
 type CustomerProviderData = Pick<
   Settings,
@@ -13,7 +13,10 @@ type CustomerProviderData = Pick<
   hasPassword: boolean
   isLoading: boolean
   isFirstLoading: boolean
+  showMobileMenu: boolean
   refetchCustomer: () => Promise<void>
+  closeMobileMenu: () => void
+  toggleMobileMenu: () => void
 }
 
 interface AppStateData {
@@ -21,6 +24,8 @@ interface AppStateData {
   hasPassword: boolean
   isLoading: boolean
   isFirstLoading: boolean
+  showMobileMenu: boolean
+
 }
 
 const initialState: AppStateData = {
@@ -28,6 +33,8 @@ const initialState: AppStateData = {
   isFirstLoading: true,
   email: '',
   hasPassword: false,
+  showMobileMenu: false,
+
 }
 
 export const CustomerContext = createContext<CustomerProviderData | null>(null)
@@ -82,6 +89,8 @@ export function CustomerProvider({
         hasPassword: customer?.has_password ?? false,
         isLoading: false,
         isFirstLoading: false,
+        showMobileMenu: false,
+
       })
     })
   }
@@ -102,6 +111,12 @@ export function CustomerProvider({
         refetchCustomer: async () => {
           return await fetchCustomerHandle(customerId, accessToken)
         },
+        closeMobileMenu: () => {
+          setState({ ...state, showMobileMenu: false })
+        },
+        toggleMobileMenu: () => {
+          setState({ ...state, showMobileMenu: !state.showMobileMenu })
+        },        
       }}
     >
       {children}
