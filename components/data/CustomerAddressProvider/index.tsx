@@ -81,3 +81,5 @@ export function CustomerAddressProvider({
     </CustomerAddressContext.Provider>
   )
 }
+
+export default CustomerAddressProvider

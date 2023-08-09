@@ -1,7 +1,5 @@
 import { AddressInputGroup } from "components/composite/Account/Address/AddressInputGroup"
 import { CustomerAddressContext } from "components/data/CustomerAddressProvider"
-// import { appRoutes } from "#data/routes"
-import { SettingsContext } from "components/data/SettingsProvider"
 import Title from "components/ui/Account/Title"
 import { useRouter } from "next/router"
 import { XCircle } from "phosphor-react"
@@ -18,7 +16,6 @@ import {
 } from "./styled"
 
 function CustomerAddressForm(): JSX.Element | null {
-  const appCtx = useContext(SettingsContext)
   const ctx = useContext(CustomerAddressContext)
   const { t } = useTranslation()
   const router = useRouter()
@@ -114,13 +111,7 @@ function CustomerAddressForm(): JSX.Element | null {
           data-test-id="save-address"
           label={t("addresses.addressForm.save")}
           onClick={() => {
-            /*
-            router.push(
-              `${appRoutes.addresses.makePath()}?accessToken=${
-                appCtx?.accessToken
-              }`
-            )
-            */
+            router.push(`account/addresses`)
           }}
           addressId={address?.id}
         />

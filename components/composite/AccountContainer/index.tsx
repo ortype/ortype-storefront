@@ -8,6 +8,8 @@ import Footer from "components/ui/Account/Footer"
 import PageMain from "components/ui/Account/PageMain"
 import type { Settings } from "CustomApp"
 import { IconContext } from "phosphor-react"
+import { SettingsContext } from 'components/data/SettingsProvider'
+import { useContext } from 'react'
 
 interface Props {
   settings: Settings
@@ -15,9 +17,12 @@ interface Props {
 }
 
 function MyAccountContainer({
-  settings,
+  // settings,
   children,
 }: Props): JSX.Element {
+  const { isLoading, settings } = useContext(SettingsContext)  
+  if (isLoading || (!settings)) return <div />  
+
   return (
     <>
           <IconContext.Provider

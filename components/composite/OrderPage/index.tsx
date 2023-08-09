@@ -1,8 +1,5 @@
 import { OrderContainer } from "@commercelayer/react-components/orders/OrderContainer"
 import { OrderNumber } from "@commercelayer/react-components/orders/OrderNumber"
-import { useContext } from "react"
-import { Trans } from "react-i18next"
-
 import OrderAccordion from "components/composite/Account/Order/OrderAccordion"
 import OrderDate from "components/composite/Account/Order/OrderDate"
 import type { OrderStatus } from "components/composite/Account/Order/OrderStatusChip"
@@ -11,7 +8,8 @@ import { SkeletonMainOrder } from "components/composite/Account/Skeleton/Main"
 import { CustomerContext } from 'components/data/CustomerProvider'
 import { OrderProvider } from "components/data/OrderProvider"
 import { useRouter } from "next/router"
-
+import { useContext } from "react"
+import { Trans } from "react-i18next"
 import styled from "styled-components"
 import tw from "twin.macro"
 interface OrderWrapperProps {

@@ -1,14 +1,15 @@
+import 'components/data/i18n'
+import 'tailwindcss/tailwind.css'
+
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
 import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { CustomerProvider } from 'components/data/CustomerProvider'
-import 'components/data/i18n'
 import { SettingsProvider } from 'components/data/SettingsProvider'
 import { GlobalHeader } from 'components/GlobalHeader'
 import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
-import 'tailwindcss/tailwind.css'
 
 const {
   RadioGroup,
@@ -74,6 +75,12 @@ const theme = extendBaseTheme({
 
 function App({ Component, pageProps, props }: AppProps) {
   // @TODO: Don't show GlobalHeader on /studio route
+
+  // @TODO: Add Types for getLayout
+  // https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript
+  const getLayout = Component.getLayout || ((page) => page)
+  console.log('getLayout: ', getLayout())
+
   return (
     <ChakraBaseProvider theme={theme}>
       <SettingsProvider config={{ ...props }}>
@@ -94,7 +101,7 @@ function App({ Component, pageProps, props }: AppProps) {
                 {...props}
               >
                 <GlobalHeader settings={settings} />
-                <Component {...pageProps} />
+                {getLayout(<Component {...pageProps} />)}
               </CustomerProvider>
             </CommerceLayer>
           )
