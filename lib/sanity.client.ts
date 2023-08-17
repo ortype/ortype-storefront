@@ -179,6 +179,23 @@ export async function findFontVariantByUidAndVersion(
   return {} as any
 }
 
+export async function findFontVariantById(
+  id: string,
+): Promise<{ fontVariant: FontVariant }> {
+  if (client) {
+    return (
+      (await client.fetch(
+        '*[_type == $type && _id == $id][0]',
+        {
+          type: 'fontVariant',
+          id,
+        }
+      )) || ({} as any)
+    )
+  }
+  return {} as any
+}
+
 export async function getAllFonts(): Promise<Font[]> {
   if (client) {
     return (await client.fetch(fontsQuery)) || []

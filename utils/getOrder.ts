@@ -25,7 +25,7 @@ export const getOrder = async (config: GetOrderConfig) => {
   return retryCall(() => getAsyncOrder(client, orderId))
 }
 
-const getAsyncOrder = async (client: CommerceLayerClient, orderId: string) => {
+export const getAsyncOrder = async (client: CommerceLayerClient, orderId: string) => {
   return await client.orders.retrieve(orderId, {
     fields: {
       orders: [
@@ -34,10 +34,11 @@ const getAsyncOrder = async (client: CommerceLayerClient, orderId: string) => {
         "placed_at",
         "number",
         "guest",
+        "line_items",
         "shipping_address",
         "billing_address",
       ],
     },
-    include: ["shipping_address", "billing_address"],
+    include: ["shipping_address", "billing_address", "line_items"],
   })
 }
