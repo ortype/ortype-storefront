@@ -168,12 +168,7 @@ const AddLineItemButton: React.FC<Props> = ({
   const label = isLineItem ? '×' : '+'
 
   return (
-    <Button
-      disabled={disabled}
-      variant={'outline'}
-      onClick={handleClick}
-      disabled={isLoading}
-    >
+    <Button variant={'outline'} onClick={handleClick} disabled={isLoading}>
       {isLoading ? isLoadingString : label}
     </Button>
   )

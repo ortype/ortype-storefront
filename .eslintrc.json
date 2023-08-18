@@ -1,9 +1,11 @@
 {
   "extends": "next",
-  "plugins": ["simple-import-sort"],
+  "plugins": ["@typescript-eslint", "simple-import-sort"],
   "rules": {
-    "simple-import-sort/imports": "warn",
-    "simple-import-sort/exports": "warn",
-    "react-hooks/exhaustive-deps": "error"
+    "simple-import-sort/imports": "0",
+    "simple-import-sort/exports": "0",
+    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/rules-of-hooks": "warn",
+    "import/no-anonymous-default-export": "warn"
   }
 }
