@@ -5,6 +5,6 @@ export default async function test(req, res) {
     type: 'font',
     uid: 'Rather v2'
   })
-  console.log('ortype', test.ortype)
+  console.log('ortype', test._id)
   res.end()
 }
