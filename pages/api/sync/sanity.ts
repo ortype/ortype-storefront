@@ -1,7 +1,5 @@
+import { apiClient } from 'lib/sanity.client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import {
-  apiClient,
-} from 'lib/sanity.client'
 import { getFonts, maybeUpsert } from '../../../lib/api/font'
 
 async function deleteAllFonts() {
@@ -56,8 +54,8 @@ export default async function handler(
 
   try {
     for (const font of await getFonts()) {
-        // await maybeUpsert(font, font.name.includes('Rather'))
-        await maybeUpsert(font)
+      // await maybeUpsert(font, font.name.includes('Rather'))
+      await maybeUpsert(font)
     }
     return res.status(200).json({ message: 'Successful' })
   } catch (error) {
