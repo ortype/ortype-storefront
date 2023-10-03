@@ -45,3 +45,6 @@ studio/.env.development
 
 yarn.lock
 package-lock.json
+
+
+public/fonts/
