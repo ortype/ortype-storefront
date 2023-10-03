@@ -65,20 +65,24 @@ export interface Settings {
 
 const fontFields = groq`
   _id,
+  _type,
   name,
   "slug": slug.current,
   variants[]->{name, _id},
   uid,
-  version
+  version,
+  metafields[]{key, value}
 `
 
 const fontVariantFields = groq`
   _id,
+  _type,
   name,
   "slug": slug.current,
   uid,
   parentUid,
-  version
+  version,
+  metafields[]{key, value}
 `
 
 export const fontSlugsQuery = groq`
@@ -87,6 +91,7 @@ export const fontSlugsQuery = groq`
 
 export interface Font {
   _id: string
+  _type: string
   name?: string
   uid?: string
   version?: string
@@ -96,6 +101,7 @@ export interface Font {
 
 export interface FontVariant {
   _id: string
+  _type: string
   name?: string
   uid?: string
   parentUid?: string
