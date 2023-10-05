@@ -22,7 +22,7 @@ export default function Poem(props: PageProps) {
     <>
       {data?.poems?.edges.map((edge) => (
         <span key={edge.node._id}>
-          {`${edge.node.entry} / ${edge.node.title} / ${edge.node.slug} / [${edge.node.variantId}]`}
+          {`${edge.node.entry} / ${edge.node.title} / ${edge.node._id}`}
           <br />
         </span>
       ))}

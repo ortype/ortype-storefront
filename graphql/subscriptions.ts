@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client'
 
-export const SUB_FONT_TESTER_BY_ID = gql`
+export const ON_TESTER_UPDATED = gql`
   # on add poem entry
   subscription onFontTesterUpdated {
     fontTesterUpdated {
       _id
       entry
       sessionId
-      insertDate
+      createdAt
       fontId
       variantId
       isEditing

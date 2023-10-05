@@ -33,6 +33,7 @@ specifiers:
   eslint-plugin-simple-import-sort: ^9.0.0
   framer-motion: ^10.12.4
   graphql: ^16.8.0
+  graphql-ws: ^5.14.1
   i18next: ^22.5.1
   intl-segmenter-polyfill: ^0.4.4
   js-cookie: ^3.0.1
@@ -67,7 +68,7 @@ specifiers:
 
 dependencies:
   '@adyen/adyen-web': 5.43.0
-  '@apollo/client': 3.8.1_cf3vfyi7pszohrk4iyysntvyhy
+  '@apollo/client': 3.8.1_hxeinbstzv3he4vsyk4cjtqhou
   '@chakra-ui/next-js': 2.1.3_ujlar3n22wburkxj56oaqcib7q
   '@chakra-ui/react': 2.6.0_7ms5pliqgy5buovqwuv34fbjke
   '@commercelayer/js-auth': 2.3.0
@@ -93,6 +94,7 @@ dependencies:
   deepmerge: 4.3.1
   framer-motion: 10.12.4_biqbaboplfbrettd7655fr4n2y
   graphql: 16.8.0
+  graphql-ws: 5.14.1_graphql@16.8.0
   i18next: 22.5.1
   intl-segmenter-polyfill: 0.4.4
   js-cookie: 3.0.1
@@ -180,7 +182,7 @@ packages:
       '@jridgewell/trace-mapping': 0.3.17
     dev: false
 
-  /@apollo/client/3.8.1_cf3vfyi7pszohrk4iyysntvyhy:
+  /@apollo/client/3.8.1_hxeinbstzv3he4vsyk4cjtqhou:
     resolution: {integrity: sha512-JGGj/9bdoLEqzatRikDeN8etseY5qeFAY0vSAx/Pd0ePNsaflKzHx6V2NZ0NsGkInq+9IXXX3RLVDf0EotizMA==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
@@ -204,6 +206,7 @@ packages:
       '@wry/trie': 0.4.3
       graphql: 16.8.0
       graphql-tag: 2.12.6_graphql@16.8.0
+      graphql-ws: 5.14.1_graphql@16.8.0
       hoist-non-react-statics: 3.3.2
       optimism: 0.17.5
       prop-types: 15.8.1
@@ -5443,6 +5446,15 @@ packages:
     dependencies:
       graphql: 16.8.0
       tslib: 2.4.1
+    dev: false
+
+  /graphql-ws/5.14.1_graphql@16.8.0:
+    resolution: {integrity: sha512-aqkls1espsygP1PfkAuuLIV96IbztQ6EaADse97pw8wRIMT3+AL/OYfS8V2iCRkc0gzckitoDRGCQEdnySggiA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      graphql: '>=0.11 <=16'
+    dependencies:
+      graphql: 16.8.0
     dev: false
 
   /graphql/16.8.0:

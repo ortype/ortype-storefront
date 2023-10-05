@@ -1,8 +1,17 @@
-import type { NormalizedCacheObject } from '@apollo/client'
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
+import {
+  ApolloClient,
+  ApolloLink,
+  HttpLink,
+  InMemoryCache,
+  NormalizedCacheObject,
+  split,
+} from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
+import { getMainDefinition } from '@apollo/client/utilities'
 import cookie from 'cookie'
 import merge from 'deepmerge'
+import { createClient } from 'graphql-ws'
 import type { IncomingMessage } from 'http'
 import isEqual from 'lodash.isequal'
 import type { GetServerSidePropsContext } from 'next'
@@ -26,10 +35,39 @@ const getToken = (req?: IncomingMessage) => {
 let apolloClient: ApolloClient<NormalizedCacheObject> = null
 
 const createApolloClient = (ctx?: GetServerSidePropsContext) => {
+  const graphqlUrl = process.env.NEXT_PUBLIC_GRAPHQL_URI
+  const wsGraphqlUrl = graphqlUrl.replace('http', 'ws')
+
   const httpLink = new HttpLink({
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
+    uri: graphqlUrl,
     credentials: 'same-origin', // default
+    // reaction uses a key called `fetch`
   })
+  let link = httpLink
+
+  if (process.browser) {
+    // If we are in the browser, try to split the request between wsLink and httpLink.
+    const wsLink = new GraphQLWsLink(
+      createClient({
+        url: wsGraphqlUrl,
+        connectionParams: {
+          // authToken: token
+        },
+      })
+    )
+
+    link = split(
+      ({ query }) => {
+        const definition = getMainDefinition(query)
+        return (
+          definition.kind === 'OperationDefinition' &&
+          definition.operation === 'subscription'
+        )
+      },
+      wsLink,
+      httpLink
+    )
+  }
 
   const authLink = setContext((_, { headers }) => {
     // Get the authentication token from cookies
@@ -47,7 +85,9 @@ const createApolloClient = (ctx?: GetServerSidePropsContext) => {
 
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: authLink.concat(httpLink),
+    // link: authLink.concat(httpLink),
+    link: ApolloLink.from([authLink, link]),
+    // reaction includes `omitTypenameLink` in this list
     cache: new InMemoryCache(),
     connectToDevTools: true,
   })

@@ -13,6 +13,7 @@ import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
 
 import { useApollo } from 'hooks/useApollo'
+import { useEffect } from 'react'
 
 const {
   RadioGroup,
@@ -76,6 +77,10 @@ const theme = extendBaseTheme({
   },
 })
 
+function onUnload() {
+  sessionStorage && sessionStorage.removeItem('sessionId')
+}
+
 function App({ Component, pageProps, props }: AppProps) {
   // @TODO: Don't show GlobalHeader on /studio route
 
@@ -84,6 +89,15 @@ function App({ Component, pageProps, props }: AppProps) {
   const getLayout = Component.getLayout || ((page) => page)
   console.log('getLayout: ', getLayout())
   const apolloClient = useApollo(pageProps?.initialApolloState)
+
+  useEffect(() => {
+    sessionStorage &&
+      sessionStorage.setItem(
+        'sessionId',
+        Math.random().toString(36).substr(2, 16)
+      )
+    return () => window.removeEventListener('beforeunload', onUnload)
+  }, [])
 
   return (
     <ChakraBaseProvider theme={theme}>

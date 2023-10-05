@@ -42,7 +42,7 @@ export const GET_LATEST_POEM_ENTRIES = gql`
   }
 `
 
-export const GET_FONT_TESTER_BY_ID = gql`
+export const GET_TESTER_BY_FONTID = gql`
   # Get the latest tester data by fontId
   query getFontTesterById($fontId: ID!) {
     fontTesterById: fontTesterById(fontId: $fontId) {
