@@ -1,6 +1,7 @@
 import 'components/data/i18n'
 import 'tailwindcss/tailwind.css'
 
+import { ApolloProvider } from '@apollo/client'
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
 import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
@@ -10,6 +11,8 @@ import { GlobalHeader } from 'components/GlobalHeader'
 import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
+
+import { useApollo } from 'hooks/useApollo'
 
 const {
   RadioGroup,
@@ -80,6 +83,7 @@ function App({ Component, pageProps, props }: AppProps) {
   // https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript
   const getLayout = Component.getLayout || ((page) => page)
   console.log('getLayout: ', getLayout())
+  const apolloClient = useApollo(pageProps?.initialApolloState)
 
   return (
     <ChakraBaseProvider theme={theme}>
@@ -101,7 +105,9 @@ function App({ Component, pageProps, props }: AppProps) {
                 {...props}
               >
                 <GlobalHeader settings={settings} />
-                {getLayout(<Component {...pageProps} />)}
+                <ApolloProvider client={apolloClient}>
+                  {getLayout(<Component {...pageProps} />)}
+                </ApolloProvider>
               </CustomerProvider>
             </CommerceLayer>
           )
