@@ -86,6 +86,12 @@ export default defineType({
           type: 'object',
           name: 'metafield',
           title: 'Metafield',
+          preview: {
+            select: {
+              title: `key`,
+              subtitle: `value`,
+            },
+          },
           fields: [
             defineField({
               name: 'key',

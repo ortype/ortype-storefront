@@ -32,11 +32,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // For testing purposes only
-  // await deleteAllFonts()
-  // await deleteAllVariants()
-  // return res.status(200).json({ message: 'Successful' })
-
   console.log('Webhook payload:', req.body)
 
   /*  ------------------------------ */
@@ -53,9 +48,32 @@ export default async function handler(
   // console.log(`We have variant dups: ${duplicates.length > 0}`)
 
   try {
+    const debug = false
+    if (debug && req.query?.reset === 'legit'){
+      // await deleteAllFonts()
+      // await deleteAllVariants()
+      const fontVariants = await apiClient.fetch(`*[_type == "fontVariant"] { _id, name }`);
+      const fonts = await apiClient.fetch(`*[_type == "font"] { variants[]->{ _id } }`);
+
+      // Extract referenced fontVariant IDs
+      const referencedFontVariantIds = fonts.flatMap(font => font.variants).map(variant => variant._id);
+
+      // Filter out fontVariant documents that are referenced
+      const unreferencedFontVariants = fontVariants.filter(variant => !referencedFontVariantIds.includes(variant._id));
+
+      // Perform the delete operation for unreferenced fontVariants
+      for (const variant of unreferencedFontVariants) {
+        // await apiClient.delete(variant._id);
+        console.log(`Deleted ${variant._id} ${variant.name}`);
+      }
+    }
     for (const font of await getFonts()) {
-      // await maybeUpsert(font, font.name.includes('Rather'))
-      await maybeUpsert(font)
+      if (debug && font.name.includes('Lemm')) {
+        await maybeUpsert(font, true)
+      }
+      if (!debug) {
+        await maybeUpsert(font)
+      }
     }
     return res.status(200).json({ message: 'Successful' })
   } catch (error) {
