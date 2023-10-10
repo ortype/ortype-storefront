@@ -2,6 +2,7 @@ import 'components/data/i18n'
 import 'tailwindcss/tailwind.css'
 
 import { ApolloProvider } from '@apollo/client'
+import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
 import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
@@ -12,7 +13,7 @@ import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
 
-import { useApollo } from 'hooks/useApollo'
+import { ApolloClientProvider } from 'components/data/ApolloProvider'
 import { useEffect } from 'react'
 
 const {
@@ -88,7 +89,6 @@ function App({ Component, pageProps, props }: AppProps) {
   // https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript
   const getLayout = Component.getLayout || ((page) => page)
   console.log('getLayout: ', getLayout())
-  const apolloClient = useApollo(pageProps?.initialApolloState)
 
   useEffect(() => {
     sessionStorage &&
@@ -118,10 +118,22 @@ function App({ Component, pageProps, props }: AppProps) {
                 domain={props.endpoint}
                 {...props}
               >
-                <GlobalHeader settings={settings} />
-                <ApolloProvider client={apolloClient}>
-                  {getLayout(<Component {...pageProps} />)}
-                </ApolloProvider>
+                <AuthorizerProvider
+                  config={{
+                    authorizerURL: props.authorizerURL,
+                    redirectURL:
+                      typeof window !== 'undefined' && window.location.origin,
+                    clientID: props.authorizerClientId,
+                    // extraHeaders: {}, // Optional JSON object to pass extra headers in each authorizer requests.
+                  }}
+                >
+                  <ApolloClientProvider
+                    initialApolloState={pageProps?.initialApolloState}
+                  >
+                    <GlobalHeader settings={settings} />
+                    {getLayout(<Component {...pageProps} />)}
+                  </ApolloClientProvider>
+                </AuthorizerProvider>
               </CustomerProvider>
             </CommerceLayer>
           )
@@ -134,6 +146,8 @@ function App({ Component, pageProps, props }: AppProps) {
 App.getInitialProps = async (ctx) => {
   return {
     props: {
+      authorizerURL: 'https://authorizer-newww.koyeb.app/',
+      authorizerClientId: 'd5814c60-03ba-4568-ac96-70eb7a8f397f', // obtain your client id from authorizer dashboard
       slug: 'or-type-mvp',
       selfHostedSlug: 'or-type-mvp',
       clientId: process.env.CL_CLIENT_ID,

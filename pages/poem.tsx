@@ -1,5 +1,4 @@
 import { useQuery } from '@apollo/client'
-// import { ApolloClientProvider } from 'components/data/ApolloProvider'
 import { GET_POEM_ENTRIES } from 'graphql/queries'
 
 interface PageProps {}
@@ -29,8 +28,3 @@ export default function Poem(props: PageProps) {
     </>
   )
 }
-/*
-Poem.getLayout = function getLayout(page) {
-  return <ApolloClientProvider>{page}</ApolloClientProvider>
-}
-*/

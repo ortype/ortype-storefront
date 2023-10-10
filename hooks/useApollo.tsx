@@ -22,25 +22,19 @@ interface PageProps {
 }
 
 export const APOLLO_STATE_PROPERTY_NAME = '__APOLLO_STATE__'
-export const COOKIES_TOKEN_NAME = 'jwt'
-
-const getToken = (req?: IncomingMessage) => {
-  const parsedCookie = cookie.parse(
-    req ? req.headers.cookie ?? '' : document.cookie
-  )
-
-  return parsedCookie[COOKIES_TOKEN_NAME]
-}
 
 let apolloClient: ApolloClient<NormalizedCacheObject> = null
 
-const createApolloClient = (ctx?: GetServerSidePropsContext) => {
+const createApolloClient = (
+  ctx?: GetServerSidePropsContext,
+  token?: Record<string, null>
+) => {
   const graphqlUrl = process.env.NEXT_PUBLIC_GRAPHQL_URI
   const wsGraphqlUrl = graphqlUrl.replace('http', 'ws')
 
   const httpLink = new HttpLink({
     uri: graphqlUrl,
-    credentials: 'same-origin', // default
+    // credentials: 'same-origin', // default
     // reaction uses a key called `fetch`
   })
   let link = httpLink
@@ -70,15 +64,11 @@ const createApolloClient = (ctx?: GetServerSidePropsContext) => {
   }
 
   const authLink = setContext((_, { headers }) => {
-    // Get the authentication token from cookies
-    const token = getToken(ctx?.req)
-
-    console.log('authLink: ', token, ctx?.req?.headers)
-
+    // Use the authentication token from passed in paramater
     return {
       headers: {
         ...headers,
-        authorization: token ? `Bearer ${token}` : '',
+        authorization: token ? token : '',
       },
     }
   })
@@ -93,8 +83,12 @@ const createApolloClient = (ctx?: GetServerSidePropsContext) => {
   })
 }
 
-export function initializeApollo(initialState = null, ctx = null) {
-  const client = apolloClient ?? createApolloClient(ctx)
+export function initializeApollo(
+  initialState = null,
+  token = null,
+  ctx = null
+) {
+  const client = apolloClient ?? createApolloClient(ctx, token)
 
   // If your page has Next.js data fetching methods that use Apollo Client,
   // the initial state gets hydrated here
@@ -143,9 +137,12 @@ export function addApolloState(
   return pageProps
 }
 
-export function useApollo(initialState) {
+export function useApollo(initialState, token) {
   // export function useApollo(pageProps: PageProps) {
   // const state = pageProps[APOLLO_STATE_PROPERTY_NAME];
-  const store = useMemo(() => initializeApollo(initialState), [initialState])
+  const store = useMemo(
+    () => initializeApollo(initialState, token),
+    [initialState, token]
+  )
   return store
 }
