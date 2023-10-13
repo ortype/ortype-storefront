@@ -1,16 +1,16 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import { getIntegrationToken } from '@commercelayer/js-auth'
 import CommerceLayer, {
+  AttachmentCreate,
+  AttachmentUpdate,
   Market,
   PriceListCreate,
+  Sku,
   SkuCreate,
   SkuOptionCreate,
   SkuOptionUpdate,
   SkuUpdate,
-  Sku,
-  AttachmentCreate,
-  AttachmentUpdate,
 } from '@commercelayer/sdk'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import settings from '../../../lib/settings.js'
 
 import { type FontVariant } from 'lib/sanity.queries'
@@ -30,6 +30,15 @@ export default async function sync(
   req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
+  // Check if the "x-secret" header is present in the request
+  // Check if the secret matches the expected value
+  if (
+    !req.headers['x-secret'] ||
+    req.headers['x-secret'] !== process.env.SANITY_WEBHOOK_SECRET
+  ) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+
   console.log('req:', req.headers, req.method)
   const idempotencyKey = req.headers['idempotency-key'] as string
 
