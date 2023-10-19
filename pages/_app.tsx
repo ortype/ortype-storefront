@@ -12,7 +12,7 @@ import { GlobalHeader } from 'components/GlobalHeader'
 import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
-
+import Webfonts from 'components/Webfonts'
 import { ApolloClientProvider } from 'components/data/ApolloProvider'
 import { useEffect } from 'react'
 
@@ -131,7 +131,9 @@ function App({ Component, pageProps, props }: AppProps) {
                     initialApolloState={pageProps?.initialApolloState}
                   >
                     <GlobalHeader settings={settings} />
-                    {getLayout(<Component {...pageProps} />)}
+                    <Webfonts>
+                      {getLayout(<Component {...pageProps} />)}
+                    </Webfonts>
                   </ApolloClientProvider>
                 </AuthorizerProvider>
               </CustomerProvider>

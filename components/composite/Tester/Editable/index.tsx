@@ -1,3 +1,5 @@
+import { Input } from '@chakra-ui/react'
+
 const Editable = ({
   index,
   entry,
@@ -41,7 +43,8 @@ const Editable = ({
   return (
     <span {...props}>
       {!isDisabled ? (
-        <input
+        <Input
+          fontSize={'2xl'}
           className={variantId}
           tabIndex={index}
           spellCheck={false}

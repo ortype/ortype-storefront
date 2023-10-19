@@ -1,5 +1,21 @@
 import { gql } from '@apollo/client'
 
+export const GET_WEBFONTS = gql`
+  query getWebfonts {
+    webfonts {
+      webfonts {
+        classId
+        fontFamily
+        woff
+        woff2
+        vf
+        fontFamilyVariable
+        fontVariationSettings
+      }
+    }
+  }
+`
+
 export const GET_POEM_ENTRIES = gql`
   query Poems(
     $first: ConnectionLimitInt
