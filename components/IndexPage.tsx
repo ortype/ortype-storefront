@@ -9,6 +9,7 @@ import IntroTemplate from 'intro-template'
 import * as demo from 'lib/demo.data'
 import type { Post, Font, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
+import { useApolloClient } from '@apollo/client'
 
 export interface IndexPageProps {
   preview?: boolean
@@ -23,6 +24,8 @@ export default function IndexPage(props: IndexPageProps) {
   const [heroPost, ...morePosts] = posts || []
   const { title = demo.title, description = demo.description } = settings || {}
 
+  const apolloClient = useApolloClient()
+
   return (
     <>
       <Head>
@@ -30,6 +33,7 @@ export default function IndexPage(props: IndexPageProps) {
       </Head>
       <Layout preview={preview} loading={loading}>
         <Container>
+          <h1>Hello, you're using Apollo Client {apolloClient.version}</h1>
           {fonts.length > 0 && <FontList fonts={fonts} />}
           {/*<BlogHeader title={title} description={description} level={1} />*/}
         </Container>

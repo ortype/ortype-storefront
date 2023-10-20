@@ -1,7 +1,6 @@
 import CommerceLayer from '@commercelayer/sdk'
 import { Buy } from 'components/composite/Buy'
 import { CustomerContext } from 'components/data/CustomerProvider'
-import FontPage from 'components/FontPage'
 import dynamic from 'next/dynamic'
 import React, { useContext } from 'react'
 
@@ -35,16 +34,6 @@ const FontWrapper = ({ preview, loading, moreFonts, font, siteSettings }) => {
       <DynamicBuyContainer font={font}>
         <DynamicBuy />
       </DynamicBuyContainer>
-      {/*<FontPage
-        // loading
-        // preview
-        cl={cl}
-        font={font}
-        moreFonts={moreFonts}
-        siteSettings={siteSettings}
-        endpoint={customerContext?.endpoint}
-        accessToken={customerContext?.accessToken}
-      />*/}
     </>
   )
 }
