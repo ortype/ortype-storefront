@@ -246,30 +246,41 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     try {
       const attrs = {
         skuCode: params.skuCode,
+        /*
         lineItemOptions: state.selectedSkuOptions.map(({ id }) => ({
           skuOptionId: id,
           options: {},
           quantity: 1,
         })),
-        orderMetadata: { license: { size: state.licenseSize } },
-        externalPrice: true,
-        quantity: 1,
-        metadata: {
-          license: {
-            size: state.licenseSize,
-            types: state.selectedSkuOptions.map((option) => option.reference),
+        lineItemOption: {
+          skuOptionId: state.selectedSkuOptions[0].id,
+          options: state.selectedSkuOptions.map(({ id }) => ({
+            skuOptionId: id,
+          })),
+          quantity: 1
+        },
+        */
+        lineItem: {
+          externalPrice: true,
+          metadata: {
+            license: {
+              size: state.licenseSize,
+              types: state.selectedSkuOptions.map((option) => option.reference),
+            },
           },
         },
+        orderMetadata: { license: { size: state.licenseSize } },
+        quantity: 1,
       }
       await addToCart(attrs)
 
       dispatch({
-        type: ActionType.DELETE_LINE_ITEM,
+        type: ActionType.ADD_LINE_ITEM,
         payload: { order: await fetchOrder(cl, orderId) },
         // @TODO: maybe need to update `state.itemsCount` here
       })
     } catch (error: any) {
-      console.log('deleteLineItem error: ', error)
+      console.log('addLineItem error: ', error)
     }
   }
 

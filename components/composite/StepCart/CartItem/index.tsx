@@ -45,6 +45,9 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
       })
     )
 
+  // @TODO: if multiple lineItemOptions can not be created with addToCart
+  // then this would need to be updated to read from the metadata of the line_item
+
   const initialLineItemOptions = lineItem.line_item_options?.map(
     ({ sku_option }) => {
       const {

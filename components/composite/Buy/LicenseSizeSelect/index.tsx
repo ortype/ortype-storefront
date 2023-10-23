@@ -3,7 +3,6 @@ import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicens
 import { Size, sizes } from 'lib/settings'
 import React, { Dispatch, useEffect, useState } from 'react'
 import Select from 'react-select'
-import { createOrUpdateOrder } from 'components/data/BuyProvider/utils'
 
 interface Props {
   cl: CommerceLayerClient

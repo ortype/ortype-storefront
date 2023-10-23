@@ -209,6 +209,9 @@ export async function updateLineItemLicenseTypes({
   // we have the options on the lineItem, we can then check if an sku_option.id is present in this array
   // which is not found in selectedSkuOptions, and delete that line_item
 
+  // @TODO: if multiple lineItemOptions can not be created with addToCart
+  // then this would need to be updated to read from the metadata of the line_item
+
   if (skuOptionsToAdd && skuOptionsToAdd.length > 0) {
     console.log('skuOptionsToAdd:', skuOptionsToAdd)
     const lineItemRel = await cl.line_items.relationship(lineItem.id)

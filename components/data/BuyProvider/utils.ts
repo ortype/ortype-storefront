@@ -1,13 +1,13 @@
-import { sizes } from 'lib/settings'
 import {
   type CommerceLayerClient,
   type LineItem,
   type LineItemOptionCreate,
+  type LineItemUpdate,
   type Order,
   type OrderUpdate,
   type SkuOption,
-  type LineItemUpdate,
 } from '@commercelayer/sdk'
+import { sizes } from 'lib/settings'
 
 import { AppStateData, LicenseSize } from 'components/data/BuyProvider'
 
@@ -17,6 +17,7 @@ export async function createOrUpdateOrder({
   updateOrder,
   licenseSize,
 }) {
+  // @TODO: `updateOrder` was not included in release 4.5.1, following up with @Alessandro Casazza
   console.log('order: ', order)
   const localStorageOrderId = localStorage.getItem('order')
   let result
