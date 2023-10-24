@@ -1,17 +1,18 @@
-import { OrderContainer } from "@commercelayer/react-components/orders/OrderContainer"
-import { OrderNumber } from "@commercelayer/react-components/orders/OrderNumber"
-import OrderAccordion from "components/composite/Account/Order/OrderAccordion"
-import OrderDate from "components/composite/Account/Order/OrderDate"
-import type { OrderStatus } from "components/composite/Account/Order/OrderStatusChip"
-import OrderStatusChip from "components/composite/Account/Order/OrderStatusChip"
-import { SkeletonMainOrder } from "components/composite/Account/Skeleton/Main"
+import { OrderContainer } from '@commercelayer/react-components/orders/OrderContainer'
+import { OrderNumber } from '@commercelayer/react-components/orders/OrderNumber'
+import OrderAccordion from 'components/composite/Account/Order/OrderAccordion'
+import OrderDate from 'components/composite/Account/Order/OrderDate'
+import OrderDownload from 'components/composite/Account/Order/OrderDownload'
+import type { OrderStatus } from 'components/composite/Account/Order/OrderStatusChip'
+import OrderStatusChip from 'components/composite/Account/Order/OrderStatusChip'
+import { SkeletonMainOrder } from 'components/composite/Account/Skeleton/Main'
 import { CustomerContext } from 'components/data/CustomerProvider'
-import { OrderProvider } from "components/data/OrderProvider"
-import { useRouter } from "next/router"
-import { useContext } from "react"
-import { Trans } from "react-i18next"
-import styled from "styled-components"
-import tw from "twin.macro"
+import { OrderProvider } from 'components/data/OrderProvider'
+import { useRouter } from 'next/router'
+import { useContext } from 'react'
+import { Trans } from 'react-i18next'
+import styled from 'styled-components'
+import tw from 'twin.macro'
 interface OrderWrapperProps {
   hidden?: boolean
 }
@@ -86,6 +87,7 @@ function OrderPage({ settings }: OrderPageProps): JSX.Element {
                     </OrderTitle>
                     <OrderDate placed_at={order?.placed_at} />
                     <OrderStatusChip status={order?.status as OrderStatus} />
+                    <OrderDownload id={order?.id} />
                   </OrderHeaderMain>
                 </OrderHeader>
                 <OrderAccordionWrapper>
