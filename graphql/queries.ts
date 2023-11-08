@@ -72,3 +72,91 @@ export const GET_TESTER_BY_FONTID = gql`
     }
   }
 `
+
+export const GET_BOOK_ITEM = gql`
+  query bookItemQuery(
+    $dedupId: String
+    $fontSize: Int
+    $variantId: String
+    $colWidth: Int
+    $wordCount: Int
+    $lineCount: Int
+    $regex: String
+    $noSpace: Boolean
+    $noGibberish: Boolean
+    $isParagraph: Boolean
+    $text: [Text]
+  ) {
+    bookItem(
+      dedupId: $dedupId
+      fontSize: $fontSize
+      variantId: $variantId
+      colWidth: $colWidth
+      wordCount: $wordCount
+      lineCount: $lineCount
+      regex: $regex
+      noSpace: $noSpace
+      noGibberish: $noGibberish
+      isParagraph: $isParagraph
+      text: $text
+    ) {
+      entry
+    }
+  }
+`
+
+export const GET_BOOK_LAYOUT = gql`
+  query bookLayoutQuery($_id: ID) {
+    bookLayout(_id: $_id) {
+      _id
+      name
+      fontId
+      isTemplate
+      spread {
+        verso {
+          colId
+          width
+          blocks {
+            blockId
+            fontSize
+            lineHeight
+            wordCount
+            lineCount
+            regex
+            noSpace
+            noGibberish
+            isParagraph
+          }
+        }
+        recto {
+          colId
+          width
+          blocks {
+            blockId
+            fontSize
+            lineHeight
+            wordCount
+            lineCount
+            regex
+            noSpace
+            noGibberish
+            isParagraph
+          }
+        }
+      }
+    }
+  }
+`
+
+export const GET_BOOK_LAYOUTS = gql`
+  query bookLayoutsQuery($fontId: ID, $isTemplate: Boolean) {
+    bookLayouts(fontId: $fontId, isTemplate: $isTemplate) {
+      nodes {
+        _id
+        name
+        isTemplate
+        fontId
+      }
+    }
+  }
+`

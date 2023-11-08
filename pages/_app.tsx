@@ -54,8 +54,14 @@ const {
 
 const theme = extendBaseTheme({
   components: {
+    NumberInput,
+    NumberInputField,
+    NumberInputStepper,
+    NumberIncrementStepper,
+    NumberDecrementStepper,
     RadioGroup,
     Radio,
+    Checkbox,
     Button,
     ButtonGroup,
     Input,

@@ -13,6 +13,7 @@ import cookie from 'cookie'
 import merge from 'deepmerge'
 import { createClient } from 'graphql-ws'
 import type { IncomingMessage } from 'http'
+import { omitTypenameLink } from 'lib/utils/omitTypenameLink'
 import isEqual from 'lodash.isequal'
 import type { GetServerSidePropsContext } from 'next'
 import { useMemo } from 'react'
@@ -76,7 +77,7 @@ const createApolloClient = (
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     // link: authLink.concat(httpLink),
-    link: ApolloLink.from([authLink, link]),
+    link: ApolloLink.from([omitTypenameLink, authLink, link]),
     // reaction includes `omitTypenameLink` in this list
     cache: new InMemoryCache(),
     connectToDevTools: true,

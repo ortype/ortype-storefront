@@ -7,7 +7,7 @@ const DEFAULT_BLOCK = {
   fontSize: 80,
   wordCount: 1,
   lineCount: 1,
-  regex: 'all',
+  regex: 'capitalize',
   noSpace: false,
   noGibberish: false,
   isParagraph: false,

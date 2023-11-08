@@ -27,10 +27,6 @@ const Wrapper = styled(`div`)({
   },
 })
 
-const StyledCheckbox = styled(Checkbox)({
-  display: `inline-block`,
-})
-
 const ActionButton = styled(Button)({
   margin: `0 0.5rem`,
 })
@@ -239,12 +235,13 @@ const Toolbar = observer(({ fonts }) => {
             layoutsLoading={layoutsLoading}
             handleLayoutChange={handleLayoutChange}
           />
-          <StyledCheckbox
-            label="Is template"
-            name="isTemplate"
-            value={bookLayoutStore.isTemplate}
-            onChange={handleIsTemplateChange}
-          />
+          <Checkbox
+            minH={10}
+            isChecked={bookLayoutStore.isTemplate}
+            onChange={(e) => handleIsTemplateChange(e.target.checked)}
+          >
+            {'Is template'}
+          </Checkbox>
           <ActionButton
             actionType="secondary"
             isWaiting={updateLoading}

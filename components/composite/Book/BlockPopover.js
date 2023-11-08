@@ -1,4 +1,12 @@
-import { Box, Button, Checkbox, SimpleGrid, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import NumericInput from 'components/composite/Book/NumericInput'
 import { BookContext } from 'components/data/BookProvider'
@@ -59,12 +67,12 @@ const BlockPopover = (props) => {
           arrowSize={16}
         >
           <PopoverInner>
-            <SimpleGrid columns={3}>
-              <Box>
-                <Text color={'red'} fontSize={'md'}>
-                  Edit block
-                </Text>
-              </Box>
+            <Box>
+              <Text color={'red'} fontSize={'md'}>
+                Edit block
+              </Text>
+            </Box>
+            <SimpleGrid columns={2}>
               <Box>
                 <Text fontSize={'sm'}>Font size</Text>
                 <NumericInput
@@ -144,99 +152,85 @@ const BlockPopover = (props) => {
                   }}
                 />
               </Box>
-              <Box>
-                <Box md />
-                <Box>
-                  <Select
-                    options={[
-                      {
-                        value: 'uppercase',
-                        label: 'Uppercase',
-                      },
-                      {
-                        value: 'lowercase',
-                        label: 'Lowercase',
-                      },
-                      {
-                        value: 'sentence',
-                        label: 'Sentence',
-                      },
-                      {
-                        value: 'capitalize',
-                        label: 'Capitalize',
-                      },
-                      {
-                        value: 'numbers',
-                        label: 'Numbers',
-                      },
-                      {
-                        value: 'all',
-                        label: 'All',
-                      },
-                    ]}
-                    value={line.regex || 'all'}
-                    name="regex"
-                    placeholder="Filters"
-                    onChange={(option) => handleChange('regex', option.value)}
-                  />
-                  <Text fontSize={'sm'}>Additional options</Text>
-                  <Checkbox
-                    isChecked={line.isParagraph}
-                    onChange={(e) =>
-                      handleChange('isParagraph', e.target.checked)
-                    }
-                  >
-                    {'Paragraph mode'}
-                  </Checkbox>
-                  <Checkbox
-                    isChecked={line.noSpace}
-                    onChange={(e) => handleChange('noSpace', e.target.checked)}
-                  >
-                    {'No spaces'}
-                  </Checkbox>
-                  <Checkbox
-                    isChecked={line.noGibberish}
-                    onChange={(e) =>
-                      handleChange('noGibberish', e.target.checked)
-                    }
-                  >
-                    {'No gibberish'}
-                  </Checkbox>
-                </Box>
-                <Box>
-                  <Button
-                    actionType="secondary"
-                    isFullWidth
-                    onClick={() =>
-                      props.fetchMore({
-                        variables: {
-                          first: null,
-                          after: null,
-                          last: null,
-                          before: null,
-                        },
-                        updateQuery: (previousResult, { fetchMoreResult }) => {
-                          props.setWord(fetchMoreResult.bookItem.entry)
-                        },
-                      })
-                    }
-                  >
-                    <Text fontSize={'sm'}>Refresh</Text>
-                  </Button>
-                </Box>
-                <Box>
-                  <Button
-                    actionType="secondary"
-                    isFullWidth
-                    onClick={() =>
-                      bookLayoutStore.removeBlock(page, col, block)
-                    }
-                  >
-                    <Text fontSize={'sm'}>Remove Block</Text>
-                  </Button>
-                </Box>
-              </Box>
             </SimpleGrid>
+            <Stack my={4} direction={'column'} spacing="2">
+              <Select
+                options={[
+                  {
+                    value: 'uppercase',
+                    label: 'Uppercase',
+                  },
+                  {
+                    value: 'lowercase',
+                    label: 'Lowercase',
+                  },
+                  {
+                    value: 'sentence',
+                    label: 'Sentence',
+                  },
+                  {
+                    value: 'capitalize',
+                    label: 'Capitalize',
+                  },
+                  /*
+                  // @TODO: verify that there is indeed not enough entries consisting of 
+                  // digits for  this feature to be removed
+                  {
+                    value: 'numbers',
+                    label: 'Numbers',
+                  },*/
+                ]}
+                name="regex"
+                placeholder={
+                  line.regex.charAt(0).toUpperCase() + line.regex.slice(1)
+                }
+                onChange={(option) => handleChange('regex', option.value)}
+              />
+              <Text fontSize={'sm'}>Additional options</Text>
+              <Checkbox
+                isChecked={line.isParagraph}
+                onChange={(e) => handleChange('isParagraph', e.target.checked)}
+              >
+                {'Paragraph mode'}
+              </Checkbox>
+              <Checkbox
+                isChecked={line.noSpace}
+                onChange={(e) => handleChange('noSpace', e.target.checked)}
+              >
+                {'No spaces'}
+              </Checkbox>
+              <Checkbox
+                isChecked={line.noGibberish}
+                onChange={(e) => handleChange('noGibberish', e.target.checked)}
+              >
+                {'No gibberish'}
+              </Checkbox>
+            </Stack>
+            <ButtonGroup variant="outline" spacing="2">
+              <Button
+                onClick={() =>
+                  props.fetchMore({
+                    variables: {
+                      first: null,
+                      after: null,
+                      last: null,
+                      before: null,
+                    },
+                    updateQuery: (previousResult, { fetchMoreResult }) => {
+                      props.setWord(fetchMoreResult.bookItem.entry)
+                    },
+                  })
+                }
+              >
+                <Text fontSize={'sm'}>Refresh</Text>
+              </Button>
+
+              <Button
+                onClick={() => bookLayoutStore.removeBlock(page, col, block)}
+              >
+                <Text fontSize={'sm'}>Remove Block</Text>
+              </Button>
+            </ButtonGroup>
           </PopoverInner>
         </ArrowContainer>
       )}

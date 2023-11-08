@@ -77,7 +77,9 @@ const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
             arrowSize={16}
           >
             <PopoverInner>
-              <Text fontSize={'md'}>Edit Column</Text>
+              <Text fontSize={'md'} color={'red'}>
+                Edit Column
+              </Text>
               <Text fontSize={'md'}>Width</Text>
               <NumericInput
                 onChange={(value) => handleChange('width', value)}
@@ -98,8 +100,7 @@ const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
               />
               <br />
               <Button
-                actionType="secondary"
-                isFullWidth
+                variant={'outline'}
                 onClick={() =>
                   bookLayoutStore.addColumn(page, 20, 'before', col)
                 }
@@ -108,8 +109,7 @@ const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
               </Button>
               <br />
               <Button
-                actionType="secondary"
-                isFullWidth
+                variant={'outline'}
                 onClick={() =>
                   bookLayoutStore.addColumn(page, 20, 'after', col)
                 }
@@ -118,16 +118,14 @@ const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
               </Button>
               <br />
               <Button
-                actionType="secondary"
-                isFullWidth
+                variant={'outline'}
                 onClick={() => bookLayoutStore.removeColumn(page, col)}
               >
                 <Text fontSize={'sm'}>Delete this column</Text>
               </Button>
               <br />
               <Button
-                actionType="secondary"
-                isFullWidth
+                variant={'outline'}
                 onClick={() => bookLayoutStore.uppercaseAll(page, col)}
               >
                 <Text fontSize={'sm'}>Uppercase all</Text>
