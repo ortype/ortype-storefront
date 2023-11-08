@@ -6,19 +6,25 @@ import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
 import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
+import { ApolloClientProvider } from 'components/data/ApolloProvider'
 import { CustomerProvider } from 'components/data/CustomerProvider'
 import { SettingsProvider } from 'components/data/SettingsProvider'
 import { GlobalHeader } from 'components/GlobalHeader'
+import Webfonts from 'components/Webfonts'
 import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
-import Webfonts from 'components/Webfonts'
-import { ApolloClientProvider } from 'components/data/ApolloProvider'
 import { useEffect } from 'react'
 
 const {
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   RadioGroup,
   Radio,
+  Checkbox,
   FormControl,
   FormLabel,
   Input,
