@@ -1,28 +1,15 @@
-import React, { useContext } from 'react'
-// import { useReactoForm } from 'reacto-form'
 import { useMutation } from '@apollo/client'
-import { Button, Input, Text } from '@chakra-ui/react'
-import styled from '@emotion/styled'
-import { BookContext } from 'components/data/BookProvider'
+import { Box, Button, HStack, Input, Text } from '@chakra-ui/react'
+import { useBookLayoutStore } from 'components/data/BookProvider'
 import { UPDATE_BOOK_LAYOUT_NAME } from 'graphql/mutations'
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
+import { observer } from 'mobx-react-lite'
+import { useRapidForm } from 'rapid-form'
+import React, { useEffect, useState } from 'react'
 
-const Wrapper = styled(`div`)({
-  position: `fixed`,
-  left: `1rem`,
-  bottom: `1rem`,
-  width: `25rem`,
-  margin: `0 0.5rem`,
-  // display: `flex`,
-  // flexDirection: `row`
-  [`div`]: {
-    display: `inline-block`,
-    marginRight: `1rem`,
-  },
-})
+const NameForm = ({ bookLayoutId, name }) => {
+  const bookLayoutStore = useBookLayoutStore()
 
-const NameForm = ({ bookLayoutId, value }) => {
-  const bookLayoutStore = useContext(BookContext)
   // mutation
   const [updateBookLayoutName, { loading: updateNameLoading }] = useMutation(
     UPDATE_BOOK_LAYOUT_NAME,
@@ -33,6 +20,7 @@ const NameForm = ({ bookLayoutId, value }) => {
             label: data.updateBookLayoutName.name,
             value: data.updateBookLayoutName.bookLayoutId,
           })
+          setIsDirty(false)
         }
       },
     }
@@ -59,42 +47,77 @@ const NameForm = ({ bookLayoutId, value }) => {
         bookLayoutId,
         name,
       },
-      refetchQueries: layoutsRefetchQueries,
+      refetchQueries: layoutsRefetchQueries, // @TODO: this updates the layoutOptions in the TieredSelect
     })
   }
-  /*
-  const { getInputProps, submitForm, isDirty } = useReactoForm({
-    onSubmit: (formData) => {
-      if (formData) {
-        handleNameChangeSave(formData)
-      }
-    },
-    validator: getRequiredValidator('name'),
-    value,
-    // setting an object to `value` causes an infinite rerender
-    // the value object must be passed in (not sure when I wrote this)
-  })
-  */
+
+  const { handleSubmit, submitValidation, validation, values, errors } =
+    useRapidForm()
+
+  const s = async (values, err, e) => {
+    const name = values['name'].value
+    handleNameChangeSave({ name })
+  }
+
+  const [isDirty, setIsDirty] = useState(false)
+  const [nameValue, setNameValue] = useState('')
+
+  const handleChange = (e) => {
+    setNameValue(e.target.value)
+    // checkIfDirty
+    if (name !== e.target.value) {
+      setIsDirty(true)
+    } else {
+      setIsDirty(false)
+    }
+  }
+
+  useEffect(() => {
+    setNameValue(name)
+  }, [name])
+
+  // @TODO:
+  // consider using an uncontrolled component via useRef
+  // https://sentry.io/answers/uncontrolled-inputs-react/
+  // but actually with the useRapidForm, we kinda don't need that
 
   return (
-    <Wrapper>
-      <Input
-        placeholder={`Layout name`}
-        // {...getInputProps('name')}
-        isReadOnly={updateNameLoading}
-      />
-      {/*isDirty && (
-        <Button
-          // actionType="secondary"
-          isTextOnly
-          isWaiting={updateNameLoading}
-          // onClick={submitForm}
-        >
-          <Text fontSize={'sm'}>{`Save`}</Text>
-        </Button>
-      )*/}
-    </Wrapper>
+    <Box
+      as={'form'}
+      w={'25rem'}
+      position={'fixed'}
+      left={'1rem'}
+      bottom={'1rem'}
+      m={'0 0.5rem'}
+      ref={submitValidation}
+      autoComplete="off"
+      onSubmit={handleSubmit(s)}
+    >
+      <HStack spacing={2}>
+        <Input
+          name={'name'}
+          type={'text'}
+          // ref={validation} // @TODO: this validation ref causes onChange handler to not fire weirdly
+          color={'#FFF'}
+          size={'lg'}
+          value={nameValue}
+          placeholder={'Layout name'}
+          isReadOnly={updateNameLoading}
+          onChange={handleChange}
+        />
+        {isDirty && (
+          <Button
+            color={'#FFF'}
+            type={'submit'}
+            variant={'outline'}
+            isLoading={updateNameLoading}
+          >
+            <Text fontSize={'sm'}>{`Save`}</Text>
+          </Button>
+        )}
+      </HStack>
+    </Box>
   )
 }
 
-export default NameForm
+export default observer(NameForm)

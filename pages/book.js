@@ -1,77 +1,21 @@
 import { useQuery } from '@apollo/client'
+import { Box, Center, Flex } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import Column from 'components/composite/Book/Column'
 import NameForm from 'components/composite/Book/NameForm'
 import Toolbar from 'components/composite/Book/Toolbar'
-import { BookContext, BookLayoutProvider } from 'components/data/BookProvider'
+import {
+  BookLayoutProvider,
+  useBookLayoutStore,
+} from 'components/data/BookProvider'
 import useWindowSize from 'components/hooks/useWindowSize'
 import { GET_BOOK_LAYOUT } from 'graphql/queries'
 import { getAllFonts } from 'lib/sanity.client'
 import { observer } from 'mobx-react-lite'
-import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 
-const Spread = styled(`div`)({
-  // position: `relative`,
-  display: `flex`,
-  margin: '5rem',
-  justifyContent: `space-around`,
-  // margin: `120px auto 0`,
-  padding: `77px 0`,
-  width: `1460px`,
-  // transformOrigin: `left top`,
-  // position: `absolute`,
-  // top: `50%`,
-  // left: `50%`,
-  backgroundColor: `#FFF`,
-  // [`::before`]: {
-  //   content: `" "`,
-  //   width: `1px`,
-  //   backgroundColor: `#000`,
-  //   top: 0,
-  //   bottom: 0,
-  //   left: `50%`,
-  //   position: `absolute`,
-  // },
-  // [`::after`]: {
-  //   content: `" "`,
-  //   position: `absolute`,
-  //   // boxShadow: `0 0 0 1px #000`,
-  //   backgroundColor: `#000`,
-  //   top: `7px`,
-  //   bottom: `-7px`,
-  //   left: `7px`,
-  //   right: `-7px`,
-  //   zIndex: -1
-  // }
-})
-/*, ({ scale }) => {
-  const thickness = 1 + (1 - scale);
-  const rounded = Math.round(thickness * 100) / 100;
-  return {
-    // boxShadow: `0 0 0 ${rounded}px #000`,
-    [`::before`]: { width: `${rounded}px` },
-    // [`::after`]: { boxShadow: `0 0 0 ${rounded}px #000` }
-  };
-});
-*/
-
-const Page = styled(`div`)({
-  width: `588px`,
-  display: `flex`,
-  flexWrap: `wrap`,
-  height: `838px`,
-})
-
-const Verso = styled(Page)({
-  margin: `0 77px`,
-})
-
-const Recto = styled(Page)({
-  margin: `0 77px`,
-})
-
-const Book = observer(({ fonts }) => {
-  const bookLayoutStore = useContext(BookContext)
+const Book = ({ fonts }) => {
+  const bookLayoutStore = useBookLayoutStore()
   // get data from api
   const { loading, data } = useQuery(GET_BOOK_LAYOUT, {
     variables: { _id: bookLayoutStore.layoutOption.value }, // this is initially hardcoded
@@ -112,46 +56,60 @@ const Book = observer(({ fonts }) => {
 
   // render spread from data
   return (
+    // @TODO: Background color
     <>
-      <Toolbar fonts={fonts} />
-      {bookLayoutStore.editMode && (
-        <NameForm
-          bookLayoutId={bookLayoutStore.layoutOption.value}
-          value={{ name: bookLayoutStore.layoutOption.label }}
-        />
-      )}
-      <Spread
-        style={{
-          // transform: `scale(${scale}) translateX(-730px)`,
-          // transform: `scale(6) translateX(-730px) translateY(-496px)`,
-          boxShadow: `0 0 0 1px #000`,
-          [`::before`]: { width: `1px` },
-        }}
-        id={bookLayoutStore.layoutOption.value}
-        scale={scale}
-      >
-        <Verso editMode={bookLayoutStore.editMode}>
-          {bookLayoutStore.spread.verso.map((col, idx) => (
-            <Column
-              key={col.colId}
-              {...col}
-              update={{ page: 'verso', col: idx }}
-            />
-          ))}
-        </Verso>
-        <Recto editMode={bookLayoutStore.editMode}>
-          {bookLayoutStore.spread.recto.map((col, idx) => (
-            <Column
-              key={col.colId}
-              {...col}
-              update={{ page: 'recto', col: idx }}
-            />
-          ))}
-        </Recto>
-      </Spread>
+      <Center w={'100vw'} h={'100vh'} bg={'black'}>
+        <Toolbar fonts={fonts} />
+        {bookLayoutStore.editMode && (
+          <NameForm
+            bookLayoutId={bookLayoutStore.layoutOption.value}
+            name={bookLayoutStore.layoutOption.label}
+          />
+        )}
+        <Flex
+          // Spread
+          // py={'77px'}
+          // w={'1460px'}
+          bg={'#FFF'}
+          id={bookLayoutStore.layoutOption.value}
+        >
+          <Flex
+            // Verso
+            w={'588px'}
+            h={'838px'}
+            flexWrap={'wrap'}
+            m={'46px'}
+            editMode={bookLayoutStore.editMode}
+          >
+            {bookLayoutStore.spread.verso.map((col, idx) => (
+              <Column
+                key={col.colId}
+                {...col}
+                update={{ page: 'verso', col: idx }}
+              />
+            ))}
+          </Flex>
+          <Flex
+            // Recto
+            w={'588px'}
+            h={'838px'}
+            flexWrap={'wrap'}
+            m={'46px'}
+            editMode={bookLayoutStore.editMode}
+          >
+            {bookLayoutStore.spread.recto.map((col, idx) => (
+              <Column
+                key={col.colId}
+                {...col}
+                update={{ page: 'recto', col: idx }}
+              />
+            ))}
+          </Flex>
+        </Flex>
+      </Center>
     </>
   )
-})
+}
 
 export const getStaticProps = async (ctx) => {
   const [fonts = []] = await Promise.all([getAllFonts()])
@@ -167,4 +125,4 @@ Book.getLayout = function getLayout(page) {
   return <BookLayoutProvider>{page}</BookLayoutProvider>
 }
 
-export default Book
+export default observer(Book)

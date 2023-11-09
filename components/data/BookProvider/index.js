@@ -6,7 +6,7 @@ import {
 import cloneDeep from 'lodash.clonedeep'
 import { action } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { createContext } from 'react'
+import React, { createContext, useContext } from 'react'
 
 export const BookLayoutProvider = ({ children }) => {
   const store = useLocalObservable(() => ({
@@ -183,3 +183,4 @@ export const BookLayoutProvider = ({ children }) => {
 }
 
 export const BookContext = createContext()
+export const useBookLayoutStore = () => useContext(BookContext)
