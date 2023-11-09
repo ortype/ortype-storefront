@@ -1,15 +1,14 @@
+import { useApolloClient } from '@apollo/client'
 import Container from 'components/BlogContainer'
 import BlogHeader from 'components/BlogHeader'
 import Layout from 'components/BlogLayout'
+import FontList from 'components/FontList'
 import HeroPost from 'components/HeroPost'
 import IndexPageHead from 'components/IndexPageHead'
 import MoreStories from 'components/MoreStories'
-import FontList from 'components/FontList'
-import IntroTemplate from 'intro-template'
 import * as demo from 'lib/demo.data'
-import type { Post, Font, Settings } from 'lib/sanity.queries'
+import type { Font, Post, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
-import { useApolloClient } from '@apollo/client'
 
 export interface IndexPageProps {
   preview?: boolean
