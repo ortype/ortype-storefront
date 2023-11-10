@@ -90,7 +90,7 @@ const Column = observer(({ width, blocks, update }) => {
       })
       difference = layout.transformValue
 
-      const { blockId, ...queryArgs } = block
+      const { blockId, variantOption, ...queryArgs } = block
 
       const humanReadableDedupId = `H${currentHour}_${update.page}_C${update.col}_B${idx}_${blockId}`
       return (
@@ -104,7 +104,8 @@ const Column = observer(({ width, blocks, update }) => {
           line={{
             dedupId: humanReadableDedupId,
             colWidth: size.width,
-            variantId: bookLayoutStore.variantOption.value,
+            variantId:
+              variantOption?.value || bookLayoutStore.variantOption.value,
             ...queryArgs,
           }}
           layout={layout}

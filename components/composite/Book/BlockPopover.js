@@ -119,9 +119,11 @@ const BlockPopover = (props) => {
                   : []
               }
               defaultValue={bookLayoutStore.variantOption}
-              value={line.variantOption}
+              value={bookLayoutStore.variantOptions.find(
+                ({ value }) => line.variantId === value
+              )}
               name="variant"
-              onChange={(option) => handleChange('variantOption', option)}
+              onChange={(option) => handleChange('variantId', option.value)}
               width={276}
             />
             <SimpleGrid columns={2}>

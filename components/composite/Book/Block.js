@@ -53,7 +53,13 @@ const Block = observer((props) => {
         mt={layout.outerWrapperMarginTop}
       >
         <BlockPopover {...props} setWord={setWord} fetchMore={props.fetchMore}>
-          <BlockPoints>{`${line.fontSize} points`}</BlockPoints>
+          <BlockPoints>
+            {
+              bookLayoutStore.variantOptions.find(
+                ({ value }) => line.variantId === value
+              ).label
+            }
+          </BlockPoints>
           {isLoadingBookItem ? (
             <Loading
               colWidth={line.colWidth}
@@ -61,7 +67,7 @@ const Block = observer((props) => {
             >{`Loading...`}</Loading>
           ) : (
             <Guides
-              className={bookLayoutStore.variantOption.value}
+              className={line.variantId}
               editMode={bookLayoutStore.editMode}
               colWidth={line.colWidth}
               innerWrapperStyle={layout.innerWrapperStyle}
@@ -92,9 +98,15 @@ const Block = observer((props) => {
 
   return (
     <Flex position={'relative'} mb={'10.8px'} mt={layout.outerWrapperMarginTop}>
-      <BlockPoints>{`${line.fontSize} points`}</BlockPoints>
+      <BlockPoints>
+        {
+          bookLayoutStore.variantOptions.find(
+            ({ value }) => line.variantId === value
+          ).label
+        }
+      </BlockPoints>
       <Guides
-        className={bookLayoutStore.variantOption.value}
+        className={line.variantId}
         editMode={bookLayoutStore.editMode}
         colWidth={line.colWidth}
         innerWrapperStyle={layout.innerWrapperStyle}
