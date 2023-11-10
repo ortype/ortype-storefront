@@ -17,6 +17,15 @@ import { AppProps } from 'next/app'
 import { useEffect } from 'react'
 
 const {
+  Portal,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
+  PopoverAnchor,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -55,6 +64,15 @@ const {
 
 const theme = extendBaseTheme({
   components: {
+    Portal,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverArrow,
+    PopoverCloseButton,
+    PopoverHeader,
+    PopoverBody,
+    PopoverAnchor,
     NumberInput,
     NumberInputField,
     NumberInputStepper,

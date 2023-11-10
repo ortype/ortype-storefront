@@ -35,6 +35,7 @@ export const ADD_BOOK_LAYOUT = gql`
         verso {
           width
           blocks {
+            variantId
             fontSize
             lineHeight
             wordCount

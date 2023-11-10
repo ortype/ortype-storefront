@@ -1,52 +1,33 @@
-import { Button, Text } from '@chakra-ui/react'
-import styled from '@emotion/styled'
+import {
+  Box,
+  Button,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import NumericInput from 'components/composite/Book/NumericInput'
 import { BookContext } from 'components/data/BookProvider'
 import { observer } from 'mobx-react-lite'
 import React, { useContext, useState } from 'react'
-import { ArrowContainer, Popover } from 'react-tiny-popover'
 
-const PopoverWrapper = styled(`div`)({
-  // position: `relative`,
-  // height: `100%`,
-})
-
-const PopoverInner = styled(`div`)({
-  border: `.1rem solid #000`,
-  boxShadow: `2px 2px 0px #000`,
-  padding: `0.75rem`,
-  backgroundColor: `#fff`,
-  width: `16rem`,
-})
-
-const PopoverToggle = styled(`div`)({
-  // display: `inline-flex`,
-  // alignItems: `center`,
-  cursor: `pointer`,
-  position: `absolute`,
-  left: `-0.75rem`,
-})
-
-const PopoverToggleIcon = styled(`div`)({
-  //   content: `${'\2807'}`,
-  // fontSize: `100px`,
-  width: `5px`,
-  height: `5px`,
-  borderRadius: `50%`,
-  backgroundColor: `#000`,
-  marginBottom: `20px`,
-  marginRight: `.5rem`,
-  boxShadow: `0px 8px 0px black, 0px 16px 0px black`,
-})
+import {
+  CopyIcon,
+  EllipsisVerticalIcon,
+  InsertAboveIcon,
+  InsertBelowIcon,
+  TrashIcon,
+} from '@sanity/icons'
 
 const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
   const { page, col } = update
   const bookLayoutStore = useContext(BookContext)
-
-  // Popover
-  const [isPopoverOpen, setPopover] = useState(false)
-  const openPopover = () => setPopover(true)
-  const closePopover = () => setPopover(false)
 
   const handleChange = (key, value) => {
     if (bookLayoutStore.updateColumn && col[key] !== value) {
@@ -55,92 +36,106 @@ const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
   }
 
   return (
-    <PopoverWrapper>
-      <Popover
-        containerStyle={
-          {
-            // zIndex: 9999,
-            // overflow: `visible`,
-            // paddingRight: `2px`,
-          }
-        }
-        position={[`bottom`, `left`]}
-        isOpen={isPopoverOpen}
-        onClickOutside={closePopover}
-        content={({ position, childRect, targetRect, popoverRect }) => (
-          <ArrowContainer
-            position={position}
-            childRect={childRect}
-            targetRect={targetRect}
-            popoverRect={popoverRect}
-            arrowColor={`#000`}
-            arrowSize={16}
+    <>
+      <Popover>
+        <PopoverTrigger>
+          <Button
+            variant={'ghost'}
+            position={'absolute'}
+            left={'-2rem'}
+            fontSize={'xl'}
+            top={'-0.6rem'}
           >
-            <PopoverInner>
+            <EllipsisVerticalIcon />
+          </Button>
+        </PopoverTrigger>
+        <Portal>
+          <PopoverContent
+            sx={{
+              border: `.1rem solid #000`,
+              boxShadow: `2px 2px 0px #000`,
+              backgroundColor: `#fff`,
+              width: `16rem`,
+            }}
+          >
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader>
               <Text fontSize={'md'} color={'red'}>
                 Edit Column
               </Text>
-              <Text fontSize={'md'}>Width</Text>
-              <NumericInput
-                onChange={(value) => handleChange('width', value)}
-                value={width}
-                step={1}
-                min={20}
-                max={100}
-                style={{
-                  wrap: {
-                    display: `block`,
-                    marginBottom: `0.5rem`,
-                  },
-                  input: {
-                    fontSize: `24px`,
-                    width: `100%`,
-                  },
-                }}
-              />
-              <br />
-              <Button
-                variant={'outline'}
-                onClick={() =>
-                  bookLayoutStore.addColumn(page, 20, 'before', col)
-                }
-              >
-                <Text fontSize={'sm'}>Add column before</Text>
-              </Button>
-              <br />
-              <Button
-                variant={'outline'}
-                onClick={() =>
-                  bookLayoutStore.addColumn(page, 20, 'after', col)
-                }
-              >
-                <Text fontSize={'sm'}>Add column after</Text>
-              </Button>
-              <br />
-              <Button
-                variant={'outline'}
-                onClick={() => bookLayoutStore.removeColumn(page, col)}
-              >
-                <Text fontSize={'sm'}>Delete this column</Text>
-              </Button>
-              <br />
-              <Button
+            </PopoverHeader>
+            <PopoverBody>
+              <VStack spacing={2} alignItems={'start'}>
+                <Box>
+                  <Text fontSize={'md'}>Width</Text>
+                  <NumericInput
+                    onChange={(value) => handleChange('width', value)}
+                    value={width}
+                    step={1}
+                    min={20}
+                    max={100}
+                    style={{
+                      wrap: {
+                        display: `block`,
+                        marginBottom: `0.5rem`,
+                      },
+                      input: {
+                        fontSize: `24px`,
+                        width: `100%`,
+                      },
+                    }}
+                  />
+                </Box>
+                <Button
+                  leftIcon={<TrashIcon />}
+                  fontSize={'2xl'}
+                  variant={'ghost'}
+                  onClick={() => bookLayoutStore.removeColumn(page, col)}
+                >
+                  <Text fontSize={'sm'}>Remove</Text>
+                </Button>
+                <Button
+                  leftIcon={<CopyIcon />}
+                  fontSize={'2xl'}
+                  variant={'ghost'}
+                  onClick={() => bookLayoutStore.duplicateColumn(page, col)}
+                >
+                  <Text fontSize={'sm'}>Duplicate</Text>
+                </Button>
+                <Button
+                  variant={'ghost'}
+                  onClick={() =>
+                    bookLayoutStore.addColumn(page, 20, 'before', col)
+                  }
+                  fontSize={'2xl'}
+                  leftIcon={<InsertAboveIcon />}
+                >
+                  <Text fontSize={'sm'}>Add column before</Text>
+                </Button>
+                <Button
+                  variant={'ghost'}
+                  onClick={() =>
+                    bookLayoutStore.addColumn(page, 20, 'after', col)
+                  }
+                  fontSize={'2xl'}
+                  leftIcon={<InsertBelowIcon />}
+                >
+                  <Text fontSize={'sm'}>Add column after</Text>
+                </Button>
+                {/*<Button
                 variant={'outline'}
                 onClick={() => bookLayoutStore.uppercaseAll(page, col)}
               >
                 <Text fontSize={'sm'}>Uppercase all</Text>
-              </Button>
-              <br />
-            </PopoverInner>
-          </ArrowContainer>
-        )}
-      >
-        <PopoverToggle onClick={openPopover}>
-          <PopoverToggleIcon />
-        </PopoverToggle>
+              </Button>*/}
+              </VStack>
+            </PopoverBody>
+          </PopoverContent>
+        </Portal>
       </Popover>
       {props.children}
-    </PopoverWrapper>
+    </>
   )
 })
 

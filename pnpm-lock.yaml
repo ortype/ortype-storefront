@@ -15,7 +15,7 @@ specifiers:
   '@headlessui/react': 1.7.14
   '@next/env': ^13.4.18
   '@portabletext/react': ^2.0.0
-  '@sanity/icons': ^2.4.1
+  '@sanity/icons': ^2.7.0
   '@sanity/image-url': ^1.0.2
   '@sanity/vision': ^3.2.5
   '@tailwindcss/forms': ^0.5.3
@@ -60,7 +60,6 @@ specifiers:
   react-dom: ^18.2.0
   react-i18next: ^12.3.1
   react-select: ^5.7.2
-  react-tiny-popover: ^8.0.4
   sanity: ^3.2.5
   sanity-plugin-asset-source-unsplash: ^1.0.6
   slugify: ^1.6.5
@@ -87,7 +86,7 @@ dependencies:
   '@headlessui/react': 1.7.14_biqbaboplfbrettd7655fr4n2y
   '@next/env': 13.4.18
   '@portabletext/react': 2.0.0_react@18.2.0
-  '@sanity/icons': 2.4.1_react@18.2.0
+  '@sanity/icons': 2.7.0_react@18.2.0
   '@sanity/image-url': 1.0.2
   '@sanity/vision': 3.2.5_2zpt4ilzykmne4yndyzrqd4gdm
   '@tailwindcss/forms': 0.5.3_tailwindcss@3.3.2
@@ -114,7 +113,7 @@ dependencies:
   nanoid: 4.0.0
   next: 13.1.5_6yd2gd23af3iivlduqv4fdyaki
   next-i18next: 13.3.0_4d7t5xakueqwpg3iirp7yp34cy
-  next-sanity: 4.1.1_sb44372djb4s2lonlpwjrydczy
+  next-sanity: 4.1.1_wnooamwunnr3xfaolfr6wyykoi
   nodemailer: 6.9.1
   opentype.js: 1.3.4
   phosphor-react: 1.4.1_react@18.2.0
@@ -123,7 +122,6 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-i18next: 12.3.1_spyi3zqm3bqfobczid2f6jym6y
   react-select: 5.7.2_5ndqzdd6t4rivxsukjv3i3ak2q
-  react-tiny-popover: 8.0.4_biqbaboplfbrettd7655fr4n2y
   sanity: 3.2.5_uzkadyugscbibgo6xwbyewzpjq
   sanity-plugin-asset-source-unsplash: 1.0.6_44semxve3hfsjb2sdqqh3byqfa
   slugify: 1.6.5
@@ -2751,8 +2749,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@sanity/icons/2.4.1_react@18.2.0:
-    resolution: {integrity: sha512-/yxcIT0k1RxStI/pP/oHM44fHI6Oxiygf0jPcdV06Ce0xfFo+51UEqJSfE8hQ3fh+uFkat8ZZObZjq5v1ceJzw==}
+  /@sanity/icons/2.7.0_react@18.2.0:
+    resolution: {integrity: sha512-vW/G8CB3+R1gww8C8ZjNchhpXrXSDLIJ0KnWy9iDlSWaFEnUrbi18yzCCrHRMFzXTPl2QtqZhjtE+A5Gyhf2QA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18
@@ -2934,7 +2932,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 1.0.1_biqbaboplfbrettd7655fr4n2y
       '@sanity/color': 2.1.20
-      '@sanity/icons': 2.4.1_react@18.2.0
+      '@sanity/icons': 2.7.0_react@18.2.0
       csstype: 3.1.1
       framer-motion: 7.6.19_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
@@ -2955,7 +2953,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 1.0.1_biqbaboplfbrettd7655fr4n2y
       '@sanity/color': 2.1.20
-      '@sanity/icons': 2.4.1_react@18.2.0
+      '@sanity/icons': 2.7.0_react@18.2.0
       csstype: 3.1.1
       framer-motion: 7.6.19_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
@@ -3013,7 +3011,7 @@ packages:
       '@rexxars/react-json-inspector': 8.0.1_react@18.2.0
       '@rexxars/react-split-pane': 0.1.93_biqbaboplfbrettd7655fr4n2y
       '@sanity/color': 2.1.20
-      '@sanity/icons': 2.4.1_react@18.2.0
+      '@sanity/icons': 2.7.0_react@18.2.0
       '@sanity/ui': 1.0.1_2zpt4ilzykmne4yndyzrqd4gdm
       '@uiw/react-codemirror': 4.19.1_tqcewwshcmzsntdgr6zxop5gj4
       hashlru: 2.3.0
@@ -6506,7 +6504,7 @@ packages:
       react-i18next: 12.3.1_spyi3zqm3bqfobczid2f6jym6y
     dev: false
 
-  /next-sanity/4.1.1_sb44372djb4s2lonlpwjrydczy:
+  /next-sanity/4.1.1_wnooamwunnr3xfaolfr6wyykoi:
     resolution: {integrity: sha512-v3xAL5MAD09Co70uGOTIHg1/WsGdZTyZ989MnZnrvZNLcjKJtfZZZYEYmk8HX7B6VgYd1Tsc4e84+QOGzlbtig==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -6519,7 +6517,7 @@ packages:
       styled-components: ^5.2
     dependencies:
       '@sanity/client': 4.0.1
-      '@sanity/icons': 2.4.1_react@18.2.0
+      '@sanity/icons': 2.7.0_react@18.2.0
       '@sanity/preview-kit': 1.3.2_react@18.2.0
       '@sanity/webhook': 2.0.0
       groq: 3.2.5
@@ -7553,16 +7551,6 @@ packages:
       tslib: 2.4.1
     dev: false
 
-  /react-tiny-popover/8.0.4_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-pn0Y/G0gyMdYTBEWSKCCnaZsXAa54PkfnRE4fnMM5633SSClYrXxwXKc6vPYgJ9shLatGginxMjnhXq6guZmng==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-    dev: false
-
   /react-transition-group/4.4.5_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
     peerDependencies:
@@ -7893,7 +7881,7 @@ packages:
       '@sanity/eventsource': 3.0.3
       '@sanity/export': 3.2.5
       '@sanity/generate-help-url': 3.0.0
-      '@sanity/icons': 2.4.1_react@18.2.0
+      '@sanity/icons': 2.7.0_react@18.2.0
       '@sanity/image-url': 1.0.2
       '@sanity/import': 3.2.5
       '@sanity/logos': 2.0.2_pyxiwslvhysx6ayyd5sfqszpe4

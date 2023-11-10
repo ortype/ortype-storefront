@@ -1,5 +1,6 @@
-import { Button, Text } from '@chakra-ui/react'
+import { Button, Flex, Text } from '@chakra-ui/react'
 import styled from '@emotion/styled'
+import { InsertBelowIcon } from '@sanity/icons'
 import { BookContext } from 'components/data/BookProvider'
 import GetBlocks from 'components/data/BookProvider/getBlocks'
 import useDimensions from 'components/hooks/useDimensions'
@@ -11,46 +12,6 @@ import Block from './Block'
 import { ColumnPopover } from './index'
 
 const currentHour = new Date().getUTCHours()
-
-const AddTextButton = styled(Button)({
-  display: `flex`,
-  alignItems: `center`,
-  justifyContent: `center`,
-  visibility: `hidden`,
-  position: `absolute`,
-  bottom: `-1rem`,
-  left: `calc(50% - 1rem)`,
-  padding: `.2rem`,
-  width: `2rem`,
-  height: `2rem`,
-  zIndex: 1,
-})
-
-const Col = styled(`div`)(
-  {
-    position: `relative`,
-    display: `flex`,
-    flexDirection: `column`,
-    // justifyContent: `space-between`,
-    flexWrap: `wrap`,
-    // marginRight: `5%`,
-    margin: `0 15px`,
-    [`&:hover`]: {
-      [AddTextButton]: {
-        visibility: `visible`,
-      },
-    },
-  },
-  ({ width, editMode }) => ({
-    // flex: `0 0 calc(${width}% - 5%)`,
-    // maxWidth: `calc(${width}% - 5%)`,
-    flex: `0 0 calc(${width}% - 30px)`,
-    maxWidth: `calc(${width}% - 30px)`,
-    [`&:hover`]: {
-      background: editMode ? `#f1f1f18a` : `inherit`,
-    },
-  })
-)
 
 // util function to add `contentArea` and `distanceTop` keys to the props
 const getBlockStyle = (
@@ -90,7 +51,7 @@ const Column = observer(({ width, blocks, update }) => {
       })
       difference = layout.transformValue
 
-      const { blockId, variantOption, ...queryArgs } = block
+      const { blockId, variantId, ...queryArgs } = block
 
       const humanReadableDedupId = `H${currentHour}_${update.page}_C${update.col}_B${idx}_${blockId}`
       return (
@@ -104,8 +65,7 @@ const Column = observer(({ width, blocks, update }) => {
           line={{
             dedupId: humanReadableDedupId,
             colWidth: size.width,
-            variantId:
-              variantOption?.value || bookLayoutStore.variantOption.value,
+            variantId: variantId || bookLayoutStore.variantOption.value,
             ...queryArgs,
           }}
           layout={layout}
@@ -119,21 +79,58 @@ const Column = observer(({ width, blocks, update }) => {
 
   if (!bookLayoutStore.editMode) {
     return (
-      <Col ref={targetRef} width={width} editMode={bookLayoutStore.editMode}>
+      <Flex
+        ref={targetRef}
+        flexDir={'column'}
+        flexWrap={'wrap'}
+        flex={`0 0 calc(${width}% - 30px)`}
+        maxW={`calc(${width}% - 30px)`}
+        m={'0 15px'}
+        position={'relative'}
+      >
         {renderBlocks()}
-      </Col>
+      </Flex>
     )
   }
 
   return (
-    <Col ref={targetRef} width={width} editMode={bookLayoutStore.editMode}>
+    <Flex
+      ref={targetRef}
+      flexDir={'column'}
+      flexWrap={'wrap'}
+      flex={`0 0 calc(${width}% - 30px)`}
+      maxW={`calc(${width}% - 30px)`}
+      m={'0 15px'}
+      position={'relative'}
+      _hover={{
+        background: `#f1f1f18a`,
+        ['.addColumnButton']: {
+          visibility: `visible`,
+        },
+      }}
+    >
       <ColumnPopover update={update} width={width}>
         {renderBlocks()}
-        <AddTextButton onClick={handleClick}>
-          <Text fontSize={'sm'}>{`+`}</Text>
-        </AddTextButton>
+        <Button
+          onClick={handleClick}
+          // variant={'ghost'}
+          fontSize={'2xl'}
+          className={'addColumnButton'}
+          sx={{
+            visibility: `hidden`,
+            position: `absolute`,
+            bottom: `-1rem`,
+            left: `calc(50% - 1rem)`,
+            padding: `.2rem`,
+            width: `2rem`,
+            height: `2rem`,
+            zIndex: 1,
+          }}
+        >
+          <InsertBelowIcon />
+        </Button>
       </ColumnPopover>
-    </Col>
+    </Flex>
   )
 })
 

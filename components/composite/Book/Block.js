@@ -1,41 +1,8 @@
-import { Box, Container, Flex } from '@chakra-ui/react'
-import { css, jsx } from '@emotion/react'
-import styled from '@emotion/styled'
+import { Box, Container, Flex, Text } from '@chakra-ui/react'
 import BlockPopover from 'components/composite/Book/BlockPopover'
 import { BookContext } from 'components/data/BookProvider'
 import { observer } from 'mobx-react-lite'
 import React, { useContext, useEffect, useState } from 'react'
-
-const Guides = styled(`div`)(
-  {
-    display: `block`,
-    marginTop: `1.5rem`, // `32.4px`, // `1.5rem`,
-    marginTop: `32.4px`,
-    transition: `none`,
-    position: `relative`,
-  },
-  ({ colWidth, innerWrapperStyle, editMode }) => ({
-    width: `${colWidth}px`,
-    ...innerWrapperStyle,
-    [`&:hover`]: {
-      backgroundColor: editMode && `#F8FFBF82`,
-    },
-  })
-)
-
-const Loading = styled(Guides)({
-  fontSize: `16px`,
-  fontFamily: `Alltaf-Regular`,
-})
-
-const BlockPoints = styled(`span`)({
-  fontSize: `12px`,
-  zIndex: 99,
-  position: `absolute`,
-  // bottom: `100%`, // here the line height plays a role
-  // transform: `translateY(30%)`
-  top: `2px`,
-})
 
 const Block = observer((props) => {
   const { entry, line, isLoadingBookItem, layout } = props
@@ -51,29 +18,35 @@ const Block = observer((props) => {
         position={'relative'}
         mb={'10.8px'}
         mt={layout.outerWrapperMarginTop}
+        _hover={{
+          backgroundColor: `#F8FFBF82`,
+          ['.configBlockButton']: {
+            visibility: `visible`,
+          },
+        }}
       >
         <BlockPopover {...props} setWord={setWord} fetchMore={props.fetchMore}>
-          <BlockPoints>
+          <Text fontSize={'12px'} position={'absolute'} top={'2px'}>
             {
               bookLayoutStore.variantOptions.find(
                 ({ value }) => line.variantId === value
-              ).label
+              )?.label
             }
-          </BlockPoints>
+          </Text>
           {isLoadingBookItem ? (
-            <Loading
-              colWidth={line.colWidth}
-              innerWrapperStyle={layout.innerWrapperStyle}
-            >{`Loading...`}</Loading>
+            <Text fontSize={'12px'}>{`Loading...`}</Text>
           ) : (
-            <Guides
+            <Box
               className={line.variantId}
-              editMode={bookLayoutStore.editMode}
-              colWidth={line.colWidth}
-              innerWrapperStyle={layout.innerWrapperStyle}
+              position={'relative'}
+              mt={`32.4px`}
+              w={`${line.colWidth}px`}
+              sx={{
+                ...layout.innerWrapperStyle,
+              }}
             >
-              <div
-                css={{
+              <Box
+                sx={{
                   position: 'absolute',
                   top: `${layout.offsetValue}`,
                   left: 0,
@@ -88,8 +61,8 @@ const Block = observer((props) => {
                 >
                   {word}
                 </Box>
-              </div>
-            </Guides>
+              </Box>
+            </Box>
           )}
         </BlockPopover>
       </Flex>
@@ -98,21 +71,24 @@ const Block = observer((props) => {
 
   return (
     <Flex position={'relative'} mb={'10.8px'} mt={layout.outerWrapperMarginTop}>
-      <BlockPoints>
+      <Text fontSize={'12px'} position={'absolute'} top={'2px'}>
         {
           bookLayoutStore.variantOptions.find(
             ({ value }) => line.variantId === value
           ).label
         }
-      </BlockPoints>
-      <Guides
+      </Text>
+      <Box
         className={line.variantId}
-        editMode={bookLayoutStore.editMode}
-        colWidth={line.colWidth}
-        innerWrapperStyle={layout.innerWrapperStyle}
+        position={'relative'}
+        mt={`32.4px`}
+        w={`${line.colWidth}px`}
+        sx={{
+          ...layout.innerWrapperStyle,
+        }}
       >
-        <div
-          css={{
+        <Box
+          sx={{
             position: 'absolute',
             top: `${layout.offsetValue}`,
             left: 0,
@@ -127,8 +103,8 @@ const Block = observer((props) => {
           >
             {word}
           </Box>
-        </div>
-      </Guides>
+        </Box>
+      </Box>
     </Flex>
   )
 })
