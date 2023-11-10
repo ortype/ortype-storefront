@@ -68,7 +68,7 @@ const fontFields = groq`
   _type,
   name,
   "slug": slug.current,
-  variants[]->{name, _id},
+  variants[]->{name, optionName, _id},
   uid,
   version,
   metafields[]{key, value}
@@ -78,6 +78,7 @@ const fontVariantFields = groq`
   _id,
   _type,
   name,
+  optionName,
   "slug": slug.current,
   uid,
   parentUid,

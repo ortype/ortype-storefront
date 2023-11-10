@@ -36,7 +36,7 @@ const GetBlocks = (props) => {
       text,
     }
   }
-  console.log('GET_BOOK_ITEM: variables()', variables())
+  // console.log('GET_BOOK_ITEM: variables()', variables())
 
   const { loading, data, fetchMore } = useQuery(GET_BOOK_ITEM, {
     variables: variables(),

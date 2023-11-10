@@ -117,7 +117,7 @@ export const BookLayoutProvider = ({ children }) => {
         col.colId = col.colId || `col_${uuid()}`
         col.blocks.forEach((block) => {
           block.blockId = block.blockId || `block_${uuid()}`
-          block.regex = block.regex || `all`
+          block.regex = block.regex || `capitalize`
           block.noSpace = block.noSpace || false
           block.noGibberish = block.noGibberish || false
           block.isParagraph = block.isParagraph || false
@@ -128,7 +128,7 @@ export const BookLayoutProvider = ({ children }) => {
         col.colId = col.colId || `col_${uuid()}`
         col.blocks.forEach((block) => {
           block.blockId = block.blockId || `block_${uuid()}`
-          block.regex = block.regex || `all`
+          block.regex = block.regex || `capitalize`
           block.noSpace = block.noSpace || false
           block.noGibberish = block.noGibberish || false
           block.isParagraph = block.isParagraph || false

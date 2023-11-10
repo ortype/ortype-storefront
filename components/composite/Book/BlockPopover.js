@@ -9,12 +9,40 @@ import {
 } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 import NumericInput from 'components/composite/Book/NumericInput'
-import { BookContext } from 'components/data/BookProvider'
-import React, { useContext, useState } from 'react'
+import { useBookLayoutStore } from 'components/data/BookProvider'
+import StyledSelect from 'components/ui/Select'
+import { toJS } from 'mobx'
+import React, { useState } from 'react'
 import Select from 'react-select'
 import { ArrowContainer, Popover } from 'react-tiny-popover'
 
 const pointFormat = (num) => `${num}pt`
+
+const regexOptions = [
+  {
+    value: 'uppercase',
+    label: 'Uppercase',
+  },
+  {
+    value: 'lowercase',
+    label: 'Lowercase',
+  },
+  {
+    value: 'sentence',
+    label: 'Sentence',
+  },
+  {
+    value: 'capitalize',
+    label: 'Capitalize',
+  },
+  /*
+                  // @TODO: verify that there is indeed not enough entries consisting of 
+                  // digits for  this feature to be removed
+                  {
+                    value: 'numbers',
+                    label: 'Numbers',
+                  },*/
+]
 
 const PopoverInner = styled(`div`)({
   border: `.1rem solid #000`,
@@ -32,7 +60,9 @@ const BlockPopover = (props) => {
   const { line, update } = props
   const { page, col, block } = update
 
-  const bookLayoutStore = useContext(BookContext)
+  console.log('BlockPopover: ', line)
+
+  const bookLayoutStore = useBookLayoutStore()
 
   // Popover
   const [isPopoverOpen, setPopover] = useState(false)
@@ -46,6 +76,14 @@ const BlockPopover = (props) => {
       bookLayoutStore.updateBlock(key, value, page, col, block)
     }
   }
+
+  // Integrate variant select
+
+  // how do we update the select when the "global" font family changes?
+  // TieredSelect handles this, with `setVariantOptions` which updates the store
+  // So we just need to output the variantOptions
+  // and call this when handleVariantChange? bookLayoutStore.setVariantOption(option)
+  // no, that's global again, we are on the Block level here
 
   return (
     <Popover
@@ -72,6 +110,20 @@ const BlockPopover = (props) => {
                 Edit block
               </Text>
             </Box>
+            <StyledSelect
+              placeholder="Select style"
+              options={
+                bookLayoutStore.variantOptions &&
+                bookLayoutStore.variantOptions.constructor === Array
+                  ? toJS(bookLayoutStore.variantOptions)
+                  : []
+              }
+              defaultValue={bookLayoutStore.variantOption}
+              value={line.variantOption}
+              name="variant"
+              onChange={(option) => handleChange('variantOption', option)}
+              width={276}
+            />
             <SimpleGrid columns={2}>
               <Box>
                 <Text fontSize={'sm'}>Font size</Text>
@@ -154,38 +206,20 @@ const BlockPopover = (props) => {
               </Box>
             </SimpleGrid>
             <Stack my={4} direction={'column'} spacing="2">
-              <Select
-                options={[
-                  {
-                    value: 'uppercase',
-                    label: 'Uppercase',
-                  },
-                  {
-                    value: 'lowercase',
-                    label: 'Lowercase',
-                  },
-                  {
-                    value: 'sentence',
-                    label: 'Sentence',
-                  },
-                  {
-                    value: 'capitalize',
-                    label: 'Capitalize',
-                  },
-                  /*
-                  // @TODO: verify that there is indeed not enough entries consisting of 
-                  // digits for  this feature to be removed
-                  {
-                    value: 'numbers',
-                    label: 'Numbers',
-                  },*/
-                ]}
-                name="regex"
-                placeholder={
-                  line.regex.charAt(0).toUpperCase() + line.regex.slice(1)
-                }
-                onChange={(option) => handleChange('regex', option.value)}
-              />
+              <Box>
+                <Text fontSize={'sm'}>Typecase</Text>
+                <StyledSelect
+                  width={276}
+                  options={regexOptions}
+                  name="regex"
+                  value={regexOptions.find(
+                    (option) => option.value === line.regex
+                  )}
+                  // placeholder={line.regex.charAt(0).toUpperCase() + line.regex.slice(1)}
+                  placeholder={'Select typecase'}
+                  onChange={(option) => handleChange('regex', option.value)}
+                />
+              </Box>
               <Text fontSize={'sm'}>Additional options</Text>
               <Checkbox
                 isChecked={line.isParagraph}

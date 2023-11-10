@@ -19,6 +19,7 @@ const Book = ({ fonts }) => {
   // get data from api
   const { loading, data } = useQuery(GET_BOOK_LAYOUT, {
     variables: { _id: bookLayoutStore.layoutOption.value }, // this is initially hardcoded
+    // @TODO: store in localStorage (Mobx has a guide to do this I think)
   })
 
   // store data in mobx
