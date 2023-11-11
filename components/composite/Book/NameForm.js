@@ -84,13 +84,13 @@ const NameForm = ({ bookLayoutId, name }) => {
   return (
     <Box
       as={'form'}
-      w={'25rem'}
+      w={'18rem'}
       m={'0 0.5rem'}
       ref={submitValidation}
       autoComplete="off"
       onSubmit={handleSubmit(s)}
     >
-      <Text fontSize={'sm'}>{'Layout name'}</Text>
+      <Text fontSize={'sm'}>{'Name'}</Text>
       <HStack spacing={2}>
         <Input
           name={'name'}

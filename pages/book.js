@@ -71,8 +71,17 @@ const Book = ({ fonts }) => {
             w={'588px'}
             h={'838px'}
             flexWrap={'wrap'}
+            position={'relative'}
             m={'46px'}
             editMode={bookLayoutStore.editMode}
+            _before={{
+              content: bookLayoutStore.editMode ? `'Verso'` : `''`,
+              fontSize: '12px',
+              position: 'absolute',
+              top: '-1.5rem',
+              width: '100%',
+              textAlign: 'center',
+            }}
           >
             {bookLayoutStore.spread.verso.map((col, idx) => (
               <Column
@@ -87,8 +96,17 @@ const Book = ({ fonts }) => {
             w={'588px'}
             h={'838px'}
             flexWrap={'wrap'}
+            position={'relative'}
             m={'46px'}
             editMode={bookLayoutStore.editMode}
+            _before={{
+              content: bookLayoutStore.editMode ? `'Recto'` : `''`,
+              fontSize: '12px',
+              position: 'absolute',
+              top: '-1rem',
+              width: '100%',
+              textAlign: 'center',
+            }}
           >
             {bookLayoutStore.spread.recto.map((col, idx) => (
               <Column

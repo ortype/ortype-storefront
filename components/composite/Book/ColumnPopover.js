@@ -42,7 +42,7 @@ const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
           <Button
             variant={'ghost'}
             position={'absolute'}
-            left={'-2rem'}
+            left={'-2.5rem'}
             fontSize={'xl'}
             top={'-0.6rem'}
           >

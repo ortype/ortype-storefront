@@ -13,83 +13,150 @@ import {
   MenuItemOption,
   MenuList,
   MenuOptionGroup,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Spinner,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
   Text,
   useDisclosure,
   VStack,
 } from '@chakra-ui/react'
 import NameForm from 'components/composite/Book/NameForm'
 import { useBookLayoutStore } from 'components/data/BookProvider'
+import { regexOptions } from 'components/data/BookProvider/bookDefaults'
+import StyledSelect from 'components/ui/Select'
+import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 
-import { CogIcon, CopyIcon, TransferIcon } from '@sanity/icons'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChevronDownIcon,
+  CogIcon,
+  CopyIcon,
+  TransferIcon,
+} from '@sanity/icons'
 
 const Config = () => {
   const bookLayoutStore = useBookLayoutStore()
-  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleIsTemplateChange = (value) => {
-    console.log('handleIsTemplateChange: ', value)
     bookLayoutStore.setIsTemplate(value)
   }
 
-  // @TODO: Consider using Popover instead of Modal here...
+  const handleFilterAllChange = (option) => {
+    bookLayoutStore.filterAll(bookLayoutStore.spread, option.value)
+  }
+
+  const handleDuplicate = (source, target) => {
+    bookLayoutStore.duplicatePage(source, target)
+  }
+
+  const handleSwap = () => {
+    bookLayoutStore.swapPages(bookLayoutStore.spread)
+  }
 
   return (
     <>
-      <IconButton
-        variant={'outline'}
-        onClick={onOpen}
-        icon={<CogIcon width={'1.5rem'} height={'1.5rem'} />}
-      />
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <Text fontSize={'lg'}>{'Layout options'}</Text>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={1} alignItems={'start'}>
-              <NameForm
-                bookLayoutId={bookLayoutStore.layoutOption.value}
-                name={bookLayoutStore.layoutOption.label}
-              />
-              <Checkbox
-                // @TODO: `useCheckbox` for customized look/feel
-                minH={10}
-                isChecked={bookLayoutStore.isTemplate}
-                onChange={(e) => handleIsTemplateChange(e.target.checked)}
-              >
-                {'Is template'}
-              </Checkbox>
-              <ButtonGroup spacing={2}>
-                <Button
-                  variant={'outline'}
-                  leftIcon={<CopyIcon width={'1.5rem'} height={'1.5rem'} />}
+      <Popover>
+        <PopoverTrigger>
+          <IconButton
+            variant={'outline'}
+            icon={<CogIcon width={'1.5rem'} height={'1.5rem'} />}
+          />
+        </PopoverTrigger>
+        <Portal>
+          <PopoverContent
+            sx={{
+              border: `.1rem solid #000`,
+              boxShadow: `2px 2px 0px #000`,
+              backgroundColor: `#fff`,
+              width: `20rem`,
+            }}
+          >
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader>
+              <Text fontSize={'md'} color={'red'}>
+                Layout options
+              </Text>
+            </PopoverHeader>
+            <PopoverBody>
+              <VStack spacing={1} alignItems={'start'}>
+                <NameForm
+                  bookLayoutId={bookLayoutStore.layoutOption.value}
+                  name={bookLayoutStore.layoutOption.label}
+                />
+                <Checkbox
+                  // @TODO: `useCheckbox` for customized look/feel
+                  isChecked={bookLayoutStore.isTemplate}
+                  onChange={(e) => handleIsTemplateChange(e.target.checked)}
                 >
-                  {'Duplicate page'}
-                </Button>
-                <Button
-                  variant={'outline'}
-                  leftIcon={<TransferIcon width={'1.5rem'} height={'1.5rem'} />}
-                >
-                  {'Reverse pages'}
-                </Button>
-              </ButtonGroup>
-            </VStack>
-          </ModalBody>
-          <ModalFooter></ModalFooter>
-        </ModalContent>
-      </Modal>
+                  {'Is template'}
+                </Checkbox>
+                <VStack spacing={2}>
+                  <Text fontSize={'sm'}>Pages</Text>
+                  <Menu>
+                    <MenuButton
+                      as={Button}
+                      variant={'outline'}
+                      leftIcon={<CopyIcon width={'1.5rem'} height={'1.5rem'} />}
+                    >
+                      <Text fontSize={'sm'}>{'Duplicate'}</Text>
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem
+                        icon={
+                          <ArrowRightIcon width={'1.5rem'} height={'1.5rem'} />
+                        }
+                        onClick={() => handleDuplicate('verso', 'recto')}
+                      >
+                        <Text fontSize={'sm'}>{`Copy verso to right`}</Text>
+                      </MenuItem>
+                      <MenuItem
+                        icon={
+                          <ArrowLeftIcon width={'1.5rem'} height={'1.5rem'} />
+                        }
+                        onClick={() => handleDuplicate('recto', 'verso')}
+                      >
+                        <Text fontSize={'sm'}>{`Copy recto to verso`}</Text>
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                  <Button
+                    variant={'outline'}
+                    leftIcon={
+                      <TransferIcon width={'1.5rem'} height={'1.5rem'} />
+                    }
+                    onClick={handleSwap}
+                  >
+                    {'Swap'}
+                  </Button>
+                  <Box>
+                    <Text fontSize={'sm'}>{'Global Typecase'}</Text>
+                    <StyledSelect
+                      width={'16rem'}
+                      options={regexOptions}
+                      name="regex"
+                      value={regexOptions?.find(
+                        (option) => option.value === bookLayoutStore.regex
+                      )}
+                      // where does line.regex come from?
+                      placeholder={'Select typecase'}
+                      onChange={handleFilterAllChange}
+                    />
+                  </Box>
+                </VStack>
+              </VStack>
+            </PopoverBody>
+          </PopoverContent>
+        </Portal>
+      </Popover>
     </>
   )
 }

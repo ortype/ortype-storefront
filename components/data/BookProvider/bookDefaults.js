@@ -28,4 +28,30 @@ const defaultColumn = () => ({
   colId: `col_${uuid()}`,
 })
 
-export { uuid, defaultBlock, defaultColumn }
+const regexOptions = [
+  {
+    value: 'uppercase',
+    label: 'Uppercase',
+  },
+  {
+    value: 'lowercase',
+    label: 'Lowercase',
+  },
+  {
+    value: 'sentence',
+    label: 'Sentence',
+  },
+  {
+    value: 'capitalize',
+    label: 'Capitalize',
+  },
+  /*
+  // @TODO: verify that there is indeed not enough entries consisting of 
+  // digits for  this feature to be removed
+  {
+    value: 'numbers',
+    label: 'Numbers',
+  },*/
+]
+
+export { uuid, defaultBlock, defaultColumn, regexOptions }

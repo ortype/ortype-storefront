@@ -4,7 +4,7 @@ import {
   uuid,
 } from 'components/data/BookProvider/bookDefaults'
 import cloneDeep from 'lodash.clonedeep'
-import { action } from 'mobx'
+import { action, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { createContext, useContext } from 'react'
 
@@ -53,6 +53,7 @@ export const BookLayoutProvider = ({ children }) => {
       },
     ],
     editMode: true,
+    regex: 'capitalize',
     spread: {
       verso: [],
       recto: [],
@@ -178,9 +179,36 @@ export const BookLayoutProvider = ({ children }) => {
         }
       )
     }),
-    // filterAll
-    filterAll: action((page, col) => {
-      // @TODO: how to set block config for every column and block on both pages
+    swapPages: action((spread) => {
+      const newSpread = cloneDeep(toJS(spread))
+      store.spread.recto = newSpread.verso
+      store.spread.verso = newSpread.recto
+    }),
+    duplicatePage: action((source, target) => {
+      store.spread[target] = store.spread[source]
+      store.spread[target].forEach((col) => {
+        col.colId = col.colId || `col_${uuid()}`
+        col.blocks.forEach((block) => {
+          block.blockId = block.blockId || `block_${uuid()}`
+        })
+      })
+    }),
+    filterAll: action((spread, regex) => {
+      const newSpread = cloneDeep(toJS(spread))
+      console.log('filterAll: ', newSpread)
+      newSpread.recto.forEach((col) => {
+        col.blocks.forEach((block) => {
+          block.regex = regex
+        })
+      })
+
+      newSpread.verso.forEach((col) => {
+        col.blocks.forEach((block) => {
+          block.regex = regex
+        })
+      })
+      store.regex = regex
+      store.spread = newSpread
     }),
   }))
   return <BookContext.Provider value={store}>{children}</BookContext.Provider>

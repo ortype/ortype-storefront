@@ -3,7 +3,6 @@ import {
   Button,
   ButtonGroup,
   Checkbox,
-  Portal,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -11,6 +10,7 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
+  Portal,
   SimpleGrid,
   Stack,
   Text,
@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react'
 import NumericInput from 'components/composite/Book/NumericInput'
 import { useBookLayoutStore } from 'components/data/BookProvider'
+import { regexOptions } from 'components/data/BookProvider/bookDefaults'
 import StyledSelect from 'components/ui/Select'
 import { toJS } from 'mobx'
 import React, { useState } from 'react'
@@ -26,32 +27,6 @@ import Select from 'react-select'
 import { EditIcon, RefreshIcon, TrashIcon } from '@sanity/icons'
 
 const pointFormat = (num) => `${num}pt`
-
-const regexOptions = [
-  {
-    value: 'uppercase',
-    label: 'Uppercase',
-  },
-  {
-    value: 'lowercase',
-    label: 'Lowercase',
-  },
-  {
-    value: 'sentence',
-    label: 'Sentence',
-  },
-  {
-    value: 'capitalize',
-    label: 'Capitalize',
-  },
-  /*
-  // @TODO: verify that there is indeed not enough entries consisting of 
-  // digits for  this feature to be removed
-  {
-    value: 'numbers',
-    label: 'Numbers',
-  },*/
-]
 
 const BlockPopover = (props) => {
   const { line, update } = props
