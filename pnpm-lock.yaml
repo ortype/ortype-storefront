@@ -9,7 +9,6 @@ specifiers:
   '@commercelayer/js-auth': ^2.3.0
   '@commercelayer/react-components': ^4.7.1
   '@commercelayer/sdk': ^4.21.0
-  '@emotion/babel-plugin': ^11.11.0
   '@emotion/react': ^11.10.6
   '@emotion/styled': ^11.10.6
   '@headlessui/react': 1.7.14
@@ -80,7 +79,6 @@ dependencies:
   '@commercelayer/js-auth': 2.3.0
   '@commercelayer/react-components': 4.7.2_biqbaboplfbrettd7655fr4n2y
   '@commercelayer/sdk': 4.21.0
-  '@emotion/babel-plugin': 11.11.0
   '@emotion/react': 11.10.6_3stiutgnnbnfnf3uowm5cip22i
   '@emotion/styled': 11.10.6_zjrrpqmb4rf5frur5mrydkybnq
   '@headlessui/react': 1.7.14_biqbaboplfbrettd7655fr4n2y
