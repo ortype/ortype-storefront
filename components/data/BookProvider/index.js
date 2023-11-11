@@ -178,6 +178,10 @@ export const BookLayoutProvider = ({ children }) => {
         }
       )
     }),
+    // filterAll
+    filterAll: action((page, col) => {
+      // @TODO: how to set block config for every column and block on both pages
+    }),
   }))
   return <BookContext.Provider value={store}>{children}</BookContext.Provider>
 }

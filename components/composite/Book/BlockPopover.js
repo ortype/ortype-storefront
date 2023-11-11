@@ -96,7 +96,7 @@ const BlockPopover = (props) => {
               border: `.1rem solid #000`,
               boxShadow: `2px 2px 0px #000`,
               backgroundColor: `#fff`,
-              width: `16rem`,
+              width: `18rem`,
             }}
           >
             <PopoverArrow />
@@ -122,9 +122,9 @@ const BlockPopover = (props) => {
                 )}
                 name="variant"
                 onChange={(option) => handleChange('variantId', option.value)}
-                width={276}
+                width={'16rem'}
               />
-              <SimpleGrid columns={2}>
+              <SimpleGrid columns={2} spacing={2}>
                 <Box>
                   <Text fontSize={'sm'}>Font size</Text>
                   <NumericInput
@@ -209,7 +209,7 @@ const BlockPopover = (props) => {
                 <Box>
                   <Text fontSize={'sm'}>Typecase</Text>
                   <StyledSelect
-                    width={276}
+                    width={'16rem'}
                     options={regexOptions}
                     name="regex"
                     value={regexOptions.find(
@@ -244,7 +244,7 @@ const BlockPopover = (props) => {
                   {'No gibberish'}
                 </Checkbox>
               </Stack>
-              <ButtonGroup variant="ghost" spacing="2">
+              <ButtonGroup variant="outline" spacing="2">
                 <Button
                   onClick={() =>
                     props.fetchMore({
@@ -259,14 +259,14 @@ const BlockPopover = (props) => {
                       },
                     })
                   }
-                  leftIcon={<RefreshIcon />}
+                  leftIcon={<RefreshIcon width={'1.5rem'} height={'1.5rem'} />}
                 >
                   <Text fontSize={'sm'}>Refresh</Text>
                 </Button>
 
                 <Button
                   onClick={() => bookLayoutStore.removeBlock(page, col, block)}
-                  leftIcon={<TrashIcon />}
+                  leftIcon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
                 >
                   <Text fontSize={'sm'}>Remove</Text>
                 </Button>

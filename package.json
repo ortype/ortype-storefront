@@ -22,7 +22,6 @@
     "@commercelayer/js-auth": "^2.3.0",
     "@commercelayer/react-components": "^4.7.1",
     "@commercelayer/sdk": "^4.21.0",
-    "@emotion/babel-plugin": "^11.11.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@headlessui/react": "1.7.14",

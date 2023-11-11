@@ -60,8 +60,6 @@ function getCustomStyles({ width, maxWidth }) {
         paddingTop: baseSpacing,
         paddingBottom: mediumSpacing,
         marginRight: `-0.1rem`,
-        // display: `inline-flex`,
-        display: `inline-block`,
       }
     },
     control(base, state) {

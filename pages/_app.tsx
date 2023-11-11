@@ -17,6 +17,14 @@ import { AppProps } from 'next/app'
 import { useEffect } from 'react'
 
 const {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
   Portal,
   Popover,
   PopoverTrigger,
@@ -40,6 +48,7 @@ const {
   Heading,
   Text,
   Divider,
+  IconButton,
   Button,
   ButtonGroup,
   Box,
@@ -53,6 +62,7 @@ const {
   VStack,
   HStack,
   Switch,
+  Spinner,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -64,6 +74,14 @@ const {
 
 const theme = extendBaseTheme({
   components: {
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    MenuItemOption,
+    MenuGroup,
+    MenuOptionGroup,
+    MenuDivider,
     Portal,
     Popover,
     PopoverTrigger,
@@ -81,6 +99,7 @@ const theme = extendBaseTheme({
     RadioGroup,
     Radio,
     Checkbox,
+    IconButton,
     Button,
     ButtonGroup,
     Input,
@@ -100,6 +119,7 @@ const theme = extendBaseTheme({
     VStack,
     HStack,
     Switch,
+    Spinner,
     Modal,
     ModalBody,
     ModalCloseButton,

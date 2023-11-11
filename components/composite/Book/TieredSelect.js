@@ -97,7 +97,7 @@ const TieredSelect = observer(
     }, [layoutsLoading])
 
     return (
-      <React.Fragment>
+      <>
         <StyledSelect
           placeholder="Select font"
           options={
@@ -132,7 +132,7 @@ const TieredSelect = observer(
           name="layouts"
           onChange={handleLayoutChange}
         />
-      </React.Fragment>
+      </>
     )
   }
 )

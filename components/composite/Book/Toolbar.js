@@ -1,44 +1,40 @@
-import { Button, Checkbox, Text } from '@chakra-ui/react'
-import styled from '@emotion/styled'
-import { BookContext } from 'components/data/BookProvider'
-import { defaultColumn } from 'components/data/BookProvider/bookDefaults'
-import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
-
 import { useMutation, useQuery } from '@apollo/client'
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  HStack,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Spinner,
+  Text,
+} from '@chakra-ui/react'
+import Config from 'components/composite/Book/Config'
+import { useBookLayoutStore } from 'components/data/BookProvider'
+import { defaultColumn } from 'components/data/BookProvider/bookDefaults'
 import {
   ADD_BOOK_LAYOUT,
   REMOVE_BOOK_LAYOUT,
   UPDATE_BOOK_LAYOUT,
 } from 'graphql/mutations'
+import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { observer } from 'mobx-react-lite'
-import React, { useContext } from 'react'
+import React from 'react'
 import TieredSelect from './TieredSelect'
 
-const Wrapper = styled(`div`)({
-  position: `absolute`,
-  right: `0`,
-  left: `0`,
-  top: `0`,
-  backgroundColor: `#FFF`,
-  zIndex: 9999,
-  padding: `0 1rem`,
-  [`@media print`]: {
-    display: `none`,
-  },
-})
-
-const ActionButton = styled(Button)({
-  margin: `0 0.5rem`,
-})
-
-const ToggleButton = styled(Button)({
-  position: `fixed`,
-  right: `1.5rem`,
-  bottom: `1.5rem`,
-  [`@media print`]: {
-    display: `none`,
-  },
-})
+import {
+  ChevronDownIcon,
+  ComposeIcon,
+  CopyIcon,
+  EditIcon,
+  EyeOpenIcon,
+  PublishIcon,
+  ResetIcon,
+  TrashIcon,
+} from '@sanity/icons'
 
 const layoutOptions = (layouts) => {
   const {
@@ -52,7 +48,7 @@ const layoutOptions = (layouts) => {
 }
 
 const Toolbar = observer(({ fonts }) => {
-  const bookLayoutStore = useContext(BookContext)
+  const bookLayoutStore = useBookLayoutStore()
 
   // queries
   // get layout data from api
@@ -68,8 +64,6 @@ const Toolbar = observer(({ fonts }) => {
 
   const { loading: unassignedLayoutsLoading, data: unassignedLayouts } =
     useQuery(GET_BOOK_LAYOUTS, { variables: { isTemplate: false } })
-
-  console.log('layouts...', assignedLayouts, templateLayouts, unassignedLayouts)
 
   const layoutsRefetchQueries = [
     {
@@ -220,65 +214,108 @@ const Toolbar = observer(({ fonts }) => {
     })
   }
 
-  const handleIsTemplateChange = (value) => {
-    console.log('handleIsTemplateChange: ', value)
-    bookLayoutStore.setIsTemplate(value)
-  }
+  const handleDiscard = () => {}
 
   return (
-    <Wrapper>
+    <Box
+      sx={{
+        position: `absolute`,
+        width: '100vw',
+        top: 0,
+        zIndex: 1,
+        backgroundColor: `#FFF`,
+        padding: `0 1rem`,
+        [`@media print`]: {
+          display: `none`,
+        },
+      }}
+    >
       {bookLayoutStore.editMode && (
-        <React.Fragment>
-          <TieredSelect
-            fonts={fonts}
-            layoutOptions={groupedLayoutOptions}
-            layoutsLoading={layoutsLoading}
-            handleLayoutChange={handleLayoutChange}
-          />
-          <Checkbox
-            minH={10}
-            isChecked={bookLayoutStore.isTemplate}
-            onChange={(e) => handleIsTemplateChange(e.target.checked)}
-          >
-            {'Is template'}
-          </Checkbox>
-          <ActionButton
-            actionType="secondary"
-            isWaiting={updateLoading}
-            onClick={handleUpdate}
-          >
-            <Text fontSize={'sm'}>{`Save 💾`}</Text>
-          </ActionButton>
-          <ActionButton
-            actionType="secondary"
-            isWaiting={addLoading}
-            onClick={handleDuplicate}
-          >
-            <Text fontSize={'sm'}>{`Copy 📑`}</Text>
-          </ActionButton>
-          <ActionButton
-            actionType="secondary"
-            isWaiting={addLoading}
-            onClick={handleAdd}
-          >
-            <Text fontSize={'sm'}>{`Add 📄`}</Text>
-          </ActionButton>
-          <ActionButton
-            actionType="secondary"
-            isWaiting={removeLoading}
-            onClick={handleRemove}
-          >
-            <Text fontSize={'sm'}>{`Delete 🗑️`}</Text>
-          </ActionButton>
-        </React.Fragment>
+        <>
+          <HStack spacing={2}>
+            <TieredSelect
+              fonts={fonts}
+              layoutOptions={groupedLayoutOptions}
+              layoutsLoading={layoutsLoading}
+              handleLayoutChange={handleLayoutChange}
+            />
+            <Config />
+            <ButtonGroup isAttached variant={'outline'}>
+              <Button
+                // isLoading={updateLoading}
+                onClick={handleUpdate}
+                leftIcon={
+                  updateLoading ? (
+                    <Spinner />
+                  ) : (
+                    <PublishIcon width={'1.5rem'} height={'1.5rem'} />
+                  )
+                }
+              >
+                <Text fontSize={'sm'}>{`Publish`}</Text>
+              </Button>
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  icon={<ChevronDownIcon width={'1.5rem'} height={'1.5rem'} />}
+                />
+                <MenuList>
+                  <MenuItem
+                    icon={<ResetIcon width={'1.5rem'} height={'1.5rem'} />}
+                    isDisabled={true}
+                    onClick={handleDiscard}
+                  >
+                    <Text fontSize={'sm'}>{`Discard changes`}</Text>
+                  </MenuItem>
+                  <MenuItem
+                    isLoading={addLoading}
+                    onClick={handleAdd}
+                    icon={<ComposeIcon width={'1.5rem'} height={'1.5rem'} />}
+                  >
+                    <Text fontSize={'sm'}>{`Create`}</Text>
+                  </MenuItem>
+                  <MenuItem
+                    isLoading={addLoading}
+                    onClick={handleDuplicate}
+                    icon={<CopyIcon width={'1.5rem'} height={'1.5rem'} />}
+                  >
+                    <Text fontSize={'sm'}>{`Duplicate`}</Text>
+                  </MenuItem>
+                  <MenuItem
+                    isLoading={removeLoading}
+                    onClick={handleRemove}
+                    icon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
+                  >
+                    <Text fontSize={'sm'}>{`Delete`}</Text>
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </ButtonGroup>
+          </HStack>
+        </>
       )}
-      <ToggleButton
-        actionType="secondary"
+      <IconButton
+        sx={{
+          position: `fixed`,
+          right: `1.5rem`,
+          bottom: `1.5rem`,
+          [`@media print`]: {
+            display: `none`,
+          },
+        }}
+        variant={'outline'}
+        _hover={{ backgroundColor: '#555' }}
+        // @TODO: consider Tooltip as a label
         onClick={() => bookLayoutStore.setEditMode(!bookLayoutStore.editMode)}
-      >
-        {bookLayoutStore.editMode ? `👀` : `✏️`}
-      </ToggleButton>
-    </Wrapper>
+        icon={
+          bookLayoutStore.editMode ? (
+            <EyeOpenIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
+          ) : (
+            <EditIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
+          )
+        }
+      />
+    </Box>
   )
 })
 

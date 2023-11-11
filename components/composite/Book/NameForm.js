@@ -85,20 +85,18 @@ const NameForm = ({ bookLayoutId, name }) => {
     <Box
       as={'form'}
       w={'25rem'}
-      position={'fixed'}
-      left={'1rem'}
-      bottom={'1rem'}
       m={'0 0.5rem'}
       ref={submitValidation}
       autoComplete="off"
       onSubmit={handleSubmit(s)}
     >
+      <Text fontSize={'sm'}>{'Layout name'}</Text>
       <HStack spacing={2}>
         <Input
           name={'name'}
           type={'text'}
+          variant={'flushed'}
           // ref={validation} // @TODO: this validation ref causes onChange handler to not fire weirdly
-          color={'#FFF'}
           size={'lg'}
           value={nameValue}
           placeholder={'Layout name'}
@@ -107,7 +105,6 @@ const NameForm = ({ bookLayoutId, name }) => {
         />
         {isDirty && (
           <Button
-            color={'#FFF'}
             type={'submit'}
             variant={'outline'}
             isLoading={updateNameLoading}

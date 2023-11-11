@@ -1,8 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { Box, Center, Flex } from '@chakra-ui/react'
-import styled from '@emotion/styled'
 import Column from 'components/composite/Book/Column'
-import NameForm from 'components/composite/Book/NameForm'
 import Toolbar from 'components/composite/Book/Toolbar'
 import {
   BookLayoutProvider,
@@ -61,12 +59,6 @@ const Book = ({ fonts }) => {
     <>
       <Center w={'100vw'} h={'100vh'} bg={'black'}>
         <Toolbar fonts={fonts} />
-        {bookLayoutStore.editMode && (
-          <NameForm
-            bookLayoutId={bookLayoutStore.layoutOption.value}
-            name={bookLayoutStore.layoutOption.label}
-          />
-        )}
         <Flex
           // Spread
           // py={'77px'}

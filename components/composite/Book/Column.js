@@ -1,5 +1,4 @@
 import { Button, Flex, Text } from '@chakra-ui/react'
-import styled from '@emotion/styled'
 import { InsertBelowIcon } from '@sanity/icons'
 import { BookContext } from 'components/data/BookProvider'
 import GetBlocks from 'components/data/BookProvider/getBlocks'
