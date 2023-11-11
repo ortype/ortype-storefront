@@ -84,8 +84,8 @@ const NameForm = ({ bookLayoutId, name }) => {
   return (
     <Box
       as={'form'}
-      w={'18rem'}
-      m={'0 0.5rem'}
+      w={'100%'}
+      my={'0.5rem'}
       ref={submitValidation}
       autoComplete="off"
       onSubmit={handleSubmit(s)}
@@ -95,7 +95,7 @@ const NameForm = ({ bookLayoutId, name }) => {
         <Input
           name={'name'}
           type={'text'}
-          variant={'flushed'}
+          variant={'outline'}
           // ref={validation} // @TODO: this validation ref causes onChange handler to not fire weirdly
           size={'lg'}
           value={nameValue}

@@ -108,7 +108,7 @@ const Column = observer(({ width, blocks, update }) => {
         },
       }}
     >
-      <ColumnPopover update={update} width={width}>
+      <ColumnPopover update={update} width={width} blocks={blocks}>
         {renderBlocks()}
         <Button
           onClick={handleClick}

@@ -3,6 +3,7 @@ import {
   Button,
   ButtonGroup,
   Checkbox,
+  Divider,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -31,8 +32,6 @@ const pointFormat = (num) => `${num}pt`
 const BlockPopover = (props) => {
   const { line, update } = props
   const { page, col, block } = update
-
-  console.log('BlockPopover: ', line)
 
   const bookLayoutStore = useBookLayoutStore()
 
@@ -219,8 +218,10 @@ const BlockPopover = (props) => {
                   {'No gibberish'}
                 </Checkbox>
               </Stack>
-              <ButtonGroup variant="outline" spacing="2">
+              <Divider />
+              <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
                 <Button
+                  width={'50%'}
                   onClick={() =>
                     props.fetchMore({
                       variables: {
@@ -240,6 +241,7 @@ const BlockPopover = (props) => {
                 </Button>
 
                 <Button
+                  width={'50%'}
                   onClick={() => bookLayoutStore.removeBlock(page, col, block)}
                   leftIcon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
                 >

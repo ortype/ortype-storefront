@@ -3,7 +3,7 @@ import {
   Button,
   ButtonGroup,
   Checkbox,
-  Flex,
+  Divider,
   IconButton,
   Menu,
   MenuButton,
@@ -22,7 +22,6 @@ import {
   PopoverTrigger,
   Portal,
   Text,
-  useDisclosure,
   VStack,
 } from '@chakra-ui/react'
 import NameForm from 'components/composite/Book/NameForm'
@@ -99,54 +98,64 @@ const Config = () => {
                 >
                   {'Is template'}
                 </Checkbox>
-                <VStack spacing={2}>
+                <VStack spacing={2} alignItems={'start'} width={'100%'}>
+                  <Divider />
                   <Text fontSize={'sm'}>Pages</Text>
-                  <Menu>
-                    <MenuButton
-                      as={Button}
+                  <ButtonGroup spacing={2} width={'100%'}>
+                    <Menu>
+                      <MenuButton
+                        // width={'50%'}
+                        as={Button}
+                        variant={'outline'}
+                        leftIcon={
+                          <CopyIcon width={'1.5rem'} height={'1.5rem'} />
+                        }
+                      >
+                        <Text fontSize={'sm'}>{'Duplicate'}</Text>
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem
+                          icon={
+                            <ArrowRightIcon
+                              width={'1.5rem'}
+                              height={'1.5rem'}
+                            />
+                          }
+                          onClick={() => handleDuplicate('verso', 'recto')}
+                        >
+                          <Text fontSize={'sm'}>{`Copy verso to right`}</Text>
+                        </MenuItem>
+                        <MenuItem
+                          icon={
+                            <ArrowLeftIcon width={'1.5rem'} height={'1.5rem'} />
+                          }
+                          onClick={() => handleDuplicate('recto', 'verso')}
+                        >
+                          <Text fontSize={'sm'}>{`Copy recto to verso`}</Text>
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                    <Button
+                      // width={'50%'}
                       variant={'outline'}
-                      leftIcon={<CopyIcon width={'1.5rem'} height={'1.5rem'} />}
+                      leftIcon={
+                        <TransferIcon width={'1.5rem'} height={'1.5rem'} />
+                      }
+                      onClick={handleSwap}
                     >
-                      <Text fontSize={'sm'}>{'Duplicate'}</Text>
-                    </MenuButton>
-                    <MenuList>
-                      <MenuItem
-                        icon={
-                          <ArrowRightIcon width={'1.5rem'} height={'1.5rem'} />
-                        }
-                        onClick={() => handleDuplicate('verso', 'recto')}
-                      >
-                        <Text fontSize={'sm'}>{`Copy verso to right`}</Text>
-                      </MenuItem>
-                      <MenuItem
-                        icon={
-                          <ArrowLeftIcon width={'1.5rem'} height={'1.5rem'} />
-                        }
-                        onClick={() => handleDuplicate('recto', 'verso')}
-                      >
-                        <Text fontSize={'sm'}>{`Copy recto to verso`}</Text>
-                      </MenuItem>
-                    </MenuList>
-                  </Menu>
-                  <Button
-                    variant={'outline'}
-                    leftIcon={
-                      <TransferIcon width={'1.5rem'} height={'1.5rem'} />
-                    }
-                    onClick={handleSwap}
-                  >
-                    {'Swap'}
-                  </Button>
-                  <Box>
+                      {'Swap'}
+                    </Button>
+                  </ButtonGroup>
+                  <Divider />
+                  <Box mt={2}>
                     <Text fontSize={'sm'}>{'Global Typecase'}</Text>
                     <StyledSelect
-                      width={'16rem'}
+                      width={'18rem'}
                       options={regexOptions}
                       name="regex"
                       value={regexOptions?.find(
                         (option) => option.value === bookLayoutStore.regex
                       )}
-                      // where does line.regex come from?
                       placeholder={'Select typecase'}
                       onChange={handleFilterAllChange}
                     />

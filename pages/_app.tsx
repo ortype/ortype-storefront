@@ -74,6 +74,7 @@ const {
 
 const theme = extendBaseTheme({
   components: {
+    Divider,
     Menu,
     MenuButton,
     MenuList,
@@ -107,7 +108,6 @@ const theme = extendBaseTheme({
     FormLabel,
     Heading,
     Text,
-    Divider,
     Box,
     Center,
     Container,

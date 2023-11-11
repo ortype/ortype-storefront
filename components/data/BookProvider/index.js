@@ -163,6 +163,17 @@ export const BookLayoutProvider = ({ children }) => {
           store.spread[page].push({ width, blocks: [defaultBlock()] })
       }
     }),
+    duplicateColumn: action((page, width, blocks, index = 0) => {
+      // colId: 'col_xg4qvh7wi', width: 100, blocks: Array(6)
+      store.spread[page].splice(index + 1, 0, {
+        colId: `col_${uuid()}`,
+        width,
+        blocks: blocks.map((block) => ({
+          ...block,
+          blockId: `block_${uuid()}`,
+        })),
+      })
+    }),
     removeColumn: action((page, col) => {
       store.spread[page] = store.spread[page].filter(
         (value, index) => index !== col
