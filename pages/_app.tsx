@@ -1,6 +1,3 @@
-import 'components/data/i18n'
-import 'tailwindcss/tailwind.css'
-
 import { ApolloProvider } from '@apollo/client'
 import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
@@ -8,13 +5,16 @@ import chakraTheme from '@chakra-ui/theme'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { ApolloClientProvider } from 'components/data/ApolloProvider'
 import { CustomerProvider } from 'components/data/CustomerProvider'
+import 'components/data/i18n'
 import { SettingsProvider } from 'components/data/SettingsProvider'
 import { GlobalHeader } from 'components/GlobalHeader'
 import Webfonts from 'components/Webfonts'
 import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
+import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import 'tailwindcss/tailwind.css'
 
 const {
   Menu,
@@ -135,12 +135,13 @@ function onUnload() {
 }
 
 function App({ Component, pageProps, props }: AppProps) {
-  // @TODO: Don't show GlobalHeader on /studio route
-
   // @TODO: Add Types for getLayout
   // https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript
   const getLayout = Component.getLayout || ((page) => page)
   console.log('getLayout: ', getLayout())
+
+  const { pathname } = useRouter()
+  const hideHeader = pathname.includes('/book') || pathname.includes('/studio')
 
   useEffect(() => {
     sessionStorage &&
@@ -182,7 +183,7 @@ function App({ Component, pageProps, props }: AppProps) {
                   <ApolloClientProvider
                     initialApolloState={pageProps?.initialApolloState}
                   >
-                    <GlobalHeader settings={settings} />
+                    {!hideHeader && <GlobalHeader settings={settings} />}
                     <Webfonts>
                       {getLayout(<Component {...pageProps} />)}
                     </Webfonts>
