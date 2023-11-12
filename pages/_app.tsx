@@ -1,7 +1,6 @@
 import { ApolloProvider } from '@apollo/client'
 import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
-import { ChakraBaseProvider, extendBaseTheme } from '@chakra-ui/react'
-import chakraTheme from '@chakra-ui/theme'
+import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { ApolloClientProvider } from 'components/data/ApolloProvider'
 import { CustomerProvider } from 'components/data/CustomerProvider'
@@ -9,126 +8,23 @@ import 'components/data/i18n'
 import { SettingsProvider } from 'components/data/SettingsProvider'
 import { GlobalHeader } from 'components/GlobalHeader'
 import Webfonts from 'components/Webfonts'
-import { GetInitialProps } from 'next'
+// import { GetInitialProps } from 'next'
 import { appWithTranslation } from 'next-i18next'
 import { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import 'tailwindcss/tailwind.css'
 
-const {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-  Portal,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverAnchor,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  RadioGroup,
-  Radio,
-  Checkbox,
-  FormControl,
-  FormLabel,
-  Input,
-  Heading,
-  Text,
-  Divider,
-  IconButton,
-  Button,
-  ButtonGroup,
-  Box,
-  Center,
-  Container,
-  Flex,
-  Grid,
-  SimpleGrid,
-  GridItem,
-  Stack,
-  VStack,
-  HStack,
-  Switch,
-  Spinner,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-} = chakraTheme.components
-
-const theme = extendBaseTheme({
-  components: {
-    Divider,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuItemOption,
-    MenuGroup,
-    MenuOptionGroup,
-    MenuDivider,
-    Portal,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverArrow,
-    PopoverCloseButton,
-    PopoverHeader,
-    PopoverBody,
-    PopoverAnchor,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper,
-    RadioGroup,
-    Radio,
-    Checkbox,
-    IconButton,
-    Button,
-    ButtonGroup,
-    Input,
-    FormControl,
-    FormLabel,
-    Heading,
-    Text,
-    Box,
-    Center,
-    Container,
-    Flex,
-    Grid,
-    SimpleGrid,
-    GridItem,
-    Stack,
-    VStack,
-    HStack,
-    Switch,
-    Spinner,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
+// 2. Extend the theme to include custom colors, fonts, etc
+const colors = {
+  brand: {
+    900: '#1a365d',
+    800: '#153e75',
+    700: '#2a69ac',
   },
-})
+}
+
+export const theme = extendTheme({ colors })
 
 function onUnload() {
   sessionStorage && sessionStorage.removeItem('sessionId')
@@ -153,48 +49,50 @@ function App({ Component, pageProps, props }: AppProps) {
   }, [])
 
   return (
-    <ChakraBaseProvider theme={theme}>
-      <SettingsProvider config={{ ...props }}>
-        {({ settings, isLoading }) => {
-          return isLoading ? (
-            <div>{'Loading...'}</div>
-          ) : !settings.isValid ? (
-            <div>{'Invalid settings config'}</div>
-          ) : (
-            <CommerceLayer
-              accessToken={settings.accessToken}
-              endpoint={props.endpoint}
-            >
-              <CustomerProvider
-                customerId={settings.customerId}
+    <>
+      <ChakraProvider theme={theme}>
+        <SettingsProvider config={{ ...props }}>
+          {({ settings, isLoading }) => {
+            return isLoading ? (
+              <div>{'Loading...'}</div>
+            ) : !settings.isValid ? (
+              <div>{'Invalid settings config'}</div>
+            ) : (
+              <CommerceLayer
                 accessToken={settings.accessToken}
-                domain={props.endpoint}
-                {...props}
+                endpoint={props.endpoint}
               >
-                <AuthorizerProvider
-                  config={{
-                    authorizerURL: props.authorizerURL,
-                    redirectURL:
-                      typeof window !== 'undefined' && window.location.origin,
-                    clientID: props.authorizerClientId,
-                    // extraHeaders: {}, // Optional JSON object to pass extra headers in each authorizer requests.
-                  }}
+                <CustomerProvider
+                  customerId={settings.customerId}
+                  accessToken={settings.accessToken}
+                  domain={props.endpoint}
+                  {...props}
                 >
-                  <ApolloClientProvider
-                    initialApolloState={pageProps?.initialApolloState}
+                  <AuthorizerProvider
+                    config={{
+                      authorizerURL: props.authorizerURL,
+                      redirectURL:
+                        typeof window !== 'undefined' && window.location.origin,
+                      clientID: props.authorizerClientId,
+                      // extraHeaders: {}, // Optional JSON object to pass extra headers in each authorizer requests.
+                    }}
                   >
-                    {!hideHeader && <GlobalHeader settings={settings} />}
-                    <Webfonts>
-                      {getLayout(<Component {...pageProps} />)}
-                    </Webfonts>
-                  </ApolloClientProvider>
-                </AuthorizerProvider>
-              </CustomerProvider>
-            </CommerceLayer>
-          )
-        }}
-      </SettingsProvider>
-    </ChakraBaseProvider>
+                    <ApolloClientProvider
+                      initialApolloState={pageProps?.initialApolloState}
+                    >
+                      {!hideHeader && <GlobalHeader settings={settings} />}
+                      <Webfonts>
+                        {getLayout(<Component {...pageProps} />)}
+                      </Webfonts>
+                    </ApolloClientProvider>
+                  </AuthorizerProvider>
+                </CustomerProvider>
+              </CommerceLayer>
+            )
+          }}
+        </SettingsProvider>
+      </ChakraProvider>
+    </>
   )
 }
 

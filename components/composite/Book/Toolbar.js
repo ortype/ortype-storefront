@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from '@apollo/client'
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   ButtonGroup,
@@ -11,6 +18,8 @@ import {
   MenuList,
   Spinner,
   Text,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react'
 import Config from 'components/composite/Book/Config'
 import { useBookLayoutStore } from 'components/data/BookProvider'
@@ -49,6 +58,10 @@ const layoutOptions = (layouts) => {
 
 const Toolbar = observer(({ fonts }) => {
   const bookLayoutStore = useBookLayoutStore()
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelRef = React.useRef()
+  const toast = useToast()
 
   // queries
   // get layout data from api
@@ -115,7 +128,17 @@ const Toolbar = observer(({ fonts }) => {
 
   // updateBookLayout
   const [updateBookLayout, { data: updateData, loading: updateLoading }] =
-    useMutation(UPDATE_BOOK_LAYOUT)
+    useMutation(UPDATE_BOOK_LAYOUT, {
+      onCompleted: (data) => {
+        toast({
+          title: 'Changes published.',
+          description: 'The changes to the layout have been published.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
+      },
+    })
   if (updateData) {
     console.log('updateData: ', updateData)
   }
@@ -131,6 +154,13 @@ const Toolbar = observer(({ fonts }) => {
             value: data.addBookLayout._id,
           })
         }
+        toast({
+          title: 'Layout created.',
+          description: 'The layout has been created.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
       },
     }
   )
@@ -147,6 +177,14 @@ const Toolbar = observer(({ fonts }) => {
         if (firstItem) {
           bookLayoutStore.setLayoutOption(firstItem)
         }
+        onClose() // close alert dialog box
+        toast({
+          title: 'Layout deleted.',
+          description: 'The layout has been permanently deleted.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
       },
     })
   if (removeData) {
@@ -283,7 +321,7 @@ const Toolbar = observer(({ fonts }) => {
                   </MenuItem>
                   <MenuItem
                     isLoading={removeLoading}
-                    onClick={handleRemove}
+                    onClick={onOpen}
                     icon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
                   >
                     <Text fontSize={'sm'}>{`Delete`}</Text>
@@ -291,6 +329,32 @@ const Toolbar = observer(({ fonts }) => {
                 </MenuList>
               </Menu>
             </ButtonGroup>
+            <AlertDialog
+              isOpen={isOpen}
+              leastDestructiveRef={cancelRef}
+              onClose={onClose}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="normal">
+                    Delete layout
+                  </AlertDialogHeader>
+
+                  <AlertDialogBody>
+                    Are you sure? You can't undo this action afterwards.
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button ref={cancelRef} onClick={onClose}>
+                      Cancel
+                    </Button>
+                    <Button colorScheme="red" onClick={handleRemove} ml={3}>
+                      Delete
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
           </HStack>
         </>
       )}
