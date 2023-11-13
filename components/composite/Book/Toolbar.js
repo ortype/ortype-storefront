@@ -56,7 +56,7 @@ const layoutOptions = (layouts) => {
   }))
 }
 
-const Toolbar = observer(({ fonts }) => {
+const Toolbar = observer(({ fonts, data }) => {
   const bookLayoutStore = useBookLayoutStore()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -252,7 +252,12 @@ const Toolbar = observer(({ fonts }) => {
     })
   }
 
-  const handleDiscard = () => {}
+  const handleDiscard = () => {
+    bookLayoutStore.setSpread(data.bookLayout.spread)
+    bookLayoutStore.setIsTemplate(data.bookLayout.isTemplate)
+    // afterwards...
+    // bookLayoutStore.setIsDirty(false) (?)
+  }
 
   return (
     <Box
@@ -282,6 +287,7 @@ const Toolbar = observer(({ fonts }) => {
               <Button
                 // isLoading={updateLoading}
                 onClick={handleUpdate}
+                isDisabled={!bookLayoutStore.isDirty}
                 leftIcon={
                   updateLoading ? (
                     <Spinner />
@@ -300,7 +306,7 @@ const Toolbar = observer(({ fonts }) => {
                 <MenuList>
                   <MenuItem
                     icon={<ResetIcon width={'1.5rem'} height={'1.5rem'} />}
-                    isDisabled={true}
+                    isDisabled={!bookLayoutStore.isDirty}
                     onClick={handleDiscard}
                   >
                     <Text fontSize={'sm'}>{`Discard changes`}</Text>
@@ -339,7 +345,6 @@ const Toolbar = observer(({ fonts }) => {
                   <AlertDialogHeader fontSize="lg" fontWeight="normal">
                     Delete layout
                   </AlertDialogHeader>
-
                   <AlertDialogBody>
                     Are you sure? You can't undo this action afterwards.
                   </AlertDialogBody>

@@ -3,14 +3,16 @@ import {
   defaultColumn,
   uuid,
 } from 'components/data/BookProvider/bookDefaults'
+import { makeLocalStorage } from 'components/utils/makeLocalStorage'
 import cloneDeep from 'lodash.clonedeep'
 import { action, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useEffect } from 'react'
 
 export const BookLayoutProvider = ({ children }) => {
   const store = useLocalObservable(() => ({
     /* observables here */
+    isDirty: false,
     layoutOption: {
       label: 'Simple layout 1',
       value: 'jZQowagN9HqSh3udy',
@@ -77,13 +79,15 @@ export const BookLayoutProvider = ({ children }) => {
       return metrics
     },
     /* actions */
+    setIsDirty: action((value) => {
+      store.isDirty = value
+    }),
     setIsTemplate: action((value) => {
       console.log('action setIsTemplate', value)
       store.isTemplate = value
     }),
     setLayoutOption: action((option) => {
       store.layoutOption = option
-      store.isTemplate = option.isTemplate
     }),
     setEditMode: action((value) => {
       store.editMode = value
@@ -222,6 +226,36 @@ export const BookLayoutProvider = ({ children }) => {
       store.spread = newSpread
     }),
   }))
+
+  useEffect(() => {
+    // @TODO: do we need to prefix this with layoutID?
+    // and move it to book.js?
+
+    makeLocalStorage(store, 'bookLayoutStore', [
+      'layoutOption',
+      'isTemplate',
+      'fontFamily',
+      'variantOption',
+      'fontFamilyOptions',
+      'variantOptions',
+      'metafields',
+      'editMode',
+      'regex',
+      'spread',
+    ])
+    /*
+    setIsDirty
+    setIsTemplate
+    setLayoutOption
+    setEditMode
+    setFontFamily
+    setFontFamilyOptions
+    setVariantOption
+    setVariantOptions
+    setSpread
+    */
+  })
+
   return <BookContext.Provider value={store}>{children}</BookContext.Provider>
 }
 

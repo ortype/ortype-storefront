@@ -9,6 +9,7 @@ import {
 import useWindowSize from 'components/hooks/useWindowSize'
 import { GET_BOOK_LAYOUT } from 'graphql/queries'
 import { getAllFonts } from 'lib/sanity.client'
+import { autorun, toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 
@@ -20,18 +21,49 @@ const Book = ({ fonts }) => {
     // @TODO: store in localStorage (Mobx has a guide to do this I think)
   })
 
+  console.log('Book component!')
+
   // store data in mobx
   useEffect(() => {
     if (loading === false && data && data.bookLayout) {
-      // fixed spread of null error
-      console.log('calling setSpread: ', data.bookLayout.spread)
-      bookLayoutStore.setSpread(data.bookLayout.spread) // this gets called a 2nd time when `bookLayoutStore.layoutOption.value` is by the toolbar
+      // this gets called a 2nd time when `bookLayoutStore.layoutOption.value` is set by the toolbar
+      const storedJson = localStorage.getItem('bookLayoutStore_spread')
+      !storedJson && bookLayoutStore.setSpread(data.bookLayout.spread)
     }
   }, [loading, data])
 
-  // invariant violantion, rendered more hooks then previous render
-  // if (loading) return <PageLoading message="Loading layout..." />;
-  // const { bookLayout: { spread: { verso, recto } } } = data;
+  // initialize autorun to update isDirty flag
+  useEffect(() => {
+    return autorun(
+      () => {
+        console.log(
+          'AUTORUN... ran: ',
+          data?.bookLayout?.isTemplate,
+          bookLayoutStore?.isTemplate,
+          bookLayoutStore?.spread
+        )
+        if (
+          data?.bookLayout &&
+          data.bookLayout.isTemplate !== null &&
+          bookLayoutStore.spread !== null
+        ) {
+          const storeSpread = JSON.stringify(toJS(bookLayoutStore.spread))
+          const dbSpread = JSON.stringify(data.bookLayout.spread)
+          if (
+            data.bookLayout.isTemplate !== bookLayoutStore.isTemplate ||
+            storeSpread !== dbSpread
+          ) {
+            bookLayoutStore.setIsDirty(true)
+            console.log('IS DIRTY!')
+          } else {
+            bookLayoutStore.setIsDirty(false)
+            console.log('NOT DIRTY!')
+          }
+        }
+      },
+      { delay: 500 }
+    )
+  })
 
   // scale value for responsive handling
   // we could output the scale as a statstic
@@ -58,7 +90,7 @@ const Book = ({ fonts }) => {
     // @TODO: Background color
     <>
       <Center w={'100vw'} h={'100vh'} bg={'black'}>
-        <Toolbar fonts={fonts} />
+        <Toolbar fonts={fonts} data={data} />
         <Flex
           // Spread
           // py={'77px'}
@@ -77,8 +109,9 @@ const Book = ({ fonts }) => {
             _before={{
               content: bookLayoutStore.editMode ? `'Verso'` : `''`,
               fontSize: '12px',
+              color: '#FFF',
               position: 'absolute',
-              top: '-1.5rem',
+              bottom: '-88px',
               width: '100%',
               textAlign: 'center',
             }}
@@ -102,8 +135,9 @@ const Book = ({ fonts }) => {
             _before={{
               content: bookLayoutStore.editMode ? `'Recto'` : `''`,
               fontSize: '12px',
+              color: '#FFF',
               position: 'absolute',
-              top: '-1rem',
+              bottom: '-88px',
               width: '100%',
               textAlign: 'center',
             }}

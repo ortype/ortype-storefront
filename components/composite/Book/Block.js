@@ -17,6 +17,7 @@ const Block = observer((props) => {
       <Flex
         position={'relative'}
         mb={'10.8px'}
+        id={line.dedupId}
         mt={layout.outerWrapperMarginTop}
         _hover={{
           backgroundColor: `#F8FFBF82`,
@@ -26,7 +27,7 @@ const Block = observer((props) => {
         }}
       >
         <BlockPopover {...props} setWord={setWord} fetchMore={props.fetchMore}>
-          <Text fontSize={'12px'} position={'absolute'} top={'2px'}>
+          <Text as={'span'} fontSize={'12px'} position={'absolute'} top={'2px'}>
             {
               bookLayoutStore.variantOptions.find(
                 ({ value }) => line.variantId === value
@@ -34,7 +35,7 @@ const Block = observer((props) => {
             }
           </Text>
           {isLoadingBookItem ? (
-            <Text fontSize={'12px'}>{`Loading...`}</Text>
+            <Text as={'span'} fontSize={'12px'}>{`Loading...`}</Text>
           ) : (
             <Box
               className={line.variantId}
@@ -71,7 +72,7 @@ const Block = observer((props) => {
 
   return (
     <Flex position={'relative'} mb={'10.8px'} mt={layout.outerWrapperMarginTop}>
-      <Text fontSize={'12px'} position={'absolute'} top={'2px'}>
+      <Text as={'span'} fontSize={'12px'} position={'absolute'} top={'2px'}>
         {
           bookLayoutStore.variantOptions.find(
             ({ value }) => line.variantId === value

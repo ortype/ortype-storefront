@@ -86,7 +86,8 @@ const TieredSelect = observer(
           'layoutOptions/layoutsLoading useEffect... firstItem',
           firstItem
         )
-        if (firstItem) {
+        const storedJson = localStorage.getItem('bookLayoutStore_layoutOption')
+        if (!storedJson && firstItem) {
           // this overrides anything in the store or localstorage
           // but without it, selecting new fonts doesn't update the selected layout
           bookLayoutStore.setLayoutOption(firstItem) // use 1st item as default
