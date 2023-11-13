@@ -5,60 +5,44 @@ import {
 } from 'components/data/BookProvider/bookDefaults'
 import { makeLocalStorage } from 'components/utils/makeLocalStorage'
 import cloneDeep from 'lodash.clonedeep'
-import { action, toJS } from 'mobx'
+import { action, autorun, reaction, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { createContext, useContext, useEffect } from 'react'
+import { GET_BOOK_LAYOUT } from 'graphql/queries'
+import { useQuery } from '@apollo/client'
 
-export const BookLayoutProvider = ({ children }) => {
+export const BookLayoutProvider = ({ font, fonts, initialBookLayout, children }) => {
   const store = useLocalObservable(() => ({
     /* observables here */
     isDirty: false,
-    layoutOption: {
-      label: 'Simple layout 1',
-      value: 'jZQowagN9HqSh3udy',
-    },
-    isTemplate: false,
-    fontFamily: {
-      label: 'Boogie School Sans',
-      value: 'font-jKmDARQpXFW60yeRco5AJ',
-    },
-    variantOption: {
-      label: 'High 2nd',
-      value: 'fontVariant-8UZWNzaqW4Ya4tyzovmZU',
-    },
-    fontFamilyOptions: [],
-    variantOptions: [],
-    metafields: [
-      {
-        key: 'otf',
-        value: 'BoogieSchoolSans-High2nd.otf',
-      },
-      {
-        key: 'woff',
-        value: 'BoogieSchoolSans-High2nd.woff',
-      },
-      {
-        key: 'woff2',
-        value: 'BoogieSchoolSans-High2nd.woff2',
-      },
-      {
-        key: 'descent',
-        value: '234',
-      },
-      {
-        key: 'ascent',
-        value: '966',
-      },
-      {
-        key: 'capHeight',
-        value: '702',
-      },
-    ],
     editMode: true,
     regex: 'capitalize',
+    layoutOption: {
+      label: initialBookLayout.name,
+      value: initialBookLayout._id,
+    },
+    bookLayoutData: {},
+    isTemplate: initialBookLayout.isTemplate,
+    fontFamily: {
+      label: font.name,
+      value: font._id
+    },
+    fontFamilyOptions: fonts.map((item) => ({
+      label: item.name,
+      value: item._id,
+    })),
+    variantOption: {
+      label: font.variants[0].name,
+      value: font.variants[0]._id
+    },
+    variantOptions: font.variants.map((variant) => ({
+      label: variant.optionName,
+      value: variant._id,
+    })),
+    metafields: font.metafields,
     spread: {
-      verso: [],
-      recto: [],
+      verso: initialBookLayout.spread?.verso,
+      recto: initialBookLayout.spread?.recto,
     },
     /* getters */
     get metrics() {
@@ -79,6 +63,12 @@ export const BookLayoutProvider = ({ children }) => {
       return metrics
     },
     /* actions */
+    setBookLayoutData: action((value) => {
+      store.bookLayoutData = value
+    }),
+    setMetafields: action((value) => {
+      store.metafields = value
+    }),
     setIsDirty: action((value) => {
       store.isDirty = value
     }),
@@ -93,6 +83,7 @@ export const BookLayoutProvider = ({ children }) => {
       store.editMode = value
     }),
     setFontFamily: action((option) => {
+      console.log('setFontFamily called: ', option)
       store.fontFamily = option
     }),
     setFontFamilyOptions: action((options) => {
@@ -228,32 +219,72 @@ export const BookLayoutProvider = ({ children }) => {
   }))
 
   useEffect(() => {
-    // @TODO: do we need to prefix this with layoutID?
-    // and move it to book.js?
-
-    makeLocalStorage(store, 'bookLayoutStore', [
-      'layoutOption',
-      'isTemplate',
-      'fontFamily',
-      'variantOption',
-      'fontFamilyOptions',
-      'variantOptions',
-      'metafields',
-      'editMode',
-      'regex',
-      'spread',
-    ])
     /*
-    setIsDirty
-    setIsTemplate
-    setLayoutOption
-    setEditMode
-    setFontFamily
-    setFontFamilyOptions
-    setVariantOption
-    setVariantOptions
-    setSpread
+    // could do this here but there is a delay as the page route changes
+    store.setFontFamily({
+      label: font.name,
+      value: font._id
+    })
     */
+    store.setVariantOption({
+      label: font.variants[0].optionName,
+      value: font.variants[0]._id
+    })
+    store.setVariantOptions(font.variants.map((variant) => ({
+      label: variant.optionName,
+      value: variant._id,
+    })))
+    store.setMetafields(font.metafields)
+  }, [font])
+
+
+  useEffect(() => {    
+    /*
+    makeLocalStorage(store, `${store.layoutOption.value}_bookLayoutStore`, [
+      { name: 'layoutOption', action: 'setLayoutOption' },
+      { name: 'isTemplate', action: 'setIsTemplate' },
+      { name: 'fontFamily', action: 'setFontFamily' },
+      { name: 'variantOption', action: 'setVariantOption' },
+      { name: 'fontFamilyOptions', action: 'setFontFamilyOptions' },
+      { name: 'variantOptions', action: 'setVariantOptions' },
+      { name: 'metafields', action: 'setMetrics' },
+      { name: 'editMode', action: 'setEditMode' },
+      { name: 'regex', action: 'setRegex' },
+      { name: 'spread', action: 'setSpread' },
+    ])
+    */
+        
+    return autorun(
+      () => {
+        console.log(
+          'AUTORUN... ran: ',
+          store.bookLayoutData.isTemplate,
+          store.isTemplate,
+          store.spread
+        )
+        if (
+          store.bookLayoutData &&
+          store.bookLayoutData.isTemplate !== null &&
+          store.spread !== null
+        ) {
+          const storeSpread = JSON.stringify(toJS(store.spread))
+          const dbSpread = JSON.stringify(store.bookLayoutData.spread)
+          if (
+            store.bookLayoutData.isTemplate !== store.isTemplate ||
+            storeSpread !== dbSpread
+          ) {
+            store.setIsDirty(true)
+            console.log('IS DIRTY!')
+          } else {
+            store.setIsDirty(false)
+            console.log('NOT DIRTY!')
+          }
+        }
+      },
+      { delay: 500 }
+    )
+    
+
   })
 
   return <BookContext.Provider value={store}>{children}</BookContext.Provider>

@@ -90,6 +90,10 @@ export const fontSlugsQuery = groq`
 *[_type == "font" && defined(slug.current)][].slug.current
 `
 
+export const fontIdsQuery = groq`
+*[_type == "font" && defined(_id)][]._id
+`
+
 export interface Font {
   _id: string
   _type: string

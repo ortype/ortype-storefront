@@ -32,7 +32,10 @@ import {
 import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import TieredSelect from './TieredSelect'
+import { useRouter } from 'next/router'
+import StyledSelect from 'components/ui/Select'
+import { toJS } from 'mobx'
+
 
 import {
   ChevronDownIcon,
@@ -51,17 +54,17 @@ const layoutOptions = (layouts) => {
   } = layouts
   return nodes.map(({ _id, name, isTemplate }, index) => ({
     value: _id,
-    label: name || `Layout ${index}`,
-    isTemplate,
+    label: name || `Layout ${index}`
   }))
 }
 
-const Toolbar = observer(({ fonts, data }) => {
+const Toolbar = observer(() => {
   const bookLayoutStore = useBookLayoutStore()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = React.useRef()
   const toast = useToast()
+  const router = useRouter()
 
   // queries
   // get layout data from api
@@ -116,12 +119,16 @@ const Toolbar = observer(({ fonts, data }) => {
     },
   ]
 
+  const handleFontFamilyChange = (option) => {
+    if (!option) return
+    bookLayoutStore.setFontFamily(option)
+    router.push(`/book/${option.value}`)
+  }  
+
   const handleLayoutChange = (option) => {
-    console.log('handleLayoutChange: ', option)
     if (option) {
       bookLayoutStore.setLayoutOption(option)
     }
-    // weiredly calling bookLayoutStore.setIsTemplate here has no effect
   }
 
   // mutations
@@ -155,7 +162,7 @@ const Toolbar = observer(({ fonts, data }) => {
           })
         }
         toast({
-          title: 'Layout created.',
+          title: `Layout ${data.addBookLayout.name} created.`,
           description: 'The layout has been created.',
           status: 'success',
           duration: 5000,
@@ -248,15 +255,19 @@ const Toolbar = observer(({ fonts, data }) => {
         fontId: bookLayoutStore.fontFamily.value,
         spread: bookLayoutStore.spread,
       },
-      refetchQueries: layoutsRefetchQueries,
+      refetchQueries: [
+        {
+          query: GET_BOOK_LAYOUT,
+          variables: { _id: bookLayoutStore.layoutOption.value },
+        },
+        ...layoutsRefetchQueries,
+      ],
     })
   }
 
   const handleDiscard = () => {
-    bookLayoutStore.setSpread(data.bookLayout.spread)
-    bookLayoutStore.setIsTemplate(data.bookLayout.isTemplate)
-    // afterwards...
-    // bookLayoutStore.setIsDirty(false) (?)
+    bookLayoutStore.setSpread(bookLayoutStore.bookLayoutData.spread)
+    bookLayoutStore.setIsTemplate(bookLayoutStore.bookLayoutData.isTemplate)
   }
 
   return (
@@ -276,12 +287,27 @@ const Toolbar = observer(({ fonts, data }) => {
       {bookLayoutStore.editMode && (
         <>
           <HStack spacing={2}>
-            <TieredSelect
-              fonts={fonts}
-              layoutOptions={groupedLayoutOptions}
-              layoutsLoading={layoutsLoading}
-              handleLayoutChange={handleLayoutChange}
-            />
+            <StyledSelect
+              placeholder="Select font"
+              options={
+                bookLayoutStore.fontFamilyOptions &&
+                bookLayoutStore.fontFamilyOptions.constructor === Array
+                  ? toJS(bookLayoutStore.fontFamilyOptions)
+                  : []
+              }
+              value={bookLayoutStore.fontFamily}
+              name="font"
+              onChange={handleFontFamilyChange}
+            />          
+            <StyledSelect
+              placeholder="Select layout"
+              isReadOnly={layoutsLoading}
+              isLoading={layoutsLoading}
+              options={groupedLayoutOptions}
+              value={bookLayoutStore.layoutOption} // @TODO: re-render this value when NameInput submits
+              name="layouts"
+              onChange={handleLayoutChange}
+            />            
             <Config />
             <ButtonGroup isAttached variant={'outline'}>
               <Button

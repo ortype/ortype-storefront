@@ -15,12 +15,12 @@ export function autoSave(store, name) {
 */
 
 export function makeLocalStorage<T extends object, K extends keyof T>(
-  obj: T,
+  store: T,
   prefix: string,
   keys: K[]
 ): void {
   for (const key of keys) {
-    const localKey = `${prefix}_${key}`
+    const localKey = `${prefix}_${key.name}`
 
     const valueStr = localStorage.getItem(localKey)
 
@@ -29,16 +29,15 @@ export function makeLocalStorage<T extends object, K extends keyof T>(
     }
 
     const value = JSON.parse(valueStr)
-    obj[key] = value // this is the setter
+    store[key.action] && store[key.action](value) // this is the store setters
     // @TODO: this seems to throw some errors
     // [MobX] Since strict-mode is enabled, changing (observed) observable values without using an action is not allowed. Tried to modify: ObservableObject@1.fontFamily
   }
 
   autorun(() => {
     for (const key of keys) {
-      const localKey = `${prefix}_${key}`
-
-      localStorage.setItem(localKey, JSON.stringify(toJS(obj[key])))
+      const localKey = `${prefix}_${key.name}`
+      localStorage.setItem(localKey, JSON.stringify(toJS(store[key.name]))) // local storage setters
     }
   })
 }

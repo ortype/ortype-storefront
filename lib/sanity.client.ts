@@ -2,6 +2,7 @@ import { apiVersion, dataset, projectId, useCdn } from 'lib/sanity.api'
 import {
   fontAndMoreFontsQuery,
   fontSlugsQuery,
+  fontIdsQuery,
   fontsQuery,
   fontVariantsQuery,
   indexQuery,
@@ -205,6 +206,14 @@ export async function getAllFontsSlugs(): Promise<Pick<Font, 'slug'>[]> {
   if (client) {
     const slugs = (await client.fetch<string[]>(fontSlugsQuery)) || []
     return slugs.map((slug) => ({ slug }))
+  }
+  return []
+}
+
+export async function getAllFontIds(): Promise<Pick<Font, '_id'>[]> {
+  if (client) {
+    const ids = (await client.fetch<string[]>(fontIdsQuery)) || []
+    return ids.map((_id) => ({ _id }))
   }
   return []
 }

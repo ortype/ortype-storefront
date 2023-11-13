@@ -146,6 +146,11 @@ export const Tester: React.FC<Props> = (props) => {
           {title}
         </Text>
       </Link>
+      <Link href={`/book/${fontId}`} className="hover:underline">
+        <Text as={'div'} fontSize="md">
+          {'Book'}
+        </Text>
+      </Link>
     </div>
   )
 }

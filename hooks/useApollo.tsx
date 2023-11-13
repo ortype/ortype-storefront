@@ -26,7 +26,7 @@ export const APOLLO_STATE_PROPERTY_NAME = '__APOLLO_STATE__'
 
 let apolloClient: ApolloClient<NormalizedCacheObject> = null
 
-const createApolloClient = (
+export const createApolloClient = (
   ctx?: GetServerSidePropsContext,
   token?: Record<string, null>
 ) => {

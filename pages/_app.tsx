@@ -34,7 +34,6 @@ function App({ Component, pageProps, props }: AppProps) {
   // @TODO: Add Types for getLayout
   // https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript
   const getLayout = Component.getLayout || ((page) => page)
-  console.log('getLayout: ', getLayout())
 
   const { pathname } = useRouter()
   const hideHeader = pathname.includes('/book') || pathname.includes('/studio')

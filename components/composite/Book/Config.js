@@ -148,7 +148,22 @@ const Config = () => {
                   </ButtonGroup>
                   <Divider />
                   <Box mt={2}>
-                    <Text fontSize={'sm'}>{'Global Typecase'}</Text>
+                    <Text fontSize={'sm'}>{`Select ${bookLayoutStore.fontFamily.label} style (global)`}</Text>
+                    <StyledSelect
+                      placeholder="Select style"
+                      options={
+                        bookLayoutStore.variantOptions &&
+                        bookLayoutStore.variantOptions.constructor === Array
+                          ? toJS(bookLayoutStore.variantOptions)
+                          : []
+                      }
+                      value={bookLayoutStore.variantOption}
+                      name="variant"
+                      onChange={bookLayoutStore.setVariantOption}
+                    />
+                  </Box>
+                  <Box mt={2}>
+                    <Text fontSize={'sm'}>{'Typecase (global)'}</Text>
                     <StyledSelect
                       width={'18rem'}
                       options={regexOptions}
