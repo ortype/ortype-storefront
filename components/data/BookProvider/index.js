@@ -1,17 +1,21 @@
+import { useQuery } from '@apollo/client'
 import {
   defaultBlock,
   defaultColumn,
   uuid,
 } from 'components/data/BookProvider/bookDefaults'
-import { makeLocalStorage } from 'components/utils/makeLocalStorage'
+import { GET_BOOK_LAYOUT } from 'graphql/queries'
 import cloneDeep from 'lodash.clonedeep'
 import { action, autorun, reaction, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { createContext, useContext, useEffect } from 'react'
-import { GET_BOOK_LAYOUT } from 'graphql/queries'
-import { useQuery } from '@apollo/client'
 
-export const BookLayoutProvider = ({ font, fonts, initialBookLayout, children }) => {
+export const BookLayoutProvider = ({
+  font,
+  fonts,
+  initialBookLayout,
+  children,
+}) => {
   const store = useLocalObservable(() => ({
     /* observables here */
     isDirty: false,
@@ -25,7 +29,7 @@ export const BookLayoutProvider = ({ font, fonts, initialBookLayout, children })
     isTemplate: initialBookLayout.isTemplate,
     fontFamily: {
       label: font.name,
-      value: font._id
+      value: font._id,
     },
     fontFamilyOptions: fonts.map((item) => ({
       label: item.name,
@@ -33,7 +37,7 @@ export const BookLayoutProvider = ({ font, fonts, initialBookLayout, children })
     })),
     variantOption: {
       label: font.variants[0].name,
-      value: font.variants[0]._id
+      value: font.variants[0]._id,
     },
     variantOptions: font.variants.map((variant) => ({
       label: variant.optionName,
@@ -219,49 +223,23 @@ export const BookLayoutProvider = ({ font, fonts, initialBookLayout, children })
   }))
 
   useEffect(() => {
-    /*
-    // could do this here but there is a delay as the page route changes
-    store.setFontFamily({
-      label: font.name,
-      value: font._id
-    })
-    */
+    // update store on `font` prop change
     store.setVariantOption({
       label: font.variants[0].optionName,
-      value: font.variants[0]._id
+      value: font.variants[0]._id,
     })
-    store.setVariantOptions(font.variants.map((variant) => ({
-      label: variant.optionName,
-      value: variant._id,
-    })))
+    store.setVariantOptions(
+      font.variants.map((variant) => ({
+        label: variant.optionName,
+        value: variant._id,
+      }))
+    )
     store.setMetafields(font.metafields)
-  }, [font])
 
-
-  useEffect(() => {    
-    /*
-    makeLocalStorage(store, `${store.layoutOption.value}_bookLayoutStore`, [
-      { name: 'layoutOption', action: 'setLayoutOption' },
-      { name: 'isTemplate', action: 'setIsTemplate' },
-      { name: 'fontFamily', action: 'setFontFamily' },
-      { name: 'variantOption', action: 'setVariantOption' },
-      { name: 'fontFamilyOptions', action: 'setFontFamilyOptions' },
-      { name: 'variantOptions', action: 'setVariantOptions' },
-      { name: 'metafields', action: 'setMetrics' },
-      { name: 'editMode', action: 'setEditMode' },
-      { name: 'regex', action: 'setRegex' },
-      { name: 'spread', action: 'setSpread' },
-    ])
-    */
-        
+    // set isDirty flag by comparing store against previous data from DB
     return autorun(
       () => {
-        console.log(
-          'AUTORUN... ran: ',
-          store.bookLayoutData.isTemplate,
-          store.isTemplate,
-          store.spread
-        )
+        console.log('AUTORUN... running')
         if (
           store.bookLayoutData &&
           store.bookLayoutData.isTemplate !== null &&
@@ -283,9 +261,7 @@ export const BookLayoutProvider = ({ font, fonts, initialBookLayout, children })
       },
       { delay: 500 }
     )
-    
-
-  })
+  }, [font])
 
   return <BookContext.Provider value={store}>{children}</BookContext.Provider>
 }

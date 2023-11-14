@@ -35,7 +35,6 @@ import React from 'react'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  ChevronDownIcon,
   CogIcon,
   CopyIcon,
   TransferIcon,
@@ -148,7 +147,9 @@ const Config = () => {
                   </ButtonGroup>
                   <Divider />
                   <Box mt={2}>
-                    <Text fontSize={'sm'}>{`Select ${bookLayoutStore.fontFamily.label} style (global)`}</Text>
+                    <Text
+                      fontSize={'sm'}
+                    >{`Select ${bookLayoutStore.fontFamily.label} style (global)`}</Text>
                     <StyledSelect
                       placeholder="Select style"
                       options={

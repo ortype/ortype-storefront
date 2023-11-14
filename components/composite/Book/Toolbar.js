@@ -24,18 +24,17 @@ import {
 import Config from 'components/composite/Book/Config'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import { defaultColumn } from 'components/data/BookProvider/bookDefaults'
+import StyledSelect from 'components/ui/Select'
 import {
   ADD_BOOK_LAYOUT,
   REMOVE_BOOK_LAYOUT,
   UPDATE_BOOK_LAYOUT,
 } from 'graphql/mutations'
 import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
-import { observer } from 'mobx-react-lite'
-import React from 'react'
-import { useRouter } from 'next/router'
-import StyledSelect from 'components/ui/Select'
 import { toJS } from 'mobx'
-
+import { observer } from 'mobx-react-lite'
+import { useRouter } from 'next/router'
+import React from 'react'
 
 import {
   ChevronDownIcon,
@@ -54,7 +53,7 @@ const layoutOptions = (layouts) => {
   } = layouts
   return nodes.map(({ _id, name, isTemplate }, index) => ({
     value: _id,
-    label: name || `Layout ${index}`
+    label: name || `Layout ${index}`,
   }))
 }
 
@@ -123,7 +122,7 @@ const Toolbar = observer(() => {
     if (!option) return
     bookLayoutStore.setFontFamily(option)
     router.push(`/book/${option.value}`)
-  }  
+  }
 
   const handleLayoutChange = (option) => {
     if (option) {
@@ -298,7 +297,7 @@ const Toolbar = observer(() => {
               value={bookLayoutStore.fontFamily}
               name="font"
               onChange={handleFontFamilyChange}
-            />          
+            />
             <StyledSelect
               placeholder="Select layout"
               isReadOnly={layoutsLoading}
@@ -307,7 +306,7 @@ const Toolbar = observer(() => {
               value={bookLayoutStore.layoutOption} // @TODO: re-render this value when NameInput submits
               name="layouts"
               onChange={handleLayoutChange}
-            />            
+            />
             <Config />
             <ButtonGroup isAttached variant={'outline'}>
               <Button
@@ -338,21 +337,18 @@ const Toolbar = observer(() => {
                     <Text fontSize={'sm'}>{`Discard changes`}</Text>
                   </MenuItem>
                   <MenuItem
-                    isLoading={addLoading}
                     onClick={handleAdd}
                     icon={<ComposeIcon width={'1.5rem'} height={'1.5rem'} />}
                   >
                     <Text fontSize={'sm'}>{`Create`}</Text>
                   </MenuItem>
                   <MenuItem
-                    isLoading={addLoading}
                     onClick={handleDuplicate}
                     icon={<CopyIcon width={'1.5rem'} height={'1.5rem'} />}
                   >
                     <Text fontSize={'sm'}>{`Duplicate`}</Text>
                   </MenuItem>
                   <MenuItem
-                    isLoading={removeLoading}
                     onClick={onOpen}
                     icon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
                   >
