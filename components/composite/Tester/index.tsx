@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { Text } from '@chakra-ui/react'
+import { HStack, Text } from '@chakra-ui/react'
 import { UPDATE_TESTER_BY_ID } from 'graphql/mutations'
 import { GET_LATEST_POEM_ENTRIES, GET_TESTER_BY_FONTID } from 'graphql/queries'
 import { ON_TESTER_UPDATED } from 'graphql/subscriptions'
@@ -141,16 +141,19 @@ export const Tester: React.FC<Props> = (props) => {
           isEditing && isEditing !== sessionStorage.getItem('sessionId')
         }
       />
-      <Link href={`/fonts/${slug}`} className="hover:underline">
-        <Text as={'div'} fontSize="md">
-          {title}
-        </Text>
-      </Link>
-      <Link href={`/book/${fontId}`} className="hover:underline">
-        <Text as={'div'} fontSize="md">
-          {'Book'}
-        </Text>
-      </Link>
+      <HStack spacing={2}>
+        <Text as={'span'} fontSize="md">{`${title}`}</Text>
+        <Link href={`/font/${slug}`} className="hover:underline">
+          <Text as={'span'} fontSize="md">
+            {`[Buy]`}
+          </Text>
+        </Link>
+        <Link href={`/font/${slug}/book/`} className="hover:underline">
+          <Text as={'span'} fontSize="md">
+            {'[Book]'}
+          </Text>
+        </Link>
+      </HStack>
     </div>
   )
 }

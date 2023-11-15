@@ -78,7 +78,7 @@ export const BookLayoutProvider = ({
     }),
     setIsTemplate: action((value) => {
       console.log('action setIsTemplate', value)
-      store.isTemplate = value
+      store.isTemplate = value === null ? false : value
     }),
     setLayoutOption: action((option) => {
       store.layoutOption = option

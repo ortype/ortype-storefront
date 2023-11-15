@@ -7,7 +7,11 @@ import {
 } from 'components/data/BookProvider'
 import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { createApolloClient } from 'hooks/useApollo'
-import { getAllFontIds, getAllFonts } from 'lib/sanity.client'
+import {
+  getAllFonts,
+  getAllFontsSlugs,
+  getFontAndMoreFonts,
+} from 'lib/sanity.client'
 import { autorun, toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect } from 'react'
@@ -16,7 +20,7 @@ import { useQuery } from '@apollo/client'
 import { makeLocalStorage } from 'components/utils/makeLocalStorage'
 import { useRouter } from 'next/router'
 
-const BookPage = () => {
+const BookPage = ({ fonts, font }) => {
   const bookLayoutStore = useBookLayoutStore()
   console.log(
     'bookLayoutStore: ',
@@ -60,7 +64,7 @@ const BookPage = () => {
   return (
     <>
       <Center w={'100vw'} h={'100vh'} bg={'black'}>
-        <Toolbar />
+        <Toolbar fonts={fonts} />
         <Flex
           // Spread
           bg={'#FFF'}
@@ -123,15 +127,19 @@ const BookPage = () => {
 }
 
 export const getStaticProps = async (ctx) => {
-  const [fonts = []] = await Promise.all([getAllFonts()])
   const { params } = ctx
-  const { fontId } = params
+  const { slug } = params
+  const [fonts = [], { font }] = await Promise.all([
+    getAllFonts(),
+    getFontAndMoreFonts(slug),
+  ])
+
   const client = createApolloClient()
   // @TODO: since this is just the initial layout option, we could request all layouts and
   // match the first fontId, or fallback to a template, or unassigned (but with one query)
   const { data: assignedLayouts } = await client.query({
     query: GET_BOOK_LAYOUTS,
-    variables: { fontId: fontId },
+    variables: { fontId: font._id },
   })
   const { data: templateLayouts } = await client.query({
     query: GET_BOOK_LAYOUTS,
@@ -151,8 +159,6 @@ export const getStaticProps = async (ctx) => {
     initialBookLayout = assignedLayouts.bookLayouts.nodes[0]
   }
 
-  const font = fonts.find((font) => font._id === fontId)
-
   return {
     props: {
       fonts,
@@ -167,11 +173,10 @@ export const getStaticProps = async (ctx) => {
   }
 }
 
-// @TODO: switch this to slugs... so we have /book/similar
 export const getStaticPaths = async () => {
-  const ids = await getAllFontIds()
+  const slugs = await getAllFontsSlugs()
   return {
-    paths: ids?.map(({ _id }) => `/book/${_id}`) || [],
+    paths: slugs?.map(({ slug }) => `/font/${slug}/book`) || [],
     fallback: false,
   }
 }

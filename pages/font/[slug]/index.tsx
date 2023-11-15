@@ -91,7 +91,7 @@ export const getStaticProps: GetStaticProps<
 export const getStaticPaths = async () => {
   const slugs = await getAllFontsSlugs()
   return {
-    paths: slugs?.map(({ slug }) => `/fonts/${slug}`) || [],
+    paths: slugs?.map(({ slug }) => `/font/${slug}`) || [],
     fallback: false,
   }
 }

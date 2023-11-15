@@ -57,7 +57,7 @@ const layoutOptions = (layouts) => {
   }))
 }
 
-const Toolbar = observer(() => {
+const Toolbar = observer(({ fonts }) => {
   const bookLayoutStore = useBookLayoutStore()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -118,10 +118,12 @@ const Toolbar = observer(() => {
     },
   ]
 
-  const handleFontFamilyChange = (option) => {
+  const handleFontFamilyChange = async (option) => {
     if (!option) return
     bookLayoutStore.setFontFamily(option)
-    router.push(`/book/${option.value}`)
+    const font = fonts.find(({ _id }) => _id === option.value)
+    console.log('handleFontFamilyChange: ', font.slug)
+    if (font) router.push(`/font/${font.slug}/book/`)
   }
 
   const handleLayoutChange = (option) => {
