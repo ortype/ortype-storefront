@@ -20,21 +20,28 @@ import { useQuery } from '@apollo/client'
 import { makeLocalStorage } from 'components/utils/makeLocalStorage'
 import { useRouter } from 'next/router'
 
-const BookPage = ({ fonts, font }) => {
+const BookPage = ({ fonts, font, initialBookLayout }) => {
+  const router = useRouter()
   const bookLayoutStore = useBookLayoutStore()
+  /*
   console.log(
     'bookLayoutStore: ',
     toJS(bookLayoutStore.fontFamily.label),
-    toJS(bookLayoutStore.layoutOption.label)
+    toJS(bookLayoutStore.fontFamily.value),
+    toJS(bookLayoutStore.layoutOption.label),
+    'layoutId param: ',
+    router.query.id
   )
+  */
 
   const { loading, data, refetch } = useQuery(GET_BOOK_LAYOUT, {
-    variables: { _id: bookLayoutStore.layoutOption.value },
+    variables: { _id: router.query.id || bookLayoutStore.layoutOption.value },
   })
 
   // store data in mobx
   useEffect(() => {
     if (loading === false && data && data.bookLayout) {
+      // console.log('loading/data dep setLayoutOption: bookLayout', data.bookLayout)
       bookLayoutStore.setLayoutOption({
         value: data.bookLayout._id,
         label: data.bookLayout.name,
@@ -44,14 +51,10 @@ const BookPage = ({ fonts, font }) => {
       bookLayoutStore.setBookLayoutData(data.bookLayout)
 
       // save to local storage
-      // prefix by fontId and bookLayoutId
-      // data.bookLayout._id
-      // bookLayoutStore.fontFamily.value
       return makeLocalStorage(
         bookLayoutStore,
         `${bookLayoutStore.fontFamily.value}_${data.bookLayout._id}_store`,
         [
-          // { name: 'layoutOption', action: 'setLayoutOption' },
           { name: 'isTemplate', action: 'setIsTemplate' },
           { name: 'editMode', action: 'setEditMode' },
           { name: 'regex', action: 'setRegex' },
@@ -59,7 +62,18 @@ const BookPage = ({ fonts, font }) => {
         ]
       )
     }
-  }, [loading, data])
+  }, [font, loading, data])
+
+  useEffect(() => {
+    // console.log('font dep changed: set initialBookLayout', initialBookLayout)
+    router.replace(
+      { query: { ...router.query, id: initialBookLayout._id } },
+      undefined,
+      {
+        shallow: true,
+      }
+    )
+  }, [font])
 
   return (
     <>
@@ -182,16 +196,7 @@ export const getStaticPaths = async () => {
 }
 
 BookPage.getLayout = function getLayout(page) {
-  const {
-    query: { id },
-  } = useRouter()
-  console.log('layoutId', id)
-  return (
-    <BookLayoutProvider layoutId={id} {...page?.props}>
-      {page}
-    </BookLayoutProvider>
-  )
+  return <BookLayoutProvider {...page?.props}>{page}</BookLayoutProvider>
 }
 
 export default observer(BookPage)
-// export default BookPage

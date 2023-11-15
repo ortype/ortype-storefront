@@ -1,4 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
+
 import {
   AlertDialog,
   AlertDialogBody,
@@ -33,7 +35,6 @@ import {
 import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import { useRouter } from 'next/router'
 import React from 'react'
 
 import {
@@ -59,11 +60,10 @@ const layoutOptions = (layouts) => {
 
 const Toolbar = observer(({ fonts }) => {
   const bookLayoutStore = useBookLayoutStore()
-
+  const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = React.useRef()
   const toast = useToast()
-  const router = useRouter()
 
   // queries
   // get layout data from api
@@ -122,13 +122,19 @@ const Toolbar = observer(({ fonts }) => {
     if (!option) return
     bookLayoutStore.setFontFamily(option)
     const font = fonts.find(({ _id }) => _id === option.value)
-    console.log('handleFontFamilyChange: ', font.slug)
     if (font) router.push(`/font/${font.slug}/book/`)
+    // @TODO: loading indicator
   }
 
   const handleLayoutChange = (option) => {
     if (option) {
-      bookLayoutStore.setLayoutOption(option)
+      router.replace(
+        { query: { ...router.query, id: option.value } },
+        undefined,
+        {
+          shallow: true,
+        }
+      )
     }
   }
 

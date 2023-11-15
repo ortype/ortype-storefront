@@ -77,7 +77,7 @@ export const BookLayoutProvider = ({
       store.isDirty = value
     }),
     setIsTemplate: action((value) => {
-      console.log('action setIsTemplate', value)
+      // @TEMP: interpert `null` values as `false`
       store.isTemplate = value === null ? false : value
     }),
     setLayoutOption: action((option) => {
@@ -87,7 +87,6 @@ export const BookLayoutProvider = ({
       store.editMode = value
     }),
     setFontFamily: action((option) => {
-      console.log('setFontFamily called: ', option)
       store.fontFamily = option
     }),
     setFontFamilyOptions: action((options) => {
@@ -139,7 +138,7 @@ export const BookLayoutProvider = ({
     }),
     updateBlock: action((key, value, page, col, block) => {
       // eslint-disable-next-line no-console
-      console.log('Store: updateBlock: ', key, value, page, col, block)
+      // console.log('Store: updateBlock: ', key, value, page, col, block)
       store.spread[page][col].blocks[block][key] = value
     }),
     removeBlock: action((page, col, block) => {
@@ -205,7 +204,7 @@ export const BookLayoutProvider = ({
     }),
     filterAll: action((spread, regex) => {
       const newSpread = cloneDeep(toJS(spread))
-      console.log('filterAll: ', newSpread)
+      // console.log('filterAll: ', newSpread)
       newSpread.recto.forEach((col) => {
         col.blocks.forEach((block) => {
           block.regex = regex
