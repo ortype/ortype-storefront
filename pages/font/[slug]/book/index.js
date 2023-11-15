@@ -100,6 +100,15 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
               width: '100%',
               textAlign: 'center',
             }}
+            _after={{
+              content: '""',
+              display: bookLayoutStore.editMode ? 'block' : 'none',
+              position: 'absolute',
+              bottom: '0',
+              height: '1px',
+              background: 'red',
+              width: '100%',
+            }}
           >
             {bookLayoutStore.spread.verso?.map((col, idx) => (
               <Column
@@ -124,6 +133,15 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
               bottom: '-88px',
               width: '100%',
               textAlign: 'center',
+            }}
+            _after={{
+              content: '""',
+              display: bookLayoutStore.editMode ? 'block' : 'none',
+              position: 'absolute',
+              bottom: '0',
+              height: '1px',
+              background: 'red',
+              width: '100%',
             }}
           >
             {bookLayoutStore.spread.recto?.map((col, idx) => (
