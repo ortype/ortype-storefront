@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Spinner } from '@chakra-ui/react'
 import Select, { components } from 'react-select'
 
 const Arrow = (props) => (
@@ -28,6 +28,10 @@ const mediumSpacing = `1rem`
 const largeSpacing = `2rem`
 
 const { DropdownIndicator } = components
+
+const LoadingIndicator = (props) => {
+  return <Spinner size={'sm'} mr={8} />
+}
 
 const CustomDropdownIndicator = ({ ...props }) => (
   <DropdownIndicator {...props}>
@@ -228,6 +232,7 @@ const StyledSelect = ({ width, maxWidth, isReadOnly, isLoading, ...props }) => {
       components={{
         IndicatorSeparator: null,
         DropdownIndicator: CustomDropdownIndicator,
+        LoadingIndicator,
       }}
       styles={getCustomStyles({
         width: width || 300,

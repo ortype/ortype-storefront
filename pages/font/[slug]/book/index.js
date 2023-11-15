@@ -78,7 +78,7 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
   return (
     <>
       <Center w={'100vw'} h={'100vh'} bg={'black'}>
-        <Toolbar fonts={fonts} />
+        <Toolbar font={font} fonts={fonts} />
         <Flex
           // Spread
           bg={'#FFF'}

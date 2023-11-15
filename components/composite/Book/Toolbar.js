@@ -35,7 +35,7 @@ import {
 import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   ChevronDownIcon,
@@ -58,12 +58,16 @@ const layoutOptions = (layouts) => {
   }))
 }
 
-const Toolbar = observer(({ fonts }) => {
+const Toolbar = observer(({ font, fonts }) => {
   const bookLayoutStore = useBookLayoutStore()
   const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = React.useRef()
   const toast = useToast()
+  const [fontLoading, setFontLoading] = useState(false)
+  useEffect(() => {
+    setFontLoading(false)
+  }, [font])
 
   // queries
   // get layout data from api
@@ -124,6 +128,7 @@ const Toolbar = observer(({ fonts }) => {
     const font = fonts.find(({ _id }) => _id === option.value)
     if (font) router.push(`/font/${font.slug}/book/`)
     // @TODO: loading indicator
+    setFontLoading(true)
   }
 
   const handleLayoutChange = (option) => {
@@ -153,9 +158,6 @@ const Toolbar = observer(({ fonts }) => {
         })
       },
     })
-  if (updateData) {
-    console.log('updateData: ', updateData)
-  }
 
   // addBookLayout
   const [addBookLayout, { data: addData, loading: addLoading }] = useMutation(
@@ -303,6 +305,7 @@ const Toolbar = observer(({ fonts }) => {
                   : []
               }
               value={bookLayoutStore.fontFamily}
+              isLoading={fontLoading}
               name="font"
               onChange={handleFontFamilyChange}
             />
