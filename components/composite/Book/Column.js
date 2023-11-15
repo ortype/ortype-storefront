@@ -39,7 +39,10 @@ const getBlockStyle = (
 const Column = observer(({ width, blocks, update }) => {
   const bookLayoutStore = useContext(BookContext)
   const targetRef = useRef()
-  const size = useDimensions(targetRef, width)
+  // const size = useDimensions(targetRef, width)
+
+  const hardCodedColumnWidth = 558
+  const queryWidth = (width / 100) * hardCodedColumnWidth
   // we store the difference of each block
   let difference = 0
   const renderBlocks = () =>
@@ -63,7 +66,8 @@ const Column = observer(({ width, blocks, update }) => {
           component={Block}
           line={{
             dedupId: humanReadableDedupId,
-            colWidth: size.width,
+            // colWidth: size.width,
+            colWidth: queryWidth,
             variantId: variantId || bookLayoutStore.variantOption.value,
             ...queryArgs,
           }}
@@ -82,7 +86,7 @@ const Column = observer(({ width, blocks, update }) => {
         ref={targetRef}
         flexDir={'column'}
         flexWrap={'wrap'}
-        flex={`0 0 calc(${width}% - 30px)`}
+        flex={`0 0 calc(${width}% - 30px)`} // 588 - 30 = 558
         maxW={`calc(${width}% - 30px)`}
         m={'0 15px'}
         position={'relative'}
