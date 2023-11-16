@@ -14,13 +14,14 @@ import {
 } from 'lib/sanity.client'
 import { autorun, toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { useQuery } from '@apollo/client'
 import { makeLocalStorage } from 'components/utils/makeLocalStorage'
 import { useRouter } from 'next/router'
 
 const BookPage = ({ fonts, font, initialBookLayout }) => {
+  const firstUpdate = useRef(true)
   const router = useRouter()
   const bookLayoutStore = useBookLayoutStore()
   /*
@@ -64,15 +65,19 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
     }
   }, [font, loading, data])
 
+  // when font family changes, reset currently selected layout to the initial layout
   useEffect(() => {
-    // console.log('font dep changed: set initialBookLayout', initialBookLayout)
-    router.replace(
-      { query: { ...router.query, id: initialBookLayout._id } },
-      undefined,
-      {
-        shallow: true,
-      }
-    )
+    if (!firstUpdate.current) {
+      router.replace(
+        { query: { ...router.query, id: initialBookLayout._id } },
+        undefined,
+        {
+          shallow: true,
+        }
+      )
+    } else {
+      firstUpdate.current = false
+    }
   }, [font])
 
   return (
