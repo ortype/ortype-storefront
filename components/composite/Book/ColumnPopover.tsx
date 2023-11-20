@@ -18,6 +18,12 @@ import NumericInput from 'components/composite/Book/NumericInput'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
+import {
+  type BlockParams,
+  type BlockStyle,
+  type LineParams,
+  type Update,
+} from './bookTypes'
 
 import {
   CopyIcon,
@@ -27,12 +33,16 @@ import {
   TrashIcon,
 } from '@sanity/icons'
 
-const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
-  const { page, col } = update
+const ColumnPopover: React.FC<{
+  blocks: BlockParams[]
+  update: Update
+  children: any // @TODO: types
+}> = observer(({ blocks, update: { page, col }, children }) => {
   const bookLayoutStore = useBookLayoutStore()
 
   const handleChange = (key, value) => {
     if (bookLayoutStore.updateColumn && col[key] !== value) {
+      console.log('width; ', key, value)
       bookLayoutStore.updateColumn(key, value, page, col)
     }
   }
@@ -147,16 +157,9 @@ const ColumnPopover = observer(({ width, blocks, update, ...props }) => {
           </PopoverContent>
         </Portal>
       </Popover>
-      {props.children}
+      {children}
     </>
   )
 })
 
-/*
-ColumnPopover.propTypes = {
-  blocks: PropTypes.array,
-  update: PropTypes.object,
-  width: PropTypes.number
-};
-*/
 export default ColumnPopover

@@ -1,48 +1,67 @@
 import { Button, Flex, Text } from '@chakra-ui/react'
 import { InsertBelowIcon } from '@sanity/icons'
-import { BookContext } from 'components/data/BookProvider'
+import { useBookLayoutStore } from 'components/data/BookProvider'
 import GetBlocks from 'components/data/BookProvider/getBlocks'
 import useDimensions from 'components/hooks/useDimensions'
 import { observer } from 'mobx-react-lite'
-import PropTypes from 'prop-types'
 import React, { useContext, useRef } from 'react'
 import Block from './Block'
+import {
+  type BlockParams,
+  type BlockStyle,
+  type BlockStyleOptions,
+  type BlockStyleParams,
+  type ColumnProps,
+  type Metrics,
+} from './bookTypes'
 
 import { ColumnPopover } from './index'
 
 const currentHour = new Date().getUTCHours()
 
+// https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align
+
+/*
+{key: "ascent", value: "978"}
+{key: "descent", value: "222"}
+{key: "capHeight", value: "700"}
+*/
+
 // util function to add `contentArea` and `distanceTop` keys to the props
 const getBlockStyle = (
-  { fontSize, lineHeight, lineCount },
-  { contentArea, distanceTop, difference }
-) => {
+  params: BlockStyleParams,
+  options: BlockStyleOptions
+): BlockStyle => {
+  const { fontSize, lineHeight, lineCount } = params
+  const { contentArea, distanceTop, difference } = options
+
   const marginTopOffset = lineHeight
-  const calcLineHeight = fontSize * contentArea
-  const transformValue = -fontSize * distanceTop
+  const calcLineHeight = fontSize * contentArea // what is content area again?
+  const transformValue = -fontSize * distanceTop // what does this achieve?
+
   return {
     transformValue,
     outerWrapperMarginTop: marginTopOffset
       ? difference + marginTopOffset
-      : difference,
-    // applies to Guides, the wrapper of the entry
+      : difference, // Outer margin top (what does this do precisely?) (=== lineHeight)
+    // is there a case where we do not have a lineHeight?
     innerWrapperStyle: {
-      // transform: `translateY(${transformValue}px)`,
-      lineHeight: `${calcLineHeight}px`,
-      height: `${calcLineHeight * lineCount}px`,
-      fontSize: `${fontSize}px`,
+      lineHeight: `${calcLineHeight}px`, // fontSize * contentArea huh...
+      height: `${calcLineHeight * lineCount}px`, // physical height the lines will occupy
+      fontSize: `${fontSize}px`, // target fontSize
     },
-    offsetValue: `${transformValue}px`,
+    offsetValue: `${transformValue}px`, // css `top` of Box (what does this do precisely?)
   }
 }
 
-const Column = observer(({ width, blocks, update }) => {
-  const bookLayoutStore = useContext(BookContext)
+const Column = observer(({ width, blocks, update }: ColumnProps) => {
+  const bookLayoutStore = useBookLayoutStore()
   const targetRef = useRef()
   // const size = useDimensions(targetRef, width)
 
   const hardCodedColumnWidth = 558
-  const queryWidth = (width / 100) * hardCodedColumnWidth
+  const queryWidth = Math.floor((width / 100) * hardCodedColumnWidth)
+
   // we store the difference of each block
   let difference = 0
   const renderBlocks = () =>
@@ -59,6 +78,7 @@ const Column = observer(({ width, blocks, update }) => {
       return (
         <GetBlocks
           key={blockId}
+          // update param contains the which `page`, the `column` index, and `block` index
           update={{
             block: idx,
             ...update,
@@ -66,12 +86,11 @@ const Column = observer(({ width, blocks, update }) => {
           component={Block}
           line={{
             dedupId: humanReadableDedupId,
-            // colWidth: size.width,
-            colWidth: queryWidth,
+            colWidth: queryWidth, // colWidth: size.width,
             variantId: variantId || bookLayoutStore.variantOption.value,
             ...queryArgs,
           }}
-          layout={layout}
+          layout={layout} // BlockStyle
         />
       )
     })
@@ -112,7 +131,7 @@ const Column = observer(({ width, blocks, update }) => {
         },
       }}
     >
-      <ColumnPopover update={update} width={width} blocks={blocks}>
+      <ColumnPopover update={update} blocks={blocks}>
         {renderBlocks()}
         <Button
           onClick={handleClick}
@@ -137,11 +156,4 @@ const Column = observer(({ width, blocks, update }) => {
   )
 })
 
-/*
-Column.propTypes = {
-  blocks: PropTypes.array,
-  update: PropTypes.object,
-  width: PropTypes.number,
-}
-*/
 export default Column

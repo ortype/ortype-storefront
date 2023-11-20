@@ -26,13 +26,26 @@ import React, { useState } from 'react'
 import Select from 'react-select'
 
 import { EditIcon, RefreshIcon, TrashIcon } from '@sanity/icons'
+import { type BlockStyle, type LineParams, type Update } from './bookTypes'
 
 const pointFormat = (num) => `${num}pt`
 
-const BlockPopover = (props) => {
-  const { line, update } = props
-  const { page, col, block } = update
-
+const BlockPopover: React.FC<{
+  line: LineParams
+  isLoadingBookItem: boolean
+  update: Update
+  fetchMore: any // @TODO: types
+  setWord: any // @TODO: types
+  children: any // @TODO: types
+  // setWord: React.Dispatch<React.SetStateAction<Word>
+}> = ({
+  line,
+  update: { page, col, block },
+  fetchMore,
+  setWord,
+  isLoadingBookItem,
+  children,
+}) => {
   const bookLayoutStore = useBookLayoutStore()
 
   // fontSize, lineHeight, wordCount, lineCount, regex handlers
@@ -223,7 +236,7 @@ const BlockPopover = (props) => {
                 <Button
                   width={'50%'}
                   onClick={() =>
-                    props.fetchMore({
+                    fetchMore({
                       variables: {
                         first: null,
                         after: null,
@@ -231,7 +244,7 @@ const BlockPopover = (props) => {
                         before: null,
                       },
                       updateQuery: (previousResult, { fetchMoreResult }) => {
-                        props.setWord(fetchMoreResult.bookItem.entry)
+                        setWord(fetchMoreResult.bookItem.entry)
                       },
                     })
                   }
@@ -252,21 +265,9 @@ const BlockPopover = (props) => {
           </PopoverContent>
         </Portal>
       </Popover>
-      {props.children}
+      {children}
     </>
   )
 }
-
-/*
-BlockPopover.propTypes = {
-  entry: PropTypes.string,
-  isLoadingBookItem: PropTypes.bool,
-  line: PropTypes.object,
-  fetchMore: PropTypes.function,
-  setWord: PropTypes.function,
-  update: PropTypes.object,
-  variables: PropTypes.object,
-}
-*/
 
 export default BlockPopover
