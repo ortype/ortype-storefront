@@ -32,25 +32,34 @@ const getBlockStyle = (
   params: BlockStyleParams,
   options: BlockStyleOptions
 ): BlockStyle => {
-  const { fontSize, lineHeight, lineCount } = params
-  const { contentArea, distanceTop, difference } = options
+  const { fontSize, lineHeight: customLineHeight, lineCount } = params
+  const { contentArea, distanceTop, ascent, capHeight, descent, difference } =
+    options
 
-  const marginTopOffset = lineHeight
-  const calcLineHeight = fontSize * contentArea // what is content area again?
-  const transformValue = -fontSize * distanceTop // what does this achieve?
+  const calcLineHeight = fontSize * contentArea // what is content area again? (metafields.ascent + metafields.descent)
+  let lineHeight = calcLineHeight
+  if (customLineHeight !== null && customLineHeight !== 0) {
+    lineHeight = customLineHeight
+  }
+
+  // what's the distance from the top edge of the font, to the top edge of the content box?
+  // our goal is to calculate a pixel negative top offset that will create a equal visual
+  // distance from the top edge of 'a capitial letter' to the 'label'
+  // Old version: `const transformValue = -fontSize * distanceTop`
+  const valign = lineHeight * (contentArea / 10) // we want to align it to the top
+  // here we tried convert contentArea to e.g. 0.126 (but we don't get a consistent distance from the top)
+  console.log('valign: ', lineHeight, ' * ', contentArea / 10, ' === ', valign)
 
   return {
-    transformValue,
-    outerWrapperMarginTop: marginTopOffset
-      ? difference + marginTopOffset
-      : difference, // Outer margin top (what does this do precisely?) (=== lineHeight)
-    // is there a case where we do not have a lineHeight?
+    transformValue: valign, // @TODO: rename... the difference is the previous block's "offset top" (negative top value)
+    outerWrapperMarginTop: `-${difference}px`,
     innerWrapperStyle: {
-      lineHeight: `${calcLineHeight}px`, // fontSize * contentArea huh...
-      height: `${calcLineHeight * lineCount}px`, // physical height the lines will occupy
+      lineHeight: `${lineHeight}px`,
+      // physical height the lines will occupy
+      height: `${lineHeight * lineCount}px`,
       fontSize: `${fontSize}px`, // target fontSize
     },
-    offsetValue: `${transformValue}px`, // css `top` of Box (what does this do precisely?)
+    offsetValue: `${valign * -1}px`, // css `top` of absolutely positioned Box (what does this do precisely?)
   }
 }
 
@@ -60,7 +69,7 @@ const Column = observer(({ width, blocks, update }: ColumnProps) => {
   // const size = useDimensions(targetRef, width)
 
   const hardCodedColumnWidth = 558
-  const queryWidth = Math.floor((width / 100) * hardCodedColumnWidth)
+  const queryWidth = Number((width / 100) * hardCodedColumnWidth)
 
   // we store the difference of each block
   let difference = 0

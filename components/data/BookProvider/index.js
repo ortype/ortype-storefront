@@ -59,9 +59,17 @@ export const BookLayoutProvider = ({
         const capHeight = store.metafields.find(
           (field) => field.key === 'capHeight'
         )
+        // --fm-capitalHeight: 0.68; (example)
+        //  --capital-height: 100;
+        // --computedFontSize: (var(--capital-height) / var(--fm-capitalHeight));
+
         metrics = {
+          capHeight: Number(capHeight.value / 1000),
+          ascent: Number(ascent.value / 1000),
+          descent: Number(descent.value) / 1000,
           contentArea: (Number(ascent.value) + Number(descent.value)) / 1000,
           distanceTop: (Number(ascent.value) - Number(capHeight.value)) / 1000,
+          // 978 - 700 / 1000 = 0.278
         }
       }
       return metrics

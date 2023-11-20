@@ -19,8 +19,11 @@ export type LineParams = BlockParams & {
 // contentArea: (Number(ascent.value) + Number(descent.value)) / 1000,
 // distanceTop: (Number(ascent.value) - Number(capHeight.value)) / 1000,
 export type Metrics = {
-  contentArea: number
-  distanceTop: number
+  capHeight: number
+  ascent: number
+  contentArea: number // metafields.ascent - metafields.descent
+  distanceTop: number // metafields.ascent - metafields.capHeight
+  descent: number // metafields.descender
 }
 
 export type BlockStyleParams = Pick<
@@ -28,13 +31,16 @@ export type BlockStyleParams = Pick<
   'fontSize' | 'lineHeight' | 'lineCount'
 >
 
-export type BlockStyleOptions = Pick<Metrics, 'contentArea' | 'distanceTop'> & {
+export type BlockStyleOptions = Pick<
+  Metrics,
+  'contentArea' | 'distanceTop' | 'ascent' | 'capHeight' | 'descent'
+> & {
   difference: number
 }
 
 export type BlockStyle = {
   transformValue: number
-  outerWrapperMarginTop: number
+  outerWrapperMarginTop: string
   innerWrapperStyle: {
     lineHeight: string
     height: string

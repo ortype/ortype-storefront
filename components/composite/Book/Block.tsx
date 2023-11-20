@@ -26,7 +26,7 @@ const Block: React.FC<{
           position={'relative'}
           mb={'10.8px'}
           id={line.dedupId}
-          mt={layout.outerWrapperMarginTop}
+          style={{ marginTop: layout.outerWrapperMarginTop }}
           _hover={{
             backgroundColor: `#F8FFBF82`,
             ['.configBlockButton']: {
@@ -59,16 +59,19 @@ const Block: React.FC<{
               <Box
                 className={line.variantId}
                 position={'relative'}
-                mt={`32.4px`}
-                w={`${line.colWidth}px`}
-                sx={{
+                // mt={`32.4px`} // this is hardcoded huh...
+                mt={`24px`} // account for height of the "label"
+                style={{
+                  width: `${line.colWidth}px`,
                   ...layout.innerWrapperStyle,
                 }}
               >
                 <Box
+                  style={{
+                    top: `${layout.offsetValue}`,
+                  }}
                   sx={{
                     position: 'absolute',
-                    top: `${layout.offsetValue}`,
                     left: 0,
                     right: 0,
                     bottom: 0,
@@ -93,7 +96,7 @@ const Block: React.FC<{
       <Flex
         position={'relative'}
         mb={'10.8px'}
-        mt={layout.outerWrapperMarginTop}
+        style={{ marginTop: layout.outerWrapperMarginTop }}
       >
         <Text as={'span'} fontSize={'12px'} position={'absolute'} top={'2px'}>
           {
@@ -107,14 +110,16 @@ const Block: React.FC<{
           position={'relative'}
           mt={`32.4px`}
           w={`${line.colWidth}px`}
-          sx={{
+          style={{
             ...layout.innerWrapperStyle,
           }}
         >
           <Box
+            style={{
+              top: `${layout.offsetValue}`,
+            }}
             sx={{
               position: 'absolute',
-              top: `${layout.offsetValue}`,
               left: 0,
               right: 0,
               bottom: 0,

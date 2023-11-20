@@ -133,7 +133,7 @@ const BlockPopover: React.FC<{
                   />
                 </Box>
                 <Box>
-                  <Text fontSize={'sm'}>Top offset</Text>
+                  <Text fontSize={'sm'}>Line height</Text>
                   <NumericInput
                     onChange={(value) => handleChange('lineHeight', value)}
                     value={line.lineHeight}
