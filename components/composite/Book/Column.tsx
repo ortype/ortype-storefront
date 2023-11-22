@@ -1,7 +1,7 @@
 import { Button, Flex, Text } from '@chakra-ui/react'
 import { InsertBelowIcon } from '@sanity/icons'
 import { useBookLayoutStore } from 'components/data/BookProvider'
-import GetBlocks from 'components/data/BookProvider/getBlocks'
+import GetBlocks from 'components/data/BookProvider/GetBlocks'
 import useDimensions from 'components/hooks/useDimensions'
 import { observer } from 'mobx-react-lite'
 import React, { useContext, useRef } from 'react'
