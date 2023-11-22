@@ -36,7 +36,8 @@ const getBlockStyle = (
   const { contentArea, distanceTop, ascent, capHeight, descent, difference } =
     options
 
-  const calcLineHeight = fontSize * contentArea // what is content area again? (metafields.ascent + metafields.descent)
+  const calcLineHeight = fontSize * contentArea
+
   let lineHeight = calcLineHeight
   if (customLineHeight !== null && customLineHeight !== 0) {
     lineHeight = customLineHeight
@@ -45,26 +46,23 @@ const getBlockStyle = (
   // what's the distance from the top edge of the font, to the top edge of the content box?
   // our goal is to calculate a pixel negative top offset that will create a equal visual
   // distance from the top edge of 'a capitial letter' to the 'label'
-  // Old version: `const transformValue = -fontSize * distanceTop`
-  const valign = lineHeight * (contentArea / 10) // we want to align it to the top
-  // here we tried convert contentArea to e.g. 0.126 (but we don't get a consistent distance from the top)
-  console.log('valign: ', lineHeight, ' * ', contentArea / 10, ' === ', valign)
+  const transformValue = -fontSize * distanceTop
 
   return {
-    transformValue: valign, // @TODO: rename... the difference is the previous block's "offset top" (negative top value)
-    outerWrapperMarginTop: `-${difference}px`,
+    transformValue, // @TODO: rename... the difference is the previous block's "offset top" (negative top value)
+    outerWrapperMarginTop: `${difference}px`, // @TODO: ah this only applies to blocks within the same column
     innerWrapperStyle: {
-      lineHeight: `${lineHeight}px`,
-      // physical height the lines will occupy
-      height: `${lineHeight * lineCount}px`,
-      fontSize: `${fontSize}px`, // target fontSize
+      lineHeight: `${calcLineHeight}px`,
+      height: `${calcLineHeight * lineCount}px`,
+      fontSize: `${fontSize}px`,
     },
-    offsetValue: `${valign * -1}px`, // css `top` of absolutely positioned Box (what does this do precisely?)
+    offsetValue: `${transformValue}px`, // css `top` of absolutely positioned Box (what does this do precisely?)
   }
 }
 
 const Column = observer(({ width, blocks, update }: ColumnProps) => {
   const bookLayoutStore = useBookLayoutStore()
+  console.log('bookLayoutStore.metrics:', bookLayoutStore.metrics)
   const targetRef = useRef()
   // const size = useDimensions(targetRef, width)
 
@@ -75,15 +73,16 @@ const Column = observer(({ width, blocks, update }: ColumnProps) => {
   let difference = 0
   const renderBlocks = () =>
     blocks.map((block, idx) => {
+      const { blockId, variantId, ...queryArgs } = block
+      const humanReadableDedupId = `H${currentHour}_${update.page}_C${update.col}_B${idx}_${blockId}`
       const layout = getBlockStyle(block, {
         ...bookLayoutStore.metrics,
+        // @TODO: consider passing `blockParams` like fontSize, lineHeight, lineCount to get metrics()
+        // to centeralize most of the calculations in the `store` (however, the getter cannot take params)
         difference,
       })
       difference = layout.transformValue
 
-      const { blockId, variantId, ...queryArgs } = block
-
-      const humanReadableDedupId = `H${currentHour}_${update.page}_C${update.col}_B${idx}_${blockId}`
       return (
         <GetBlocks
           key={blockId}

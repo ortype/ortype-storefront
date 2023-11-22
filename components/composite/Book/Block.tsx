@@ -59,8 +59,8 @@ const Block: React.FC<{
               <Box
                 className={line.variantId}
                 position={'relative'}
-                // mt={`32.4px`} // this is hardcoded huh...
-                mt={`24px`} // account for height of the "label"
+                mt={`32.4px`} // this is hardcoded huh...
+                // mt={`24px`} // account for height of the "label"
                 style={{
                   width: `${line.colWidth}px`,
                   ...layout.innerWrapperStyle,

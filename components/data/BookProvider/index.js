@@ -16,6 +16,10 @@ export const BookLayoutProvider = ({
   initialBookLayout,
   children,
 }) => {
+  const getMetric = (key) => {
+    return Number(store.metafields.find((field) => field.key === key)?.value)
+  }
+
   const store = useLocalObservable(() => ({
     /* observables here */
     isDirty: false,
@@ -52,24 +56,32 @@ export const BookLayoutProvider = ({
     get metrics() {
       let metrics = {}
       if (store.metafields) {
-        const ascent = store.metafields.find((field) => field.key === 'ascent')
-        const descent = store.metafields.find(
-          (field) => field.key === 'descent'
-        )
-        const capHeight = store.metafields.find(
-          (field) => field.key === 'capHeight'
-        )
+        const unitsPerEm = getMetric('unitsPerEm')
+        const capHeight = getMetric('capHeight') / unitsPerEm
+        const lineGap = getMetric('hheaLineGap') / unitsPerEm
+        // usWinAscent, sTypoAscender, hheaAscender
+        const ascent = getMetric('usWinAscent') / unitsPerEm
+        // usWinDescent, sTypoDescender, hheaDescender
+        const descent = getMetric('usWinDescent') / unitsPerEm
+        // const lineHeightNormal = ascent + descent + lineGap
+        const contentArea = ascent + descent // + lineGap
+        const distanceTop = ascent - capHeight
+        // --fm-capitalHeight: 0.68;
+        // --fm-descender: 0.54;
+        // --fm-ascender: 1.1;
         // --fm-capitalHeight: 0.68; (example)
-        //  --capital-height: 100;
+        // these do not apply I think, we don't need to size the font by cap height, do we?
+        //  --capital-height: 100; (target font size)
         // --computedFontSize: (var(--capital-height) / var(--fm-capitalHeight));
 
         metrics = {
-          capHeight: Number(capHeight.value / 1000),
-          ascent: Number(ascent.value / 1000),
-          descent: Number(descent.value) / 1000,
-          contentArea: (Number(ascent.value) + Number(descent.value)) / 1000,
-          distanceTop: (Number(ascent.value) - Number(capHeight.value)) / 1000,
-          // 978 - 700 / 1000 = 0.278
+          unitsPerEm,
+          contentArea,
+          lineGap,
+          capHeight,
+          ascent,
+          descent,
+          distanceTop,
         }
       }
       return metrics

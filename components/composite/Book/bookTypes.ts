@@ -19,6 +19,8 @@ export type LineParams = BlockParams & {
 // contentArea: (Number(ascent.value) + Number(descent.value)) / 1000,
 // distanceTop: (Number(ascent.value) - Number(capHeight.value)) / 1000,
 export type Metrics = {
+  unitsPerEm: number
+  lineGap: number
   capHeight: number
   ascent: number
   contentArea: number // metafields.ascent - metafields.descent
