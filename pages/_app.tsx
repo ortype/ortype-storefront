@@ -102,10 +102,10 @@ App.getInitialProps = async (ctx) => {
       authorizerClientId: 'd5814c60-03ba-4568-ac96-70eb7a8f397f', // obtain your client id from authorizer dashboard
       slug: 'or-type-mvp',
       selfHostedSlug: 'or-type-mvp',
-      clientId: process.env.CL_CLIENT_ID,
-      endpoint: process.env.CL_ENDPOINT,
-      marketId: process.env.CL_SCOPE_GLOBAL,
-      domain: process.env.CL_DOMAIN,
+      clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
+      endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT,
+      marketId: process.env.NEXT_PUBLIC_CL_SCOPE_GLOBAL,
+      domain: process.env.NEXT_PUBLIC_CL_DOMAIN,
     },
   }
 }
