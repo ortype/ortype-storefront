@@ -8,12 +8,13 @@ import { previewDocumentNode } from 'plugins/previewPane'
 import { productionUrl } from 'plugins/productionUrl'
 import { settingsPlugin, settingsStructure } from 'plugins/settings'
 import { defineConfig } from 'sanity'
-import { deskTool } from 'sanity/desk'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
-import { fontType, fontVariantType } from 'schemas/font'
-import productImageType from 'schemas/productImage'
+import { vercelDeployTool } from 'sanity-plugin-vercel-deploy'
+import { deskTool } from 'sanity/desk'
 import authorType from 'schemas/author'
+import { fontType, fontVariantType } from 'schemas/font'
 import postType from 'schemas/post'
+import productImageType from 'schemas/productImage'
 import settingsType from 'schemas/settings'
 
 const title =
@@ -32,7 +33,7 @@ export default defineConfig({
       fontType,
       fontVariantType,
       productImageType,
-      settingsType
+      settingsType,
     ],
   },
   plugins: [
@@ -49,10 +50,11 @@ export default defineConfig({
       previewSecretId,
       types: [postType.name, settingsType.name],
     }),
+    vercelDeployTool(),
     // Add an image asset source for Unsplash
-    unsplashImageAsset(),
+    // unsplashImageAsset(),
     // Vision lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin
-    visionTool({ defaultApiVersion: apiVersion }),
+    // visionTool({ defaultApiVersion: apiVersion }),
   ],
 })
