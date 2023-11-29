@@ -9,6 +9,7 @@ import { productionUrl } from 'plugins/productionUrl'
 import { settingsPlugin, settingsStructure } from 'plugins/settings'
 import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
+import { media } from 'sanity-plugin-media'
 import { vercelDeployTool } from 'sanity-plugin-vercel-deploy'
 import { deskTool } from 'sanity/desk'
 import authorType from 'schemas/author'
@@ -32,7 +33,7 @@ export default defineConfig({
       postType,
       fontType,
       fontVariantType,
-      productImageType,
+      // productImageType,
       settingsType,
     ],
   },
@@ -51,6 +52,7 @@ export default defineConfig({
       types: [postType.name, settingsType.name],
     }),
     vercelDeployTool(),
+    media(),
     // Add an image asset source for Unsplash
     // unsplashImageAsset(),
     // Vision lets you query your content with GROQ in the studio
