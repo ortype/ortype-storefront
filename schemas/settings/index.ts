@@ -55,6 +55,13 @@ export default defineType({
       ],
       validation: (rule) => rule.max(155).required(),
     }),
+    defineField({
+      name: 'groupings',
+      title: 'Font Style Groups',
+      description: 'Used to organize large font families',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
     /*defineField({
       name: 'ogImage',
       title: 'Open Graph Image',

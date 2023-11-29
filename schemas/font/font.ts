@@ -1,6 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
-import productImage from '../productImage'
+// import productImage from '../productImage'
 import variant from './variant'
 
 // @TODO: Only allow creation via the API (not through the Studio UI)
@@ -59,18 +59,18 @@ export default defineType({
       validation: (rule) => rule.required(),
       readOnly: true,
     }),
-    defineField({
+    /*defineField({
       name: 'images',
       title: 'Images',
       type: 'array',
       of: [
         {
           type: 'reference',
-          to: { type: productImage.name },
+          // to: { type: productImage.name },
         },
       ],
       // validation: (rule) => rule.required(),
-    }),
+    }),*/
     defineField({
       name: 'styleGroups',
       title: 'Style groups',
