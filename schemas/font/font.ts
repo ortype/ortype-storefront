@@ -59,6 +59,13 @@ export default defineType({
       validation: (rule) => rule.required(),
       readOnly: true,
     }),
+    defineField({
+      name: 'modifiedAt',
+      title: 'Modified at',
+      type: 'string',
+      validation: (rule) => rule.required(),
+      readOnly: true,
+    }),
     /*defineField({
       name: 'images',
       title: 'Images',
