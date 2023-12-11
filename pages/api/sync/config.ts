@@ -29,7 +29,7 @@ export default async function config(
     })
 
     const cl = CommerceLayer({
-      organization: 'or-type-mvp',
+      organization: process.env.CL_SLUG,
       accessToken: token.accessToken,
     })
 
@@ -114,7 +114,6 @@ export default async function config(
         name: 'Base Price',
         currency_code: 'EUR',
       })
-      // @TODO: create "price list" array from data in settings
     }
     const markets = await cl.markets.list({
       filters: {

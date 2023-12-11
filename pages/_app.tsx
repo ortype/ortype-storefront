@@ -95,13 +95,40 @@ function App({ Component, pageProps, props }: AppProps) {
   )
 }
 
+// @TODO: legacy API, use getServerSideProps
+// import { GetServerSideProps } from 'next'
+// https://nextjs.org/docs/pages/api-reference/functions/get-initial-props
+// > If getInitialProps is used in a custom _app.js, and the page being navigated to is using getServerSideProps, then getInitialProps will also run on the server.
 App.getInitialProps = async (ctx) => {
+  // @TODO: should we fetch the market like so?
+  /*
+    import { getIntegrationToken } from '@commercelayer/js-auth'
+    import CommerceLayer from '@commercelayer/sdk'  
+
+    const token = await getIntegrationToken({
+      clientId: process.env.CL_SYNC_CLIENT_ID,
+      clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
+      endpoint: process.env.CL_ENDPOINT,
+    })
+
+    const cl = CommerceLayer({
+      organization: process.env.CL_SLUG,
+      accessToken: token.accessToken,
+    })
+    const markets = await cl.markets.list({
+      filters: {
+        name_eq: 'Global',
+      },
+    })
+    console.log('markets: ', markets)
+  */
+
   return {
     props: {
       authorizerURL: 'https://authorizer-newww.koyeb.app/',
       authorizerClientId: 'd5814c60-03ba-4568-ac96-70eb7a8f397f', // obtain your client id from authorizer dashboard
-      slug: 'or-type-mvp',
-      selfHostedSlug: 'or-type-mvp',
+      slug: process.env.NEXT_PUBLIC_CL_SLUG,
+      selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG,
       clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
       endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT,
       marketId: process.env.NEXT_PUBLIC_CL_SCOPE_GLOBAL,

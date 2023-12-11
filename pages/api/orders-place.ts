@@ -3,8 +3,8 @@
 // Here's an example of a Next.js API route in Typescript that handles a Commerce Layer webhook JSON payload for the `orders.place` event:
 // This code defines a Next.js API route that expects a POST request with a JSON payload in the format of a Commerce Layer webhook for the `orders.place` event. It checks that the event is correct, extracts the order ID and status from the payload, and then does something with that information (e.g. updates a database). Finally, it responds with a 200 OK status code.
 
+import CommerceLayer, { Attachments, LineItems } from '@commercelayer/sdk'
 import { NextApiRequest, NextApiResponse } from 'next'
-import CommerceLayer, { LineItems, Attachments } from '@commercelayer/sdk'
 import nodemailer from 'nodemailer'
 
 type CommerceLayerWebhookPayload = {
@@ -33,6 +33,21 @@ export default async function handler(
     res.status(405).end() // Method Not Allowed
     return
   }
+
+  // @TODO: check webhook secret
+  // https://docs.commercelayer.io/core/callbacks-security
+  // process.env.CL_ORDERS_PLACE_SECRET
+  // e.g. Sanity check
+  // Check if the "x-secret" header is present in the request
+  // Check if the secret matches the expected value
+  /*
+  if (
+    !req.headers['x-secret'] ||
+    req.headers['x-secret'] !== process.env.SANITY_WEBHOOK_SECRET
+  ) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }  
+  */
 
   const {
     data: {
@@ -65,8 +80,8 @@ export default async function handler(
 
   // send an email to the customer
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
+    host: process.env.MAIL_SMTP,
+    port: process.env.MAIL_PORT,
     secure: false,
     auth: {
       user: process.env.MAIL_URL_USER,

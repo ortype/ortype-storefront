@@ -11,7 +11,8 @@ import CommerceLayer, {
   SkuUpdate,
 } from '@commercelayer/sdk'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import settings from '../../../lib/settings.js'
+
+// @NOTE: DEPRECATED
 
 import { type FontVariant } from 'lib/sanity.queries'
 
@@ -54,10 +55,6 @@ export default async function sync(
   deliveredIds.add(idempotencyKey)
 
   try {
-    // @TODO: for security
-    // https://medium.com/@fibonacid/syncing-contacts-between-sanity-and-active-campaign-2d42f1184a70
-    // const secret = process.env.SANITY_WEBHOOK_SECRET;
-
     const token = await getIntegrationToken({
       clientId: process.env.CL_SYNC_CLIENT_ID,
       clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
