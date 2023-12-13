@@ -1,3 +1,5 @@
+import withTwin from './withTwin.mjs'
+
 /** @type {import('next').NextConfig} */
 const config = {
   webpack: (config) => {
@@ -19,4 +21,4 @@ const config = {
   },
 }
 
-export default config
+export default withTwin(config)
