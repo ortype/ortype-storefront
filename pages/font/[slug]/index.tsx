@@ -1,4 +1,3 @@
-import { PreviewSuspense } from '@sanity/preview-kit'
 import FontWrapper from 'components/FontWrapper'
 import {
   getAllFontsSlugs,
@@ -7,7 +6,7 @@ import {
 } from 'lib/sanity.client'
 import { Font, Settings } from 'lib/sanity.queries'
 import { GetStaticProps } from 'next'
-import { lazy } from 'react'
+import { lazy, Suspense } from 'react'
 
 const PreviewFontPage = lazy(() => import('components/PreviewFontPage'))
 
@@ -31,7 +30,7 @@ export default function FontSlugRoute(props: PageProps) {
   const { settings, font, moreFonts, preview, token } = props
   if (preview) {
     return (
-      <PreviewSuspense
+      <Suspense
         fallback={
           <FontWrapper
             loading
@@ -48,7 +47,7 @@ export default function FontSlugRoute(props: PageProps) {
           moreFonts={moreFonts}
           settings={settings}
         />
-      </PreviewSuspense>
+      </Suspense>
     )
   }
 

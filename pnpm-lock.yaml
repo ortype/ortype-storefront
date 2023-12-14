@@ -116,6 +116,9 @@ dependencies:
   i18next:
     specifier: ^22.5.1
     version: 22.5.1
+  i18next-resources-to-backend:
+    specifier: ^1.2.0
+    version: 1.2.0
   intl-segmenter-polyfill:
     specifier: ^0.4.4
     version: 0.4.4
@@ -143,6 +146,9 @@ dependencies:
   next:
     specifier: ^14.0.4
     version: 14.0.4(@babel/core@7.23.5)(babel-plugin-macros@2.8.0)(react-dom@18.2.0)(react@18.2.0)
+  next-i18n-router:
+    specifier: ^5.0.2
+    version: 5.0.2
   next-i18next:
     specifier: ^13.3.0
     version: 13.3.0(i18next@22.5.1)(next@14.0.4)(react-i18next@12.3.1)(react@18.2.0)
@@ -266,7 +272,7 @@ packages:
   /@adyen/adyen-web@5.53.1:
     resolution: {integrity: sha512-pVtswhxMfdDC/OF+jqdSwA/H+enhXgvle+6U/0VsXeOl0Qm2XZze9H8aOGFE0hGt7Fq38OVYUZXpKnodcjhBlg==}
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
       '@babel/runtime-corejs3': 7.20.6
       '@types/applepayjs': 3.0.4
       '@types/googlepay': 0.7.0
@@ -2677,6 +2683,12 @@ packages:
     resolution: {integrity: sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==}
     dev: false
 
+  /@formatjs/intl-localematcher@0.5.2:
+    resolution: {integrity: sha512-txaaE2fiBMagLrR4jYhxzFO6wEdEG4TPMqrzBAcbr4HFUYzH/YC+lg6OIzKCHm8WgDdyQevxbAAV1OgcXctuGw==}
+    dependencies:
+      tslib: 2.4.1
+    dev: false
+
   /@graphql-typed-document-node/core@3.2.0(graphql@16.8.0):
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
     peerDependencies:
@@ -4481,7 +4493,7 @@ packages:
     resolution: {integrity: sha512-Cg7TFGpIr01vOQNODXOOaGz2NpCU5gl8x1qJFbb6hbZxR7XrcE2vtbAsTAbJ7/xwJtUuJEw8K8Zr/AE0LHlesg==}
     engines: {node: '>=10', npm: '>=6'}
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
       cosmiconfig: 7.1.0
       resolve: 1.22.2
     dev: false
@@ -5271,7 +5283,7 @@ packages:
   /dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
       csstype: 3.1.2
     dev: false
 
@@ -6663,6 +6675,12 @@ packages:
     resolution: {integrity: sha512-12IwV5DrHkDkByM+o2sjU668DOJrhf3Of+I+P+9yAheVvXoldaQ7J/jKPwHgRKciTS3a2Ib4oVbDg/AsztZGuQ==}
     dev: false
 
+  /i18next-resources-to-backend@1.2.0:
+    resolution: {integrity: sha512-8f1l03s+QxDmCfpSXCh9V+AFcxAwIp0UaroWuyOx+hmmv8484GcELHs+lnu54FrNij8cDBEXvEwhzZoXsKcVpg==}
+    dependencies:
+      '@babel/runtime': 7.23.5
+    dev: false
+
   /i18next@22.5.1:
     resolution: {integrity: sha512-8TGPgM3pAD+VRsMtUMNknRz3kzqwp/gPALrWMsDnmC1mKqJwpWyooQRLMcbTwq8z8YwSmuj+ZYvc+xCuEpkssA==}
     dependencies:
@@ -7594,8 +7612,20 @@ packages:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
 
+  /negotiator@0.6.3:
+    resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
+    engines: {node: '>= 0.6'}
+    dev: false
+
   /neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+    dev: false
+
+  /next-i18n-router@5.0.2:
+    resolution: {integrity: sha512-+pQCAnr5vHkLqqSa8RtkNJzRVTZgbBoyL4AJ2YG0SE1MSzgMC5ew0ALkxcIKInDx+1S4prW6oRdsLapmKw1NVA==}
+    dependencies:
+      '@formatjs/intl-localematcher': 0.5.2
+      negotiator: 0.6.3
     dev: false
 
   /next-i18next@13.3.0(i18next@22.5.1)(next@14.0.4)(react-i18next@12.3.1)(react@18.2.0):
@@ -8553,7 +8583,7 @@ packages:
     peerDependencies:
       react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
       react: 18.2.0
     dev: false
 
@@ -8615,7 +8645,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
       '@types/react': 18.0.27
       focus-lock: 1.0.0
       prop-types: 15.8.1
@@ -8699,7 +8729,7 @@ packages:
       react-native:
         optional: true
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
       '@types/react-redux': 7.1.31
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0
@@ -8823,7 +8853,7 @@ packages:
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
@@ -8952,7 +8982,7 @@ packages:
   /redux@4.2.1:
     resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
     dependencies:
-      '@babel/runtime': 7.22.5
+      '@babel/runtime': 7.23.5
     dev: false
 
   /reflect.getprototypeof@1.0.4:

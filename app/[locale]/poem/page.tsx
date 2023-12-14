@@ -1,3 +1,4 @@
+'use client'
 import { useQuery } from '@apollo/client'
 import { GET_POEM_ENTRIES } from 'graphql/queries'
 
