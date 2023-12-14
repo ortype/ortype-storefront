@@ -2,9 +2,9 @@
 import { cache } from 'react'
 import 'tailwindcss/tailwind.css'
 
+import Providers from '@/app/Providers'
 import { getIntegrationToken } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
-import Providers from 'app/Providers'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

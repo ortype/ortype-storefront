@@ -1,7 +1,7 @@
 import CustomerContainer from '@commercelayer/react-components/customers/CustomerContainer'
 import OrderContainer from '@commercelayer/react-components/orders/OrderContainer'
 import PlaceOrderContainer from '@commercelayer/react-components/orders/PlaceOrderContainer'
-import { useRouter } from 'next/router'
+import { useParams } from 'next/navigation'
 import { useContext } from 'react'
 import styled from 'styled-components'
 import tw from 'twin.macro'
@@ -60,22 +60,22 @@ const Checkout: React.FC<Props> = ({
 }) => {
   const ctx = useContext(CheckoutContext)
 
-  const { query } = useRouter()
+  const params = useParams()
 
   let paypalPayerId = ''
   let checkoutComSession = ''
   let redirectResult = ''
 
-  if (query.PayerID) {
-    paypalPayerId = query.PayerID as string
+  if (params.PayerID) {
+    paypalPayerId = params.PayerID as string
   }
 
-  if (query.redirectResult) {
-    redirectResult = query.redirectResult as string
+  if (params.redirectResult) {
+    redirectResult = params.redirectResult as string
   }
 
-  if (query['cko-session-id']) {
-    checkoutComSession = query['cko-session-id'] as string
+  if (params['cko-session-id']) {
+    checkoutComSession = params['cko-session-id'] as string
   }
 
   const { activeStep, lastActivableStep, setActiveStep, steps } =

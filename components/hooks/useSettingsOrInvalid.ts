@@ -1,10 +1,7 @@
 // import { getSubdomain } from 'utils/getSubdomain'
 import { SettingsContext } from 'components/data/SettingsProvider'
+import { useParams } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'
-// import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-
-// import { useParams } from 'next/navigation' // only avaiable with /app directory
-import { useRouter } from 'next/router'
 import { getCheckoutSettings } from 'utils/getCheckoutSettings'
 
 import Cookies from 'js-cookie'
@@ -17,11 +14,7 @@ interface UseSettingsOrInvalid {
 }
 
 export const useSettingsOrInvalid = (): UseSettingsOrInvalid => {
-  const {
-    query: { orderId },
-  } = useRouter()
-  // const paymentReturn = searchParams.get('paymentReturn')
-  // const redirectResult = searchParams.get('redirectResult')
+  const { orderId, paymentReturn, redirectResult } = useParams()
   // In the Checkout App these params are being parsed from the URL params
   // like the accessToken, which my Buy/Cart page generates
   // Here we can use CustomerContext or const settingsCtx = useContext(SettingsContext)
@@ -43,8 +36,6 @@ export const useSettingsOrInvalid = (): UseSettingsOrInvalid => {
   } = settingsCtx
   // @TODO: consider merging the Settings from checkout and account
 
-  const paymentReturn = ''
-  const redirectResult = ''
   const [settings, setSettings] = useState<
     CheckoutSettings | InvalidCheckoutSettings | undefined
   >(undefined)

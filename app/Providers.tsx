@@ -1,13 +1,13 @@
 'use client'
 
+import { ApolloClientProvider } from '@/components/data/ApolloProvider'
+import { CustomerProvider } from '@/components/data/CustomerProvider'
+import { SettingsProvider } from '@/components/data/SettingsProvider'
+import { GlobalHeader } from '@/components/GlobalHeader'
+import Webfonts from '@/components/Webfonts'
 import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
-import { ApolloClientProvider } from 'components/data/ApolloProvider'
-import { CustomerProvider } from 'components/data/CustomerProvider'
-import { SettingsProvider } from 'components/data/SettingsProvider'
-import { GlobalHeader } from 'components/GlobalHeader'
-import Webfonts from 'components/Webfonts'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 

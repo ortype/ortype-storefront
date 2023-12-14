@@ -1,4 +1,4 @@
-import { NextPage } from 'next'
+'use client'
 import dynamic from 'next/dynamic'
 
 // import { RetryError } from "components/composite/RetryError"
@@ -21,7 +21,7 @@ const DynamicCheckout: any = dynamic(
   }
 )
 
-const Order: NextPage = () => {
+const Order = () => {
   const { settings, retryOnError, isLoading } = useSettingsOrInvalid()
 
   if (isLoading || (!settings && !retryOnError)) return <div />
