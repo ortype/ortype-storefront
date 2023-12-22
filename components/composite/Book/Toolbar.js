@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 import {
   AlertDialog,
@@ -128,7 +128,7 @@ const Toolbar = observer(({ font, fonts }) => {
     if (!option) return
     bookLayoutStore.setFontFamily(option)
     const font = fonts.find(({ _id }) => _id === option.value)
-    if (font) router.push(`/font/${font.slug}/book/`)
+    if (font) router.push(`/fonts/${font.slug}/book/`)
     // @TODO: loading indicator
     setFontLoading(true)
   }

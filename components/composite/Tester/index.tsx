@@ -143,12 +143,12 @@ export const Tester: React.FC<Props> = (props) => {
       />
       <HStack spacing={2}>
         <Text as={'span'} fontSize="md">{`${title}`}</Text>
-        <Link href={`/font/${slug}`} className="hover:underline">
+        <Link href={`/fonts/${slug}`} className="hover:underline">
           <Text as={'span'} fontSize="md">
             {`[Buy]`}
           </Text>
         </Link>
-        <Link href={`/font/${slug}/book/`} className="hover:underline">
+        <Link href={`/fonts/${slug}/book/`} className="hover:underline">
           <Text as={'span'} fontSize="md">
             {'[Book]'}
           </Text>

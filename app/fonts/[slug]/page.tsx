@@ -25,7 +25,7 @@ export const dynamicParams = false
 
 export async function generateStaticParams() {
   const slugs = await getAllFontsSlugs()
-  return slugs?.map(({ slug }) => `/font/${slug}`) || []
+  return slugs?.map(({ slug }) => `/fonts/${slug}`) || []
 }
 
 const getData = cache(async ({ previewData, params }) => {
