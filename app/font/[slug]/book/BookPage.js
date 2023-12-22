@@ -1,28 +1,21 @@
+'use client'
 import { Center, Flex } from '@chakra-ui/react'
 import Column from 'components/composite/Book/Column'
 import Toolbar from 'components/composite/Book/Toolbar'
-import {
-  BookLayoutProvider,
-  useBookLayoutStore,
-} from 'components/data/BookProvider'
-import { GET_BOOK_LAYOUT, GET_BOOK_LAYOUTS } from 'graphql/queries'
-import { createApolloClient } from 'hooks/useApollo'
-import {
-  getAllFonts,
-  getAllFontsSlugs,
-  getFontAndMoreFonts,
-} from 'lib/sanity.client'
-import { autorun, toJS } from 'mobx'
-import { observer } from 'mobx-react-lite'
-import React, { useEffect, useRef } from 'react'
-
+import { useBookLayoutStore } from 'components/data/BookProvider'
+import { GET_BOOK_LAYOUT } from 'graphql/queries'
+// import { toJS } from 'mobx'
 import { useQuery } from '@apollo/client'
 import { makeLocalStorage } from 'components/utils/makeLocalStorage'
-import { useRouter } from 'next/router'
+import { observer } from 'mobx-react-lite'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import React, { Suspense, useEffect, useRef } from 'react'
 
 const BookPage = ({ fonts, font, initialBookLayout }) => {
   const firstUpdate = useRef(true)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
   const bookLayoutStore = useBookLayoutStore()
   /*
   console.log(
@@ -31,12 +24,14 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
     toJS(bookLayoutStore.fontFamily.value),
     toJS(bookLayoutStore.layoutOption.label),
     'layoutId param: ',
-    router.query.id
+    searchParams.get('id')
   )
   */
 
   const { loading, data, refetch } = useQuery(GET_BOOK_LAYOUT, {
-    variables: { _id: router.query.id || bookLayoutStore.layoutOption.value },
+    variables: {
+      _id: searchParams.get('id') || bookLayoutStore.layoutOption.value,
+    },
   })
 
   // store data in mobx
@@ -68,20 +63,16 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
   // when font family changes, reset currently selected layout to the initial layout
   useEffect(() => {
     if (!firstUpdate.current) {
-      router.replace(
-        { query: { ...router.query, id: initialBookLayout._id } },
-        undefined,
-        {
-          shallow: true,
-        }
-      )
+      router.replace(`${pathname}/?id=${initialBookLayout._id}`, {
+        scroll: false,
+      })
     } else {
       firstUpdate.current = false
     }
   }, [font])
 
   return (
-    <>
+    <Suspense fallback={<div />}>
       <Center w={'100vw'} h={'100vh'} bg={'black'}>
         <Toolbar font={font} fonts={fonts} />
         <Flex
@@ -159,67 +150,8 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
           </Flex>
         </Flex>
       </Center>
-    </>
+    </Suspense>
   )
-}
-
-export const getStaticProps = async (ctx) => {
-  const { params } = ctx
-  const { slug } = params
-  const [fonts = [], { font }] = await Promise.all([
-    getAllFonts(),
-    getFontAndMoreFonts(slug),
-  ])
-
-  const client = createApolloClient()
-  // @TODO: since this is just the initial layout option, we could request all layouts and
-  // match the first fontId, or fallback to a template, or unassigned (but with one query)
-  const { data: assignedLayouts } = await client.query({
-    query: GET_BOOK_LAYOUTS,
-    variables: { fontId: font._id },
-  })
-  const { data: templateLayouts } = await client.query({
-    query: GET_BOOK_LAYOUTS,
-    variables: { isTemplate: true },
-  })
-  const { data: unassignedLayouts } = await client.query({
-    query: GET_BOOK_LAYOUTS,
-    variables: { isTemplate: false },
-  })
-
-  let initialBookLayout
-  if (assignedLayouts.bookLayouts.nodes.length === 0) {
-    initialBookLayout =
-      templateLayouts.bookLayouts.nodes[0] ||
-      unassignedLayouts.bookLayouts.nodes[0]
-  } else {
-    initialBookLayout = assignedLayouts.bookLayouts.nodes[0]
-  }
-
-  return {
-    props: {
-      fonts,
-      font,
-      initialBookLayout,
-      bookLayouts: {
-        assigned: assignedLayouts.bookLayouts.nodes,
-        template: templateLayouts.bookLayouts.nodes,
-        unassigned: unassignedLayouts.bookLayouts.nodes,
-      },
-    },
-  }
-}
-
-export const getStaticPaths = async () => {
-  const slugs = await getAllFontsSlugs()
-  return {
-    paths: slugs?.map(({ slug }) => `/font/${slug}/book`) || [],
-    fallback: false,
-  }
-}
-
-BookPage.getLayout = function getLayout(page) {
-  return <BookLayoutProvider {...page?.props}>{page}</BookLayoutProvider>
 }
 
 export default observer(BookPage)

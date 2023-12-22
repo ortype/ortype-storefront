@@ -18,17 +18,18 @@ const DynamicBuy: any = dynamic(() => import('components/composite/Buy'), {
   },
 })
 
-const FontWrapper = ({ preview, loading, moreFonts, font, siteSettings }) => {
+const FontWrapper = ({ preview, loading, moreFonts, font }) => {
+  /*
   const customerContext = useContext(CustomerContext)
 
   let cl
   if (customerContext?.accessToken) {
     cl = CommerceLayer({
-      organization: 'or-type-mvp',
+      organization: process.env.NEXT_PUBLIC_CL_SLUG || '',
       accessToken: customerContext?.accessToken,
     })
   }
-
+*/
   return (
     <>
       <DynamicBuyContainer font={font}>

@@ -62,7 +62,6 @@ const getBlockStyle = (
 
 const Column = observer(({ width, blocks, update }: ColumnProps) => {
   const bookLayoutStore = useBookLayoutStore()
-  console.log('bookLayoutStore.metrics:', bookLayoutStore.metrics)
   const targetRef = useRef()
   // const size = useDimensions(targetRef, width)
 

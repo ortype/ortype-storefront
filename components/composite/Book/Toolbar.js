@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { useRouter } from 'next/router'
+import { useRouter, usePathname } from 'next/navigation'
 
 import {
   AlertDialog,
@@ -23,8 +23,8 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react'
-import Config from 'components/composite/Book/Config'
 import Auth from 'components/composite/Book/Auth'
+import Config from 'components/composite/Book/Config'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import { defaultColumn } from 'components/data/BookProvider/bookDefaults'
 import StyledSelect from 'components/ui/Select'
@@ -62,6 +62,7 @@ const layoutOptions = (layouts) => {
 const Toolbar = observer(({ font, fonts }) => {
   const bookLayoutStore = useBookLayoutStore()
   const router = useRouter()
+  const pathname = usePathname()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = React.useRef()
   const toast = useToast()
@@ -134,13 +135,9 @@ const Toolbar = observer(({ font, fonts }) => {
 
   const handleLayoutChange = (option) => {
     if (option) {
-      router.replace(
-        { query: { ...router.query, id: option.value } },
-        undefined,
-        {
-          shallow: true,
-        }
-      )
+      router.replace(`${pathname}/?id=${option.value}`, {
+        scroll: false,
+      })
     }
   }
 

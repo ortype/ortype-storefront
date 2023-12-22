@@ -28,7 +28,10 @@ const getMarketId = cache(async () => {
       name_eq: 'Global',
     },
   })
-  return markets.length ? markets.shift()?.id : null
+  if (markets.length) {
+    return `market:${markets.shift().number}`
+  }
+  return null
 })
 
 async function RootLayout({
@@ -39,7 +42,6 @@ async function RootLayout({
   children: React.ReactNode
 }) {
   const marketId = (await getMarketId()) || ''
-
   return (
     <html lang="en">
       <body>
