@@ -1,3 +1,4 @@
+'use client'
 import { OrderContainer } from '@commercelayer/react-components/orders/OrderContainer'
 import { OrderNumber } from '@commercelayer/react-components/orders/OrderNumber'
 import OrderAccordion from 'components/composite/Account/Order/OrderAccordion'
@@ -8,7 +9,8 @@ import OrderStatusChip from 'components/composite/Account/Order/OrderStatusChip'
 import { SkeletonMainOrder } from 'components/composite/Account/Skeleton/Main'
 import { CustomerContext } from 'components/data/CustomerProvider'
 import { OrderProvider } from 'components/data/OrderProvider'
-import { useRouter } from 'next/router'
+import { SettingsContext } from 'components/data/SettingsProvider'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useContext } from 'react'
 import { Trans } from 'react-i18next'
 import styled from 'styled-components'
@@ -51,17 +53,15 @@ export const DesktopOnly = styled.div`
 `
 
 interface OrderPageProps {
-  // orderId: string
-  settings: object
+  orderId: string
+  // settings: object
 }
 
-function OrderPage({ settings }: OrderPageProps): JSX.Element {
-  // const ctx = useContext(CustomerContext)
+function OrderPage({ orderId }: OrderPageProps): JSX.Element {
+  const { isLoading, settings } = useContext(SettingsContext)
   const accessToken = settings?.accessToken
   const slug = settings?.slug
-  const {
-    query: { orderId },
-  } = useRouter()
+  if (isLoading || !orderId || !settings) return <div />
 
   return (
     <OrderProvider

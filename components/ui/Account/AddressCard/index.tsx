@@ -1,28 +1,28 @@
-import type { Address as CLayerAddress } from "@commercelayer/sdk"
-import { Trash, X } from "phosphor-react"
-import { useContext, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { useRouter } from "next/router"
+import type { Address as CLayerAddress } from '@commercelayer/sdk'
+import { useRouter } from 'next/navigation'
+import { Trash, X } from 'phosphor-react'
+import { useContext, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
-  EditButton,
-  Wrapper,
-  Customer,
-  Address,
-  ActionsWrapper,
   Actions,
-  Text,
-  Overlay,
+  ActionsWrapper,
+  Address,
   ConfirmActions,
   // ConfirmCancel,
   ConfirmDelete,
-  DeleteButtonWrapper,
+  Customer,
   DeleteButton,
-} from "./styled"
+  DeleteButtonWrapper,
+  EditButton,
+  Overlay,
+  Text,
+  Wrapper,
+} from './styled'
 
-import { GridCard } from "components/ui/Account/GridCard"
+import { GridCard } from 'components/ui/Account/GridCard'
 // import { appRoutes } from "#data/routes"
-import { SettingsContext } from "components/data/SettingsProvider"
+import { SettingsContext } from 'components/data/SettingsProvider'
 
 interface Props {
   address?: CLayerAddress
@@ -67,11 +67,11 @@ export function AddressCard({
             className="absolute w-5 h-5 text-gray-300 cursor-pointer right-2 top-2"
             onClick={() => setShowDeleteConfirmation(false)}
           />
-          <Text>{t("addresses.deleteConfirmation")}</Text>
+          <Text>{t('addresses.deleteConfirmation')}</Text>
           <ConfirmActions>
             <ConfirmDelete
               type="delete"
-              label={t("addresses.yes") as string}
+              label={t('addresses.yes') as string}
               className="address-confirm-delete-button"
               onClick={() => {
                 setShowDeleteConfirmation(false)
@@ -85,7 +85,7 @@ export function AddressCard({
           {first_name} {last_name}
         </Customer>
         <Address data-cy={`full_address_${addressType}`}>
-          {line_2 != null ? [line_1, line_2].join(", ") : line_1}
+          {line_2 != null ? [line_1, line_2].join(', ') : line_1}
           <br />
           {zip_code} {city} ({state_code}) - {country_code}
           <br />
@@ -97,12 +97,10 @@ export function AddressCard({
             <Actions>
               <EditButton
                 type="edit"
-                label={editButton || t("addresses.edit")}
+                label={editButton || t('addresses.edit')}
                 className="address-edit-button"
                 onClick={(address) => {
-                  router.push(
-                    `/account/addresses/${address?.id}/edit`
-                  )
+                  router.push(`/account/addresses/${address?.id}/edit`)
                 }}
               />
               <DeleteButtonWrapper
@@ -111,7 +109,7 @@ export function AddressCard({
               >
                 <Trash className="w-3.5 h-3.5" />
                 <DeleteButton
-                  label={deleteButton || t("addresses.delete")}
+                  label={deleteButton || t('addresses.delete')}
                   variant="warning"
                 />
               </DeleteButtonWrapper>

@@ -1,3 +1,4 @@
+'use client'
 import { Link as ChakraLink } from '@chakra-ui/react'
 import { OrderList } from '@commercelayer/react-components/orders/OrderList'
 import { OrderListEmpty } from '@commercelayer/react-components/orders/OrderListEmpty'
@@ -43,8 +44,8 @@ export const OrderDate = styled.p`
 
 function OrdersPage(): JSX.Element {
   const { t } = useTranslation()
-  const ctx = useContext(SettingsContext)
-  const accessToken = ctx?.accessToken
+  const { isLoading, settings } = useContext(SettingsContext)
+  if (isLoading || !settings) return <div />
 
   const colClassName =
     'text-left text-xs font-thin border-b border-gray-200 md:border-none text-gray-300 md:font-semibold md:uppercase md:relative'

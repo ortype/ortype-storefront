@@ -8,18 +8,17 @@ import { useContext } from 'react'
 export default function AddressFormPage({ addressId }: { addressId: string }) {
   const { isLoading, settings } = useContext(SettingsContext)
   if (isLoading || !settings) return <div />
-
-  console.log('addressId: ', settings, addressId)
+  console.log('addressId: ', addressId)
 
   return (
     <CustomerAddressProvider
       accessToken={settings?.accessToken as string}
       domain={settings?.domain as string}
-      slug={settings?.slug as string}
       addressId={addressId}
+      slug={settings?.slug as string}
     >
       <AddressesContainer>
-        <CustomerAddressForm />
+        <CustomerAddressForm addressId={addressId} />
       </AddressesContainer>
     </CustomerAddressProvider>
   )

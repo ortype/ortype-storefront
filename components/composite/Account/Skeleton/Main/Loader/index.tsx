@@ -1,15 +1,15 @@
-import { useRouter } from "next/router"
+import { usePathname } from 'next/navigation'
 
 import {
   SkeletonMainAddresses,
-  SkeletonMainWallet,
-  SkeletonMainOrders,
   SkeletonMainOrder,
+  SkeletonMainOrders,
   SkeletonMainParcel,
-} from "components/composite/Account/Skeleton/Main"
+  SkeletonMainWallet,
+} from 'components/composite/Account/Skeleton/Main'
 
 export function SkeletonMainLoader(): JSX.Element {
-  const { pathname } = useRouter()
+  const pathname = usePathname()
   switch (true) {
     case /\/addresses/.test(pathname):
       return <SkeletonMainAddresses />
