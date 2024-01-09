@@ -97,11 +97,11 @@ export const fontIdsQuery = groq`
 export interface Font {
   _id: string
   _type: string
-  name?: string
+  name: string
   uid?: string
   version?: string
-  slug?: string
-  variants?: FontVariant[]
+  slug: string
+  variants: FontVariant[]
 }
 
 export interface FontVariant {
@@ -112,6 +112,14 @@ export interface FontVariant {
   parentUid?: string
   version?: string
 }
+
+export const homePageQuery = groq`
+{
+  "fonts": *[_type == "font"] {
+    ${fontFields}
+  }
+}
+`
 
 export const fontsQuery = groq`
 *[_type == "font"] {

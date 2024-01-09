@@ -1,6 +1,6 @@
 import BlogMeta from 'components/BlogMeta'
 import * as demo from 'lib/demo.data'
-import { urlForImage } from 'lib/sanity.image'
+import { urlForImage } from 'lib/sanity.utils'
 import { Post, Settings } from 'lib/sanity.queries'
 
 export interface PostPageHeadProps {

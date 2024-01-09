@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { HStack, Text } from '@chakra-ui/react'
+import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import { UPDATE_TESTER_BY_ID } from 'graphql/mutations'
 import { GET_LATEST_POEM_ENTRIES, GET_TESTER_BY_FONTID } from 'graphql/queries'
 import { ON_TESTER_UPDATED } from 'graphql/subscriptions'
@@ -16,11 +17,22 @@ interface Props {
   slug: string
   variants: FontVariant[]
   defaultVariantId: string
+  href: string
+  encodeDataAttribute?: EncodeDataAttributeCallback
 }
 
 // export default function Tester({ _id, name, slug }: Omit<Font, '_type'>) {
 export const Tester: React.FC<Props> = (props) => {
-  const { index, fontId, title, slug, variants, defaultVariantId } = props
+  const {
+    index,
+    encodeDataAttribute,
+    fontId,
+    title,
+    slug,
+    variants,
+    defaultVariantId,
+    href,
+  } = props
 
   // is controlled by the focus and blur events of the input
   const [isEditing, setEditing] = useState(false)
@@ -143,7 +155,11 @@ export const Tester: React.FC<Props> = (props) => {
       />
       <HStack spacing={2}>
         <Text as={'span'} fontSize="md">{`${title}`}</Text>
-        <Link href={`/fonts/${slug}`} className="hover:underline">
+        <Link
+          href={`/fonts/${slug}`}
+          className="hover:underline"
+          data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
+        >
           <Text as={'span'} fontSize="md">
             {`[Buy]`}
           </Text>

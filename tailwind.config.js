@@ -7,7 +7,7 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
     './intro-template/**/*.{js,ts,jsx,tsx}',
     './pages/**/*.{js,ts,jsx,tsx}',
-    './plugins/**/*.{js,ts,jsx,tsx}',
+    './sanity/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     container: {
@@ -97,6 +97,5 @@ module.exports = {
     require('@tailwindcss/forms')({
       strategy: 'class',
     }),
-    require('@tailwindcss/line-clamp'),
   ],
 }

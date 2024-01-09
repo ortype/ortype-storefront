@@ -44,7 +44,7 @@ export const useGetToken: UseGetToken = ({
       }
     : undefined
   const [token, setToken] = useState('')
-  console.log('useGetToken: ', clientId, endpoint, scope, customer, user)
+  // console.log('useGetToken: ', clientId, endpoint, scope, customer, user)
 
   useEffect(() => {
     const getCookieToken = Cookies.get(`clAccessToken`)

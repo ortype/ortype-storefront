@@ -1,8 +1,15 @@
-import { apiVersion, dataset, projectId, useCdn } from 'lib/sanity.api'
+import { createClient } from '@sanity/client/stega'
+import {
+  apiVersion,
+  dataset,
+  projectId,
+  revalidateSecret,
+  studioUrl,
+} from 'lib/sanity.api'
 import {
   fontAndMoreFontsQuery,
-  fontSlugsQuery,
   fontIdsQuery,
+  fontSlugsQuery,
   fontsQuery,
   fontVariantsQuery,
   indexQuery,
@@ -16,24 +23,26 @@ import {
   type Settings,
 } from 'lib/sanity.queries'
 import { maybeInitiateOrType } from 'lib/utils/helpers'
-import { createClient } from 'next-sanity'
 
-/**
- * Checks if it's safe to create a client instance, as `@sanity/client` will throw an error if `projectId` is false
- */
-const client = projectId
-  ? createClient({ projectId, dataset, apiVersion, useCdn })
-  : null
+export const client = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  // If webhook revalidation is setup we want the freshest content, if not then it's best to use the speedy CDN
+  useCdn: revalidateSecret ? false : true,
+  perspective: 'published',
+  stega: {
+    studioUrl,
+    // logger: console,
+    filter: (props) => {
+      if (props.sourcePath.at(-1) === 'title') {
+        return true
+      }
 
-export const apiClient = projectId
-  ? createClient({
-      projectId,
-      dataset,
-      apiVersion,
-      token: process.env.SANITY_API_WRITE_TOKEN,
-      useCdn,
-    })
-  : null
+      return props.filterDefault(props)
+    },
+  },
+})
 
 export async function getSettings(): Promise<Settings> {
   if (client) {
@@ -73,7 +82,7 @@ export async function getPostAndMoreStories(
       projectId,
       dataset,
       apiVersion,
-      useCdn,
+      useCdn: revalidateSecret ? false : true,
       token: token || undefined,
     })
     return await client.fetch(postAndMoreStoriesQuery, { slug })
@@ -234,7 +243,7 @@ export async function getFontAndMoreFonts(
       projectId,
       dataset,
       apiVersion,
-      useCdn,
+      useCdn: revalidateSecret ? false : true,
       token: token || undefined,
     })
     return await client.fetch(fontAndMoreFontsQuery, { slug })

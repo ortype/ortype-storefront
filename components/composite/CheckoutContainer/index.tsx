@@ -1,5 +1,5 @@
 import CommerceLayer from '@commercelayer/react-components/auth/CommerceLayer'
-import { CheckoutHead } from 'components/composite/CheckoutTitle'
+// import { CheckoutHead } from 'components/composite/CheckoutTitle'
 import { CheckoutProvider } from 'components/data/CheckoutProvider'
 // import { GTMProvider } from 'components/data/GTMProvider'
 

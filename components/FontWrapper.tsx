@@ -1,3 +1,4 @@
+'use client'
 import CommerceLayer from '@commercelayer/sdk'
 import { Buy } from 'components/composite/Buy'
 import { CustomerContext } from 'components/data/CustomerProvider'
@@ -18,7 +19,7 @@ const DynamicBuy: any = dynamic(() => import('components/composite/Buy'), {
   },
 })
 
-const FontWrapper = ({ preview, loading, moreFonts, font }) => {
+const FontWrapper = ({ moreFonts, font }) => {
   /*
   const customerContext = useContext(CustomerContext)
 
