@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       // "@/styles/*": ["styles/*"],
+      // @NOTE: or simply `"@/*": ["./*"]`
       "@/*": ["./*"],
       "@/components/*": ["components/*"],
       "@/app/*": ["app/*"],

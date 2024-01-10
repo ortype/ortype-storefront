@@ -29,7 +29,7 @@ export const LoginForm: React.FC<Props> = () => {
   let cl
   if (customerContext?.accessToken) {
     cl = CommerceLayer({
-      organization: 'or-type-mvp',
+      organization: process.env.NEXT_PUBLIC_CL_SLUG || '',
       accessToken: customerContext?.accessToken,
     })
   }

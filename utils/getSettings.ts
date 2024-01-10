@@ -78,7 +78,7 @@ export const getSettings = async ({
   }
 
   const client = CommerceLayer({
-    organization: 'or-type-mvp',
+    organization: process.env.NEXT_PUBLIC_CL_SLUG || '',
     accessToken,
     domain,
   })

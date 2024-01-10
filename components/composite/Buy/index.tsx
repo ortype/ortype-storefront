@@ -34,7 +34,7 @@ export const Buy = () => {
   let cl
   if (accessToken) {
     cl = CommerceLayer({
-      organization: 'or-type-mvp',
+      organization: process.env.NEXT_PUBLIC_CL_SLUG || '',
       accessToken: accessToken,
     })
   }

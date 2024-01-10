@@ -65,7 +65,7 @@ export default async function sync(
     // console.log('Expiration date: ', token.expires)
 
     const cl = CommerceLayer({
-      organization: 'or-type-mvp',
+      organization: process.env.CL_SLUG,
       accessToken: token.accessToken,
     })
 
