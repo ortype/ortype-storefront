@@ -1,10 +1,9 @@
-// Write a Next.js API route in Typescript to handle a Commerce Layer webhook JSON payload for the orders.place event
+// Orders place webhook is managed at:
+// `${process.env.CL_SLUG}.commercelayer.app/webhooks/${webhookId}
+// e.g. https://owenhoskins.ngrok.app/api/orders-place
 
-// Here's an example of a Next.js API route in Typescript that handles a Commerce Layer webhook JSON payload for the `orders.place` event:
-// This code defines a Next.js API route that expects a POST request with a JSON payload in the format of a Commerce Layer webhook for the `orders.place` event. It checks that the event is correct, extracts the order ID and status from the payload, and then does something with that information (e.g. updates a database). Finally, it responds with a 200 OK status code.
-
-import CommerceLayer, { Attachments, LineItems } from '@commercelayer/sdk'
-import { NextApiRequest, NextApiResponse } from 'next'
+import CommerceLayer, { LineItem } from '@commercelayer/sdk'
+import { NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 
 type CommerceLayerWebhookPayload = {
@@ -18,21 +17,23 @@ type CommerceLayerWebhookPayload = {
       // add any other attributes you need here
     }
     relationships: {
-      line_items: LineItems
-      // attachments: Attachments
+      line_items: LineItem[]
     }
   }
   included: []
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+export async function POST(
+  request: Request,
+  response: NextResponse | Response
 ) {
-  if (req.method !== 'POST') {
+  /*
+  // with new route handlers this is not required (?)
+  if (request.method !== 'POST') {
     res.status(405).end() // Method Not Allowed
     return
   }
+  */
 
   // @TODO: check webhook secret
   // https://docs.commercelayer.io/core/callbacks-security
@@ -42,8 +43,8 @@ export default async function handler(
   // Check if the secret matches the expected value
   /*
   if (
-    !req.headers['x-secret'] ||
-    req.headers['x-secret'] !== process.env.SANITY_WEBHOOK_SECRET
+    !request.headers['x-secret'] ||
+    request.headers['x-secret'] !== process.env.SANITY_WEBHOOK_SECRET
   ) {
     return res.status(401).json({ error: 'Unauthorized' })
   }  
@@ -56,9 +57,9 @@ export default async function handler(
       // relationships: { line_items },
     },
     included,
-  } = req.body as CommerceLayerWebhookPayload
+  } = request.body as CommerceLayerWebhookPayload
 
-  // const webhookPayload: CommerceLayerWebhookPayload = req.body
+  // const webhookPayload: CommerceLayerWebhookPayload = request.body
   console.log(
     'webhookPayload: ',
     orderId,
@@ -99,9 +100,13 @@ export default async function handler(
   try {
     await transporter.sendMail(mailOptions)
     console.log(`Email sent to ${customerEmail}`)
+    return NextResponse.json({
+      status: 200,
+      revalidated: true, // what does this option do?
+      now: Date.now(),
+    })
   } catch (error) {
     console.error(`Error sending email to ${customerEmail}: ${error}`)
+    return new Response(error.message, { status: 500 })
   }
-
-  res.status(200).end() // OK
 }

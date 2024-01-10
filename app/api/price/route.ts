@@ -1,7 +1,11 @@
 import { getIntegrationToken } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { sizes } from 'lib/settings'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextRequest, NextResponse } from 'next/server'
+
+// External prices URL is mananged at
+// `${process.env.CL_SLUG}.commercelayer.io/admin/settings/markets/${marketId}/edit`
+// e.g. https://owenhoskins.ngrok.app/api/price
 
 type PriceCalculationRequest = {
   data: {
@@ -39,17 +43,17 @@ type PriceCalculationResponse = {
   },
 */
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<PriceCalculationResponse>
+export async function POST(
+  request: NextRequest,
+  res: NextResponse<PriceCalculationResponse>
 ) {
-  // console.log('Price req.body: ', req.body)
+  console.log('Price request.body: ', request.body)
   const {
     data: {
       attributes: { quantity, sku_code, unit_amount_cents, metadata },
     },
     // included,
-  } = req.body as PriceCalculationRequest
+  } = request.body as PriceCalculationRequest
 
   // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
@@ -62,7 +66,7 @@ export default async function handler(
     })
 
     const cl = CommerceLayer({
-      organization: 'or-type-mvp',
+      organization: process.env.CL_SLUG,
       accessToken: token.accessToken,
     })
 
@@ -104,11 +108,21 @@ export default async function handler(
 
     console.log('Price API route data: ', data)
 
-    return res.status(200).json({ success: true, data })
+    // return result.status(200).json({ success: true, data })
+    return NextResponse.json({
+      status: 200,
+      // revalidated: true, // what does this option do?
+      now: Date.now(),
+      data,
+    })
   } catch (error) {
     console.error(error)
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' })
+    // return result.status(500).json({ success: false, message: 'Internal server error' })
+    return NextResponse.json({
+      status: 500,
+      success: false,
+      now: Date.now(),
+      message: 'Internal server error',
+    })
   }
 }
