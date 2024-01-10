@@ -1,4 +1,3 @@
-// import 'components/data/i18n'
 import { cache } from 'react'
 import 'tailwindcss/tailwind.css'
 

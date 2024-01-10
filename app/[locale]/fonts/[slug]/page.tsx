@@ -4,11 +4,13 @@ import dynamic from 'next/dynamic'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 
-import { FontPage } from '@/components/pages/font/FontPage'
-import { urlForOpenGraphImage } from 'lib/sanity.utils' // from '@/sanity/lib/utils'
+import { FontPage } from '@/components/pages/fonts/FontPage'
 import { generateStaticSlugs } from '@/sanity/loader/generateStaticSlugs'
 import { loadFont } from '@/sanity/loader/loadQuery'
-const FontPreview = dynamic(() => import('@/components/pages/font/FontPreview'))
+import { urlForOpenGraphImage } from 'lib/sanity.utils' // from '@/sanity/lib/utils'
+const FontPreview = dynamic(
+  () => import('@/components/pages/fonts/FontPreview')
+)
 
 type Props = {
   params: { slug: string }

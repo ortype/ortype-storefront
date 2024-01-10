@@ -7,14 +7,14 @@ import { client } from 'lib/sanity.client' // from '@/sanity/lib/client'
 import {
   fontAndMoreFontsQuery,
   homePageQuery,
-  postBySlugQuery,
+  postAndMoreStoriesQuery,
   settingsQuery,
 } from 'lib/sanity.queries'
 // } from '@/sanity/lib/queries'
 import {
   FontPagePayload,
   HomePagePayload,
-  PostPayload,
+  PostPagePayload,
   SettingsPayload,
 } from '@/types'
 import { token } from 'lib/sanity.token' // '@/sanity/lib/token'
@@ -90,8 +90,8 @@ export function loadFont(slug: string) {
 }
 
 export function loadPost(slug: string) {
-  return loadQuery<PostPayload | null>(
-    postBySlugQuery,
+  return loadQuery<PostPagePayload | null>(
+    postAndMoreStoriesQuery,
     { slug },
     { next: { tags: [`post:${slug}`] } }
   )

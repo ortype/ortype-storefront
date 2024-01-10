@@ -1,7 +1,7 @@
-import FontPreview from 'components/FontPreview'
+import FontPreview from 'components/pages/fonts/FontPreview'
 import type { Font } from 'lib/sanity.queries'
 
-export default function MoreStories({ fonts }: { fonts: Font[] }) {
+export default function MoreFonts({ fonts }: { fonts: Font[] }) {
   return (
     <section>
       <h2 className="mb-8 text-6xl font-bold leading-tight tracking-tighter md:text-7xl">

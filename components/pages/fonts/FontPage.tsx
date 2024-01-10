@@ -1,7 +1,7 @@
+import FontWrapper from '@/components/pages/fonts/FontWrapper'
+import type { FontPagePayload } from '@/types'
 import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
-import type { FontPagePayload } from '@/types'
-import FontWrapper from '@/components/FontWrapper'
 
 export interface FontPageProps {
   data: FontPagePayload | null

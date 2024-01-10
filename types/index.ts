@@ -37,7 +37,7 @@ export interface Author {
   picture?: any
 }
 
-export interface PostPayload {
+export interface Post {
   _id: string
   title?: string
   coverImage?: any
@@ -46,8 +46,13 @@ export interface PostPayload {
   author?: Author
   slug?: string
   content?: any
-  // body?: PortableTextBlock[]
   name?: string
+  // body?: PortableTextBlock[]
+}
+
+export interface PostPagePayload {
+  post: Post
+  morePosts: Post[]
 }
 
 export interface SettingsPayload {

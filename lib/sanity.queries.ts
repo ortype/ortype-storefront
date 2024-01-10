@@ -29,16 +29,6 @@ export const postAndMoreStoriesQuery = groq`
   }
 }`
 
-export const postSlugsQuery = groq`
-*[_type == "post" && defined(slug.current)][].slug.current
-`
-
-export const postBySlugQuery = groq`
-*[_type == "post" && slug.current == $slug][0] {
-  ${postFields}
-}
-`
-
 export interface Author {
   name?: string
   picture?: any

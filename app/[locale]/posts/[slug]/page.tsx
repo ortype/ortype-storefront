@@ -1,87 +1,55 @@
-import PostPage from 'components/PostPage'
-import {
-  getAllPostsSlugs,
-  getPostAndMoreStories,
-  getSettings,
-} from 'lib/sanity.client'
-import { Post, Settings } from 'lib/sanity.queries'
-import { cache, lazy, Suspense } from 'react'
+import { toPlainText } from '@portabletext/react'
+import { Metadata, ResolvingMetadata } from 'next'
+import dynamic from 'next/dynamic'
+import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
 
-export const dynamicParams = false
+import { PostPage } from '@/components/pages/posts/PostPage'
+import { generateStaticSlugs } from '@/sanity/loader/generateStaticSlugs'
+import { loadPost } from '@/sanity/loader/loadQuery'
+import { urlForOpenGraphImage } from 'lib/sanity.utils' // from '@/sanity/lib/utils'
+const PostPreview = dynamic(
+  () => import('@/components/pages/posts/PostPreview')
+)
 
-export async function generateStaticParams() {
-  const slugs = await getAllPostsSlugs()
-  return slugs?.map(({ slug }) => `/posts/${slug}`) || []
+type Props = {
+  params: { slug: string }
 }
 
-const getData = cache(async ({ previewData, params }) => {
-  const token = previewData.token
-
-  const [settings, { post, morePosts }] = await Promise.all([
-    getSettings(),
-    getPostAndMoreStories(params.slug, token),
-  ])
-
-  if (!post) {
-    return {
-      notFound: true,
-    }
-  }
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { data: post } = await loadPost(params.slug)
+  const ogImage = urlForOpenGraphImage(post?.coverImage)
 
   return {
-    post,
-    morePosts,
-    settings,
-  }
-})
-
-const PreviewPostPage = lazy(() => import('components/PreviewPostPage'))
-
-interface DataProps {
-  posts: Post[]
-  morePosts: Post[]
-  settings?: Settings
-} // @TODO: OR `notFound: Boolean`
-
-interface Query {
-  [key: string]: string
-}
-
-interface PreviewData {
-  token?: string
-}
-
-export default async function ProjectSlugRoute(props) {
-  const { preview = false, previewData = {}, params = {} } = props
-  // @TODO: how to access `preview` and `previewData` that were passed to the context by `api/preview`
-  // is `next/headers` a direction here?
-  const { settings, post, morePosts }: DataProps = await getData({
-    previewData,
-    params,
-  })
-
-  if (preview) {
-    return (
-      <Suspense
-        fallback={
-          <PostPage
-            loading
-            preview
-            post={post}
-            morePosts={morePosts}
-            settings={settings}
-          />
+    title: post?.title,
+    description: post?.excerpt
+      ? toPlainText(post.excerpt)
+      : (await parent).description,
+    openGraph: ogImage
+      ? {
+          images: [ogImage, ...((await parent).openGraph?.images || [])],
         }
-      >
-        <PreviewPostPage
-          token={token}
-          post={post}
-          morePosts={morePosts}
-          settings={settings}
-        />
-      </Suspense>
-    )
+      : {},
+  }
+}
+
+export function generateStaticParams() {
+  return generateStaticSlugs('post')
+}
+
+export default async function PostSlugRoute({ params }: Props) {
+  const initial = await loadPost(params.slug)
+
+  if (draftMode().isEnabled) {
+    return <PostPreview params={params} initial={initial} />
   }
 
-  return <PostPage post={post} morePosts={morePosts} settings={settings} />
+  if (!initial.data) {
+    notFound()
+  }
+
+  return <PostPage data={initial.data} />
 }
