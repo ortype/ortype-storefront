@@ -173,7 +173,7 @@
   },
   "header": {
     "title": "My account"
-  },  
+  },
   "orders": {
     "title": "My orders",
     "orderContains": "contains {{count}} item",
@@ -225,7 +225,7 @@
     "title": "My addresses",
     "edit": "Edit",
     "delete": "Delete",
-    "addNewAddress":"Add new address",
+    "addNewAddress": "Add new address",
     "deleteConfirmation": "Delete your address?",
     "yes": "Yes",
     "no": "No",
@@ -314,5 +314,5 @@
   "showHideMenu": {
     "mainLabel": "show 1 item",
     "mainLabel_plural": "show <0/> items"
-  }  
+  }
 }

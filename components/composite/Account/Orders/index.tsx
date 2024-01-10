@@ -52,25 +52,25 @@ function OrdersPage(): JSX.Element {
   const titleClassName = 'flex gap-2'
   const columns = [
     {
-      Header: 'Order',
+      header: 'Order',
       accessorKey: 'number',
       className: colClassName,
       titleClassName,
     },
     {
-      Header: 'Date',
+      header: 'Date',
       accessorKey: 'placed_at',
       className: colClassName,
       titleClassName,
     },
     {
-      Header: 'Status',
+      header: 'Status',
       accessorKey: 'status',
       className: colClassName,
       titleClassName,
     },
     {
-      Header: 'Amount',
+      header: 'Amount',
       accessorKey: 'formatted_total_amount_with_taxes',
       className: colClassName,
       titleClassName,

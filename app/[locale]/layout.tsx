@@ -3,11 +3,14 @@ import { Metadata, Viewport } from 'next'
 import dynamic from 'next/dynamic'
 import { draftMode } from 'next/headers'
 import { Suspense } from 'react'
+import initTranslations from '@/app/i18n'
+import TranslationsProvider from '@/components/data/TranslationsProvider'
 
 // import { Footer } from '@/components/global/Footer'
 // import { Navbar } from '@/components/global/Navbar'
 import { loadHomePage, loadSettings } from '@/sanity/loader/loadQuery'
 import { urlForOpenGraphImage } from 'lib/sanity.utils' // from '@/sanity/lib/utils'
+const i18nNamespaces = ['common']
 
 const VisualEditing = dynamic(() => import('@/sanity/loader/VisualEditing'))
 
@@ -38,14 +41,23 @@ export const viewport: Viewport = {
   themeColor: '#000',
 }
 
-export default async function IndexRoute({
+export default async function LocaleRoute({
   children,
+  params: { locale },
 }: {
   children: React.ReactNode
+  params: {
+    locale: string
+  }
 }) {
+  const { t, resources } = await initTranslations(locale, i18nNamespaces)
   return (
     <>
-      <div>
+      <TranslationsProvider
+        namespaces={i18nNamespaces}
+        locale={locale}
+        resources={resources}
+      >
         {/*<Suspense>
           <Navbar />
         </Suspense>*/}
@@ -53,8 +65,8 @@ export default async function IndexRoute({
         {/*<Suspense>
           <Footer />
         </Suspense>*/}
-      </div>
-      {draftMode().isEnabled && <VisualEditing />}
+        {draftMode().isEnabled && <VisualEditing />}
+      </TranslationsProvider>
     </>
   )
 }
