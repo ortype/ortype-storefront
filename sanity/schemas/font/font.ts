@@ -32,6 +32,14 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'isVisible',
+      title: 'Visible',
+      description:
+        'Set to visible when font should be displayed on the front-end',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
       name: 'price',
       title: 'Family price (cents)',
       description: 'E.g. 9000 for €90.00',

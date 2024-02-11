@@ -6,6 +6,10 @@ import satori, { type SatoriOptions } from 'satori'
 import styled from 'styled-components'
 import useSWR from 'swr/immutable'
 
+// This component generates png/svg for open graph with dynamic text
+// https://www.npmjs.com/package/satori
+// https://vercel.com/docs/functions/og-image-generation
+
 async function init(): Promise<SatoriOptions['fonts']> {
   if (!globalThis?.Intl?.Segmenter) {
     console.debug('Polyfilling Intl.Segmenter')

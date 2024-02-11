@@ -22,6 +22,7 @@ export default function FontIndex({
         {fonts.map((font, key) => {
           const href = resolveHref(font._type, font.slug)
           const containsNull = font.variants.includes(null) // @TEMP: dealing broken data where variant refs come in as `null`
+          console.log('font contains broken variants?', font.name, containsNull)
           if (!href || containsNull) {
             return null
           }

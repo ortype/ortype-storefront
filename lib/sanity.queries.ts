@@ -57,6 +57,7 @@ const fontFields = groq`
   _id,
   _type,
   name,
+  isVisible,
   "slug": slug.current,
   variants[]->{name, optionName, _id},
   uid,
@@ -77,17 +78,18 @@ const fontVariantFields = groq`
 `
 
 export const fontSlugsQuery = groq`
-*[_type == "font" && defined(slug.current)][].slug.current
+*[_type == "font"  && isVisible == true && defined(slug.current)][].slug.current
 `
 
 export const fontIdsQuery = groq`
-*[_type == "font" && defined(_id)][]._id
+*[_type == "font"  && isVisible == true && defined(_id)][]._id
 `
 
 export interface Font {
   _id: string
   _type: string
   name: string
+  isVisible: boolean
   uid?: string
   version?: string
   slug: string
@@ -105,14 +107,14 @@ export interface FontVariant {
 
 export const homePageQuery = groq`
 {
-  "fonts": *[_type == "font"] {
+  "fonts": *[_type == "font" && isVisible == true] {
     ${fontFields}
   }
 }
 `
 
 export const fontsQuery = groq`
-*[_type == "font"] {
+*[_type == "font" && isVisible == true] {
   ${fontFields}
 }`
 
@@ -123,10 +125,10 @@ export const fontVariantsQuery = groq`
 
 export const fontAndMoreFontsQuery = groq`
 {
-  "font": *[_type == "font" && slug.current == $slug] | order(_updatedAt desc) [0] {
+  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
     ${fontFields}
   },
-  "moreFonts": *[_type == "font" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {
+  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(date desc, _updatedAt desc) [0...2] {
     ${fontFields}
   }
 }`
