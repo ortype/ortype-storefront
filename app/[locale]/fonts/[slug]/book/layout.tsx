@@ -1,10 +1,6 @@
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { createApolloClient } from 'hooks/useApollo'
-import {
-  getAllFonts,
-  getAllFontsSlugs,
-  getFontAndMoreFonts,
-} from 'lib/sanity.client'
+import { getFontAndMoreFonts, getVisibleFonts } from 'lib/sanity.client'
 import { Font } from 'lib/sanity.queries'
 import { cache } from 'react'
 
@@ -12,7 +8,7 @@ import { BookLayoutProvider } from 'components/data/BookProvider'
 
 const getData = cache(async ({ slug }) => {
   const [fonts = [], { font }] = await Promise.all([
-    getAllFonts(),
+    getVisibleFonts(),
     getFontAndMoreFonts(slug),
   ])
 

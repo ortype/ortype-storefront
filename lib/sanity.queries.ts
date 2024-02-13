@@ -78,11 +78,7 @@ const fontVariantFields = groq`
 `
 
 export const fontSlugsQuery = groq`
-*[_type == "font"  && isVisible == true && defined(slug.current)][].slug.current
-`
-
-export const fontIdsQuery = groq`
-*[_type == "font"  && isVisible == true && defined(_id)][]._id
+*[_type == "font" && defined(slug.current)][].slug.current
 `
 
 export interface Font {
@@ -105,6 +101,7 @@ export interface FontVariant {
   version?: string
 }
 
+// @TODO: unify `homePageQuery` with `visibleFontsQuery`
 export const homePageQuery = groq`
 {
   "fonts": *[_type == "font" && isVisible == true] {
@@ -113,8 +110,14 @@ export const homePageQuery = groq`
 }
 `
 
-export const fontsQuery = groq`
+export const visibleFontsQuery = groq`
 *[_type == "font" && isVisible == true] {
+  ${fontFields}
+}`
+
+// used in `getAllFonts` @TODO: consider removing if not really needed
+export const fontsQuery = groq`
+*[_type == "font"] {
   ${fontFields}
 }`
 
@@ -125,10 +128,10 @@ export const fontVariantsQuery = groq`
 
 export const fontAndMoreFontsQuery = groq`
 {
-  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
+  "font": *[_type == "font" && slug.current == $slug] | order(_updatedAt desc) [0] {
     ${fontFields}
   },
-  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(date desc, _updatedAt desc) [0...2] {
+  "moreFonts": *[_type == "font" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {
     ${fontFields}
   }
 }`

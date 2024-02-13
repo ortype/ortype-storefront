@@ -8,13 +8,13 @@ import {
 } from 'lib/sanity.api'
 import {
   fontAndMoreFontsQuery,
-  fontIdsQuery,
   fontSlugsQuery,
   fontsQuery,
   fontVariantsQuery,
   indexQuery,
   postAndMoreStoriesQuery,
   settingsQuery,
+  visibleFontsQuery,
   type Font,
   type FontVariant,
   type Post,
@@ -156,6 +156,13 @@ export async function findFontVariantById(
   return {} as any
 }
 
+export async function getVisibleFonts(): Promise<Font[]> {
+  if (client) {
+    return (await client.fetch(visibleFontsQuery)) || []
+  }
+  return []
+}
+
 export async function getAllFonts(): Promise<Font[]> {
   if (client) {
     return (await client.fetch(fontsQuery)) || []
@@ -163,18 +170,11 @@ export async function getAllFonts(): Promise<Font[]> {
   return []
 }
 
+// @TODO: look at replacing with '@/sanity/loader/generateStaticSlugs'
 export async function getAllFontsSlugs(): Promise<Pick<Font, 'slug'>[]> {
   if (client) {
     const slugs = (await client.fetch<string[]>(fontSlugsQuery)) || []
     return slugs.map((slug) => ({ slug }))
-  }
-  return []
-}
-
-export async function getAllFontIds(): Promise<Pick<Font, '_id'>[]> {
-  if (client) {
-    const ids = (await client.fetch<string[]>(fontIdsQuery)) || []
-    return ids.map((_id) => ({ _id }))
   }
   return []
 }

@@ -1,9 +1,9 @@
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { createApolloClient } from 'hooks/useApollo'
 import {
-  getAllFonts,
   getAllFontsSlugs,
   getFontAndMoreFonts,
+  getVisibleFonts,
 } from 'lib/sanity.client'
 import { Font } from 'lib/sanity.queries'
 import { cache } from 'react'
@@ -11,6 +11,7 @@ import BookPage from './BookPage'
 
 export const dynamicParams = false
 
+// @TODO: look at replacing with '@/sanity/loader/generateStaticSlugs'
 export async function generateStaticParams() {
   const slugs = await getAllFontsSlugs()
   return slugs?.map(({ slug }) => `/fonts/${slug}/book`) || []
@@ -18,7 +19,7 @@ export async function generateStaticParams() {
 
 const getData = cache(async ({ slug }) => {
   const [fonts = [], { font }] = await Promise.all([
-    getAllFonts(),
+    getVisibleFonts(),
     getFontAndMoreFonts(slug),
   ])
 
