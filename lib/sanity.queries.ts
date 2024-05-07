@@ -128,10 +128,10 @@ export const fontVariantsQuery = groq`
 
 export const fontAndMoreFontsQuery = groq`
 {
-  "font": *[_type == "font" && slug.current == $slug] | order(_updatedAt desc) [0] {
+  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
     ${fontFields}
   },
-  "moreFonts": *[_type == "font" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {
+  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(date desc, _updatedAt desc) [0...2] {
     ${fontFields}
   }
 }`

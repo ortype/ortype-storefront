@@ -6,7 +6,7 @@ import { apiVersion, dataset, projectId, studioUrl } from 'lib/sanity.api'
 import { defineConfig } from 'sanity'
 import { presentationTool } from 'sanity/presentation'
 
-// import { visionTool } from '@sanity/vision'
+import { visionTool } from '@sanity/vision'
 // import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
 import { locate } from '@/sanity/plugins/locate'
 import { previewDocumentNode } from '@/sanity/plugins/previewPane'
@@ -60,6 +60,6 @@ export default defineConfig({
     // unsplashImageAsset(),
     // Vision lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin
-    // visionTool({ defaultApiVersion: apiVersion }),
+    visionTool({ defaultApiVersion: apiVersion }),
   ],
 })

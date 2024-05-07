@@ -1,12 +1,12 @@
 'use client'
+import { useQuery } from '@apollo/client'
 import { Center, Flex } from '@chakra-ui/react'
 import Column from 'components/composite/Book/Column'
 import Toolbar from 'components/composite/Book/Toolbar'
 import { useBookLayoutStore } from 'components/data/BookProvider'
-import { GET_BOOK_LAYOUT } from 'graphql/queries'
-// import { toJS } from 'mobx'
-import { useQuery } from '@apollo/client'
 import { makeLocalStorage } from 'components/utils/makeLocalStorage'
+import { GET_BOOK_LAYOUT } from 'graphql/queries'
+import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { Suspense, useEffect, useRef } from 'react'
@@ -17,7 +17,7 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const bookLayoutStore = useBookLayoutStore()
-  /*
+
   console.log(
     'bookLayoutStore: ',
     toJS(bookLayoutStore.fontFamily.label),
@@ -26,7 +26,6 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
     'layoutId param: ',
     searchParams.get('id')
   )
-  */
 
   const { loading, data, refetch } = useQuery(GET_BOOK_LAYOUT, {
     variables: {
@@ -37,7 +36,10 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
   // store data in mobx
   useEffect(() => {
     if (loading === false && data && data.bookLayout) {
-      // console.log('loading/data dep setLayoutOption: bookLayout', data.bookLayout)
+      console.log(
+        'loading/data dep setLayoutOption: bookLayout',
+        data.bookLayout
+      )
       bookLayoutStore.setLayoutOption({
         value: data.bookLayout._id,
         label: data.bookLayout.name,
@@ -61,6 +63,9 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
   }, [font, loading, data])
 
   // when font family changes, reset currently selected layout to the initial layout
+  // @TODO: this  is currently causing an issue where book layout is always reset
+  // we need to look into the firstUpdate useRef(true) pattern
+  /*
   useEffect(() => {
     if (!firstUpdate.current) {
       router.replace(`${pathname}/?id=${initialBookLayout._id}`, {
@@ -70,6 +75,7 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
       firstUpdate.current = false
     }
   }, [font])
+  */
 
   return (
     <Suspense fallback={<div />}>

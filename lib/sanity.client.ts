@@ -186,6 +186,7 @@ export async function getAllFontVariants(): Promise<FontVariant[]> {
   return []
 }
 
+// We use this on the font detail page
 export async function getFontAndMoreFonts(
   slug: string,
   token?: string | null

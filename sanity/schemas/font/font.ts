@@ -236,11 +236,12 @@ export default defineType({
       title: `name`,
       subtitle: `slug.current`,
       media: 'images.0.images',
+      isVisible: 'isVisible',
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ title, subtitle, media, isVisible }) {
       return {
         title: title,
-        subtitle: `/${subtitle}`,
+        subtitle: `/${subtitle} ${isVisible ? '[Visible]' : '[Hidden]'}`,
         media: media,
       }
     },
