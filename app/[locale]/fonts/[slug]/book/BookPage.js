@@ -12,7 +12,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { Suspense, useEffect, useRef } from 'react'
 
 const BookPage = ({ fonts, font, initialBookLayout }) => {
-  const firstUpdate = useRef(true)
+  // const firstUpdate = useRef(true)
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
