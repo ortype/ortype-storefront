@@ -59,6 +59,7 @@
     "intl-segmenter-polyfill": "^0.4.4",
     "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
+    "lib-font": "^2.4.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "mobx": "^6.10.2",

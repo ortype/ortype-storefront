@@ -140,6 +140,9 @@ dependencies:
   jwt-decode:
     specifier: ^3.1.2
     version: 3.1.2
+  lib-font:
+    specifier: ^2.4.2
+    version: 2.4.2
   lodash.clonedeep:
     specifier: ^4.5.0
     version: 4.5.0
@@ -7255,8 +7258,8 @@ packages:
       type-check: 0.4.0
     dev: true
 
-  /lib-font@2.4.0:
-    resolution: {integrity: sha512-j2Hyn12JjMLe9JkFDRq40q4+tOeDg276Z9Ezxyhas8HEv0jNLbRXyzG7r7n6QdLbWRtL2RYQtgVlIt3Q4ur6nQ==}
+  /lib-font@2.4.2:
+    resolution: {integrity: sha512-XZ2ILcYgxiASC/oDZE4RwV9qlZ4FdCj+uv8GH/p3vWxhkpQAlSr3a3zlDHlqpuuBhWEqWXxSNFZAh88stQIRbA==}
     dev: false
 
   /lilconfig@2.1.0:
@@ -10927,5 +10930,5 @@ packages:
     engines: {node: '>=12'}
     requiresBuild: true
     dependencies:
-      lib-font: 2.4.0
+      lib-font: 2.4.2
     dev: false
