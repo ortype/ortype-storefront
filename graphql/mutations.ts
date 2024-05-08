@@ -13,7 +13,9 @@ export const UPDATE_TESTER_BY_ID = gql`
         sessionId
         createdAt
         fontId
+        fontUid
         variantId
+        variantUid
         isEditing
         updatedAt
       }
@@ -24,12 +26,20 @@ export const UPDATE_TESTER_BY_ID = gql`
 export const ADD_BOOK_LAYOUT = gql`
   mutation addBookLayoutMutation(
     $spread: BookLayoutInput!
-    $fontId: ID
+    $fontId: ID!
+    $name: String!
     $isTemplate: Boolean
   ) {
-    addBookLayout(spread: $spread, fontId: $fontId, isTemplate: $isTemplate) {
+    addBookLayout(
+      spread: $spread
+      name: $name
+      fontId: $fontId
+      isTemplate: $isTemplate
+    ) {
       _id
+      name
       fontId
+      fontUid
       isTemplate
       spread {
         verso {
@@ -88,6 +98,7 @@ export const UPDATE_BOOK_LAYOUT = gql`
       isTemplate: $isTemplate
     ) {
       fontId
+      fontUid
       isTemplate
       _id
       spread {

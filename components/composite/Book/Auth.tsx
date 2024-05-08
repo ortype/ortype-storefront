@@ -93,8 +93,6 @@ const BookAuth: React.FC<{}> = ({}) => {
             ) : (
               <>
                 <LoginForm />
-                <ForgotForm />
-                <ResetForm />
               </>
             )}
           </ModalBody>

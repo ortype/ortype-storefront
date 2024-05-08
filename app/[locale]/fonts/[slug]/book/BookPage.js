@@ -17,7 +17,7 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const bookLayoutStore = useBookLayoutStore()
-
+  /*
   console.log(
     'bookLayoutStore: ',
     toJS(bookLayoutStore.fontFamily.label),
@@ -26,7 +26,7 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
     'layoutId param: ',
     searchParams.get('id')
   )
-
+*/
   const { loading, data, refetch } = useQuery(GET_BOOK_LAYOUT, {
     variables: {
       _id: searchParams.get('id') || bookLayoutStore.layoutOption.value,
@@ -36,10 +36,12 @@ const BookPage = ({ fonts, font, initialBookLayout }) => {
   // store data in mobx
   useEffect(() => {
     if (loading === false && data && data.bookLayout) {
+      /*
       console.log(
         'loading/data dep setLayoutOption: bookLayout',
         data.bookLayout
       )
+      */
       bookLayoutStore.setLayoutOption({
         value: data.bookLayout._id,
         label: data.bookLayout.name,

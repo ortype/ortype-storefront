@@ -119,6 +119,7 @@ export const GET_BOOK_LAYOUT = gql`
           blocks {
             blockId
             variantId
+            variantUid
             fontSize
             lineHeight
             wordCount
@@ -135,6 +136,7 @@ export const GET_BOOK_LAYOUT = gql`
           blocks {
             blockId
             variantId
+            variantUid
             fontSize
             lineHeight
             wordCount

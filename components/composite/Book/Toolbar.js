@@ -169,7 +169,7 @@ const Toolbar = observer(({ font, fonts }) => {
           })
         }
         toast({
-          title: `Layout ${data.addBookLayout.name} created.`,
+          title: `Layout "${data.addBookLayout.name}" created.`,
           description: 'The layout has been created.',
           status: 'success',
           duration: 5000,
@@ -230,6 +230,7 @@ const Toolbar = observer(({ font, fonts }) => {
     addBookLayout({
       variables: {
         fontId: bookLayoutStore.fontFamily.value,
+        name: 'New layout',
         isTemplate: false,
         spread: {
           verso: [defaultColumn()],
@@ -258,6 +259,7 @@ const Toolbar = observer(({ font, fonts }) => {
   const handleDuplicate = () => {
     addBookLayout({
       variables: {
+        name: `${bookLayoutStore.layoutOption.label} (Duplicate)`,
         isTemplate: bookLayoutStore.isTemplate,
         fontId: bookLayoutStore.fontFamily.value,
         spread: bookLayoutStore.spread,
