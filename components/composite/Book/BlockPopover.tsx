@@ -111,7 +111,7 @@ const BlockPopover: React.FC<{
                 onChange={(option) => handleChange('variantId', option.value)}
                 width={'16rem'}
               />
-              <SimpleGrid columns={2} spacing={2}>
+              <SimpleGrid columns={3} spacing={3}>
                 <Box>
                   <Text fontSize={'sm'}>Font size</Text>
                   <NumericInput
@@ -133,10 +133,29 @@ const BlockPopover: React.FC<{
                   />
                 </Box>
                 <Box>
-                  <Text fontSize={'sm'}>Line height</Text>
+                  <Text fontSize={'sm'}>Line gap</Text>
                   <NumericInput
-                    onChange={(value) => handleChange('lineHeight', value)}
-                    value={line.lineHeight}
+                    onChange={(value) => handleChange('lineGap', value)}
+                    value={line.lineGap}
+                    format={pointFormat}
+                    step={1}
+                    style={{
+                      wrap: {
+                        display: `block`,
+                        marginBottom: `0.5rem`,
+                      },
+                      input: {
+                        fontSize: `24px`,
+                        width: `100%`,
+                      },
+                    }}
+                  />
+                </Box>
+                <Box>
+                  <Text fontSize={'sm'}>Offset</Text>
+                  <NumericInput
+                    onChange={(value) => handleChange('marginBottom', value)}
+                    value={line.marginBottom}
                     format={pointFormat}
                     step={1}
                     style={{

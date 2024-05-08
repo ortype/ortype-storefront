@@ -48,6 +48,8 @@ export const ADD_BOOK_LAYOUT = gql`
             variantId
             fontSize
             lineHeight
+            lineGap
+            marginBottom
             wordCount
             lineCount
             regex
@@ -61,6 +63,8 @@ export const ADD_BOOK_LAYOUT = gql`
           blocks {
             fontSize
             lineHeight
+            lineGap
+            marginBottom
             wordCount
             lineCount
             regex
@@ -107,6 +111,8 @@ export const UPDATE_BOOK_LAYOUT = gql`
           blocks {
             fontSize
             lineHeight
+            lineGap
+            marginBottom
             wordCount
             lineCount
             regex
@@ -120,6 +126,8 @@ export const UPDATE_BOOK_LAYOUT = gql`
           blocks {
             fontSize
             lineHeight
+            lineGap
+            marginBottom
             wordCount
             lineCount
             regex

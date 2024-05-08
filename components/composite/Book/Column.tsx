@@ -32,15 +32,20 @@ const getBlockStyle = (
   params: BlockStyleParams,
   options: BlockStyleOptions
 ): BlockStyle => {
-  const { fontSize, lineHeight: customLineHeight, lineCount } = params
+  const { fontSize, lineGap, marginBottom, lineCount } = params
   const { contentArea, distanceTop, ascent, capHeight, descent, difference } =
     options
 
   const calcLineHeight = fontSize * contentArea
 
-  let lineHeight = calcLineHeight
-  if (customLineHeight !== null && customLineHeight !== 0) {
-    lineHeight = customLineHeight
+  let height = calcLineHeight * lineCount
+  if (lineGap !== null && lineGap !== 0) {
+    if (lineGap > 0) {
+      height = height - lineGap * lineCount
+    } else {
+      height = height + lineGap * lineCount
+    }
+    // how to subtract this
   }
 
   // what's the distance from the top edge of the font, to the top edge of the content box?
@@ -51,9 +56,10 @@ const getBlockStyle = (
   return {
     transformValue, // @TODO: rename... the difference is the previous block's "offset top" (negative top value)
     outerWrapperMarginTop: `${difference}px`, // @TODO: ah this only applies to blocks within the same column
+    outerWrapperMarginBottom: `${marginBottom}px`,
     innerWrapperStyle: {
       lineHeight: `${calcLineHeight}px`,
-      height: `${calcLineHeight * lineCount}px`,
+      height: `${height}px`,
       fontSize: `${fontSize}px`,
     },
     offsetValue: `${transformValue}px`, // css `top` of absolutely positioned Box (what does this do precisely?)

@@ -5,6 +5,8 @@ const uuid = () => Math.random().toString(36).substr(2, 9)
 
 const DEFAULT_BLOCK = {
   fontSize: 80,
+  marginBottom: 0,
+  lineGap: 0,
   wordCount: 1,
   lineCount: 1,
   regex: 'capitalize',

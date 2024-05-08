@@ -26,7 +26,10 @@ const Block: React.FC<{
           position={'relative'}
           mb={'10.8px'}
           id={line.dedupId}
-          style={{ marginTop: layout.outerWrapperMarginTop }}
+          style={{
+            marginTop: layout.outerWrapperMarginTop,
+            marginBottom: layout.outerWrapperMarginBottom,
+          }}
           _hover={{
             backgroundColor: `#F8FFBF82`,
             ['.configBlockButton']: {
@@ -59,8 +62,7 @@ const Block: React.FC<{
               <Box
                 className={line.variantId}
                 position={'relative'}
-                mt={`32.4px`} // this is hardcoded huh...
-                // mt={`24px`} // account for height of the "label"
+                mt={`32.4px`} // account for height of the "label"
                 style={{
                   width: `${line.colWidth}px`,
                   ...layout.innerWrapperStyle,
@@ -78,12 +80,20 @@ const Block: React.FC<{
                   }}
                 >
                   <Box
-                    as={'span'}
+                    as={'div'}
                     // whiteSpace={line.lineCount === 1 ? 'nowrap' : 'pre-wrap'}
                     whiteSpace={'pre-wrap'}
-                  >
-                    {word}
-                  </Box>
+                    dangerouslySetInnerHTML={{ __html: word }}
+                    sx={{
+                      span: {
+                        display: 'block',
+                        mt: `${line.lineGap}px`,
+                      },
+                      'span:first-child': {
+                        mt: 0,
+                      },
+                    }}
+                  />
                 </Box>
               </Box>
             )}
@@ -96,7 +106,10 @@ const Block: React.FC<{
       <Flex
         position={'relative'}
         mb={'10.8px'}
-        style={{ marginTop: layout.outerWrapperMarginTop }}
+        style={{
+          marginTop: layout.outerWrapperMarginTop,
+          marginBottom: layout.outerWrapperMarginBottom,
+        }}
       >
         <Text as={'span'} fontSize={'12px'} position={'absolute'} top={'2px'}>
           {
@@ -126,12 +139,20 @@ const Block: React.FC<{
             }}
           >
             <Box
-              as={'span'}
+              as={'div'}
               // whiteSpace={line.lineCount === 1 ? 'nowrap' : 'pre-wrap'}
               whiteSpace={'pre-wrap'}
-            >
-              {word}
-            </Box>
+              dangerouslySetInnerHTML={{ __html: word }}
+              sx={{
+                span: {
+                  display: 'block',
+                  mt: `${line.lineGap}px`,
+                },
+                'span:first-child': {
+                  mt: 0,
+                },
+              }}
+            />
           </Box>
         </Box>
       </Flex>

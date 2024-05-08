@@ -141,6 +141,8 @@ export const BookLayoutProvider = ({
           block.noSpace = block.noSpace || false
           block.noGibberish = block.noGibberish || false
           block.isParagraph = block.isParagraph || false
+          block.marginBottom = block.marginBottom || false
+          block.lineGap = block.lineGap || 0
         })
       })
 
@@ -152,6 +154,8 @@ export const BookLayoutProvider = ({
           block.noSpace = block.noSpace || false
           block.noGibberish = block.noGibberish || false
           block.isParagraph = block.isParagraph || false
+          block.marginBottom = block.marginBottom || false
+          block.lineGap = block.lineGap || 0
         })
       })
 

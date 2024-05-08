@@ -122,6 +122,8 @@ export const GET_BOOK_LAYOUT = gql`
             variantUid
             fontSize
             lineHeight
+            lineGap
+            marginBottom
             wordCount
             lineCount
             regex
@@ -139,6 +141,8 @@ export const GET_BOOK_LAYOUT = gql`
             variantUid
             fontSize
             lineHeight
+            lineGap
+            marginBottom
             wordCount
             lineCount
             regex

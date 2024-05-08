@@ -3,6 +3,8 @@ export type BlockParams = {
   variantId: string | null
   fontSize: number
   lineHeight: number
+  lineGap: number
+  marginBottom: number
   wordCount: number
   lineCount: number
   regex: string
@@ -30,7 +32,7 @@ export type Metrics = {
 
 export type BlockStyleParams = Pick<
   BlockParams,
-  'fontSize' | 'lineHeight' | 'lineCount'
+  'fontSize' | 'lineHeight' | 'lineCount' | 'lineGap' | 'marginBottom'
 >
 
 export type BlockStyleOptions = Pick<
@@ -43,6 +45,7 @@ export type BlockStyleOptions = Pick<
 export type BlockStyle = {
   transformValue: number
   outerWrapperMarginTop: string
+  outerWrapperMarginBottom: string
   innerWrapperStyle: {
     lineHeight: string
     height: string
