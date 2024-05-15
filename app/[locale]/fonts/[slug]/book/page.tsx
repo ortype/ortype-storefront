@@ -31,38 +31,41 @@ const getData = cache(async ({ slug }) => {
   const client = createApolloClient()
   // @TODO: since this is just the initial layout option, we could request all layouts and
   // match the first fontId, or fallback to a template, or unassigned (but with one query)
-  const { data: assignedLayouts } = await client.query({
-    query: GET_BOOK_LAYOUTS,
-    variables: { fontId: font._id },
-  })
-  const { data: templateLayouts } = await client.query({
-    query: GET_BOOK_LAYOUTS,
-    variables: { isTemplate: true },
-  })
-  const { data: unassignedLayouts } = await client.query({
-    query: GET_BOOK_LAYOUTS,
-    variables: { isTemplate: false },
-  })
+  if (font) {
+    const { data: assignedLayouts } = await client.query({
+      query: GET_BOOK_LAYOUTS,
+      variables: { fontId: font._id },
+    })
+    const { data: templateLayouts } = await client.query({
+      query: GET_BOOK_LAYOUTS,
+      variables: { isTemplate: true },
+    })
+    const { data: unassignedLayouts } = await client.query({
+      query: GET_BOOK_LAYOUTS,
+      variables: { isTemplate: false },
+    })
 
-  let initialBookLayout
-  if (assignedLayouts.bookLayouts.nodes.length === 0) {
-    initialBookLayout =
-      templateLayouts.bookLayouts.nodes[0] ||
-      unassignedLayouts.bookLayouts.nodes[0]
-  } else {
-    initialBookLayout = assignedLayouts.bookLayouts.nodes[0]
-  }
+    let initialBookLayout
+    if (assignedLayouts.bookLayouts.nodes.length === 0) {
+      initialBookLayout =
+        templateLayouts.bookLayouts.nodes[0] ||
+        unassignedLayouts.bookLayouts.nodes[0]
+    } else {
+      initialBookLayout = assignedLayouts.bookLayouts.nodes[0]
+    }
 
-  return {
-    fonts,
-    font,
-    initialBookLayout,
-    bookLayouts: {
-      assigned: assignedLayouts.bookLayouts.nodes,
-      template: templateLayouts.bookLayouts.nodes,
-      unassigned: unassignedLayouts.bookLayouts.nodes,
-    },
+    return {
+      fonts,
+      font,
+      initialBookLayout,
+      bookLayouts: {
+        assigned: assignedLayouts.bookLayouts.nodes,
+        template: templateLayouts.bookLayouts.nodes,
+        unassigned: unassignedLayouts.bookLayouts.nodes,
+      },
+    }
   }
+  return false
 })
 
 interface BookLayout {
@@ -84,6 +87,7 @@ interface DataProps {
 }
 
 export default async function Page(props) {
-  const data: DataProps = await getData({ slug: props.params.slug })
-  return <BookPage {...data} />
+  const data: DataProps | false = await getData({ slug: props.params.slug })
+
+  return <BookPage data={data} />
 }

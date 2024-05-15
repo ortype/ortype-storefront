@@ -10,13 +10,15 @@ import cloneDeep from 'lodash.clonedeep'
 import { action, autorun, reaction, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { createContext, useContext, useEffect } from 'react'
+import { notFound } from 'next/navigation'
 
-export const BookLayoutProvider = ({
-  font,
-  fonts,
-  initialBookLayout,
-  children,
-}) => {
+export const BookLayoutProvider = ({ data, children }) => {
+  const { fonts = [], font = { variants: [] }, initialBookLayout = {} } = data
+
+  if (!data) {
+    notFound()
+  }
+
   const getMetric = (key) => {
     return Number(store.metafields.find((field) => field.key === key)?.value)
   }

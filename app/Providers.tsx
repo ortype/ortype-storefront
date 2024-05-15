@@ -5,7 +5,6 @@ import { CustomerProvider } from '@/components/data/CustomerProvider'
 import { SettingsProvider } from '@/components/data/SettingsProvider'
 import { GlobalHeader } from '@/components/global/GlobalHeader'
 import Webfonts from '@/components/global/Webfonts'
-import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { usePathname } from 'next/navigation'
@@ -27,8 +26,6 @@ function onUnload() {
 }
 
 const config = {
-  authorizerURL: 'https://authorizer-newww.koyeb.app/',
-  authorizerClientId: 'd5814c60-03ba-4568-ac96-70eb7a8f397f', // obtain your client id from authorizer dashboard
   slug: process.env.NEXT_PUBLIC_CL_SLUG,
   selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG,
   clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
@@ -79,20 +76,10 @@ function Providers({
                   domain={config.endpoint}
                   {...config}
                 >
-                  <AuthorizerProvider
-                    config={{
-                      authorizerURL: config.authorizerURL,
-                      redirectURL:
-                        typeof window !== 'undefined' && window.location.origin,
-                      clientID: config.authorizerClientId,
-                      // extraHeaders: {}, // Optional JSON object to pass extra headers in each authorizer requests.
-                    }}
-                  >
-                    <ApolloClientProvider initialApolloState={{}}>
-                      {!hideHeader && <GlobalHeader settings={settings} />}
-                      <Webfonts>{children}</Webfonts>
-                    </ApolloClientProvider>
-                  </AuthorizerProvider>
+                  <ApolloClientProvider initialApolloState={{}}>
+                    {!hideHeader && <GlobalHeader settings={settings} />}
+                    <Webfonts>{children}</Webfonts>
+                  </ApolloClientProvider>
                 </CustomerProvider>
               </CommerceLayer>
             )
