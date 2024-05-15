@@ -89,7 +89,7 @@ const Block: React.FC<{
                         display: 'block',
                         mt: `${line.lineGap}px`,
                       },
-                      'span:first-child': {
+                      'span:first-of-type': {
                         mt: 0,
                       },
                     }}
@@ -148,7 +148,7 @@ const Block: React.FC<{
                   display: 'block',
                   mt: `${line.lineGap}px`,
                 },
-                'span:first-child': {
+                'span:first-of-type': {
                   mt: 0,
                 },
               }}

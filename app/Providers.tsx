@@ -25,20 +25,12 @@ function onUnload() {
   sessionStorage && sessionStorage.removeItem('sessionId')
 }
 
-const config = {
-  slug: process.env.NEXT_PUBLIC_CL_SLUG,
-  selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG,
-  clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
-  endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT,
-  domain: process.env.NEXT_PUBLIC_CL_DOMAIN,
-}
-
 function Providers({
-  marketId,
   children,
+  marketId,
 }: {
-  marketId: string | null
   children: React.ReactNode
+  marketId: string
 }) {
   // @TODO: migrate nested layouts per page
   // const getLayout = Component.getLayout || ((page) => page)
@@ -56,35 +48,15 @@ function Providers({
   const hideHeader =
     pathname?.includes('/book') || pathname?.includes('/studio')
 
+  const settings = {} // @TODO: somehow get the `accessToken` passed to GlobalHeader
+
   return (
     <>
       <ChakraProvider theme={theme}>
-        <SettingsProvider config={{ ...config, marketId }}>
-          {({ settings, isLoading }) => {
-            return isLoading ? (
-              <div>{'Loading...'}</div>
-            ) : !settings.isValid ? (
-              <div>{'Invalid settings config'}</div>
-            ) : (
-              <CommerceLayer
-                accessToken={settings.accessToken}
-                endpoint={config.endpoint}
-              >
-                <CustomerProvider
-                  customerId={settings.customerId}
-                  accessToken={settings.accessToken}
-                  domain={config.endpoint}
-                  {...config}
-                >
-                  <ApolloClientProvider initialApolloState={{}}>
-                    {!hideHeader && <GlobalHeader settings={settings} />}
-                    <Webfonts>{children}</Webfonts>
-                  </ApolloClientProvider>
-                </CustomerProvider>
-              </CommerceLayer>
-            )
-          }}
-        </SettingsProvider>
+        <ApolloClientProvider initialApolloState={{}}>
+          {!hideHeader && <GlobalHeader marketId={marketId} />}
+          <Webfonts>{children}</Webfonts>
+        </ApolloClientProvider>
       </ChakraProvider>
     </>
   )
