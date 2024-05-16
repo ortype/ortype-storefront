@@ -108,8 +108,11 @@ const BlockPopover: React.FC<{
                   ({ value }) => line.variantId === value
                 )}
                 name="variant"
-                onChange={(option) => handleChange('variantId', option.value)}
+                onChange={(option) =>
+                  handleChange('variantId', option?.value || null)
+                }
                 width={'16rem'}
+                isClearable
               />
               <SimpleGrid columns={3} spacing={3}>
                 <Box>
@@ -220,6 +223,9 @@ const BlockPopover: React.FC<{
                     name="regex"
                     value={regexOptions.find(
                       (option) => option.value === line.regex
+                    )}
+                    defaultValue={regexOptions.find(
+                      (option) => option.value === 'uppercase'
                     )}
                     // placeholder={line.regex.charAt(0).toUpperCase() + line.regex.slice(1)}
                     placeholder={'Select typecase'}

@@ -1,5 +1,5 @@
-import { Box, Spinner } from '@chakra-ui/react'
-import Select, { components } from 'react-select'
+import { Box, Indicator, Spinner } from '@chakra-ui/react'
+import Select, { components, DropdownIndicatorProps } from 'react-select'
 
 const Arrow = (props) => (
   <Box {...props} as={'svg'} width="32px" height="32px" viewBox="0 0 32 32">
@@ -27,12 +27,30 @@ const baseSpacing = `.5rem`
 const mediumSpacing = `1rem`
 const largeSpacing = `2rem`
 
-const { DropdownIndicator } = components
-
 const LoadingIndicator = (props) => {
   return <Spinner size={'sm'} mr={8} />
 }
 
+// const IndicatorSeparator
+
+const DropdownIndicator = (props: DropdownIndicatorProps) => {
+  return (
+    <components.DropdownIndicator {...props}>
+      <Arrow
+        sx={{
+          pointerEvents: `none`,
+          // position: `absolute`,
+          // top: `calc(50% - 16px)`,
+          // right: `0.25rem`,
+          transformOrigin: `center 16px`,
+          transition: `transform 0.2s ease`,
+        }}
+        transform={props.selectProps.menuIsOpen && `rotate(180deg)`}
+      />
+    </components.DropdownIndicator>
+  )
+}
+/*
 const CustomDropdownIndicator = ({ ...props }) => (
   <DropdownIndicator {...props}>
     <Arrow
@@ -47,7 +65,7 @@ const CustomDropdownIndicator = ({ ...props }) => (
       transform={props.selectProps.menuIsOpen && `rotate(180deg)`}
     />
   </DropdownIndicator>
-)
+)*/
 
 /**
  * @summary Returns custom Select styles
@@ -230,8 +248,10 @@ const StyledSelect = ({ width, maxWidth, isReadOnly, isLoading, ...props }) => {
   return (
     <Select
       components={{
-        IndicatorSeparator: null,
-        DropdownIndicator: CustomDropdownIndicator,
+        IndicatorSeparator: props.isClearable
+          ? components.IndicatorSeparator
+          : null,
+        DropdownIndicator,
         LoadingIndicator,
       }}
       styles={getCustomStyles({
