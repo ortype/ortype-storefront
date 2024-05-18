@@ -9,8 +9,8 @@ import { GET_BOOK_LAYOUT } from 'graphql/queries'
 import cloneDeep from 'lodash.clonedeep'
 import { action, autorun, reaction, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { createContext, useContext, useEffect } from 'react'
 import { notFound } from 'next/navigation'
+import React, { createContext, useContext, useEffect } from 'react'
 
 export const BookLayoutProvider = ({ data, children }) => {
   const { fonts = [], font = { variants: [] }, initialBookLayout = {} } = data
@@ -143,7 +143,7 @@ export const BookLayoutProvider = ({ data, children }) => {
           block.noSpace = block.noSpace || false
           block.noGibberish = block.noGibberish || false
           block.isParagraph = block.isParagraph || false
-          block.marginBottom = block.marginBottom || false
+          block.marginBottom = block.marginBottom || 0
           block.lineGap = block.lineGap || 0
         })
       })
@@ -156,7 +156,7 @@ export const BookLayoutProvider = ({ data, children }) => {
           block.noSpace = block.noSpace || false
           block.noGibberish = block.noGibberish || false
           block.isParagraph = block.isParagraph || false
-          block.marginBottom = block.marginBottom || false
+          block.marginBottom = block.marginBottom || 0
           block.lineGap = block.lineGap || 0
         })
       })
