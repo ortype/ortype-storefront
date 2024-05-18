@@ -136,7 +136,7 @@ const BlockPopover: React.FC<{
                   />
                 </Box>
                 <Box>
-                  <Text fontSize={'sm'}>Line gap</Text>
+                  <Text fontSize={'sm'}>Line gap (↕)</Text>
                   <NumericInput
                     onChange={(value) => handleChange('lineGap', value)}
                     value={line.lineGap}
@@ -155,7 +155,7 @@ const BlockPopover: React.FC<{
                   />
                 </Box>
                 <Box>
-                  <Text fontSize={'sm'}>Offset</Text>
+                  <Text fontSize={'sm'}>Offset (↓)</Text>
                   <NumericInput
                     onChange={(value) => handleChange('marginBottom', value)}
                     value={line.marginBottom}

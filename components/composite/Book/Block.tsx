@@ -56,29 +56,24 @@ const Block: React.FC<{
                 )?.label
               }
             </Text>
-            {isLoadingBookItem ? (
-              <Text as={'span'} fontSize={'12px'}>{`Loading...`}</Text>
-            ) : (
+            <Box
+              className={line.variantId}
+              position={'relative'}
+              mt={`32.4px`} // account for height of the "label"
+              style={{
+                width: `${line.colWidth}px`,
+                ...layout.innerWrapperStyle,
+              }}
+            >
               <Box
-                className={line.variantId}
-                position={'relative'}
-                mt={`32.4px`} // account for height of the "label"
                 style={{
                   width: `${line.colWidth}px`,
                   ...layout.innerWrapperStyle,
                 }}
               >
-                <Box
-                  style={{
-                    top: `${layout.offsetValue}`,
-                  }}
-                  sx={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                  }}
-                >
+                {isLoadingBookItem ? (
+                  <Text as={'span'} fontSize={'12px'}>{`Loading...`}</Text>
+                ) : (
                   <Box
                     as={'div'}
                     // whiteSpace={line.lineCount === 1 ? 'nowrap' : 'pre-wrap'}
@@ -94,9 +89,9 @@ const Block: React.FC<{
                       },
                     }}
                   />
-                </Box>
+                )}
               </Box>
-            )}
+            </Box>
           </BlockPopover>
         </Flex>
       )
@@ -115,7 +110,7 @@ const Block: React.FC<{
           {
             bookLayoutStore.variantOptions.find(
               ({ value }) => line.variantId === value
-            ).label
+            )?.label
           }
         </Text>
         <Box
