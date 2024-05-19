@@ -71,8 +71,14 @@ const Column = observer(({ width, blocks, update }: ColumnProps) => {
   const targetRef = useRef()
   // const size = useDimensions(targetRef, width)
 
-  const hardCodedColumnWidth = 558
-  const queryWidth = Number((width / 100) * hardCodedColumnWidth)
+  // @TODO: account for 30px total x margin in column
+
+  let hardCodedColumnWidth = 558 // the total page size not including margin left/right
+  if (width !== 100) {
+    hardCodedColumnWidth = hardCodedColumnWidth - 30
+  }
+
+  const queryWidth = Math.floor(Number((width / 100) * hardCodedColumnWidth))
 
   // we store the difference of each block
   let difference = 0
