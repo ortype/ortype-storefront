@@ -225,7 +225,7 @@ const BlockPopover: React.FC<{
                       (option) => option.value === line.regex
                     )}
                     defaultValue={regexOptions.find(
-                      (option) => option.value === 'uppercase'
+                      (option) => option.value === 'capitalize'
                     )}
                     // placeholder={line.regex.charAt(0).toUpperCase() + line.regex.slice(1)}
                     placeholder={'Select typecase'}
@@ -246,14 +246,6 @@ const BlockPopover: React.FC<{
                   onChange={(e) => handleChange('noSpace', e.target.checked)}
                 >
                   {'No spaces'}
-                </Checkbox>
-                <Checkbox
-                  isChecked={line.noGibberish}
-                  onChange={(e) =>
-                    handleChange('noGibberish', e.target.checked)
-                  }
-                >
-                  {'No gibberish'}
                 </Checkbox>
               </Stack>
               <Divider />

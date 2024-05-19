@@ -83,7 +83,6 @@ export const GET_BOOK_ITEM = gql`
     $lineCount: Int
     $regex: String
     $noSpace: Boolean
-    $noGibberish: Boolean
     $isParagraph: Boolean
     $text: [Text]
   ) {
@@ -96,7 +95,6 @@ export const GET_BOOK_ITEM = gql`
       lineCount: $lineCount
       regex: $regex
       noSpace: $noSpace
-      noGibberish: $noGibberish
       isParagraph: $isParagraph
       text: $text
     ) {
@@ -128,7 +126,6 @@ export const GET_BOOK_LAYOUT = gql`
             lineCount
             regex
             noSpace
-            noGibberish
             isParagraph
           }
         }
@@ -147,7 +144,6 @@ export const GET_BOOK_LAYOUT = gql`
             lineCount
             regex
             noSpace
-            noGibberish
             isParagraph
           }
         }

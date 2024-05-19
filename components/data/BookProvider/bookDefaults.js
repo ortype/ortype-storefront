@@ -10,8 +10,7 @@ const DEFAULT_BLOCK = {
   wordCount: 1,
   lineCount: 1,
   regex: 'capitalize',
-  noSpace: false,
-  noGibberish: false,
+  noSpace: true,
   isParagraph: false,
 }
 

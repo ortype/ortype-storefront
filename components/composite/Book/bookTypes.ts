@@ -9,7 +9,6 @@ export type BlockParams = {
   lineCount: number
   regex: string
   noSpace: boolean
-  noGibberish: boolean
   isParagraph: boolean
 }
 

@@ -54,7 +54,6 @@ export const ADD_BOOK_LAYOUT = gql`
             lineCount
             regex
             noSpace
-            noGibberish
             isParagraph
           }
         }
@@ -69,7 +68,6 @@ export const ADD_BOOK_LAYOUT = gql`
             lineCount
             regex
             noSpace
-            noGibberish
             isParagraph
           }
         }
@@ -117,7 +115,6 @@ export const UPDATE_BOOK_LAYOUT = gql`
             lineCount
             regex
             noSpace
-            noGibberish
             isParagraph
           }
         }
@@ -132,7 +129,6 @@ export const UPDATE_BOOK_LAYOUT = gql`
             lineCount
             regex
             noSpace
-            noGibberish
             isParagraph
           }
         }

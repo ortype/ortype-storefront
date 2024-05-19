@@ -140,8 +140,7 @@ export const BookLayoutProvider = ({ data, children }) => {
         col.blocks.forEach((block) => {
           block.blockId = block.blockId || `block_${uuid()}`
           block.regex = block.regex || `capitalize`
-          block.noSpace = block.noSpace || false
-          block.noGibberish = block.noGibberish || false
+          block.noSpace = block.noSpace || true
           block.isParagraph = block.isParagraph || false
           block.marginBottom = block.marginBottom || 0
           block.lineGap = block.lineGap || 0
@@ -153,8 +152,7 @@ export const BookLayoutProvider = ({ data, children }) => {
         col.blocks.forEach((block) => {
           block.blockId = block.blockId || `block_${uuid()}`
           block.regex = block.regex || `capitalize`
-          block.noSpace = block.noSpace || false
-          block.noGibberish = block.noGibberish || false
+          block.noSpace = block.noSpace || true
           block.isParagraph = block.isParagraph || false
           block.marginBottom = block.marginBottom || 0
           block.lineGap = block.lineGap || 0
