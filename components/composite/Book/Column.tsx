@@ -130,7 +130,6 @@ const Column = observer(
     if (!bookLayoutStore.editMode) {
       return (
         <Flex
-          ref={targetRef}
           flexDir={'column'}
           flexWrap={'wrap'}
           style={{
@@ -147,7 +146,6 @@ const Column = observer(
 
     return (
       <Flex
-        ref={targetRef}
         className={'column'}
         flexDir={'column'}
         flexWrap={'wrap'}
