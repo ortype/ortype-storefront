@@ -24,7 +24,6 @@ const Block: React.FC<{
       return (
         <Box
           position={'relative'}
-          mb={'10.8px'}
           id={line.dedupId}
           style={{
             marginTop: layout.outerWrapperMarginTop,
@@ -46,9 +45,11 @@ const Block: React.FC<{
           >
             <Text
               as={'span'}
-              fontSize={'12px'}
+              style={{
+                fontSize: `${12 * layout.conversion}px`,
+                top: `${2 * layout.conversion}px`,
+              }}
               position={'absolute'}
-              top={'2px'}
             >
               {
                 bookLayoutStore.variantOptions.find(
@@ -59,9 +60,10 @@ const Block: React.FC<{
             <Box
               className={line.variantId}
               position={'relative'}
-              mt={`32.4px`} // account for height of the "label"
               style={{
-                width: `${line.colWidth}px`,
+                // width: `${line.colWidth}px`,
+                marginTop: `${32.4 * layout.conversion}px`, // account for height of the "label"
+                width: '100%',
                 ...layout.innerWrapperStyle,
               }}
             >
@@ -77,7 +79,10 @@ const Block: React.FC<{
                 }}
               >
                 {isLoadingBookItem ? (
-                  <Text as={'span'} fontSize={'12px'}>{`Loading...`}</Text>
+                  <Text
+                    as={'span'}
+                    style={{ fontSize: `${12 * layout.conversion}px` }}
+                  >{`Loading...`}</Text>
                 ) : (
                   <Box
                     as={'div'}
@@ -87,7 +92,7 @@ const Block: React.FC<{
                     sx={{
                       span: {
                         display: 'block',
-                        mt: `${line.lineGap}px`,
+                        mt: `${line.lineGap * layout.conversion}px`,
                       },
                       'span:first-of-type': {
                         mt: 0,
@@ -105,13 +110,19 @@ const Block: React.FC<{
     return (
       <Box
         position={'relative'}
-        mb={'10.8px'}
         style={{
           marginTop: layout.outerWrapperMarginTop,
           marginBottom: layout.outerWrapperMarginBottom,
         }}
       >
-        <Text as={'span'} fontSize={'12px'} position={'absolute'} top={'2px'}>
+        <Text
+          as={'span'}
+          style={{
+            fontSize: `${12 * layout.conversion}px`,
+            top: `${10.8 * layout.conversion}px`,
+          }}
+          position={'absolute'}
+        >
           {
             bookLayoutStore.variantOptions.find(
               ({ value }) => line.variantId === value
@@ -121,9 +132,9 @@ const Block: React.FC<{
         <Box
           className={line.variantId}
           position={'relative'}
-          mt={`32.4px`}
-          w={`${line.colWidth}px`}
+          w={'100%'} // w={`${line.colWidth}px`}
           style={{
+            marginTop: `${10.8 * layout.conversion}px`,
             ...layout.innerWrapperStyle,
           }}
         >
@@ -146,7 +157,7 @@ const Block: React.FC<{
               sx={{
                 span: {
                   display: 'block',
-                  mt: `${line.lineGap}px`,
+                  mt: `${line.lineGap * layout.conversion}px`,
                 },
                 'span:first-of-type': {
                   mt: 0,

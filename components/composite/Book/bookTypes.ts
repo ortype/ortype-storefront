@@ -39,6 +39,7 @@ export type BlockStyleOptions = Pick<
   'contentArea' | 'distanceTop' | 'ascent' | 'capHeight' | 'descent'
 > & {
   difference: number
+  conversion: number
 }
 
 export type BlockStyle = {
@@ -51,6 +52,7 @@ export type BlockStyle = {
     fontSize: string
   }
   offsetValue: string
+  conversion: number
 }
 
 export type Update = {
@@ -61,6 +63,7 @@ export type Update = {
 
 export type ColumnProps = {
   width: number
+  conversion: number
   blocks: BlockParams[]
   update: Update
 }

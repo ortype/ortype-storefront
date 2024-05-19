@@ -41,7 +41,6 @@ const ColumnPopover: React.FC<{
 
   const handleChange = (key, value) => {
     if (bookLayoutStore.updateColumn && col[key] !== value) {
-      console.log('width; ', key, value)
       bookLayoutStore.updateColumn(key, value, page, col)
     }
   }

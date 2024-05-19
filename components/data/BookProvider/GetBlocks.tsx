@@ -33,7 +33,7 @@ const GetBlocks = (props: GetBlocksProps) => {
 
     return {
       ...line,
-      colWidth: colWidth - 5,
+      colWidth: colWidth, // - 5, // @TODO: why -5 (?)
       text,
     }
   }
