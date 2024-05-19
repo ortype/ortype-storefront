@@ -67,8 +67,13 @@ const Block: React.FC<{
             >
               <Box
                 style={{
-                  width: `${line.colWidth}px`,
-                  ...layout.innerWrapperStyle,
+                  top: `${layout.offsetValue}`,
+                }}
+                sx={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
                 }}
               >
                 {isLoadingBookItem ? (
