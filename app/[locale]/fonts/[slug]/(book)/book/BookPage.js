@@ -98,6 +98,7 @@ const BookPage = ({
             flexWrap={'wrap'}
             position={'relative'}
             m={'46px'}
+            alignContent={'flex-start'}
             _before={{
               content: bookLayoutStore.editMode ? `'Verso'` : `''`,
               fontSize: '12px',
@@ -132,6 +133,7 @@ const BookPage = ({
             flexWrap={'wrap'}
             position={'relative'}
             m={'46px'}
+            alignContent={'flex-start'}
             _before={{
               content: bookLayoutStore.editMode ? `'Recto'` : `''`,
               fontSize: '12px',

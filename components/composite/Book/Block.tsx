@@ -22,7 +22,7 @@ const Block: React.FC<{
 
     if (bookLayoutStore.editMode) {
       return (
-        <Flex
+        <Box
           position={'relative'}
           mb={'10.8px'}
           id={line.dedupId}
@@ -98,12 +98,12 @@ const Block: React.FC<{
               </Box>
             </Box>
           </BlockPopover>
-        </Flex>
+        </Box>
       )
     }
 
     return (
-      <Flex
+      <Box
         position={'relative'}
         mb={'10.8px'}
         style={{
@@ -155,7 +155,7 @@ const Block: React.FC<{
             />
           </Box>
         </Box>
-      </Flex>
+      </Box>
     )
   }
 )
