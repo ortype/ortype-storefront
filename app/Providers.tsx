@@ -9,6 +9,7 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
+import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 
 // 2. Extend the theme to include custom colors, fonts, etc
 const colors = {
@@ -23,6 +24,11 @@ export const theme = extendTheme({ colors })
 
 function onUnload() {
   sessionStorage && sessionStorage.removeItem('sessionId')
+}
+
+const config = {
+  authorizerURL: 'https://authorizer-newww.koyeb.app/',
+  authorizerClientId: 'd5814c60-03ba-4568-ac96-70eb7a8f397f', // obtain your client id from authorizer dashboard
 }
 
 function Providers({
@@ -53,10 +59,19 @@ function Providers({
   return (
     <>
       <ChakraProvider theme={theme}>
-        <ApolloClientProvider initialApolloState={{}}>
-          {!hideHeader && <GlobalHeader marketId={marketId} />}
-          <Webfonts>{children}</Webfonts>
-        </ApolloClientProvider>
+        <AuthorizerProvider
+          config={{
+            authorizerURL: config.authorizerURL,
+            redirectURL:
+              typeof window !== 'undefined' && window.location.origin,
+            clientID: config.authorizerClientId,
+          }}
+        >
+          <ApolloClientProvider initialApolloState={{}}>
+            {!hideHeader && <GlobalHeader marketId={marketId} />}
+            <Webfonts>{children}</Webfonts>
+          </ApolloClientProvider>
+        </AuthorizerProvider>
       </ChakraProvider>
     </>
   )

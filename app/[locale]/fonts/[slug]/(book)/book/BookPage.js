@@ -1,5 +1,4 @@
 'use client'
-import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 
 import { useQuery } from '@apollo/client'
 import { Center, Flex } from '@chakra-ui/react'
@@ -12,11 +11,6 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React, { Suspense, useEffect, useRef } from 'react'
-
-const config = {
-  authorizerURL: 'https://authorizer-newww.koyeb.app/',
-  authorizerClientId: 'd5814c60-03ba-4568-ac96-70eb7a8f397f', // obtain your client id from authorizer dashboard
-}
 
 const BookPage = ({
   data: { fonts = [], font = {}, initialBookLayout = {} },
@@ -90,91 +84,83 @@ const BookPage = ({
 
   return (
     <Suspense fallback={<div />}>
-      <AuthorizerProvider
-        config={{
-          authorizerURL: config.authorizerURL,
-          redirectURL: typeof window !== 'undefined' && window.location.origin,
-          clientID: config.authorizerClientId,
-        }}
-      >
-        <Center w={'100vw'} h={'100vh'} bg={'black'}>
-          <Toolbar font={font} fonts={fonts} />
+      <Center w={'100vw'} h={'100vh'} bg={'black'}>
+        <Toolbar font={font} fonts={fonts} />
+        <Flex
+          // Spread
+          bg={'#FFF'}
+          id={bookLayoutStore.layoutOption.value}
+        >
           <Flex
-            // Spread
-            bg={'#FFF'}
-            id={bookLayoutStore.layoutOption.value}
+            // Verso
+            w={'588px'}
+            h={'838px'}
+            flexWrap={'wrap'}
+            position={'relative'}
+            m={'46px'}
+            _before={{
+              content: bookLayoutStore.editMode ? `'Verso'` : `''`,
+              fontSize: '12px',
+              color: '#FFF',
+              position: 'absolute',
+              bottom: '-88px',
+              width: '100%',
+              textAlign: 'center',
+            }}
+            _after={{
+              content: '""',
+              display: bookLayoutStore.editMode ? 'block' : 'none',
+              position: 'absolute',
+              bottom: '0',
+              height: '1px',
+              background: 'red',
+              width: '100%',
+            }}
           >
-            <Flex
-              // Verso
-              w={'588px'}
-              h={'838px'}
-              flexWrap={'wrap'}
-              position={'relative'}
-              m={'46px'}
-              _before={{
-                content: bookLayoutStore.editMode ? `'Verso'` : `''`,
-                fontSize: '12px',
-                color: '#FFF',
-                position: 'absolute',
-                bottom: '-88px',
-                width: '100%',
-                textAlign: 'center',
-              }}
-              _after={{
-                content: '""',
-                display: bookLayoutStore.editMode ? 'block' : 'none',
-                position: 'absolute',
-                bottom: '0',
-                height: '1px',
-                background: 'red',
-                width: '100%',
-              }}
-            >
-              {bookLayoutStore.spread.verso?.map((col, idx) => (
-                <Column
-                  key={col.colId}
-                  {...col}
-                  update={{ page: 'verso', col: idx }}
-                />
-              ))}
-            </Flex>
-            <Flex
-              // Recto
-              w={'588px'}
-              h={'838px'}
-              flexWrap={'wrap'}
-              position={'relative'}
-              m={'46px'}
-              _before={{
-                content: bookLayoutStore.editMode ? `'Recto'` : `''`,
-                fontSize: '12px',
-                color: '#FFF',
-                position: 'absolute',
-                bottom: '-88px',
-                width: '100%',
-                textAlign: 'center',
-              }}
-              _after={{
-                content: '""',
-                display: bookLayoutStore.editMode ? 'block' : 'none',
-                position: 'absolute',
-                bottom: '0',
-                height: '1px',
-                background: 'red',
-                width: '100%',
-              }}
-            >
-              {bookLayoutStore.spread.recto?.map((col, idx) => (
-                <Column
-                  key={col.colId}
-                  {...col}
-                  update={{ page: 'recto', col: idx }}
-                />
-              ))}
-            </Flex>
+            {bookLayoutStore.spread.verso?.map((col, idx) => (
+              <Column
+                key={col.colId}
+                {...col}
+                update={{ page: 'verso', col: idx }}
+              />
+            ))}
           </Flex>
-        </Center>
-      </AuthorizerProvider>
+          <Flex
+            // Recto
+            w={'588px'}
+            h={'838px'}
+            flexWrap={'wrap'}
+            position={'relative'}
+            m={'46px'}
+            _before={{
+              content: bookLayoutStore.editMode ? `'Recto'` : `''`,
+              fontSize: '12px',
+              color: '#FFF',
+              position: 'absolute',
+              bottom: '-88px',
+              width: '100%',
+              textAlign: 'center',
+            }}
+            _after={{
+              content: '""',
+              display: bookLayoutStore.editMode ? 'block' : 'none',
+              position: 'absolute',
+              bottom: '0',
+              height: '1px',
+              background: 'red',
+              width: '100%',
+            }}
+          >
+            {bookLayoutStore.spread.recto?.map((col, idx) => (
+              <Column
+                key={col.colId}
+                {...col}
+                update={{ page: 'recto', col: idx }}
+              />
+            ))}
+          </Flex>
+        </Flex>
+      </Center>
     </Suspense>
   )
 }
