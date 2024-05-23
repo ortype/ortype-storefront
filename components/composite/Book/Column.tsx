@@ -127,23 +127,6 @@ const Column = observer(
       bookLayoutStore.addBlock(update.page, update.col)
     }
 
-    if (!bookLayoutStore.editMode) {
-      return (
-        <Flex
-          flexDir={'column'}
-          flexWrap={'wrap'}
-          style={{
-            flex: `0 0 calc(${width}% - ${30 * conversion})`,
-            maxWidth: `calc(${width}% - ${30 * conversion})`,
-            margin: `0 ${15 * conversion}px`,
-          }}
-          position={'relative'}
-        >
-          {renderBlocks()}
-        </Flex>
-      )
-    }
-
     return (
       <Flex
         className={'column'}
@@ -156,33 +139,34 @@ const Column = observer(
         }}
         position={'relative'}
         _hover={{
-          background: `#f1f1f18a`,
+          background: bookLayoutStore.editMode && `#f1f1f18a`,
           ['.addColumnButton']: {
-            visibility: `visible`,
+            visibility: bookLayoutStore.editMode && `visible`,
           },
         }}
       >
-        <ColumnPopover update={update} blocks={blocks}>
-          {renderBlocks()}
-          <Button
-            onClick={handleClick}
-            // variant={'ghost'}
-            fontSize={'2xl'}
-            className={'addColumnButton'}
-            sx={{
-              visibility: `hidden`,
-              position: `absolute`,
-              bottom: `-1rem`,
-              left: `calc(50% - 1rem)`,
-              padding: `.2rem`,
-              width: `2rem`,
-              height: `2rem`,
-              zIndex: 1,
-            }}
-          >
-            <InsertBelowIcon />
-          </Button>
-        </ColumnPopover>
+        {bookLayoutStore.editMode && (
+          <ColumnPopover update={update} blocks={blocks} />
+        )}
+        {renderBlocks()}
+        <Button
+          onClick={handleClick}
+          // variant={'ghost'}
+          fontSize={'2xl'}
+          className={'addColumnButton'}
+          sx={{
+            visibility: `hidden`,
+            position: `absolute`,
+            bottom: `-1rem`,
+            left: `calc(50% - 1rem)`,
+            padding: `.2rem`,
+            width: `2rem`,
+            height: `2rem`,
+            zIndex: 1,
+          }}
+        >
+          <InsertBelowIcon />
+        </Button>
       </Flex>
     )
   }

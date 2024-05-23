@@ -20,106 +20,35 @@ const Block: React.FC<{
       setWord(entry)
     }, [isLoadingBookItem, entry])
 
-    if (bookLayoutStore.editMode) {
-      return (
-        <Box
-          position={'relative'}
-          id={line.dedupId}
-          style={{
-            marginTop: layout.outerWrapperMarginTop,
-            marginBottom: layout.outerWrapperMarginBottom,
-          }}
-          _hover={{
-            backgroundColor: `#F8FFBF82`,
-            ['.configBlockButton']: {
-              visibility: `visible`,
-            },
-          }}
-        >
+    return (
+      <Box
+        position={'relative'}
+        id={line.dedupId}
+        style={{
+          marginTop: layout.outerWrapperMarginTop,
+          marginBottom: layout.outerWrapperMarginBottom,
+        }}
+        _hover={{
+          backgroundColor: bookLayoutStore.editMode && `#F8FFBF82`,
+          ['.configBlockButton']: {
+            visibility: bookLayoutStore.editMode && `visible`,
+          },
+        }}
+      >
+        {bookLayoutStore.editMode && (
           <BlockPopover
             line={line}
             update={update}
             setWord={setWord}
             isLoadingBookItem={isLoadingBookItem}
             fetchMore={fetchMore}
-          >
-            <Text
-              as={'span'}
-              style={{
-                fontSize: `${12 * layout.conversion}px`,
-                top: `${2 * layout.conversion}px`,
-              }}
-              position={'absolute'}
-            >
-              {
-                bookLayoutStore.variantOptions.find(
-                  ({ value }) => line.variantId === value
-                )?.label
-              }
-            </Text>
-            <Box
-              className={line.variantId}
-              position={'relative'}
-              style={{
-                // width: `${line.colWidth}px`,
-                marginTop: `${32.4 * layout.conversion}px`, // account for height of the "label"
-                width: '100%',
-                ...layout.innerWrapperStyle,
-              }}
-            >
-              <Box
-                style={{
-                  top: `${layout.offsetValue}`,
-                }}
-                sx={{
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                }}
-              >
-                {isLoadingBookItem ? (
-                  <Text
-                    as={'span'}
-                    style={{ fontSize: `${12 * layout.conversion}px` }}
-                  >{`Loading...`}</Text>
-                ) : (
-                  <Box
-                    as={'div'}
-                    // whiteSpace={line.lineCount === 1 ? 'nowrap' : 'pre-wrap'}
-                    whiteSpace={'pre-wrap'}
-                    dangerouslySetInnerHTML={{ __html: word }}
-                    sx={{
-                      span: {
-                        display: 'block',
-                        mt: `${line.lineGap * layout.conversion}px`,
-                      },
-                      'span:first-of-type': {
-                        mt: 0,
-                      },
-                    }}
-                  />
-                )}
-              </Box>
-            </Box>
-          </BlockPopover>
-        </Box>
-      )
-    }
-
-    return (
-      <Box
-        position={'relative'}
-        style={{
-          marginTop: layout.outerWrapperMarginTop,
-          marginBottom: layout.outerWrapperMarginBottom,
-        }}
-      >
+          />
+        )}
         <Text
           as={'span'}
           style={{
             fontSize: `${12 * layout.conversion}px`,
-            top: `${10.8 * layout.conversion}px`,
+            top: `${2 * layout.conversion}px`,
           }}
           position={'absolute'}
         >
@@ -132,9 +61,9 @@ const Block: React.FC<{
         <Box
           className={line.variantId}
           position={'relative'}
-          w={'100%'} // w={`${line.colWidth}px`}
+          w={'100%'}
           style={{
-            marginTop: `${10.8 * layout.conversion}px`,
+            marginTop: `${32.4 * layout.conversion}px`, // account for height of the "label"
             ...layout.innerWrapperStyle,
           }}
         >
@@ -149,21 +78,28 @@ const Block: React.FC<{
               bottom: 0,
             }}
           >
-            <Box
-              as={'div'}
-              // whiteSpace={line.lineCount === 1 ? 'nowrap' : 'pre-wrap'}
-              whiteSpace={'pre-wrap'}
-              dangerouslySetInnerHTML={{ __html: word }}
-              sx={{
-                span: {
-                  display: 'block',
-                  mt: `${line.lineGap * layout.conversion}px`,
-                },
-                'span:first-of-type': {
-                  mt: 0,
-                },
-              }}
-            />
+            {isLoadingBookItem ? (
+              <Text
+                as={'span'}
+                style={{ fontSize: `${12 * layout.conversion}px` }}
+              >{`Loading...`}</Text>
+            ) : (
+              <Box
+                as={'div'}
+                // whiteSpace={line.lineCount === 1 ? 'nowrap' : 'pre-wrap'}
+                whiteSpace={'pre-wrap'}
+                dangerouslySetInnerHTML={{ __html: word }}
+                sx={{
+                  span: {
+                    display: 'block',
+                    mt: `${line.lineGap * layout.conversion}px`,
+                  },
+                  'span:first-of-type': {
+                    mt: 0,
+                  },
+                }}
+              />
+            )}
           </Box>
         </Box>
       </Box>
