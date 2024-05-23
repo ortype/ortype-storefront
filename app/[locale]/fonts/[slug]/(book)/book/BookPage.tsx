@@ -128,7 +128,7 @@ const BookPage = ({
   return (
     <Suspense fallback={<div />}>
       <Box bg={'#000'} height={'100%'}>
-        <Toolbar font={font} fonts={fonts} />
+        <Toolbar font={font} fonts={fonts} bookLayoutData={data} />
         <Flex
           // Spread
           id={bookLayoutStore.layoutOption.value}

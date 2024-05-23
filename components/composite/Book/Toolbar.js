@@ -59,7 +59,7 @@ const layoutOptions = (layouts) => {
   }))
 }
 
-const Toolbar = observer(({ font, fonts }) => {
+const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
   const bookLayoutStore = useBookLayoutStore()
   const router = useRouter()
   const pathname = usePathname()
@@ -275,8 +275,13 @@ const Toolbar = observer(({ font, fonts }) => {
   }
 
   const handleDiscard = () => {
-    bookLayoutStore.setSpread(bookLayoutStore.bookLayoutData.spread)
-    bookLayoutStore.setIsTemplate(bookLayoutStore.bookLayoutData.isTemplate)
+    // bookLayoutData from Apollo
+    bookLayoutStore.setSpread(bookLayoutData.bookLayout.spread)
+    bookLayoutStore.setIsTemplate(bookLayoutData.bookLayout.isTemplate)
+    // @NOTE: using the bookLayoutData stored in the mobx store throws
+    // maximum call stack size exceeded (where as using the data from apollo does not)
+    // bookLayoutStore.setSpread(bookLayoutStore.bookLayoutData.spread)
+    // bookLayoutStore.setIsTemplate(bookLayoutStore.bookLayoutData.isTemplate)
   }
 
   return (

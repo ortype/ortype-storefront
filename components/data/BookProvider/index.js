@@ -135,7 +135,7 @@ export const BookLayoutProvider = ({ data, children }) => {
       // const newSpread = { ...spread }; didn't work, but cloneDeep does
       // https://github.com/apollographql/apollo-client/issues/5903#issuecomment-732904527
       const newSpread = cloneDeep(spread)
-      newSpread.recto.forEach((col) => {
+      newSpread?.recto.forEach((col) => {
         col.colId = col.colId || `col_${uuid()}`
         col.blocks.forEach((block) => {
           block.blockId = block.blockId || `block_${uuid()}`
@@ -147,7 +147,7 @@ export const BookLayoutProvider = ({ data, children }) => {
         })
       })
 
-      newSpread.verso.forEach((col) => {
+      newSpread?.verso.forEach((col) => {
         col.colId = col.colId || `col_${uuid()}`
         col.blocks.forEach((block) => {
           block.blockId = block.blockId || `block_${uuid()}`
