@@ -44,6 +44,45 @@ export function mapResponsive(prop: any, mapper: (val: any) => any) {
   return null
 }
 
+type BottomGuideProps = {
+  label: string
+  bottom: number
+  editMode: boolean
+}
+
+const BottomGuide: React.FC<BottomGuideProps> = ({
+  label,
+  bottom,
+  editMode,
+}) => {
+  return (
+    <>
+      <Box
+        style={{ bottom: bottom + 'px' }}
+        sx={{
+          display: editMode ? 'block' : 'none',
+          position: 'absolute',
+          height: '1px',
+          background: 'red',
+          width: '100%',
+        }}
+      />
+      <Box
+        style={{ bottom: -bottom + 'px' }}
+        sx={{
+          color: '#FFF',
+          position: 'absolute',
+          width: '100%',
+          textAlign: 'center',
+          fontSize: '12px',
+        }}
+      >
+        {label}
+      </Box>
+    </>
+  )
+}
+
 const BookPage = ({
   data: { fonts = [], font = {}, initialBookLayout = {} },
 }) => {
@@ -161,24 +200,6 @@ const BookPage = ({
               right={0}
               flexWrap={'wrap'}
               alignContent={'flex-start'}
-              _before={{
-                content: bookLayoutStore.editMode ? `'Verso'` : `''`,
-                color: '#FFF',
-                position: 'absolute',
-                width: '100%',
-                textAlign: 'center',
-                bottom: -pageMargin + 'px',
-                fontSize: '12px',
-              }}
-              _after={{
-                content: '""',
-                display: bookLayoutStore.editMode ? 'block' : 'none',
-                position: 'absolute',
-                height: '1px',
-                background: 'red',
-                width: '100%',
-                bottom: pageMargin + 'px',
-              }}
               style={{
                 padding: `${pageMargin * conversion}px`,
               }}
@@ -192,6 +213,11 @@ const BookPage = ({
                 />
               ))}
             </Flex>
+            <BottomGuide
+              label={'Verso'}
+              bottom={pageMargin * conversion}
+              editMode={bookLayoutStore.editMode}
+            />
           </Box>
           <Box
             flex={'0 0 50%'}
@@ -215,24 +241,6 @@ const BookPage = ({
               right={0}
               flexWrap={'wrap'}
               alignContent={'flex-start'}
-              _before={{
-                content: bookLayoutStore.editMode ? `'Verso'` : `''`,
-                color: '#FFF',
-                position: 'absolute',
-                width: '100%',
-                textAlign: 'center',
-                bottom: -pageMargin + 'px',
-                fontSize: '12px',
-              }}
-              _after={{
-                content: '""',
-                display: bookLayoutStore.editMode ? 'block' : 'none',
-                position: 'absolute',
-                height: '1px',
-                background: 'red',
-                width: '100%',
-                bottom: pageMargin + 'px',
-              }}
               style={{
                 padding: `${pageMargin * conversion}px`,
               }}
@@ -246,6 +254,11 @@ const BookPage = ({
                 />
               ))}
             </Flex>
+            <BottomGuide
+              label={'Recto'}
+              bottom={pageMargin * conversion}
+              editMode={bookLayoutStore.editMode}
+            />
           </Box>
         </Flex>
       </Box>
