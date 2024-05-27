@@ -48,7 +48,7 @@ const Block: React.FC<{
           as={'span'}
           style={{
             fontSize: `${12 * layout.conversion}px`,
-            top: `${2 * layout.conversion}px`,
+            top: `${4 * layout.conversion}px`,
           }}
           position={'absolute'}
         >
