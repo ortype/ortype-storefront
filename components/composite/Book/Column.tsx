@@ -1,4 +1,4 @@
-import { Button, Flex, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Text } from '@chakra-ui/react'
 import { InsertBelowIcon } from '@sanity/icons'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import GetBlocks from 'components/data/BookProvider/GetBlocks'
@@ -139,12 +139,58 @@ const Column = observer(
         }}
         position={'relative'}
         _hover={{
-          background: bookLayoutStore.editMode && `#f1f1f18a`,
+          ['.colGuide']: {
+            backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
+          },
           ['.addColumnButton']: {
             visibility: bookLayoutStore.editMode && `visible`,
           },
         }}
       >
+        <Box
+          className={'colGuide'}
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: '1px',
+            backgroundColor: 'transparent',
+          }}
+        />
+        <Box
+          className={'colGuide'}
+          sx={{
+            position: 'absolute',
+            right: 0,
+            left: 0,
+            bottom: 0,
+            height: '1px',
+            backgroundColor: 'transparent',
+          }}
+        />
+        <Box
+          className={'colGuide'}
+          sx={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: '1px',
+            backgroundColor: 'transparent',
+          }}
+        />
+        <Box
+          className={'colGuide'}
+          sx={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: '1px',
+            backgroundColor: 'transparent',
+          }}
+        />
         {bookLayoutStore.editMode && (
           <ColumnPopover update={update} blocks={blocks} />
         )}

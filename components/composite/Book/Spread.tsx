@@ -55,7 +55,7 @@ const BottomGuide: React.FC<BottomGuideProps> = ({
           display: editMode ? 'block' : 'none',
           position: 'absolute',
           height: '1px',
-          background: 'red',
+          background: '#ff4fff',
           width: '100%',
         }}
       />
@@ -99,6 +99,8 @@ const Spread: React.FC<{}> = ({}) => {
       mx={'auto'}
       py={'10vh'}
       ref={ref}
+      pos={'relative'}
+      overflow={'hidden'}
     >
       <Box
         // Verso page
@@ -158,7 +160,7 @@ const Spread: React.FC<{}> = ({}) => {
           display: bookLayoutStore.editMode ? 'block' : 'none',
           position: 'absolute',
           height: '1px',
-          background: 'red',
+          background: '#7abad9',
           width: '100%',
         }}
       />

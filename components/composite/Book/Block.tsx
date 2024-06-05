@@ -29,12 +29,36 @@ const Block: React.FC<{
           marginBottom: layout.outerWrapperMarginBottom,
         }}
         _hover={{
-          backgroundColor: bookLayoutStore.editMode && `#F8FFBF82`,
+          ['.blockGuide']: {
+            backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
+          },
           ['.configBlockButton']: {
             visibility: bookLayoutStore.editMode && `visible`,
           },
         }}
       >
+        <Box
+          className={'blockGuide'}
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: '1px',
+            backgroundColor: 'transparent',
+          }}
+        />
+        <Box
+          className={'blockGuide'}
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: '1px',
+            backgroundColor: 'transparent',
+          }}
+        />
         {bookLayoutStore.editMode && (
           <BlockPopover
             line={line}
