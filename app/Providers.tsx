@@ -1,15 +1,16 @@
 'use client'
 
+import authorizerConfig from '@/authorizerConfig'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
 import { CustomerProvider } from '@/components/data/CustomerProvider'
 import { SettingsProvider } from '@/components/data/SettingsProvider'
 import { GlobalHeader } from '@/components/global/GlobalHeader'
 import Webfonts from '@/components/global/Webfonts'
+import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-import { AuthorizerProvider } from '@authorizerdev/authorizer-react'
 
 // 2. Extend the theme to include custom colors, fonts, etc
 const colors = {
@@ -26,9 +27,15 @@ function onUnload() {
   sessionStorage && sessionStorage.removeItem('sessionId')
 }
 
-const config = {
-  authorizerURL: 'https://authorizer-newww.koyeb.app/',
-  authorizerClientId: 'd5814c60-03ba-4568-ac96-70eb7a8f397f', // obtain your client id from authorizer dashboard
+const onStateChangeCallback = async ({ token }) => {
+  await fetch(
+    '/api/session',
+    {
+      method: 'POST',
+      body: JSON.stringify(token),
+    },
+    { cache: 'no-store' }
+  )
 }
 
 function Providers({
@@ -61,11 +68,12 @@ function Providers({
       <ChakraProvider theme={theme}>
         <AuthorizerProvider
           config={{
-            authorizerURL: config.authorizerURL,
+            authorizerURL: authorizerConfig.authorizerURL,
             redirectURL:
               typeof window !== 'undefined' && window.location.origin,
-            clientID: config.authorizerClientId,
+            clientID: authorizerConfig.clientID,
           }}
+          onStateChangeCallback={onStateChangeCallback}
         >
           <ApolloClientProvider initialApolloState={{}}>
             {!hideHeader && <GlobalHeader marketId={marketId} />}

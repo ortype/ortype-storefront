@@ -23,8 +23,8 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react'
-import Auth from 'components/composite/Book/Auth'
 import Config from 'components/composite/Book/Config'
+import Logout from 'components/composite/Book/Logout'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import { defaultColumn } from 'components/data/BookProvider/bookDefaults'
 import StyledSelect from 'components/ui/Select'
@@ -398,7 +398,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                 </AlertDialogContent>
               </AlertDialogOverlay>
             </AlertDialog>
-            <Auth />
+            <Logout />
           </HStack>
         </>
       )}

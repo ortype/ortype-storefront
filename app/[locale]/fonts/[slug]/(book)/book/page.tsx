@@ -1,15 +1,21 @@
+import Login from '@/components/composite/Book/Login'
+import { Authorizer } from '@authorizerdev/authorizer-js'
+import authorizerConfig from 'authorizerConfig'
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { createApolloClient } from 'hooks/useApollo'
+
 import {
   getAllFontsSlugs,
   getFontAndMoreFonts,
   getVisibleFonts,
 } from 'lib/sanity.client'
 import { Font } from 'lib/sanity.queries'
-import { cache } from 'react'
+import { cookies } from 'next/headers'
+import { cache as ReactCache } from 'react'
 import BookPage from './BookPage'
 
 export const dynamicParams = false
+// export const dynamic = 'force-dynamic'
 
 // @TODO: look at replacing with '@/sanity/loader/generateStaticSlugs'
 /*
@@ -22,7 +28,7 @@ export async function generateStaticParams() {
   return slugs?.map(({ slug }) => `/fonts/${slug}/book`) || []
 }
 */
-const getData = cache(async ({ slug }) => {
+const getData = ReactCache(async ({ slug }) => {
   const [fonts = [], { font }] = await Promise.all([
     getVisibleFonts(),
     getFontAndMoreFonts(slug),
@@ -68,6 +74,26 @@ const getData = cache(async ({ slug }) => {
   return false
 })
 
+const getAdminUserData = async () => {
+  const nextCookies = cookies()
+  const token = nextCookies.get('authorizer-client-next')?.value
+  const authRef = new Authorizer(authorizerConfig)
+  if (!token) {
+    return false
+  }
+
+  const { data, errors } = await authRef.getProfile({
+    Authorization: `Bearer ${token}`,
+  })
+
+  if (data) {
+    return data
+  } else {
+    return false
+    console.log('Authorization errors: ', errors)
+  }
+}
+
 interface BookLayout {
   _id: string
   name: string
@@ -88,6 +114,6 @@ interface DataProps {
 
 export default async function Page(props) {
   const data: DataProps | false = await getData({ slug: props.params.slug })
-
-  return <BookPage data={data} />
+  const admin = await getAdminUserData()
+  return admin ? <BookPage data={data} admin={admin} /> : <Login />
 }

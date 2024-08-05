@@ -11,9 +11,12 @@ dependencies:
   '@apollo/client':
     specifier: ^3.8.1
     version: 3.8.1(graphql-ws@5.14.1)(graphql@16.8.0)(react-dom@18.2.0)(react@18.2.0)
+  '@authorizerdev/authorizer-js':
+    specifier: ^2.0.0
+    version: 2.0.0
   '@authorizerdev/authorizer-react':
-    specifier: ^1.1.14
-    version: 1.1.14(react@18.2.0)
+    specifier: ^1.3.2
+    version: 1.3.2(react@18.2.0)
   '@babel/plugin-syntax-typescript':
     specifier: ^7.23.3
     version: 7.23.3(@babel/core@7.23.5)
@@ -357,8 +360,8 @@ packages:
       zen-observable-ts: 1.2.5
     dev: false
 
-  /@authorizerdev/authorizer-js@1.2.7:
-    resolution: {integrity: sha512-3KTVYXRNDjbxg/A0WKAR+j0mURt/ZjxlTeBLfIVrclgiSq2Ud3sNjOHwznRzF3iLWqMuglZsj5b8g1J61uwK+g==}
+  /@authorizerdev/authorizer-js@2.0.0:
+    resolution: {integrity: sha512-PTVuCrCkZkVPoo+l0+9PVFyP9frLp/L3FUtQDtAaN+ERuqx97DNF20tIH8khSvnXrkKv3lTJ/5iFWddy+dTAwg==}
     engines: {node: '>=16'}
     dependencies:
       cross-fetch: 3.1.8
@@ -366,14 +369,24 @@ packages:
       - encoding
     dev: false
 
-  /@authorizerdev/authorizer-react@1.1.14(react@18.2.0):
-    resolution: {integrity: sha512-vIthzJZQLdAKnH6mILrsRmy2xv9Lfn9Aihi+JbkUOnQmRrEEQDYhVBAtVakTSe+YEZ5HWfF66z2ZgObOYaqgGw==}
+  /@authorizerdev/authorizer-js@2.0.3:
+    resolution: {integrity: sha512-uencwr3Ea8mwfxVKDFf2ITRCRSmzvua+O2voRuiWQORtRQTgZQjkN3M+IEkEj+WP9M1iFIl+NDgzECsp8ptC/A==}
+    engines: {node: '>=16'}
+    dependencies:
+      cross-fetch: 3.1.8
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@authorizerdev/authorizer-react@1.3.2(react@18.2.0):
+    resolution: {integrity: sha512-3kMAygHBCa8Fc9Oo0lz1k88r+Pd6kx1PSn3NMYLwxQXy2jRt4xWn7iuGn+SDGFs3DzofaN71I61gRwQ+6dO1rw==}
     engines: {node: '>=10'}
     peerDependencies:
       react: '>=16'
     dependencies:
-      '@authorizerdev/authorizer-js': 1.2.7
+      '@authorizerdev/authorizer-js': 2.0.3
       react: 18.2.0
+      validator: 13.12.0
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -10597,6 +10610,11 @@ packages:
     dependencies:
       spdx-correct: 3.1.1
       spdx-expression-parse: 3.0.1
+    dev: false
+
+  /validator@13.12.0:
+    resolution: {integrity: sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==}
+    engines: {node: '>= 0.10'}
     dev: false
 
   /vite@4.5.0:

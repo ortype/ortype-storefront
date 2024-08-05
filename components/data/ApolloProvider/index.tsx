@@ -25,10 +25,6 @@ export const ApolloClientProvider = ({
   children: React.ReactNode
 }) => {
   const { token, loading } = useAuthorizer()
-  console.log(
-    'ApolloClientProvider authorizer token.id_token: ',
-    token?.id_token
-  )
   if (loading) return <div>{'loading..'}</div>
   return (
     <ApolloProviderWrapper
