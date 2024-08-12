@@ -145,3 +145,31 @@ export const UPDATE_BOOK_LAYOUT_NAME = gql`
     }
   }
 `
+
+export const EXPORT_BOOK_LAYOUT = gql`
+  mutation exportBookLayoutMutation(
+    $bookLayoutId: ID!
+    $name: String!
+    $fontId: ID!
+    $variantId: ID!
+    $spread: BookLayoutInput!
+  ) {
+    exportBookLayout(
+      bookLayoutId: $bookLayoutId
+      name: $name
+      fontId: $fontId
+      variantId: $variantId
+      spread: $spread
+    ) {
+      fontId
+      fontUid
+      bookLayoutId
+      name
+      _id
+      snapshots {
+        spread
+        createdAt
+      }
+    }
+  }
+`

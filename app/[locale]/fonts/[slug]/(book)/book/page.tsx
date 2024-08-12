@@ -28,6 +28,8 @@ export async function generateStaticParams() {
   return slugs?.map(({ slug }) => `/fonts/${slug}/book`) || []
 }
 */
+
+// @TODO: look into next data layer caching to reduce requests
 const getData = ReactCache(async ({ slug }) => {
   const [fonts = [], { font }] = await Promise.all([
     getVisibleFonts(),

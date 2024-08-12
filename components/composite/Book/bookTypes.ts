@@ -13,6 +13,7 @@ export type BlockParams = {
 }
 
 export type LineParams = BlockParams & {
+  entry: string
   dedupId: string
   colWidth: number
 }
@@ -56,6 +57,7 @@ export type BlockStyle = {
 }
 
 export type Update = {
+  entry: string
   page: string // 'recto' or 'verso'
   col: number // column index
   block: number | null // block index

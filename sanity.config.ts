@@ -13,7 +13,7 @@ import { previewDocumentNode } from '@/sanity/plugins/previewPane'
 import { productionUrl } from '@/sanity/plugins/productionUrl'
 import { pageStructure, singletonPlugin } from '@/sanity/plugins/settings'
 import authorType from '@/sanity/schemas/author'
-import { fontType, fontVariantType } from '@/sanity/schemas/font'
+import { bookType, fontType, fontVariantType } from '@/sanity/schemas/font'
 import postType from '@/sanity/schemas/post'
 import productImageType from '@/sanity/schemas/productImage'
 import settingsType from '@/sanity/schemas/settings'
@@ -36,6 +36,7 @@ export default defineConfig({
       postType,
       fontType,
       fontVariantType,
+      bookType,
       // productImageType,
       settingsType,
     ],

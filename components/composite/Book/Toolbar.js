@@ -30,6 +30,7 @@ import { defaultColumn } from 'components/data/BookProvider/bookDefaults'
 import StyledSelect from 'components/ui/Select'
 import {
   ADD_BOOK_LAYOUT,
+  EXPORT_BOOK_LAYOUT,
   REMOVE_BOOK_LAYOUT,
   UPDATE_BOOK_LAYOUT,
 } from 'graphql/mutations'
@@ -39,8 +40,9 @@ import { observer } from 'mobx-react-lite'
 import React, { useEffect, useState } from 'react'
 
 import {
+  AddDocumentIcon,
   ChevronDownIcon,
-  ComposeIcon,
+  ClipboardImageIcon,
   CopyIcon,
   EditIcon,
   EyeOpenIcon,
@@ -150,6 +152,23 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         toast({
           title: 'Changes published.',
           description: 'The changes to the layout have been published.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
+      },
+    })
+
+  const [exportBookLayout, { data: exportData, loading: exportLoading }] =
+    useMutation(EXPORT_BOOK_LAYOUT, {
+      onError: (error) => {
+        console.log('exportBookLayout error: ', error)
+      },
+      onCompleted: (data) => {
+        console.log('exportBookLayout data: ', data)
+        toast({
+          title: 'Snapshot exported.',
+          description: 'A snapshot of this layout has been exported.',
           status: 'success',
           duration: 5000,
           isClosable: true,
@@ -284,6 +303,25 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
     // bookLayoutStore.setIsTemplate(bookLayoutStore.bookLayoutData.isTemplate)
   }
 
+  const handleExport = () => {
+    if (bookLayoutStore.isTemplate) {
+      // @TODO: toast with error about exporting templates
+    } else {
+      console.log('exporting...')
+      // @TODO: bookLayoutStore.spread does not contain the actual text strings from the Mongo queries
+
+      exportBookLayout({
+        variables: {
+          fontId: bookLayoutStore.fontFamily.value,
+          variantId: bookLayoutStore.variantOption.value,
+          bookLayoutId: bookLayoutStore.layoutOption.value,
+          spread: bookLayoutStore.spread,
+          name: bookLayoutStore.layoutOption.label,
+        },
+      })
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -354,7 +392,9 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                   </MenuItem>
                   <MenuItem
                     onClick={handleAdd}
-                    icon={<ComposeIcon width={'1.5rem'} height={'1.5rem'} />}
+                    icon={
+                      <AddDocumentIcon width={'1.5rem'} height={'1.5rem'} />
+                    }
                   >
                     <Text fontSize={'sm'}>{`Create`}</Text>
                   </MenuItem>
@@ -369,6 +409,14 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                     icon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
                   >
                     <Text fontSize={'sm'}>{`Delete`}</Text>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleExport}
+                    icon={
+                      <ClipboardImageIcon width={'1.5rem'} height={'1.5rem'} />
+                    }
+                  >
+                    <Text fontSize={'sm'}>{`Export snapshot`}</Text>
                   </MenuItem>
                 </MenuList>
               </Menu>

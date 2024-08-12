@@ -32,17 +32,10 @@ const BlockPopover: React.FC<{
   line: LineParams
   isLoadingBookItem: boolean
   update: Update
-  fetchMore: any // @TODO: types
-  setWord: any // @TODO: types
+  refetch: any // @TODO: types
   // children: any // @TODO: types
   // setWord: React.Dispatch<React.SetStateAction<Word>
-}> = ({
-  line,
-  update: { page, col, block },
-  fetchMore,
-  setWord,
-  isLoadingBookItem,
-}) => {
+}> = ({ line, update: { page, col, block }, refetch, isLoadingBookItem }) => {
   const bookLayoutStore = useBookLayoutStore()
 
   // fontSize, lineHeight, wordCount, lineCount, regex handlers
@@ -246,19 +239,7 @@ const BlockPopover: React.FC<{
           <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
             <Button
               width={'50%'}
-              onClick={() =>
-                fetchMore({
-                  variables: {
-                    first: null,
-                    after: null,
-                    last: null,
-                    before: null,
-                  },
-                  updateQuery: (previousResult, { fetchMoreResult }) => {
-                    setWord(fetchMoreResult.bookItem.entry)
-                  },
-                })
-              }
+              onClick={() => refetch()}
               leftIcon={<RefreshIcon width={'1.5rem'} height={'1.5rem'} />}
             >
               <Text fontSize={'sm'}>Refresh</Text>

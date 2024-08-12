@@ -6,13 +6,15 @@ import {
   type Update,
 } from 'components/composite/Book/bookTypes'
 import { GET_BOOK_ITEM } from 'graphql/queries'
-import React from 'react'
+import React, { useEffect, useContext } from 'react'
+import { useEditState } from 'sanity'
+import { useBookLayoutStore } from './'
 
 type GetBlocksProps = {
   component: React.ComponentType<any>
   line: Pick<
     LineParams,
-    'dedupId' | 'regex' | 'lineCount' | 'wordCount' | 'colWidth'
+    'entry' | 'dedupId' | 'regex' | 'lineCount' | 'wordCount' | 'colWidth'
   >
   update: Update
   layout: BlockStyle
@@ -38,8 +40,10 @@ const GetBlocks = (props: GetBlocksProps) => {
     }
   }
 
-  const { loading, data, fetchMore } = useQuery(GET_BOOK_ITEM, {
+  const { loading, data, previousData, refetch } = useQuery(GET_BOOK_ITEM, {
     variables: variables(),
+    // @TODO: check on fetch policy regarding caching
+    // https://www.apollographql.com/docs/react/data/queries/#setting-a-fetch-policy
   })
 
   return (
@@ -48,8 +52,8 @@ const GetBlocks = (props: GetBlocksProps) => {
       update={update}
       layout={layout}
       isLoadingBookItem={loading}
-      fetchMore={fetchMore}
-      entry={data && data.bookItem && data.bookItem.entry}
+      refetch={refetch}
+      entry={data?.bookItem?.entry}
     />
   )
 }

@@ -12,6 +12,8 @@ import { useLocalObservable } from 'mobx-react-lite'
 import { notFound } from 'next/navigation'
 import React, { createContext, useContext, useEffect } from 'react'
 
+// @TODO: Typescript this mobx store
+
 export const BookLayoutProvider = ({ data, children }) => {
   const { fonts = [], font = { variants: [] }, initialBookLayout = {} } = data
 
@@ -158,7 +160,6 @@ export const BookLayoutProvider = ({ data, children }) => {
           block.lineGap = block.lineGap || 0
         })
       })
-
       store.spread = newSpread
     }),
     updateBlock: action((key, value, page, col, block) => {

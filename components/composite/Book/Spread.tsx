@@ -57,6 +57,7 @@ const BottomGuide: React.FC<BottomGuideProps> = ({
           height: '1px',
           background: '#ff4fff',
           width: '100%',
+          pointerEvents: 'none',
         }}
       />
       <Box
@@ -67,6 +68,7 @@ const BottomGuide: React.FC<BottomGuideProps> = ({
           width: '100%',
           textAlign: 'center',
           fontSize: '12px',
+          pointerEvents: 'none',
         }}
       >
         {label}
@@ -162,6 +164,7 @@ const Spread: React.FC<{}> = ({}) => {
           height: '1px',
           background: '#7abad9',
           width: '100%',
+          pointerEvents: 'none',
         }}
       />
     </Flex>
