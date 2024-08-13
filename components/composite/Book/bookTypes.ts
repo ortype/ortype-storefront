@@ -1,6 +1,6 @@
 export type BlockParams = {
   blockId: string
-  variantId: string | null
+  variantId?: string
   fontSize: number
   lineHeight: number
   lineGap: number
@@ -10,11 +10,13 @@ export type BlockParams = {
   regex: string
   noSpace: boolean
   isParagraph: boolean
+  entry?: string
 }
 
 export type LineParams = BlockParams & {
-  entry: string
-  dedupId: string
+  entry?: string
+  dedupId?: string
+  variantId?: string
   colWidth: number
 }
 
@@ -64,6 +66,7 @@ export type Update = {
 }
 
 export type ColumnProps = {
+  defaultVariantId?: string
   width: number
   conversion: number
   blocks: BlockParams[]

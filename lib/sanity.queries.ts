@@ -62,7 +62,9 @@ const fontFields = groq`
   variants[]->{name, optionName, _id},
   uid,
   version,
-  metafields[]{key, value}
+  metafields[]{key, value},
+  modules[]{_type, book->{variantId, snapshots}, config},
+  modifiedAt
 `
 
 const fontVariantFields = groq`
@@ -81,6 +83,39 @@ export const fontSlugsQuery = groq`
 *[_type == "font" && defined(slug.current)][].slug.current
 `
 
+interface Snapshot {
+  createdAt: string
+  spread: string
+}
+
+interface Book {
+  variantId: string
+  snapshots: Snapshot[]
+}
+
+interface Module {
+  book: Book
+  // different modules defined here
+  config: {
+    display: string
+  }
+}
+
+export interface Metafield {
+  key: string
+  value: string
+}
+
+export interface Metrics {
+  unitsPerEm: number
+  contentArea: number
+  lineGap: number
+  capHeight: number
+  ascent: number
+  descent: number
+  distanceTop: number
+}
+
 export interface Font {
   _id: string
   _type: string
@@ -90,12 +125,17 @@ export interface Font {
   version?: string
   slug: string
   variants: FontVariant[]
+  modules?: Module[]
+  modifiedAt: string
+  metafields: Metafield[]
+  metrics?: Metrics
 }
 
 export interface FontVariant {
   _id: string
   _type: string
-  name?: string
+  name: string
+  optionName: string
   uid?: string
   parentUid?: string
   version?: string

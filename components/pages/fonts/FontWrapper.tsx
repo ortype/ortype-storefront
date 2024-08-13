@@ -4,6 +4,8 @@ import { Buy } from 'components/composite/Buy'
 import { CustomerContext } from 'components/data/CustomerProvider'
 import dynamic from 'next/dynamic'
 import React, { useContext } from 'react'
+import FontContainer from './FontContainer'
+import Modules from '@/components/modules'
 
 const DynamicBuyContainer: any = dynamic(
   () => import('components/composite/BuyContainer'),
@@ -31,11 +33,15 @@ const FontWrapper = ({ moreFonts, font }) => {
     })
   }
 */
+
   return (
     <>
-      <DynamicBuyContainer font={font}>
+      <FontContainer font={font} moreFonts={moreFonts}>
+        {font?.modules && <Modules value={font.modules} />}
+      </FontContainer>
+      {/*<DynamicBuyContainer font={font}>
         <DynamicBuy />
-      </DynamicBuyContainer>
+      </DynamicBuyContainer>*/}
     </>
   )
 }

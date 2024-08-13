@@ -1,24 +1,6 @@
 import type { PortableTextBlock } from '@portabletext/types'
 // import type { Image } from 'sanity'
-
-export interface FontVariant {
-  _id: string
-  _type: string
-  name?: string
-  uid?: string
-  parentUid?: string
-  version?: string
-}
-
-export interface Font {
-  _id: string
-  _type: string
-  name?: string
-  uid?: string
-  version?: string
-  slug?: string
-  variants?: FontVariant[]
-}
+import { Font, FontVariant } from '@/lib/sanity.queries'
 
 export interface FontPagePayload {
   font: Font
