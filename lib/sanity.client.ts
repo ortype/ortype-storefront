@@ -36,6 +36,11 @@ export const client = createClient({
       if (props.sourcePath.at(-1) === 'title') {
         return true
       }
+      // console.log('filter stega: ', props)
+      // @NOTE: stega ignore font menu href
+      if (props.sourcePath[0] === 'fonts') {
+        return false
+      }
 
       return props.filterDefault(props)
     },
