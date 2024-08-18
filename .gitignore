@@ -13,6 +13,10 @@
 /.next/
 /out/
 
+# sanity
+/.sanity/
+/dist/
+
 # production
 /build
 /studio/dist
@@ -38,6 +42,8 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+next-env.d.ts
+
 
 # Env files created by scripts for working locally
 .env

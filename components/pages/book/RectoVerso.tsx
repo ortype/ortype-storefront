@@ -7,9 +7,10 @@ const RectoVerso: React.FC<{
   conversion: number
   page: any
   defaultVariantId: string
-}> = ({ pageMargin, conversion, page, defaultVariantId }) => {
+}> = ({ pageMargin, conversion, page, label, defaultVariantId }) => {
   return (
     <Flex
+      className={`page-${label}`}
       w={'100%'}
       h={'100%'}
       bg={'#FFF'}

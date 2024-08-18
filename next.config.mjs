@@ -1,7 +1,7 @@
 import withTwin from './withTwin.mjs'
 
 /** @type {import('next').NextConfig} */
-const config = {
+/*const config = {
   webpack: (config) => {
     config.experiments = { ...config.experiments, topLevelAwait: true }
     return config
@@ -19,6 +19,26 @@ const config = {
     // ignoreDuringBuilds: process.env.VERCEL_ENV === 'production',
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    // Used to guard against accidentally leaking SANITY_API_READ_TOKEN to the browser
+    taint: true,
+  },
 }
 
+export default withTwin(config)
+*/
+/** @type {import('next').NextConfig} */
+
+const config = {
+  experimental: {
+    // Used to guard against accidentally leaking SANITY_API_READ_TOKEN to the browser
+    taint: true,
+  },
+  logging: {
+    fetches: { fullUrl: false },
+  },
+  images: {
+    remotePatterns: [{ hostname: 'cdn.sanity.io' }],
+  },
+}
 export default withTwin(config)

@@ -1,3 +1,4 @@
+'use client'
 import { CogIcon } from '@sanity/icons'
 import * as demo from 'lib/demo.data'
 import { defineArrayMember, defineField, defineType } from 'sanity'

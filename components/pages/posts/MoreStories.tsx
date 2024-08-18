@@ -1,5 +1,5 @@
 import type { Post } from 'lib/sanity.queries'
-import PostPreview from './PostPreview'
+import PostPage from './PostPage'
 
 export default function MoreStories({ posts }: { posts: Post[] }) {
   return (
@@ -9,7 +9,7 @@ export default function MoreStories({ posts }: { posts: Post[] }) {
       </h2>
       <div className="mb-32 grid grid-cols-1 gap-y-20 md:grid-cols-2 md:gap-x-16 md:gap-y-32 lg:gap-x-32">
         {posts.map((post) => (
-          <PostPreview
+          <PostPage
             key={post._id}
             title={post.title}
             coverImage={post.coverImage}

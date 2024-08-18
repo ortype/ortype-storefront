@@ -1,11 +1,5 @@
 import { createClient } from '@sanity/client/stega'
-import {
-  apiVersion,
-  dataset,
-  projectId,
-  revalidateSecret,
-  studioUrl,
-} from 'lib/sanity.api'
+import { apiVersion, dataset, projectId, studioUrl } from 'lib/sanity.api'
 import {
   fontAndMoreFontsQuery,
   fontSlugsQuery,
@@ -26,17 +20,30 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  // If webhook revalidation is setup we want the freshest content, if not then it's best to use the speedy CDN
-  useCdn: revalidateSecret ? false : true,
+  useCdn: true,
   perspective: 'published',
   stega: {
     studioUrl,
-    // logger: console,
+    logger: console,
     filter: (props) => {
       if (props.sourcePath.at(-1) === 'title') {
         return true
       }
-      // console.log('filter stega: ', props)
+
+      /*
+      // log props without too much noise from arrays
+      if (
+        props.sourcePath[0] !== 'metafields' &&
+        props.sourcePath[0] !== 'optionName'
+      ) {
+        console.log('filter stega: ', props)
+      }
+      */
+      // @NOTE: stega ignore book docs b/c snapshots.$.spread had non-white space characters
+      // which broke JSON.parse
+      if (props.sourceDocument._type === 'book') {
+        return false
+      }
       // @NOTE: stega ignore font menu href
       if (props.sourcePath[0] === 'fonts') {
         return false
@@ -201,7 +208,7 @@ export async function getFontAndMoreFonts(
       projectId,
       dataset,
       apiVersion,
-      useCdn: revalidateSecret ? false : true,
+      useCdn: true,
       token: token || undefined,
     })
     return await client.fetch(fontAndMoreFontsQuery, { slug })

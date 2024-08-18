@@ -3,14 +3,18 @@
  */
 
 import { apiVersion, dataset, projectId, studioUrl } from 'lib/sanity.api'
-import { defineConfig } from 'sanity'
-import { presentationTool } from 'sanity/presentation'
+import { PluginOptions, defineConfig } from 'sanity'
+import {
+  presentationTool,
+  defineDocuments,
+  defineLocations,
+  type DocumentLocation,
+} from 'sanity/presentation'
+// import { resolveHref } from '@/sanity/lib/utils'
+import { resolveHref } from '@/lib/sanity.utils'
 
 import { visionTool } from '@sanity/vision'
 // import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
-import { locate } from '@/sanity/plugins/locate'
-import { previewDocumentNode } from '@/sanity/plugins/previewPane'
-import { productionUrl } from '@/sanity/plugins/productionUrl'
 import { pageStructure, singletonPlugin } from '@/sanity/plugins/settings'
 import authorType from '@/sanity/schemas/author'
 import { bookType, fontType, fontVariantType } from '@/sanity/schemas/font'
@@ -18,11 +22,15 @@ import postType from '@/sanity/schemas/post'
 import productImageType from '@/sanity/schemas/productImage'
 import settingsType from '@/sanity/schemas/settings'
 import { media } from 'sanity-plugin-media'
-import { vercelDeployTool } from 'sanity-plugin-vercel-deploy'
-import { deskTool } from 'sanity/desk'
+import { structureTool } from 'sanity/structure'
 
 const title =
   process.env.NEXT_PUBLIC_SANITY_PROJECT_TITLE || 'Or Type – Sanity Studio'
+
+const homeLocation = {
+  title: 'Home',
+  href: '/',
+} satisfies DocumentLocation
 
 export default defineConfig({
   basePath: studioUrl,
@@ -42,25 +50,68 @@ export default defineConfig({
     ],
   },
   plugins: [
-    deskTool({
-      structure: pageStructure([settingsType]),
-    }),
     presentationTool({
-      locate,
-      previewUrl: {
-        draftMode: {
-          enable: '/api/draft',
+      resolve: {
+        mainDocuments: defineDocuments([
+          {
+            route: '/posts/:slug',
+            filter: `_type == "post" && slug.current == $slug`,
+          },
+          {
+            route: '/fonts/:slug',
+            filter: `_type == "font" && slug.current == $slug`,
+          },
+        ]),
+        locations: {
+          settings: defineLocations({
+            locations: [homeLocation],
+            message: 'This document is used on all pages',
+            tone: 'caution',
+          }),
+          font: defineLocations({
+            select: {
+              title: 'title',
+              slug: 'slug.current',
+            },
+            resolve: (doc) => ({
+              locations: [
+                {
+                  title: doc?.title || 'Untitled',
+                  href: resolveHref('font', doc?.slug)!,
+                },
+                homeLocation,
+              ],
+            }),
+          }),
+          post: defineLocations({
+            select: {
+              title: 'title',
+              slug: 'slug.current',
+            },
+            resolve: (doc) => ({
+              locations: [
+                {
+                  title: doc?.title || 'Untitled',
+                  href: resolveHref('post', doc?.slug)!,
+                },
+                homeLocation,
+              ],
+            }),
+          }),
         },
       },
+      previewUrl: { previewMode: { enable: '/api/draft' } },
     }),
+    structureTool({ structure: pageStructure([settingsType]) }),
     // Configures the global "new document" button, and document actions, to suit the Settings document singleton
-    singletonPlugin([settingsType.name]),
-    vercelDeployTool(),
+    // singletonPlugin([settingsType.name]),
+    // vercelDeployTool(),
     media(),
     // Add an image asset source for Unsplash
     // unsplashImageAsset(),
     // Vision lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin
-    visionTool({ defaultApiVersion: apiVersion }),
-  ],
+    process.env.NODE_ENV === 'development' &&
+      visionTool({ defaultApiVersion: apiVersion }),
+  ].filter(Boolean) as PluginOptions[],
 })

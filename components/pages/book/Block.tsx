@@ -12,9 +12,9 @@ const Block: React.FC<{
   layout: BlockStyle
 }> = ({ entry, line, layout }) => {
   const font = useFont()
-
   return (
     <Box
+      className={'block'}
       position={'relative'}
       style={{
         marginTop: layout.outerWrapperMarginTop,

@@ -12,7 +12,9 @@ export default function getMetrics(metafields?: Metafield[]): Metrics {
   }
   if (metafields) {
     const getMetric = (key: string): number => {
-      return Number(metafields.find((field) => field.key === key)?.value)
+      return parseInt(
+        metafields.find((field) => field.key === key)?.value || ''
+      )
     }
     const unitsPerEm = getMetric('unitsPerEm')
     const capHeight = getMetric('capHeight') / unitsPerEm

@@ -1,6 +1,6 @@
-import { groq } from 'next-sanity'
+import { defineQuery } from 'groq'
 
-const postFields = groq`
+const postFields = defineQuery(`
   _id,
   title,
   date,
@@ -8,17 +8,16 @@ const postFields = groq`
   coverImage,
   "slug": slug.current,
   "author": author->{name, picture},
-`
+`)
 
-export const settingsQuery = groq`*[_type == "settings"][0]`
+export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
 
-export const indexQuery = groq`
+export const indexQuery = defineQuery(`
 *[_type == "post"] | order(date desc, _updatedAt desc) {
   ${postFields}
-}`
+}`)
 
-export const postAndMoreStoriesQuery = groq`
-{
+export const postAndMoreStoriesQuery = defineQuery(`{
   "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {
     content,
     ${postFields}
@@ -27,7 +26,7 @@ export const postAndMoreStoriesQuery = groq`
     content,
     ${postFields}
   }
-}`
+}`)
 
 export interface Author {
   name?: string
@@ -53,7 +52,7 @@ export interface Settings {
   }
 }
 
-const fontFields = groq`
+const fontFields = defineQuery(`
   _id,
   _type,
   name,
@@ -65,9 +64,9 @@ const fontFields = groq`
   metafields[]{key, value},
   modules[]{_type, book->{variantId, snapshots}, config},
   modifiedAt
-`
+`)
 
-const fontVariantFields = groq`
+const fontVariantFields = defineQuery(`
   _id,
   _type,
   name,
@@ -77,11 +76,11 @@ const fontVariantFields = groq`
   parentUid,
   version,
   metafields[]{key, value}
-`
+`)
 
-export const fontSlugsQuery = groq`
+export const fontSlugsQuery = defineQuery(`
 *[_type == "font" && defined(slug.current)][].slug.current
-`
+`)
 
 interface Snapshot {
   createdAt: string
@@ -142,36 +141,35 @@ export interface FontVariant {
 }
 
 // @TODO: unify `homePageQuery` with `visibleFontsQuery`
-export const homePageQuery = groq`
+export const homePageQuery = defineQuery(`
 {
   "fonts": *[_type == "font" && isVisible == true] {
     ${fontFields}
   }
 }
-`
+`)
 
-export const visibleFontsQuery = groq`
+export const visibleFontsQuery = defineQuery(`
 *[_type == "font" && isVisible == true] {
   ${fontFields}
-}`
+}`)
 
 // used in `getAllFonts` @TODO: consider removing if not really needed
-export const fontsQuery = groq`
+export const fontsQuery = defineQuery(`
 *[_type == "font"] {
   ${fontFields}
-}`
+}`)
 
-export const fontVariantsQuery = groq`
+export const fontVariantsQuery = defineQuery(`
 *[_type == "fontVariant"] {
   ${fontVariantFields}
-}`
+}`)
 
-export const fontAndMoreFontsQuery = groq`
-{
+export const fontAndMoreFontsQuery = defineQuery(`{
   "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
     ${fontFields}
   },
   "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(date desc, _updatedAt desc) [0...2] {
     ${fontFields}
   }
-}`
+}`)

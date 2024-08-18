@@ -9,7 +9,7 @@ export interface BookModuleProps {
 export default function BookModule({ value }: BookModuleProps) {
   let spread = {}
   if (value.book?.snapshots[0]?.spread) {
-    console.log('Stringified spread: ', value.book?.snapshots[1]?.spread)
+    // @TODO: thinking left to do on selecting snapshots...
     spread = JSON.parse(value.book?.snapshots[0]?.spread)
   }
 
