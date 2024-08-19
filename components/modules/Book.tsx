@@ -1,24 +1,30 @@
-import { Box } from '@chakra-ui/react'
+import RectoVerso from '@/components/pages/book/RectoVerso'
 import Spread from '@/components/pages/book/Spread'
-import { useFont } from '@/components/pages/fonts/FontContainer'
+import { Box } from '@chakra-ui/react'
 
 export interface BookModuleProps {
   value: any // @TODO: types
 }
 
 export default function BookModule({ value }: BookModuleProps) {
+  const { config, book } = value
   let spread = {}
-  if (value.book?.snapshots[0]?.spread) {
+  if (book?.snapshots[0]?.spread) {
     // @TODO: thinking left to do on selecting snapshots...
-    spread = JSON.parse(value.book?.snapshots[0]?.spread)
+    spread = JSON.parse(book?.snapshots[0]?.spread)
   }
+
+  console.log('Book Module config: ', config)
+  // @TOOD: handle config string values 'recto' or 'verso'... 'spread' is the default
+
+  // `config.display = 'spread' means we want to output two Box/Grid Items
 
   return (
     <Box bg={'black'}>
-      <Spread
-        defaultVariantId={value.book.variantId}
-        config={value.config}
-        spread={spread}
+      <RectoVerso
+        label={config.display}
+        page={spread.verso} // depends on config...
+        defaultVariantId={book.variantId}
       />
     </Box>
   )

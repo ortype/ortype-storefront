@@ -1,8 +1,6 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react'
-import { useBookLayoutStore } from 'components/data/BookProvider'
-import React, { useContext, useRef } from 'react'
-import Block from './Block'
 import {
+  BlockParams,
+  Update,
   type BlockStyle,
   type BlockStyleOptions,
   type BlockStyleParams,
@@ -10,6 +8,10 @@ import {
   type Metrics,
 } from '@/components/composite/Book/bookTypes'
 import { useFont } from '@/components/pages/fonts/FontContainer'
+import { Box, Button, Flex, Text } from '@chakra-ui/react'
+import { useBookLayoutStore } from 'components/data/BookProvider'
+import React, { useContext, useRef } from 'react'
+import Block from './Block'
 
 const getBlockStyle = (
   params: BlockStyleParams,
@@ -53,19 +55,28 @@ const getBlockStyle = (
   }
 }
 
+type ColumnProps = {
+  defaultVariantId: string
+  width: number
+  colWidth: number
+  conversion: number
+  blocks: BlockParams[]
+  update: Update
+}
+
 const Column = ({
   conversion,
   width,
   blocks,
   defaultVariantId,
+  colWidth,
 }: ColumnProps) => {
   const font = useFont()
-  let hardCodedColumnWidth = 558 // the total page size not including margin left/right
   if (width !== 100) {
-    hardCodedColumnWidth = hardCodedColumnWidth - 30
+    colWidth = colWidth - 30
   }
 
-  const queryWidth = Math.floor(Number((width / 100) * hardCodedColumnWidth))
+  const queryWidth = Math.floor(Number((width / 100) * colWidth))
   // we store the difference of each block
   let difference = 0
 

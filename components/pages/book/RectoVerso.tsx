@@ -1,13 +1,13 @@
 import { Flex } from '@chakra-ui/react'
+import { useSpreadContainer } from '../fonts/SpreadContainer'
 import Column from './Column'
 
 const RectoVerso: React.FC<{
   label: string
-  pageMargin: number
-  conversion: number
   page: any
   defaultVariantId: string
-}> = ({ pageMargin, conversion, page, label, defaultVariantId }) => {
+}> = ({ page, label, defaultVariantId }) => {
+  const { padding, conversion, colWidth } = useSpreadContainer()
   return (
     <Flex
       className={`page-${label}`}
@@ -22,7 +22,7 @@ const RectoVerso: React.FC<{
       wrap={'wrap'}
       alignContent={'flex-start'}
       style={{
-        padding: `${pageMargin * conversion}px`,
+        padding,
       }}
     >
       {page &&
@@ -32,6 +32,7 @@ const RectoVerso: React.FC<{
             {...col}
             defaultVariantId={defaultVariantId}
             conversion={conversion}
+            colWidth={colWidth}
           />
         ))}
     </Flex>
