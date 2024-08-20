@@ -20,14 +20,16 @@ const BookPage = ({
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const bookLayoutStore = useBookLayoutStore()
-  /*
+
+  /*  
   console.log(
     'bookLayoutStore: ',
     toJS(bookLayoutStore.fontFamily.label),
     toJS(bookLayoutStore.fontFamily.value),
     toJS(bookLayoutStore.layoutOption.label),
     'layoutId param: ',
-    searchParams.get('id')
+    searchParams.get('id'),
+    toJS(bookLayoutStore.spread?.verso[0]?.blocks[0]?.entry)
   )
 */
   const { loading, data, refetch } = useQuery(GET_BOOK_LAYOUT, {

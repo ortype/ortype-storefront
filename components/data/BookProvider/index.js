@@ -165,7 +165,20 @@ export const BookLayoutProvider = ({ data, children }) => {
     updateBlock: action((key, value, page, col, block) => {
       // eslint-disable-next-line no-console
       // console.log('Store: updateBlock: ', key, value, page, col, block)
-      store.spread[page][col].blocks[block][key] = value
+      if (
+        // this conditional is needed in some cases when deleting layouts
+        store.spread[page] &&
+        store.spread[page][col] &&
+        store.spread[page][col].blocks[block]
+      ) {
+        store.spread[page][col].blocks[block][key] = value
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(
+          'store.spread is missing a block or something... ',
+          store.spread
+        )
+      }
     }),
     removeBlock: action((page, col, block) => {
       store.spread[page][col].blocks = store.spread[page][col].blocks.filter(

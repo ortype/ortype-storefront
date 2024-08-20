@@ -13,10 +13,7 @@ import {
   type ColumnProps,
   type Metrics,
 } from './bookTypes'
-
 import { ColumnPopover } from './index'
-
-const currentHour = new Date().getUTCHours()
 
 // https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align
 
@@ -93,7 +90,7 @@ const Column = observer(
     const renderBlocks = () =>
       blocks.map((block, idx) => {
         const { blockId, variantId, ...queryArgs } = block
-        const humanReadableDedupId = `H${currentHour}_${update.page}_C${update.col}_B${idx}_${blockId}`
+        const humanReadableDedupId = `${bookLayoutStore.layoutOption.value}_${update.page}_C${update.col}_B${idx}_${blockId}`
         const layout = getBlockStyle(block, {
           conversion,
           ...bookLayoutStore.metrics,

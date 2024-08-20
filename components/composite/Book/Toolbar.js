@@ -135,6 +135,8 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
     setFontLoading(true)
   }
 
+  // @NOTE: this should be a completely reliable way to set the layout option
+  // because the page has a useEffect that sets the layout via searchParams
   const handleLayoutChange = (option) => {
     if (option) {
       router.replace(`${pathname}/?id=${option.value}`, {
@@ -182,7 +184,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
     {
       onCompleted: (data) => {
         if (data.addBookLayout && data.addBookLayout._id) {
-          bookLayoutStore.setLayoutOption({
+          handleLayoutChange({
             label: data.addBookLayout.name,
             value: data.addBookLayout._id,
           })
@@ -197,9 +199,6 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       },
     }
   )
-  if (addData) {
-    console.log('addData: ', addData)
-  }
 
   // removeBookLayout
   const [removeBookLayout, { data: removeData, loading: removeLoading }] =
@@ -208,7 +207,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         // here we set another ID?
         const firstItem = groupedLayoutOptions[0].options[0]
         if (firstItem) {
-          bookLayoutStore.setLayoutOption(firstItem)
+          handleLayoutChange(firstItem) // layoutOptions object with value/label params
         }
         onClose() // close alert dialog box
         toast({
@@ -220,9 +219,6 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         })
       },
     })
-  if (removeData) {
-    console.log('removeData: ', removeData)
-  }
 
   // how does the _id in addData get set in the store
 
@@ -308,8 +304,6 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       // @TODO: toast with error about exporting templates
     } else {
       console.log('exporting...')
-      // @TODO: bookLayoutStore.spread does not contain the actual text strings from the Mongo queries
-
       exportBookLayout({
         variables: {
           fontId: bookLayoutStore.fontFamily.value,

@@ -6,7 +6,7 @@ import {
   type Update,
 } from 'components/composite/Book/bookTypes'
 import { GET_BOOK_ITEM } from 'graphql/queries'
-import React, { useEffect, useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useEditState } from 'sanity'
 import { useBookLayoutStore } from './'
 
@@ -44,6 +44,9 @@ const GetBlocks = (props: GetBlocksProps) => {
     variables: variables(),
     // @TODO: check on fetch policy regarding caching
     // https://www.apollographql.com/docs/react/data/queries/#setting-a-fetch-policy
+    // the default cache policy is ideal in this case, where only if variables change
+    // then the cache should be invalidated, so using the bookLayout ID as part of
+    // the dedupId will refetch on layout change
   })
 
   return (
