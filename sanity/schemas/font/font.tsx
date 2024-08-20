@@ -1,5 +1,5 @@
-import { defineField, defineType } from 'sanity'
 import { BookIcon } from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
 
 // import productImage from '../productImage'
 import variant from './variant'
@@ -103,14 +103,13 @@ export default defineType({
                   type: 'string',
                   name: 'display',
                   title: 'Display options',
-                  initialValue: 'spread',
+                  initialValue: 'verso',
                   options: {
                     layout: 'radio',
                     direction: 'horizontal',
                     list: [
-                      { title: 'Spread', value: 'spread' },
-                      { title: 'Recto', value: 'recto' },
                       { title: 'Verso', value: 'verso' },
+                      { title: 'Recto', value: 'recto' },
                     ],
                   },
                 }),

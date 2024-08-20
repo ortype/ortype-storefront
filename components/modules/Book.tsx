@@ -8,24 +8,21 @@ export interface BookModuleProps {
 
 export default function BookModule({ value }: BookModuleProps) {
   const { config, book } = value
-  let spread = {}
+  let page = null
   if (book?.snapshots[0]?.spread) {
     // @TODO: thinking left to do on selecting snapshots...
-    spread = JSON.parse(book?.snapshots[0]?.spread)
+    const spread = JSON.parse(book?.snapshots[0]?.spread)
+    page = spread[config.display]
   }
 
-  console.log('Book Module config: ', config)
-  // @TOOD: handle config string values 'recto' or 'verso'... 'spread' is the default
-
-  // `config.display = 'spread' means we want to output two Box/Grid Items
-
   return (
-    <Box bg={'black'}>
+    book &&
+    page && (
       <RectoVerso
         label={config.display}
-        page={spread.verso} // depends on config...
+        page={page}
         defaultVariantId={book.variantId}
       />
-    </Box>
+    )
   )
 }

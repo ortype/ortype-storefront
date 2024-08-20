@@ -24,26 +24,31 @@ export const client = createClient({
   perspective: 'published',
   stega: {
     studioUrl,
-    logger: console,
+    // logger: console,
     filter: (props) => {
       if (props.sourcePath.at(-1) === 'title') {
         return true
       }
 
-      /*
       // log props without too much noise from arrays
       if (
         props.sourcePath[0] !== 'metafields' &&
         props.sourcePath[0] !== 'optionName'
       ) {
-        console.log('filter stega: ', props)
+        // console.log('filter stega: ', props)
       }
-      */
+
       // @NOTE: stega ignore book docs b/c snapshots.$.spread had non-white space characters
       // which broke JSON.parse
       if (props.sourceDocument._type === 'book') {
         return false
       }
+
+      // remove all config paths from stega
+      if (props.sourcePath.includes('config')) {
+        return false
+      }
+
       // @NOTE: stega ignore font menu href
       if (props.sourcePath[0] === 'fonts') {
         return false

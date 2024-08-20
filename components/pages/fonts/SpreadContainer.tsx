@@ -90,6 +90,7 @@ const SpreadContainerProvider: React.FC<SpreadContainerProviderProps> = ({
         py={'10vh'}
         pos={'relative'}
         overflow={'hidden'}
+        wrap={'wrap'}
         ref={targetRef}
       >
         {children}
