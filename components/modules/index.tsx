@@ -2,8 +2,10 @@
 import config from '@/sanity.config'
 import { Box } from '@chakra-ui/react'
 import { PortableText } from '@portabletext/react'
+import { type PortableTextBlock } from 'next-sanity'
 import { useSpreadContainer } from '../pages/fonts/SpreadContainer'
 import BookModule from './Book'
+import ContentModule from './Content'
 
 const SpreadPage = ({ children }) => {
   const { pseudoPadding, padding } = useSpreadContainer()
@@ -28,7 +30,12 @@ const SpreadPage = ({ children }) => {
 
 const components = {
   types: {
-    'module.book': (props) => (
+    content: (props) => (
+      <SpreadPage>
+        <ContentModule {...props} />
+      </SpreadPage>
+    ),
+    book: (props) => (
       <SpreadPage>
         <BookModule {...props} />
       </SpreadPage>
@@ -39,7 +46,7 @@ const components = {
 const Modules = ({ value }) => {
   return (
     <PortableText
-      value={value}
+      value={value as PortableTextBlock[]}
       components={components}
       onMissingComponent={false}
       {...config}

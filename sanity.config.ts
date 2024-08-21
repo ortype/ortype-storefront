@@ -5,9 +5,9 @@
 import { apiVersion, dataset, projectId, studioUrl } from 'lib/sanity.api'
 import { PluginOptions, defineConfig } from 'sanity'
 import {
-  presentationTool,
   defineDocuments,
   defineLocations,
+  presentationTool,
   type DocumentLocation,
 } from 'sanity/presentation'
 // import { resolveHref } from '@/sanity/lib/utils'
@@ -18,6 +18,9 @@ import { visionTool } from '@sanity/vision'
 import { pageStructure, singletonPlugin } from '@/sanity/plugins/settings'
 import authorType from '@/sanity/schemas/author'
 import { bookType, fontType, fontVariantType } from '@/sanity/schemas/font'
+import body from '@/sanity/schemas/objects/body'
+import moduleBook from '@/sanity/schemas/objects/modules/book'
+import moduleContent from '@/sanity/schemas/objects/modules/content'
 import postType from '@/sanity/schemas/post'
 import productImageType from '@/sanity/schemas/productImage'
 import settingsType from '@/sanity/schemas/settings'
@@ -47,6 +50,10 @@ export default defineConfig({
       bookType,
       // productImageType,
       settingsType,
+      // modules
+      moduleBook,
+      moduleContent,
+      body,
     ],
   },
   plugins: [
