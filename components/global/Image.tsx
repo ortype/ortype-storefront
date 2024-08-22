@@ -1,31 +1,25 @@
-import { Image } from 'next-sanity/image'
-
-import { urlForImage } from '@/lib/sanity.utils'
+import { client } from '@/lib/sanity.client'
+import { useNextSanityImage } from 'next-sanity-image'
+import Image from 'next/image'
 
 interface ImageSanityNextProps {
   image: any
+  sizes?: string
   priority?: boolean
 }
 
 export default function ImageSanityNext(props: ImageSanityNextProps) {
-  const { image: source, priority } = props
-  const image = source?.asset?._ref ? (
-    <Image
-      className="h-auto w-full"
-      width={2000}
-      height={1000}
-      alt={source?.alt || ''}
-      src={urlForImage(source)?.height(1000).width(2000).url() as string}
-      sizes="100vw"
-      priority={priority}
-    />
-  ) : (
-    <div className="bg-slate-50" style={{ paddingTop: '50%' }} />
-  )
+  const { image: asset, sizes, priority } = props
+
+  const imageProps = useNextSanityImage(client, asset)
+
+  if (!imageProps) return null
 
   return (
-    <div className="shadow-md transition-shadow duration-200 group-hover:shadow-lg sm:mx-0">
-      {image}
-    </div>
+    <Image
+      {...imageProps}
+      style={{ width: '100%', height: 'auto' }} // "responsive"
+      sizes={sizes || '(max-width: 800px) 100vw, 800px'}
+    />
   )
 }

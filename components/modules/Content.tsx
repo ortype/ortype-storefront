@@ -22,6 +22,7 @@ const Content: React.FC<{
       style={{
         padding,
       }}
+      overflow={'hidden'}
     >
       <Box
         sx={{

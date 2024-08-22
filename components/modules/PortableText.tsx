@@ -38,7 +38,10 @@ export default function CustomPortableText({
     types: {
       image: (props) => (
         <Box>
-          <Image image={props.value} />
+          <Image
+            image={props.value}
+            sizes={'(max-width: 800px) 100vw, 800px'}
+          />
         </Box>
       ),
     },
