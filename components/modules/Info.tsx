@@ -1,6 +1,7 @@
 import { useFont } from '@/components/pages/fonts/FontContainer'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import config from '@/sanity.config'
+import { Link } from '@chakra-ui/next-js'
 import { Box, Center, Flex, Heading, Text } from '@chakra-ui/react'
 
 import {
@@ -29,11 +30,23 @@ function InfoPortableText({
       ),
     },
     marks: {
-      link: ({ children, value }) => {
-        return (
-          <a href={value?.href} rel="noreferrer noopener">
+      link: ({ value, children }) => {
+        // Read https://css-tricks.com/use-target_blank/
+        const { blank, href } = value
+        return blank ? (
+          <Link
+            color={'#0000FF'}
+            textDecor={'underline'}
+            href={href}
+            target="_blank"
+            rel="noopener"
+          >
             {children}
-          </a>
+          </Link>
+        ) : (
+          <Link href={href} color={'#0000FF'} textDecor={'underline'}>
+            {children}
+          </Link>
         )
       },
     },

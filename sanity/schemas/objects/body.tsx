@@ -1,4 +1,6 @@
+import { LinkIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
+
 export default defineType({
   name: 'body',
   title: 'Body',
@@ -10,7 +12,37 @@ export default defineType({
         { title: 'Numbered', value: 'number' },
       ],
       marks: {
-        annotations: [],
+        annotations: [
+          defineField({
+            type: 'object',
+            name: 'link',
+            fields: [
+              {
+                type: 'string',
+                name: 'href',
+                title: 'URL',
+                validation: (rule) => rule.required(),
+              },
+            ],
+          }),
+          defineField({
+            name: 'internalLink',
+            type: 'object',
+            title: 'Internal link',
+            icon: () => <LinkIcon />,
+            fields: [
+              {
+                name: 'reference',
+                type: 'reference',
+                title: 'Reference',
+                to: [
+                  { type: 'post' },
+                  // other types you may want to link to
+                ],
+              },
+            ],
+          }),
+        ],
         decorators: [
           {
             title: 'Italic',
@@ -26,7 +58,7 @@ export default defineType({
       // of: [{ type: '' }]
       styles: [
         { title: 'Heading', value: 'h2' },
-        { title: 'Quote', value: 'blockquote' },
+        // { title: 'Quote', value: 'blockquote' },
       ],
       // Paragraphs
       type: 'block',

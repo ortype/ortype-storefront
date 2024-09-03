@@ -31,6 +31,11 @@ export default {
   fields: [
     defineField({ name: 'title', type: 'string' }),
     defineField({ name: 'body', type: body.name }),
+    defineField({
+      name: 'centered',
+      title: 'Center text',
+      type: 'boolean',
+    }),
   ],
   preview: {
     select: {

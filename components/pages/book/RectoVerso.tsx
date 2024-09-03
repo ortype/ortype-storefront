@@ -47,7 +47,7 @@ const RectoVerso: React.FC<{
             fontWeight={'normal'}
             textTransform={'uppercase'}
           >
-            {font.name.replace('OR ', '')}
+            {font.name}
           </Heading>
         </Box>
       )}

@@ -9,6 +9,7 @@
  */
 
 import config from '@/sanity.config'
+import { Link } from '@chakra-ui/next-js'
 
 import {
   PortableText,
@@ -19,7 +20,7 @@ import {
 import Image from '@/components/global/Image'
 import { useFont } from '@/components/pages/fonts/FontContainer'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
-import { Box, Heading, Text } from '@chakra-ui/react'
+import { Box, Button, Heading, Text } from '@chakra-ui/react'
 
 export default function CustomPortableText({
   className,
@@ -40,6 +41,7 @@ export default function CustomPortableText({
       normal: ({ children }) => (
         <Text
           fontSize={38 * conversion + 'px'}
+          lineHeight={49 * conversion + 'px'}
           className={font?.variants[0]?._id}
         >
           {children}
@@ -57,11 +59,50 @@ export default function CustomPortableText({
       ),
     },
     marks: {
-      link: ({ children, value }) => {
-        return (
-          <a href={value?.href} rel="noreferrer noopener">
+      link: ({ value, children }) => {
+        // Read https://css-tricks.com/use-target_blank/
+        const { blank, href } = value
+        return blank ? (
+          <Link
+            color={'#0000FF'}
+            textDecor={'underline'}
+            href={href}
+            target="_blank"
+            rel="noopener"
+          >
             {children}
-          </a>
+          </Link>
+        ) : (
+          <Link href={href} color={'#0000FF'} textDecor={'underline'}>
+            {children}
+          </Link>
+        )
+      },
+      internalLink: ({ children, value }) => {
+        const { slug = {} } = value
+        const href = `/${slug.current}`
+        return (
+          <Button
+            as={Link}
+            href={href}
+            fontSize={38 * conversion + 'px'}
+            borderRadius={38 * conversion + 'px'}
+            variant={'outline'}
+            colorScheme={'brand'}
+            fontWeight={'normal'}
+            bg={'#000'}
+            color={'#FFF'}
+            borderWidth={'2px'}
+            borderColor={'#000'}
+            _hover={{
+              textDecoration: 'none',
+              bg: '#FFF',
+              color: '#000',
+              borderColor: '#000',
+            }}
+          >
+            {children}
+          </Button>
         )
       },
     },

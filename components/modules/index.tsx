@@ -31,7 +31,7 @@ const PageDivider: React.FC<PageDividerProps> = ({ visible }) => {
   )
 }
 
-const SpreadPage = ({ children, index }) => {
+const SpreadPage = ({ children, index, ...props }) => {
   const { pseudoPadding, padding } = useSpreadContainer()
   return (
     <Box
@@ -46,6 +46,13 @@ const SpreadPage = ({ children, index }) => {
         display: 'block',
         paddingBottom: pseudoPadding,
       }}
+      sx={{
+        p: {
+          maxW: props.textAlign === 'center' ? '80%' : '100%',
+          mx: 'auto',
+        },
+      }}
+      {...props}
       // #C6C6C6
     >
       {children}
@@ -62,7 +69,10 @@ const components = {
       </SpreadPage>
     ),
     content: (props) => (
-      <SpreadPage index={props.index}>
+      <SpreadPage
+        index={props.index}
+        textAlign={props.value.centered ? 'center' : 'left'}
+      >
         <ContentModule {...props} />
       </SpreadPage>
     ),

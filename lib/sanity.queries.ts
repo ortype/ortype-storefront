@@ -1,4 +1,5 @@
 import { defineQuery } from 'groq'
+import { PortableTextBlock } from 'next-sanity'
 
 const postFields = defineQuery(`
   _id,
@@ -62,7 +63,19 @@ const fontFields = defineQuery(`
   uid,
   version,
   metafields[]{key, value},
-  modules[]{..., book->{variantId, snapshots} },  
+  modules[]{
+    ..., 
+    book->{variantId, snapshots},  
+    body[]{
+      ...,
+      markDefs[]{
+        ...,
+        _type == "internalLink" => {
+          "slug": @.reference->slug
+        }
+      }
+    } 
+  },
   modifiedAt,
   languages[]{html, name}
 `)
@@ -100,14 +113,24 @@ interface SpecialFeature {
 }
 
 interface Module {
-  book: Book
+  title: string
   // different modules defined here
+  // book
+  book: Book
   config: {
     display: string
   }
   // features
   label: string
   features: SpecialFeature[]
+  // content
+  body: PortableTextBlock[]
+  // info
+  items: {
+    key: string
+    // content: @TODO sanity block types
+    content: PortableTextBlock[]
+  }
 }
 
 export interface Metafield {

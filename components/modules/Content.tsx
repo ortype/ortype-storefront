@@ -48,8 +48,11 @@ const Content: React.FC<{
           </Heading>
         </Box>
       )}
-      <Box
-        sx={{
+      <Flex
+        direction={'column'}
+        justifyContent={'space-between'}
+        h={'100%'}
+        /*sx={{
           '> div + div': {
             mt: 100,
           },
@@ -71,10 +74,10 @@ const Content: React.FC<{
           '> #toc + h2': {
             mt: 0,
           },
-        }}
+        }}*/
       >
         <PortableText value={value.body} />
-      </Box>
+      </Flex>
     </Flex>
   )
 }
