@@ -62,8 +62,9 @@ const fontFields = defineQuery(`
   uid,
   version,
   metafields[]{key, value},
-  modules[]{_type, book->{variantId, snapshots}, body, config},
-  modifiedAt
+  modules[]{..., book->{variantId, snapshots} },  
+  modifiedAt,
+  languages[]{html, name}
 `)
 
 const fontVariantFields = defineQuery(`
@@ -92,17 +93,38 @@ interface Book {
   snapshots: Snapshot[]
 }
 
+interface SpecialFeature {
+  title: string
+  example: string
+  tag: string
+}
+
 interface Module {
   book: Book
   // different modules defined here
   config: {
     display: string
   }
+  // features
+  label: string
+  features: SpecialFeature[]
 }
 
 export interface Metafield {
   key: string
   value: string
+}
+
+export interface Feature {
+  tag: string // 'aalt'
+  name: string // 'Access All Alternates'
+  css: { feature: string } // { feature: 'font-feature-settings: "aalt"', variant: null }
+}
+
+export interface Language {
+  html: string // country code
+  name: string // full name
+  ot: string // another country code...
 }
 
 export interface Metrics {
@@ -128,6 +150,8 @@ export interface Font {
   modifiedAt: string
   metafields: Metafield[]
   metrics?: Metrics
+  features?: Feature[]
+  languages?: Language[]
 }
 
 export interface FontVariant {

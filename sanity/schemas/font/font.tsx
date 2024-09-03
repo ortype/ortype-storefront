@@ -1,5 +1,6 @@
 import moduleBook from '@/sanity/schemas/objects/modules/book'
 import moduleContent from '@/sanity/schemas/objects/modules/content'
+import moduleFeatures from '@/sanity/schemas/objects/modules/features'
 import { BookIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 // import productImage from '../productImage'
@@ -71,6 +72,8 @@ export default defineType({
         // Item of type 'object' not valid for this list
         defineArrayMember({ type: moduleContent.name, name: 'content' }),
         defineArrayMember({ type: moduleBook.name, name: 'book' }),
+        // @TODO: rename to 'features'?
+        defineArrayMember({ type: moduleFeatures.name, name: 'feature' }),
       ],
       group: 'presentation',
     },
@@ -237,6 +240,60 @@ export default defineType({
       ],
       // validation: (rule) => rule.required(),
       group: 'fontFileSync',
+    }),
+    defineField({
+      name: 'features',
+      title: 'Features',
+      type: 'array',
+      group: 'fontFileSync',
+      readOnly: true,
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'feature',
+          fields: [
+            defineField({
+              type: 'string',
+              name: 'tag',
+            }),
+            defineField({
+              type: 'string',
+              name: 'name',
+            }),
+            defineField({
+              type: 'string',
+              name: 'css',
+            }),
+          ],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'languages',
+      title: 'Languages',
+      type: 'array',
+      group: 'fontFileSync',
+      readOnly: true,
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'language',
+          fields: [
+            defineField({
+              type: 'string',
+              name: 'html',
+            }),
+            defineField({
+              type: 'string',
+              name: 'name',
+            }),
+            defineField({
+              type: 'string',
+              name: 'ot',
+            }),
+          ],
+        }),
+      ],
     }),
     defineField({
       name: 'metafields',

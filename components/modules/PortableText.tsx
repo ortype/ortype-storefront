@@ -17,6 +17,8 @@ import {
 } from 'next-sanity'
 
 import Image from '@/components/global/Image'
+import { useFont } from '@/components/pages/fonts/FontContainer'
+import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import { Box, Heading, Text } from '@chakra-ui/react'
 
 export default function CustomPortableText({
@@ -26,6 +28,8 @@ export default function CustomPortableText({
   className?: string
   value: PortableTextBlock[]
 }) {
+  const { conversion } = useSpreadContainer()
+  const font = useFont()
   const components: PortableTextComponents = {
     block: {
       h2: ({ children, value }) => (
@@ -33,7 +37,14 @@ export default function CustomPortableText({
           {children}
         </Heading>
       ),
-      normal: ({ children }) => <Text>{children}</Text>,
+      normal: ({ children }) => (
+        <Text
+          fontSize={38 * conversion + 'px'}
+          className={font?.variants[0]?._id}
+        >
+          {children}
+        </Text>
+      ),
     },
     types: {
       image: (props) => (

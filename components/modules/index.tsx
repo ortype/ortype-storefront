@@ -6,8 +6,31 @@ import { type PortableTextBlock } from 'next-sanity'
 import { useSpreadContainer } from '../pages/fonts/SpreadContainer'
 import BookModule from './Book'
 import ContentModule from './Content'
+import FeaturesModule from './Features'
 
-const SpreadPage = ({ children }) => {
+type PageDividerProps = {
+  visible: boolean
+}
+
+const PageDivider: React.FC<PageDividerProps> = ({ visible }) => {
+  return (
+    <Box
+      sx={{
+        display: visible ? 'block' : 'none',
+        position: 'absolute',
+        width: '2px',
+        background: '#C6C6C6',
+        height: '100%',
+        pointerEvents: 'none',
+        top: 0,
+        right: 0,
+        zIndex: 'popover',
+      }}
+    />
+  )
+}
+
+const SpreadPage = ({ children, index }) => {
   const { pseudoPadding, padding } = useSpreadContainer()
   return (
     <Box
@@ -22,8 +45,10 @@ const SpreadPage = ({ children }) => {
         display: 'block',
         paddingBottom: pseudoPadding,
       }}
+      // #C6C6C6
     >
       {children}
+      <PageDivider visible={index % 2 == 0} />
     </Box>
   )
 }
@@ -31,13 +56,19 @@ const SpreadPage = ({ children }) => {
 const components = {
   types: {
     content: (props) => (
-      <SpreadPage>
+      <SpreadPage index={props.index}>
         <ContentModule {...props} />
       </SpreadPage>
     ),
     book: (props) => (
-      <SpreadPage>
+      <SpreadPage index={props.index}>
         <BookModule {...props} />
+      </SpreadPage>
+    ),
+    // @TODO: rename to 'features'?
+    feature: (props) => (
+      <SpreadPage index={props.index}>
+        <FeaturesModule {...props} />
       </SpreadPage>
     ),
   },

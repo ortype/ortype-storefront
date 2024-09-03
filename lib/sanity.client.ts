@@ -220,32 +220,3 @@ export async function getFontAndMoreFonts(
   }
   return { font: null, moreFonts: [] }
 }
-
-/**
- * Fetches data from Sanity CMS and processes the results as necessary.
- *
- * @param {string} query - Sanity query.
- * @param {Object} [params={}] - Query parameters.
- * @returns {Promise<Array|Object|Boolean>} - Processed results.
- */
-export async function getFontOrVariantWithOrTypeInstance(
-  query: string,
-  params: object = {}
-): Promise<Array<any> | object | boolean> {
-  try {
-    const results = await apiClient.fetch(query, params)
-
-    // Handle the possibility of an error result from Sanity
-    if (results.error) {
-      console.error('Error in sanity fetch response:', results.error)
-      return results // Return the original results on error
-    }
-
-    return await maybeInitiateOrType(results)
-  } catch (error) {
-    console.error('Error in sanity api call:', error)
-    // It might be safer to return false as an error indicator,
-    // as we don't have the original results at this point.
-    return false
-  }
-}
