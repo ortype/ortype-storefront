@@ -59,7 +59,7 @@ export default {
       return {
         media: <BookIcon />,
         subtitle: `Display as '${config.display}'`,
-        title: `Layout: '${moduleTitle}'`,
+        title: `Book: '${moduleTitle}'`,
       }
     },
   },

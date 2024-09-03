@@ -1,6 +1,7 @@
 import moduleBook from '@/sanity/schemas/objects/modules/book'
 import moduleContent from '@/sanity/schemas/objects/modules/content'
 import moduleFeatures from '@/sanity/schemas/objects/modules/features'
+import moduleInfo from '@/sanity/schemas/objects/modules/info'
 import { BookIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 // import productImage from '../productImage'
@@ -74,6 +75,7 @@ export default defineType({
         defineArrayMember({ type: moduleBook.name, name: 'book' }),
         // @TODO: rename to 'features'?
         defineArrayMember({ type: moduleFeatures.name, name: 'feature' }),
+        defineArrayMember({ type: moduleInfo.name, name: 'info' }),
       ],
       group: 'presentation',
     },

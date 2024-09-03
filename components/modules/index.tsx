@@ -7,6 +7,7 @@ import { useSpreadContainer } from '../pages/fonts/SpreadContainer'
 import BookModule from './Book'
 import ContentModule from './Content'
 import FeaturesModule from './Features'
+import InfoModule from './Info'
 
 type PageDividerProps = {
   visible: boolean
@@ -55,6 +56,11 @@ const SpreadPage = ({ children, index }) => {
 
 const components = {
   types: {
+    info: (props) => (
+      <SpreadPage index={props.index}>
+        <InfoModule {...props} />
+      </SpreadPage>
+    ),
     content: (props) => (
       <SpreadPage index={props.index}>
         <ContentModule {...props} />

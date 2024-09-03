@@ -1,6 +1,6 @@
 import PortableText from '@/components/modules/PortableText'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, Heading } from '@chakra-ui/react'
 import React from 'react'
 
 const Content: React.FC<{
@@ -22,8 +22,32 @@ const Content: React.FC<{
       style={{
         padding,
       }}
-      overflow={'hidden'}
+      overflowY={'auto'}
     >
+      {value.title && (
+        <Box
+          pos={'absolute'}
+          top={0}
+          right={0}
+          left={0}
+          style={{
+            padding: `0 ${padding}`,
+          }}
+        >
+          <Heading
+            pt={'0.5rem'}
+            pb={'0.25rem'}
+            borderBottom={'1px solid #000'}
+            size={'xs'}
+            color={'red'}
+            textAlign={'center'}
+            fontWeight={'normal'}
+            textTransform={'uppercase'}
+          >
+            {value.title}
+          </Heading>
+        </Box>
+      )}
       <Box
         sx={{
           '> div + div': {

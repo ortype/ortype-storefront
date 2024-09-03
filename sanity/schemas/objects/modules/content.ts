@@ -28,15 +28,19 @@ export default {
   name: 'module.content',
   title: 'Content',
   type: 'object',
-  fields: [defineField({ name: 'body', type: body.name })],
+  fields: [
+    defineField({ name: 'title', type: 'string' }),
+    defineField({ name: 'body', type: body.name }),
+  ],
   preview: {
     select: {
+      moduleTitle: 'title',
       body: 'body',
     },
     prepare(selection) {
-      const { body, title } = selection
+      const { body, moduleTitle } = selection
       return {
-        title: 'Rich text',
+        title: moduleTitle || '',
         subtitle: body && blocksToText(body),
       }
     },
