@@ -8,6 +8,7 @@ import BookModule from './Book'
 import ContentModule from './Content'
 import FeaturesModule from './Features'
 import InfoModule from './Info'
+import StylesModule from './Styles'
 
 type PageDividerProps = {
   visible: boolean
@@ -48,12 +49,13 @@ const SpreadPage = ({ children, index, ...props }) => {
       }}
       sx={{
         p: {
-          maxW: props.textAlign === 'center' ? '80%' : '100%',
-          mx: 'auto',
+          // @NOTE: either manual enter line-breaks `/n` with shift+return
+          // in the editor or we define a maxW only when centered
+          // maxW: props.textAlign === 'center' ? '85%' : '100%',
+          // mx: 'auto',
         },
       }}
       {...props}
-      // #C6C6C6
     >
       {children}
       <PageDivider visible={index % 2 == 0} />
@@ -63,6 +65,11 @@ const SpreadPage = ({ children, index, ...props }) => {
 
 const components = {
   types: {
+    styles: (props) => (
+      <SpreadPage index={props.index}>
+        <StylesModule {...props} />
+      </SpreadPage>
+    ),
     info: (props) => (
       <SpreadPage index={props.index}>
         <InfoModule {...props} />

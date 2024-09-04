@@ -109,7 +109,7 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
                       <Center
                         h={'100%'}
                         style={{ fontSize: `${140 * conversion}px` }}
-                        className={font?.variants[0]._id}
+                        className={font?.defaultVariant?._id}
                       >
                         {feature.example}
                       </Center>
@@ -133,7 +133,7 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
                           fontSize: `${140 * conversion}px`,
                           fontFeatureSettings: `'${feature.tag}'`,
                         }}
-                        className={font?.variants[0]._id}
+                        className={font?.defaultVariant?._id}
                       >
                         {feature.example}
                       </Center>

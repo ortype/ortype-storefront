@@ -57,12 +57,14 @@ const fontFields = defineQuery(`
   _id,
   _type,
   name,
+  shortName,
   isVisible,
   "slug": slug.current,
   variants[]->{name, optionName, _id},
   uid,
   version,
   metafields[]{key, value},
+  defaultVariant->{_id},
   modules[]{
     ..., 
     book->{variantId, snapshots},  
@@ -77,7 +79,12 @@ const fontFields = defineQuery(`
     } 
   },
   modifiedAt,
-  languages[]{html, name}
+  languages[]{html, name},
+  styleGroups[]{
+    _type,
+    groupName,
+    variants[]->{_id, optionName}
+  },
 `)
 
 const fontVariantFields = defineQuery(`
@@ -160,6 +167,11 @@ export interface Metrics {
   distanceTop: number
 }
 
+type StyleGroup = {
+  groupName: string
+  variants: { _id: string; optionName: string }[]
+}
+
 export interface Font {
   _id: string
   _type: string
@@ -167,14 +179,17 @@ export interface Font {
   isVisible: boolean
   uid?: string
   version?: string
+  shortName?: string
   slug: string
   variants: FontVariant[]
   modules?: Module[]
   modifiedAt: string
   metafields: Metafield[]
+  styleGroups?: StyleGroup[]
   metrics?: Metrics
   features?: Feature[]
   languages?: Language[]
+  defaultVariant: FontVariant
 }
 
 export interface FontVariant {

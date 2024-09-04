@@ -52,6 +52,8 @@ const Content: React.FC<{
         direction={'column'}
         justifyContent={'space-between'}
         h={'100%'}
+        w={'100%'}
+        overflow={'hidden'}
         /*sx={{
           '> div + div': {
             mt: 100,

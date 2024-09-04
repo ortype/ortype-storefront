@@ -23,6 +23,7 @@ import moduleBook from '@/sanity/schemas/objects/modules/book'
 import moduleContent from '@/sanity/schemas/objects/modules/content'
 import moduleFeatures from '@/sanity/schemas/objects/modules/features'
 import moduleInfo from '@/sanity/schemas/objects/modules/info'
+import moduleStyles from '@/sanity/schemas/objects/modules/styles'
 import postType from '@/sanity/schemas/post'
 import productImageType from '@/sanity/schemas/productImage'
 import settingsType from '@/sanity/schemas/settings'
@@ -56,6 +57,7 @@ export default defineConfig({
       moduleBook,
       moduleFeatures,
       moduleInfo,
+      moduleStyles,
       moduleContent,
       body,
     ],

@@ -27,7 +27,7 @@ const RectoVerso: React.FC<{
         padding,
       }}
     >
-      {font.name && (
+      {font.shortName && (
         <Box
           pos={'absolute'}
           top={0}
@@ -47,7 +47,7 @@ const RectoVerso: React.FC<{
             fontWeight={'normal'}
             textTransform={'uppercase'}
           >
-            {font.name}
+            {font.shortName}
           </Heading>
         </Box>
       )}

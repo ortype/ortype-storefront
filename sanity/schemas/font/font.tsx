@@ -2,6 +2,7 @@ import moduleBook from '@/sanity/schemas/objects/modules/book'
 import moduleContent from '@/sanity/schemas/objects/modules/content'
 import moduleFeatures from '@/sanity/schemas/objects/modules/features'
 import moduleInfo from '@/sanity/schemas/objects/modules/info'
+import moduleStyles from '@/sanity/schemas/objects/modules/styles'
 import { BookIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 // import productImage from '../productImage'
@@ -42,6 +43,14 @@ export default defineType({
       group: 'fontFileSync',
     }),
     defineField({
+      name: 'shortName',
+      title: 'Short name',
+      type: 'string',
+      validation: (rule) => rule.required(),
+      readOnly: true,
+      group: 'fontFileSync',
+    }),
+    defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
@@ -64,18 +73,41 @@ export default defineType({
       type: 'text',
       group: 'presentation',
     }),
+    {
+      name: 'defaultVariant',
+      title: 'Default variant',
+      type: 'reference',
+      weak: true,
+      group: 'presentation',
+      to: [{ type: 'fontVariant' }],
+      validation: (Rule) => Rule.required(),
+      options: {
+        disableNew: true,
+        filter: ({ document }) => ({
+          filter: 'parentUid == $parentUid',
+          params: {
+            // fontId: document._id.replace('drafts.', ''),
+            parentUid: document.uid,
+          },
+        }),
+      },
+      preview: {
+        title: 'name',
+      },
+    },
     // Modules
     {
       name: 'modules',
       title: 'Modules',
       type: 'array',
       of: [
-        // Item of type 'object' not valid for this list
+        // Item of type 'object' not valid for this list, must be type array
         defineArrayMember({ type: moduleContent.name, name: 'content' }),
         defineArrayMember({ type: moduleBook.name, name: 'book' }),
         // @TODO: rename to 'features'?
         defineArrayMember({ type: moduleFeatures.name, name: 'feature' }),
         defineArrayMember({ type: moduleInfo.name, name: 'info' }),
+        defineArrayMember({ type: moduleStyles.name, name: 'styles' }),
       ],
       group: 'presentation',
     },
@@ -154,6 +186,7 @@ export default defineType({
                   type: 'reference',
                   weak: true,
                   options: {
+                    disableNew: true,
                     filter: ({ document, parent, parentPath }) => {
                       const group = document.styleGroups?.filter(
                         (group) => group._key === parentPath[1]?._key
@@ -187,6 +220,7 @@ export default defineType({
                   type: 'reference',
                   weak: true,
                   options: {
+                    disableNew: true,
                     filter: ({ document, parent, parentPath }) => {
                       const group = document.styleGroups?.filter(
                         (group) => group._key === parentPath[1]._key
