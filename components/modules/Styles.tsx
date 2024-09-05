@@ -1,7 +1,6 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import {
   Box,
-  Center,
   Flex,
   Heading,
   Tab,
@@ -11,16 +10,20 @@ import {
   Tabs,
   Text,
 } from '@chakra-ui/react'
+import { useRef } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
+import PageModal from './PageModal'
 
 export interface StylesModuleProps {
   value: any // @TODO: types
+  index: number
 }
 
-export default function StylesModule({ value }: StylesModuleProps) {
+export default function StylesModule({ value, index }: StylesModuleProps) {
   const { title } = value
   const { padding, conversion } = useSpreadContainer()
   const font = useFont()
+  const containerRef = useRef(null)
 
   const tabList: string[] = []
   const tabPanels: { _id: string; optionName: string }[][] = []
@@ -47,24 +50,8 @@ export default function StylesModule({ value }: StylesModuleProps) {
     }
   }
 
-  return (
-    <Flex
-      w={'100%'}
-      h={'100%'}
-      bg={'#FFF'}
-      position={'absolute'}
-      top={0}
-      left={0}
-      bottom={0}
-      right={0}
-      wrap={'nowrap'}
-      direction={'column'}
-      alignContent={'flex-start'}
-      style={{
-        padding,
-      }}
-      overflow={'hidden'}
-    >
+  const renderModule = () => (
+    <>
       <Box
         pos={'absolute'}
         top={0}
@@ -122,6 +109,34 @@ export default function StylesModule({ value }: StylesModuleProps) {
           ))}
         </TabPanels>
       </Tabs>
-    </Flex>
+    </>
+  )
+
+  return (
+    <>
+      <Flex
+        w={'100%'}
+        h={'100%'}
+        bg={'#FFF'}
+        position={'absolute'}
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        wrap={'nowrap'}
+        direction={'column'}
+        alignContent={'flex-start'}
+        style={{
+          padding,
+        }}
+        overflow={'hidden'}
+        ref={containerRef}
+      >
+        {renderModule()}
+      </Flex>
+      <PageModal isEven={index % 2 == 0} containerRef={containerRef}>
+        {renderModule()}
+      </PageModal>
+    </>
   )
 }

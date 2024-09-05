@@ -26,7 +26,7 @@ const PageDivider: React.FC<PageDividerProps> = ({ visible }) => {
         pointerEvents: 'none',
         top: 0,
         right: 0,
-        zIndex: 'popover',
+        zIndex: 'docked',
       }}
     />
   )

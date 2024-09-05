@@ -33,6 +33,7 @@ const customTheme = extendTheme({
     }
 });
 */
+
 const colors = {
   brand: {
     50: '#ffffff', // Lighter white
@@ -51,8 +52,19 @@ const colors = {
   },
 }
 
+const styles = {
+  global: {
+    'html, body': {
+      color: '#000',
+    },
+    a: {
+      color: '#0000FF',
+    },
+  },
+}
+
 export const theme = extendTheme(
-  { colors },
+  { colors, styles },
   withDefaultColorScheme({ colorScheme: 'brand' })
 )
 
