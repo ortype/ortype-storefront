@@ -3,6 +3,7 @@ import { Box, Flex } from '@chakra-ui/react'
 import React, { ReactNode, useEffect, useLayoutEffect, useRef } from 'react'
 
 interface OverflowDetectorProps {
+  _key: string
   index: number
   children: ReactNode
   overflowCol: boolean
@@ -17,11 +18,18 @@ const arrayKeysAreEqual = (a1, a2) =>
 const OverflowDetector: React.FC<OverflowDetectorProps> = ({
   index,
   children,
+  _key,
   overflowCol,
 }) => {
   const hiddenRef = useRef<HTMLDivElement | null>(null)
-  const { state, dispatch, padding, pageAspect, conversion } =
-    useSpreadContainer()
+  const {
+    state,
+    updateItemAction,
+    updateItemsAction,
+    padding,
+    pageAspect,
+    conversion,
+  } = useSpreadContainer()
 
   useEffect(() => {
     // @NOTE: disable the SET_OVERFLOW logic for smaller breakpoints with chakra's useMediaQuery
@@ -30,34 +38,34 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
 
     const measureOverflow = () => {
       if (hiddenContainer) {
-        const hasOverflow =
+        const isOverflowing =
           hiddenContainer.scrollHeight > hiddenContainer.offsetHeight
         // `clientHeight` probably works the same as `offsetHeight`
 
-        if (hasOverflow === state[index]?.value) {
+        if (isOverflowing === state.items[_key]?.isOverflowing) {
           return
         }
-        dispatch({
-          type: 'SET_OVERFLOW',
+        updateItemAction({
+          _key,
+          isOverflowing,
           index,
-          isOverflowing: { value: hasOverflow, overflowCol },
+          overflowCol,
+        })
+
+        updateItemsAction({
+          _key,
+          isOverflowing,
         })
       }
     }
 
     measureOverflow()
-
-    window.addEventListener('resize', measureOverflow)
-
-    return () => {
-      window.removeEventListener('resize', measureOverflow)
-    }
   })
 
-  const isOverflowing = state[index]?.value
+  const isOverflowing = state.items[_key]?.isOverflowing
   const isSpread = isOverflowing && overflowCol
-  console.log('isOverflowing: ', index, isOverflowing)
-  console.log('isSpread: ', index, isSpread)
+  // console.log('isOverflowing: ', index, isOverflowing)
+  // console.log('isSpread: ', index, isSpread)
 
   return (
     <>

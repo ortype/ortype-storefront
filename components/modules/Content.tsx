@@ -52,7 +52,11 @@ const Content: React.FC<{
           </Box>
         )
       }
-      <OverflowDetector index={index} overflowCol={value.overflowCol}>
+      <OverflowDetector
+        index={index}
+        _key={value._key}
+        overflowCol={value.overflowCol}
+      >
         <PortableText value={value.body} />
       </OverflowDetector>
     </Flex>

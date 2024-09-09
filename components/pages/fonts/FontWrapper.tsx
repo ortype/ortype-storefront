@@ -27,7 +27,7 @@ const FontWrapper = ({ moreFonts, font }) => {
   return (
     <Box bg={'#000'}>
       <FontContainer font={font} moreFonts={moreFonts}>
-        <SpreadContainerProvider>
+        <SpreadContainerProvider initialItems={font.modules}>
           {font?.modules && <Modules value={font.modules} />}
         </SpreadContainerProvider>
       </FontContainer>

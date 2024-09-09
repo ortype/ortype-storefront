@@ -27,7 +27,7 @@ export default function PageModal({
   isEven,
   containerRef,
 }: PageModal) {
-  const { pseudoPadding, padding, conversion } = useSpreadContainer()
+  const { padding, conversion } = useSpreadContainer()
   const font = useFont()
   const { isOpen, onOpen, onClose } = useDisclosure()
 

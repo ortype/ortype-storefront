@@ -16,12 +16,12 @@ import PageModal from './PageModal'
 
 export interface StylesModuleProps {
   value: any // @TODO: types
-  index: number
 }
 
-export default function StylesModule({ value, index }: StylesModuleProps) {
+export default function StylesModule({ value }: StylesModuleProps) {
   const { title } = value
-  const { padding, conversion } = useSpreadContainer()
+  const { padding, conversion, state } = useSpreadContainer()
+  const itemState = state.items[value._key]
   const font = useFont()
   const containerRef = useRef(null)
 
@@ -134,7 +134,15 @@ export default function StylesModule({ value, index }: StylesModuleProps) {
       >
         {renderModule()}
       </Flex>
-      <PageModal isEven={index % 2 == 0} containerRef={containerRef}>
+      {/*
+        <OverflowDetector
+          index={index}
+          _key={value._key}
+          overflowCol={value.overflowCol}
+        >
+        // use overflow detector... or a easy hook... to conditionally render PageModal        
+        */}
+      <PageModal isEven={itemState.index % 2 == 0} containerRef={containerRef}>
         {renderModule()}
       </PageModal>
     </>

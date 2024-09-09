@@ -44,52 +44,17 @@ const PageDivider: React.FC<PageDividerProps> = ({
   )
 }
 
-const SpreadPage = ({ children, index, spreadMode, overflowCol, ...props }) => {
-  const { pseudoPadding, dispatch, spreadAspect, pageAspect, padding, state } =
-    useSpreadContainer()
-  const isOverflowing = state[index]?.value
-
-  const isSpread = spreadMode && isOverflowing && overflowCol
-
-  useEffect(() => {
-    let i = index
-    if (isSpread) {
-      i = index + 1
-    }
-    // @NOTE: spreadMode and overflowCol are virtually the same thing I think
-    if (!spreadMode || !overflowCol) {
-      // previous state has overflow and overflowCol (or spreadMode)
-      // bump the index up by 1 to account for phantom page
-
-      // @NOTE: ok this doesn't work for the following pages/spreads
-      // we need a way of counting up from the bottom, and always adding 1 more
-      // should we store each module in the SpreadContainer.state by `_key` along with
-      // an `index` prop which we generate (?)
-
-      // state[value._key]
-      // the state is an object with keys
-
-      /*
-      const keys = Object.keys(test);
-      const index = keys.indexOf('y');
-      console.log(test[keys[index - 1]]);
-      */
-
-      if (state[index - 1]?.value === true && state[index - 1]?.overflowCol) {
-        dispatch({
-          type: 'SET_OVERFLOW',
-          index: i + 1,
-          isOverflowing: { value: false, overflowCol: false },
-        })
-      } else {
-        dispatch({
-          type: 'SET_OVERFLOW',
-          index: i,
-          isOverflowing: { value: false, overflowCol: false },
-        })
-      }
-    }
-  }, [isSpread])
+const SpreadPage = ({
+  children,
+  _key,
+  spreadMode = false,
+  overflowCol,
+  ...props
+}) => {
+  const { spreadAspect, pageAspect, padding, state } = useSpreadContainer()
+  const isOverflowing = state.items[_key]?.isOverflowing
+  const itemState = state.items[_key]
+  const isSpread = spreadMode || (isOverflowing && overflowCol)
 
   return (
     <Box
@@ -117,8 +82,7 @@ const SpreadPage = ({ children, index, spreadMode, overflowCol, ...props }) => {
     >
       {children}
       <PageDivider
-        // @NOTE: we need to consider any index's that become a spread
-        visible={index % 2 == 0}
+        visible={itemState.index % 2 == 0}
         overflowCol={overflowCol}
         isOverflowing={isOverflowing}
       />
@@ -129,36 +93,46 @@ const SpreadPage = ({ children, index, spreadMode, overflowCol, ...props }) => {
 const components = {
   types: {
     styles: (props) => (
-      <SpreadPage index={props.index} spreadMode={false}>
+      <SpreadPage _key={props.value._key}>
         <StylesModule {...props} />
       </SpreadPage>
     ),
     info: (props) => (
-      <SpreadPage index={props.index} spreadMode={false}>
+      <SpreadPage _key={props.value._key}>
         <InfoModule {...props} />
       </SpreadPage>
     ),
     content: (props) => (
       <SpreadPage
-        index={props.index}
+        _key={props.value._key}
         textAlign={props.value.centered ? 'center' : 'left'}
         overflowCol={props.value.overflowCol}
-        spreadMode={true}
       >
         <ContentModule {...props} />
       </SpreadPage>
     ),
     book: (props) => (
-      <SpreadPage index={props.index} spreadMode={false}>
+      <SpreadPage _key={props.value._key}>
         <BookModule {...props} />
       </SpreadPage>
     ),
     // @TODO: rename to 'features'?
     feature: (props) => (
-      <SpreadPage index={props.index} spreadMode={false}>
+      <SpreadPage _key={props.value._key}>
         <FeaturesModule {...props} />
       </SpreadPage>
     ),
+    // @TODO: type tester module
+    /*
+    tester: (props) => (
+      <SpreadPage
+        _key={props.value._key}
+        spreadMode={true}
+      >
+        <TesterModule {...props} />
+      </SpreadPage>
+    ),    
+    */
   },
 }
 

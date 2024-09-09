@@ -48,75 +48,125 @@ margin: 46,
 }
 */
 
-// gets consumed by modules:
-// pageMargin
-// conversion
-// ratio (to calculate paddingBottom)
+// Define types for the item and state
+
+interface Item {
+  _key: string
+  _type: string
+  overflowCol: boolean
+  index: number
+  isOverflowing: boolean // @TODO: this is not included in the initial items
+}
 
 interface State {
-  [index: number]: {
-    value: boolean
-    overflowCol: boolean
-  }
+  items: { [key: string]: Item }
+  order: string[] // Array to keep the order of ids
 }
+
+const UPDATE_ITEMS = 'UPDATE_ITEMS'
+const UPDATE_ITEM = 'UPDATE_ITEM'
+
+interface UpdateItemsPayload {
+  _key: string
+  isOverflowing: boolean
+}
+
+interface UpdateItemPayload {
+  _key: string
+  isOverflowing: boolean
+  overflowCol?: boolean
+  index?: number
+}
+
+type Payload = UpdateItemsPayload | UpdateItemPayload
 
 interface Action {
-  type: 'SET_OVERFLOW'
-  index: number
-  isOverflowing: {
-    value: boolean
-    overflowCol: boolean
+  type: string
+  payload: Payload
+}
+
+interface SpreadContainerProviderProps {
+  initialItems: Item[]
+  children: ReactNode
+}
+
+const SpreadContainerContext = createContext<
+  | {
+      conversion: number
+      colWidth: number
+      spreadAspect: string
+      pageAspect: string
+      padding: string
+      state: State
+      updateItemsAction: (payload: UpdateItemsPayload) => void
+      updateItemAction: (payload: UpdateItemPayload) => void
+    }
+  | undefined
+>(undefined)
+
+const updateItem = (state: State, payload: UpdateItemPayload): State => {
+  const { _key, isOverflowing, index } = payload
+  if (!state.items[_key]) return state
+
+  return {
+    ...state,
+    items: {
+      ...state.items,
+      [_key]: {
+        ...state.items[_key],
+        isOverflowing: isOverflowing,
+        index: index ?? state.items[_key].index,
+      },
+    },
   }
 }
 
-interface ConfigProps {
-  conversion: number
-  colWidth: number
-  pseudoPadding: string
-  spreadAspect: string
-  pageAspect: string
-  padding: string
-  dispatch: Dispatch<Action>
-  state: State
+const updateItems = (state: State, payload: UpdateItemsPayload): State => {
+  const { order } = state
+  const { isOverflowing } = payload
+
+  if (!isOverflowing) return state
+  console.log('updateItemsAction running for: ', payload._key)
+  let newState = { ...state }
+  for (let i = 0; i < order.length; i++) {
+    // ok we start from the current _key's index
+    if (order[i] === payload._key) {
+      for (let j = i + 1; j < order.length; j++) {
+        // start 1 index item after
+        // order[j] === item._key
+        newState = {
+          ...newState,
+          items: {
+            ...newState.items,
+            [order[j]]: {
+              ...newState.items[order[j]],
+              index: newState.items[order[j]].index + 1,
+            },
+          },
+        }
+      }
+      break
+    }
+  }
+
+  return newState
 }
 
-const SpreadContainerContext = createContext<ConfigProps | undefined>(undefined)
-
-const initialState: State = {}
-
 const spreadContainerReducer = (state: State, action: Action): State => {
-  console.log(
-    'spreadContainerReducer: ',
-    action.type,
-    action.index,
-    action.isOverflowing
-  )
   switch (action.type) {
-    case 'SET_OVERFLOW':
-      return {
-        ...state,
-        // [action._key]: {
-        // index: action.module.index
-        // isOverflowing: action.module.isOverflowing
-        // overflowCol: action.module.overflowCol
-        // },
-        [action.index]: {
-          value: action.isOverflowing.value,
-          overflowCol: action.isOverflowing.overflowCol,
-        },
-      }
+    case 'UPDATE_ITEMS':
+      return updateItems(state, action.payload)
+    case UPDATE_ITEM:
+      return updateItem(state, action.payload as UpdateItemPayload)
     default:
       return state
   }
 }
 
-interface SpreadContainerProviderProps {
-  children: ReactNode
-}
-
-const SpreadContainerProvider: React.FC<SpreadContainerProviderProps> = ({
+const SpreadContainerProvider = ({
+  initialItems,
   children,
-}) => {
+}: SpreadContainerProviderProps) => {
   const targetRef = useRef()
   const size = useDimensions(targetRef)
   const pageWidth = 680
@@ -126,23 +176,45 @@ const SpreadContainerProvider: React.FC<SpreadContainerProviderProps> = ({
   const conversion = size.width / 2 / pageWidth
   const colWidth = 558
 
-  // track overflow index
+  // Transform the initialItems array into a state object keyed by '_key', including the index
+  const initialState: State = {
+    items: initialItems.reduce((acc, item, index) => {
+      acc[item._key] = {
+        index,
+        _key: item._key,
+        _type: item._type,
+        overflowCol: item.overflowCol,
+        isOverflowing: false,
+      }
+      return acc
+    }, {} as { [key: string]: Item }),
+    order: initialItems.map((item) => item._key),
+  }
+
   const [state, dispatch] = useReducer(spreadContainerReducer, initialState)
 
+  const updateItemsAction = (payload: UpdateItemsPayload) => {
+    dispatch({ type: UPDATE_ITEMS, payload })
+  }
+
+  const updateItemAction = (payload: UpdateItemPayload) => {
+    dispatch({ type: UPDATE_ITEM, payload })
+  }
+
   // @TODO: this is the config for desktop '50% / 2-up display'
-  // for base breakpoint these values need to be halved or something
+  // for base breakpoint these aspect values need to be halved or something
 
   return (
     <SpreadContainerContext.Provider
       value={{
         colWidth,
         conversion,
-        pseudoPadding: mapResponsive(ratio, (r) => `${(r / 1) * 100}%`),
         spreadAspect: mapResponsive(ratio, (r) => `${(r / 1) * 100}%`),
         pageAspect: mapResponsive(ratio, (r) => `${(1 / r) * 100}%`),
         padding: `${pageMargin * conversion}px`,
         state,
-        dispatch,
+        updateItemsAction,
+        updateItemAction,
       }}
     >
       <Flex
