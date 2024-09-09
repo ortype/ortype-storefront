@@ -43,7 +43,7 @@ export default function CustomPortableText({
           fontSize={38 * conversion + 'px'}
           lineHeight={49 * conversion + 'px'}
           className={font?.defaultVariant?._id}
-          noOfLines={17}
+          // noOfLines={17}
         >
           {children}
         </Text>

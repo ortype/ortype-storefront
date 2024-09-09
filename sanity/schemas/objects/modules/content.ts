@@ -36,6 +36,14 @@ export default {
       title: 'Center text',
       type: 'boolean',
     }),
+    defineField({
+      name: 'overflowCol',
+      title: 'Overflow into columns',
+      description:
+        'Content overflow is handled by a overlay, unless this is ticked, then it flows content across a spread',
+      type: 'boolean',
+      initialValue: false,
+    }),
   ],
   preview: {
     select: {

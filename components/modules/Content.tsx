@@ -2,10 +2,12 @@ import PortableText from '@/components/modules/PortableText'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import { Box, Flex, Heading } from '@chakra-ui/react'
 import React from 'react'
+import OverflowDetector from './OverflowDetector'
 
 const Content: React.FC<{
   value: any
-}> = ({ value }) => {
+  index: number
+}> = ({ value, index }) => {
   const { padding } = useSpreadContainer()
   return (
     <Flex
@@ -22,64 +24,37 @@ const Content: React.FC<{
       style={{
         padding,
       }}
-      overflowY={'auto'}
     >
-      {value.title && (
-        <Box
-          pos={'absolute'}
-          top={0}
-          right={0}
-          left={0}
-          style={{
-            padding: `0 ${padding}`,
-          }}
-        >
-          <Heading
-            pt={'0.5rem'}
-            pb={'0.25rem'}
-            borderBottom={'1px solid #000'}
-            size={'xs'}
-            color={'red'}
-            textAlign={'center'}
-            fontWeight={'normal'}
-            textTransform={'uppercase'}
+      {
+        // @TODO: in the case of `isSpread` we need a title for each 'column/page'
+        value.title && (
+          <Box
+            pos={'absolute'}
+            top={0}
+            right={0}
+            left={0}
+            style={{
+              padding: `0 ${padding}`,
+            }}
           >
-            {value.title}
-          </Heading>
-        </Box>
-      )}
-      <Flex
-        direction={'column'}
-        justifyContent={'space-between'}
-        h={'100%'}
-        w={'100%'}
-        overflow={'hidden'}
-        /*sx={{
-          '> div + div': {
-            mt: 100,
-          },
-          '> p + p': {
-            mt: 2,
-          },
-          '> div + h2': {
-            mt: 100,
-          },
-          '> h2 + p': {
-            mt: 50,
-          },
-          '> p + h2': {
-            mt: 100,
-          },
-          '> div + p, > p + div': {
-            mt: 100,
-          },
-          '> #toc + h2': {
-            mt: 0,
-          },
-        }}*/
-      >
+            <Heading
+              pt={'0.5rem'}
+              pb={'0.25rem'}
+              borderBottom={'1px solid #000'}
+              size={'xs'}
+              color={'red'}
+              textAlign={'center'}
+              fontWeight={'normal'}
+              textTransform={'uppercase'}
+            >
+              {value.title}
+            </Heading>
+          </Box>
+        )
+      }
+      <OverflowDetector index={index} overflowCol={value.overflowCol}>
         <PortableText value={value.body} />
-      </Flex>
+      </OverflowDetector>
     </Flex>
   )
 }
