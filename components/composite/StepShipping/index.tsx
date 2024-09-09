@@ -253,7 +253,7 @@ export const StepShipping: React.FC<Props> = () => {
                                           props?.deliveryLeadTimeForShipment
                                         return (
                                           <label
-                                            className="flex flex-col p-3 border rounded cursor-pointer hover:border-primary transition duration-200 ease-in"
+                                            className="flex flex-col p-3 border rounded cursor-pointer hover:border-black transition duration-200 ease-in"
                                             htmlFor={props.htmlFor}
                                           >
                                             <ShippingLineItemTitle>

@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import tw from "twin.macro"
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
 interface ShowHideMenuButtonIconProps {
   showHideMenu: boolean
@@ -10,11 +10,11 @@ export const ShowHideMenuWrapper = styled.div`
 `
 
 export const ShowHideMenuButton = styled.button`
-  ${tw`text-xs text-primary flex items-center mb-4`}
+  ${tw`text-xs text-gray-500 flex items-center mb-4`}
 `
 
 export const ShowHideMenuButtonText = styled.span`
-  ${tw`font-semibold border-b border-primary`}
+  ${tw`font-semibold border-b border-black`}
 `
 
 export const ShowHideMenuButtonIcon = styled.div<ShowHideMenuButtonIconProps>`

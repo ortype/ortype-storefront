@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import tw from "twin.macro"
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
 export const SpinnerIcon: React.FC = () => {
   return (
@@ -27,5 +27,5 @@ export const SpinnerIcon: React.FC = () => {
 }
 
 const Svg = styled.svg`
-  ${tw`text-contrast`}
+  ${tw`text-base`}
 `

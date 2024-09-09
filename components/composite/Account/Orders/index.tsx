@@ -39,7 +39,7 @@ export const OrderItemsCount = styled.p`
 `
 
 export const OrderDate = styled.p`
-  ${tw`inline-block text-sm font-extralight text-gray-400 bg-gray-200 px-3 rounded-full h-5 md:(bg-contrast px-0 w-min)`}
+  ${tw`inline-block text-sm font-extralight text-gray-400 bg-gray-200 px-3 rounded-full h-5 md:(bg-gray-50 px-0 w-min)`}
 `
 
 function OrdersPage(): JSX.Element {
@@ -205,7 +205,7 @@ function OrdersPage(): JSX.Element {
               className:
                 'w-[46px] h-[38px] mr-2 border rounded text-sm text-gray-500',
               activeClassName:
-                'text-primary font-semibold border-primary border-2',
+                'text-gray-500 font-semibold border-black border-2',
             }}
             className="p-2"
           />

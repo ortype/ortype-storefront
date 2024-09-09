@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import tw from "twin.macro"
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
 export const CheckmarkIcon: React.FC = () => {
   return (
@@ -19,5 +19,5 @@ export const CheckmarkIcon: React.FC = () => {
 }
 
 const Svg = styled.svg`
-  ${tw`text-contrast w-3/5`}
+  ${tw`text-base w-3/5`}
 `

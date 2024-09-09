@@ -1,8 +1,8 @@
-import { BillingAddressForm } from "@commercelayer/react-components/addresses/BillingAddressForm"
-import { SaveAddressesButton } from "@commercelayer/react-components/addresses/SaveAddressesButton"
-import type { Dispatch } from "react"
-import styled from "styled-components"
-import tw from "twin.macro"
+import { BillingAddressForm } from '@commercelayer/react-components/addresses/BillingAddressForm'
+import { SaveAddressesButton } from '@commercelayer/react-components/addresses/SaveAddressesButton'
+import type { Dispatch } from 'react'
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
 export const Wrapper = styled.div`
   ${tw`mt-0 absolute top-0 translate-y-5 opacity-0`}
@@ -25,11 +25,11 @@ export const FormButtons = styled.div`
 `
 
 export const DiscardChanges = styled.div<DiscardChangesProps>`
-  ${tw`flex content-center items-center text-sm text-primary underline border-red-400 font-bold hover:(cursor-pointer)`}
+  ${tw`flex content-center items-center text-sm text-gray-500 underline border-red-400 font-bold hover:(cursor-pointer)`}
 `
 
 export const SaveButton = styled(SaveAddressesButton)`
-  ${tw`text-sm font-bold text-black bg-primary text-center px-16 lg:px-20 h-11 rounded-md shadow-sm disabled:opacity-50 max-w-max`}
+  ${tw`text-sm font-bold text-black bg-gray-200 text-center px-16 lg:px-20 h-11 rounded-md shadow-sm disabled:opacity-50 max-w-max`}
 `
 
 export const Text = styled.p`

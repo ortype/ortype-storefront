@@ -16,7 +16,7 @@ export const ShippingTitle = styled.h4`
 export const ShippingSummary = styled.div`
   ${tw`contents`}
   input:checked + label {
-    ${tw`border-2 border-primary shadow-md bg-gray-50`}
+    ${tw`border-2 border-black shadow-md bg-gray-50`}
   }
 `
 export const ShippingSummaryItem = styled.div`

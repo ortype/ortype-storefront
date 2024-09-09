@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import tw from "twin.macro"
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
 interface Props {
   label: string
@@ -44,7 +44,7 @@ const ButtonTrack = styled.button`
 `
 
 const Dot = styled.span`
-  ${tw` inline-block h-3 w-3 rounded-full bg-contrast shadow ring-0 transition ease-in-out duration-200`}
+  ${tw` inline-block h-3 w-3 rounded-full bg-gray-50 shadow ring-0 transition ease-in-out duration-200`}
 `
 
 const Label = styled.span`
@@ -57,7 +57,7 @@ interface WrapperProps {
 const ButtonToggle = styled.label<WrapperProps>`
   ${tw`flex`}
   ${ButtonTrack} {
-    ${({ checked }) => (checked ? tw`bg-primary` : tw`bg-gray-200`)}
+    ${({ checked }) => (checked ? tw`bg-gray-200` : tw`bg-gray-200`)}
   }
   ${Dot} {
     ${({ checked }) => (checked ? tw`translate-x-3` : tw`translate-x-0`)}

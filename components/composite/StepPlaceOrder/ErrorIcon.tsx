@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import tw from "twin.macro"
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
 export const ErrorIcon: React.FC = () => {
   return (
@@ -19,5 +19,5 @@ export const ErrorIcon: React.FC = () => {
 }
 
 const Svg = styled.svg`
-  ${tw`text-contrast mx-1`}
+  ${tw`text-base mx-1`}
 `

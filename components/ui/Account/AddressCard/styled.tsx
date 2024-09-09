@@ -1,9 +1,9 @@
-import { AddressField } from "@commercelayer/react-components/addresses/AddressField"
-import styled from "styled-components"
-import tw from "twin.macro"
+import { AddressField } from '@commercelayer/react-components/addresses/AddressField'
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
-import { LinkButtonCss } from "components/ui/Account/form/Button"
-import { LinkButton } from "components/ui/Account/LinkButton"
+import { LinkButtonCss } from 'components/ui/Account/form/Button'
+import { LinkButton } from 'components/ui/Account/LinkButton'
 
 export const Wrapper = styled.div`
   ${tw`relative transition duration-200 ease-in bg-white md:bg-transparent focus:shadow-sm`}
@@ -38,7 +38,7 @@ export const ConfirmActions = styled.div`
 
 export const EditButton = styled(AddressField)`
   ${LinkButtonCss}
-  ${tw`text-gray-400 group-hover:(text-primary)`}
+  ${tw`text-gray-400 group-hover:(text-gray-500)`}
 `
 
 export const DeleteButtonWrapper = styled.div`
@@ -47,7 +47,7 @@ export const DeleteButtonWrapper = styled.div`
 
 export const DeleteButton = styled(LinkButton)`
   ${LinkButtonCss}
-  ${tw`group-hover:(text-primary) bg-white`}
+  ${tw`group-hover:(text-gray-500) bg-white`}
 `
 
 export const ConfirmDelete = styled(AddressField)`
@@ -57,5 +57,5 @@ export const ConfirmDelete = styled(AddressField)`
 
 export const ConfirmCancel = styled.a`
   ${LinkButtonCss}
-  ${tw`px-4 py-4 text-black rounded-xl bg-contrast flex items-center justify-center mx-0.5 w-14`}
+  ${tw`px-4 py-4 text-black rounded-xl bg-gray-50 flex items-center justify-center mx-0.5 w-14`}
 `

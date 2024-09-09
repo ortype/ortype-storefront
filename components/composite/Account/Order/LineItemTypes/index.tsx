@@ -1,11 +1,11 @@
-import type { TLineItem } from "@commercelayer/react-components"
-import { LineItem } from "@commercelayer/react-components/line_items/LineItem"
-import { LineItemAmount } from "@commercelayer/react-components/line_items/LineItemAmount"
-import { LineItemCode } from "@commercelayer/react-components/line_items/LineItemCode"
-import { LineItemImage } from "@commercelayer/react-components/line_items/LineItemImage"
-import { LineItemName } from "@commercelayer/react-components/line_items/LineItemName"
-import { LineItemQuantity } from "@commercelayer/react-components/line_items/LineItemQuantity"
-import { useTranslation } from "react-i18next"
+import type { TLineItem } from '@commercelayer/react-components'
+import { LineItem } from '@commercelayer/react-components/line_items/LineItem'
+import { LineItemAmount } from '@commercelayer/react-components/line_items/LineItemAmount'
+import { LineItemCode } from '@commercelayer/react-components/line_items/LineItemCode'
+import { LineItemImage } from '@commercelayer/react-components/line_items/LineItemImage'
+import { LineItemName } from '@commercelayer/react-components/line_items/LineItemName'
+import { LineItemQuantity } from '@commercelayer/react-components/line_items/LineItemQuantity'
+import { useTranslation } from 'react-i18next'
 
 import {
   LineItemWrapper,
@@ -13,7 +13,7 @@ import {
   LineItemDescription,
   LineItemSku,
   LineItemQty,
-} from "./styled"
+} from './styled'
 
 interface Props {
   type: TLineItem
@@ -25,7 +25,7 @@ export function LineItemTypes({ type }: Props): JSX.Element {
   return (
     <LineItem type={type}>
       <LineItemWrapper>
-        <LineItemImage className="self-start p-1 border rounded w-[75px] md:w-[85px] bg-contrast" />
+        <LineItemImage className="self-start p-1 border rounded w-[75px] md:w-[85px] bg-gray-50" />
         <LineItemContent>
           <LineItemDescription>
             <LineItemSku>
@@ -37,7 +37,7 @@ export function LineItemTypes({ type }: Props): JSX.Element {
                 {(props) => (
                   <>
                     {!!props.quantity &&
-                      t("order.summary.quantity", { count: props.quantity })}
+                      t('order.summary.quantity', { count: props.quantity })}
                   </>
                 )}
               </LineItemQuantity>

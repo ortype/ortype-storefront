@@ -1,5 +1,5 @@
-import styled from "styled-components"
-import tw from "twin.macro"
+import styled from 'styled-components'
+import tw from 'twin.macro'
 
 interface WrapperProps {
   isCurrentPage: boolean
@@ -32,7 +32,7 @@ export const Title = styled.p`
 `
 
 export const ComingSoon = styled.span`
-  ${tw`ml-1 uppercase px-[4px] py-[2px] text-[9px] leading-[9px] font-bold rounded text-white bg-orange-400`}
+  ${tw`ml-1 uppercase px-[4px] py-[2px] text-[9px] leading-[9px] font-bold rounded text-white bg-red-400`}
 `
 
 export const Description = styled.p`
