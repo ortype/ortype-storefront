@@ -1,6 +1,5 @@
 'use client'
 import { Tester } from '@/components/composite/Tester'
-import TestPageModal from '@/components/modules/TestPageModal'
 import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import type { Font } from 'lib/sanity.queries'
 import { resolveHref } from 'lib/sanity.utils' // from '@/sanity/lib/utils'
@@ -20,7 +19,6 @@ export default function FontIndex({
       <h2 className="mb-8 text-6xl font-bold leading-tight tracking-tighter md:text-7xl">
         Fonts
       </h2>
-      <TestPageModal />
       <div>
         <Link
           href={`/posts/test-post-1`}
