@@ -24,7 +24,6 @@ import {
   AuthorizerResetPassword,
   useAuthorizer,
 } from '@authorizerdev/authorizer-react'
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const ForgotForm: React.FC<{}> = ({}) => {
