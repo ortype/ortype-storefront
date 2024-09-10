@@ -1,4 +1,5 @@
 'use client'
+import { disableDraftMode } from '@/app/actions'
 import {
   Box,
   Button,
@@ -15,6 +16,7 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react'
+import { useRouter } from 'next/navigation'
 
 import {
   AuthorizerBasicAuthLogin,
@@ -23,9 +25,16 @@ import {
   useAuthorizer,
 } from '@authorizerdev/authorizer-react'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const ForgotForm: React.FC<{}> = ({}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const router = useRouter()
+  useEffect(() => {
+    disableDraftMode().then(() => {
+      router.refresh()
+    })
+  }, [])
   return (
     <>
       <Button size={'sm'} variant={'link'} onClick={onOpen}>
@@ -90,6 +99,22 @@ const Login: React.FC<{}> = ({}) => {
   const router = useRouter()
   const handleLogin = async (response) => {
     await fetch('/api/login')
+    console.log('basicauthlogin response: ', response)
+    // https://github.com/authorizerdev/authorizer?tab=readme-ov-file#copy-the-following-code-in-html-file
+    // https://docs.authorizer.dev/integrations/react-native#step-10-silent-refresh
+    /*const res = await authorizerRef.authorize({
+      // {"error":"invalid client_id "}
+      response_type: 'code',
+      use_refresh_token: true,
+    })
+    console.log('res: ', res)
+    */
+    /*
+    const res = await authorizerRef.getToken({
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken,
+          })
+    */
     setTimeout(() => {
       console.log('waiting... and... calling refresh()')
       router.refresh()
