@@ -1,6 +1,7 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import { Box, Flex } from '@chakra-ui/react'
 import React, { ReactNode, useEffect, useLayoutEffect, useRef } from 'react'
+import PageModal from './PageModal'
 
 interface OverflowDetectorProps {
   _key: string
@@ -22,6 +23,7 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
   overflowCol,
 }) => {
   const hiddenRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const {
     state,
     updateItemAction,
@@ -62,7 +64,8 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
     measureOverflow()
   })
 
-  const isOverflowing = state.items[_key]?.isOverflowing
+  const itemState = state.items[_key]
+  const isOverflowing = itemState.isOverflowing
   const isSpread = isOverflowing && overflowCol
   // console.log('isOverflowing: ', index, isOverflowing)
   // console.log('isSpread: ', index, isSpread)
@@ -116,8 +119,18 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
         }}
         flexDirection={'column'}
         justifyContent={'space-between'}
+        ref={containerRef}
       >
         {children}
+        {!overflowCol && isOverflowing && (
+          // @NOTE: `overflowCol === false` we render the PageModal
+          <PageModal
+            isEven={itemState.index % 2 == 0}
+            containerRef={containerRef}
+          >
+            {children}
+          </PageModal>
+        )}
       </Box>
     </>
   )

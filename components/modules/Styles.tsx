@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react'
 import { useRef } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
-import PageModal from './PageModal'
 
 export interface StylesModuleProps {
   value: any // @TODO: types
@@ -134,17 +133,6 @@ export default function StylesModule({ value }: StylesModuleProps) {
       >
         {renderModule()}
       </Flex>
-      {/*
-        <OverflowDetector
-          index={index}
-          _key={value._key}
-          overflowCol={value.overflowCol}
-        >
-        // use overflow detector... or a easy hook... to conditionally render PageModal        
-        */}
-      <PageModal isEven={itemState.index % 2 == 0} containerRef={containerRef}>
-        {renderModule()}
-      </PageModal>
     </>
   )
 }

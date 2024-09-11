@@ -50,14 +50,42 @@ export default function CustomPortableText({
       ),
     },
     types: {
-      image: (props) => (
-        <Box>
-          <Image
-            image={props.value}
-            sizes={'(max-width: 800px) 100vw, 800px'}
-          />
-        </Box>
-      ),
+      image: (props) => {
+        const display = props.value.config?.display
+        const thumbnail = props.value.config?.thumbnail
+        const vertical = display === 'vertical'
+        const horizontal = display === 'horizontal'
+
+        const thumbW = 300 * conversion + 'px'
+        let style = { width: thumbnail ? thumbW : '100%', height: 'auto' }
+        if (vertical) {
+          style = { width: 'auto', height: '100%' }
+        }
+        return (
+          <Box
+            as={'figure'}
+            sx={{ img: { mx: 'auto' } }}
+            textAlign={thumbnail ? 'center' : 'left'}
+            h={vertical ? '100%' : 'auto'}
+          >
+            <Image
+              image={props.value}
+              style={style}
+              sizes={
+                // if thumbnail set width or height to max-width instead of width
+                thumbnail
+                  ? `(max-width: ${thumbW}) 100vw, ${thumbW}`
+                  : '(max-width: 800px) 100vw, 800px'
+              }
+            />
+            {props.value.caption && (
+              <Text as={'figcaption'} fontSize={11 * conversion + 'px'}>
+                {props.value.caption}
+              </Text>
+            )}
+          </Box>
+        )
+      },
     },
     marks: {
       link: ({ value, children }) => {
