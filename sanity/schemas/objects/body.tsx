@@ -91,6 +91,37 @@ export default defineType({
             })
           },
         },
+        defineField({
+          name: 'caption',
+          type: 'text',
+        }),
+        defineField({
+          name: 'config',
+          title: 'Config',
+          type: 'object',
+          fields: [
+            defineField({
+              type: 'string',
+              name: 'display',
+              title: 'Constrain image',
+              initialValue: 'verso',
+              options: {
+                layout: 'radio',
+                direction: 'horizontal',
+                list: [
+                  { title: 'Vertical', value: 'vertical' },
+                  { title: 'Horizontal', value: 'horizontal' },
+                ],
+              },
+            }),
+            defineField({
+              type: 'boolean',
+              name: 'thumbnail',
+              title: 'Thumbnail size image',
+              initialValue: false,
+            }),
+          ],
+        }),
       ],
       validation: (rule) => rule.required(),
     }),

@@ -82,7 +82,7 @@ const SpreadPage = ({
     >
       {children}
       <PageDivider
-        visible={itemState.index % 2 == 0}
+        visible={itemState?.index % 2 == 0}
         overflowCol={overflowCol}
         isOverflowing={isOverflowing}
       />

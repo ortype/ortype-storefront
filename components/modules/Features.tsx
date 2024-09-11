@@ -86,7 +86,15 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
         >
           <TabList>
             {features.map((feature, index) => (
-              <Tab key={'tab-' + feature.tag + index}>{feature.title}</Tab>
+              <Tab
+                key={'tab-' + feature.tag + index}
+                style={{
+                  fontSize: 15 * conversion + 'px',
+                  lineHeight: 15 * conversion + 'px',
+                }}
+              >
+                {feature.title}
+              </Tab>
             ))}
           </TabList>
 
