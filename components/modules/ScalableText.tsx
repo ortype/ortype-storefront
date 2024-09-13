@@ -4,42 +4,75 @@ import React, { useEffect, useRef, useState } from 'react'
 
 interface ScalableTextProps {
   children: ReactNode
+  count: number
+  index: number
+  tabIndex: number
 }
 
 const ScalableText: React.FC<OverflowDetectorProps> = ({
   index,
+  tabIndex,
   children,
-  _key,
-  overflowCol,
+  count,
 }) => {
-  const hiddenRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const innerRef = useRef<HTMLDivElement>(null)
-  const initialFontSize = 60
-  const lineHeightConversion = 64 / 60
-  const [fontSize, setFontSize] = useState(60) // Initial font size
+
+  // Use an inverse relationship. Here’s a simple example using a basic inverse proportion:
+
+  const maxFontSize = 160 // max font size
+
+  // Adjust these minimum and maximum values to suit your needs
+  const minFontSize = 12
+
+  // Ensure that count is always greater than 0 to avoid division by zero
+  const initialFontSize = parseInt(maxFontSize / (1 + count / 20))
+
+  console.log(`Calculated Font Size: ${initialFontSize} for ${count} items`)
+
+  const lineHeightConversion = 64 / 60 // base font size for ratio calculation
+  const [fontSize, setFontSize] = useState(initialFontSize) // Initial font size
   const { padding, pageAspect, conversion } = useSpreadContainer()
-  const hiddenContainer = hiddenRef.current
+  const container = containerRef.current
   const innerContainer = innerRef.current
 
   useEffect(() => {
     const resizeFont = () => {
-      if (hiddenContainer) {
+      if (container) {
         let newFontSize = fontSize
-        const hiddenHeight = hiddenContainer.clientHeight
+        const containerHeight = container.clientHeight
+        const containerWidth = container.clientWidth
+        const textHeight = innerContainer.clientHeight
+        const textWidth = innerContainer.clientWidth
 
-        let textHeight = innerContainer.clientHeight
-        console.log('ScalableText resizeFont(): ', hiddenHeight, textHeight)
+        console.log(
+          'ScalableText (',
+          index,
+          ')',
+          'ScalableText height: ',
+          containerHeight,
+          textHeight,
+          ' and width: ',
+          containerWidth,
+          textWidth
+        )
 
-        if (textHeight > hiddenHeight && newFontSize > 12) {
+        // @NOTE: there is an issue with this if condition
+        if (
+          (textWidth > containerWidth || textHeight > containerHeight) &&
+          newFontSize > minFontSize
+        ) {
           newFontSize -= 1
           console.log(
-            'ScalableText while: ',
+            'ScalableText: container:',
+            containerHeight,
+            ' text height:',
             textHeight,
-            hiddenHeight,
-            newFontSize,
-            innerContainer.style.fontSize
+            ' new font size: ',
+            newFontSize
           )
-          textHeight = innerContainer.clientHeight
+          // textHeight = innerContainer.clientHeight
+          // textWidth = innerContainer.clientWidth
           if (fontSize !== newFontSize) {
             console.log('ScalableText setFontSize(): ', newFontSize)
             setFontSize(newFontSize)
@@ -50,71 +83,38 @@ const ScalableText: React.FC<OverflowDetectorProps> = ({
 
     resizeFont()
   }, [
+    tabIndex,
     fontSize,
     conversion,
-    hiddenContainer?.clientHeight,
+    container?.clientHeight,
+    container?.clientWidth,
     innerContainer?.clientHeight,
+    innerContainer?.clientWidth,
   ])
 
   return (
-    <>
+    <Box
+      overflow={'auto'}
+      style={{
+        fontSize: `${fontSize * conversion}px`,
+        lineHeight: fontSize * lineHeightConversion * conversion + 'px',
+      }}
+      position={'absolute'}
+      top={0}
+      left={0}
+      bottom={0}
+      right={0}
+      className={'outer-container'}
+      ref={containerRef}
+    >
       <Box
-        className={'overflow-detector'}
-        aria-hidden="true"
-        sx={{
-          position: 'absolute',
-          visibility: 'hidden',
-          pointerEvents: 'none',
-          top: 0,
-          left: 0,
-          // @NOTE: elements with this aspect padding must have a width, or it collapses entirely
-          w: '100%',
-          h: '100%',
-        }}
-      >
-        <Box
-          ref={hiddenRef}
-          className={'hidden-container'}
-          position={'absolute'}
-          overflow={'auto'}
-          sx={{
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-          }}
-          m={padding}
-          style={{
-            fontSize: `${fontSize * conversion}px`,
-            lineHeight: fontSize * lineHeightConversion * conversion + 'px',
-          }}
-        >
-          <Box className={'inner-container'} ref={innerRef}>
-            {
-              // @TODO: for this Tab use-case we actually need to measure each TabPanels
-              // and run the logic if the tab changes (or run the logic behind the scenes already for each TabPanel)
-              children
-            }
-          </Box>
-        </Box>
-      </Box>
-      <Box
-        overflow={'hidden'}
-        h={'100%'}
-        w={'100%'}
-        style={{
-          display: 'flex',
-        }}
-        flexDirection={'column'}
-        justifyContent={'space-between'}
-        style={{
-          fontSize: `${fontSize * conversion}px`,
-          lineHeight: fontSize * lineHeightConversion * conversion + 'px',
-        }}
+        className={'inner-container'}
+        display={'inline-block'}
+        ref={innerRef}
       >
         {children}
       </Box>
-    </>
+    </Box>
   )
 }
 

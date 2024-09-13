@@ -10,7 +10,7 @@ import {
   Tabs,
   Text,
 } from '@chakra-ui/react'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
 import ScalableText from './ScalableText'
 
@@ -23,6 +23,16 @@ export default function StylesModule({ value }: StylesModuleProps) {
   const { padding, conversion, state } = useSpreadContainer()
   const itemState = state.items[value._key]
   const font = useFont()
+
+  const [tabIndex, setTabIndex] = useState(0)
+
+  const handleSliderChange = (event) => {
+    setTabIndex(parseInt(event.target.value, 10))
+  }
+
+  const handleTabsChange = (index) => {
+    setTabIndex(index)
+  }
 
   const tabList: string[] = []
   const tabPanels: { _id: string; optionName: string }[][] = []
@@ -88,36 +98,60 @@ export default function StylesModule({ value }: StylesModuleProps) {
             {value.title}
           </Heading>
         </Box>
-        <ScalableText>
-          <Tabs
-            display={'flex'}
-            flexDir={'column'}
-            // isLazy
-            h={'100%'}
-            variant={'solid-rounded'}
-            size={'sm'}
-            colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
-          >
-            <TabList>
-              {tabList.map((item, index) => (
-                <Tab
-                  key={'tab-' + index}
-                  style={{
-                    fontSize: 15 * conversion + 'px',
-                    lineHeight: 15 * conversion + 'px',
-                  }}
-                >
-                  {item}
-                </Tab>
-              ))}
-            </TabList>
+        <Tabs
+          index={tabIndex}
+          onChange={handleTabsChange}
+          display={'flex'}
+          flexDir={'column'}
+          // isLazy
+          h={'100%'}
+          w={'100%'}
+          variant={'solid-rounded'}
+          size={'sm'}
+          colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
+        >
+          <TabList zIndex={'popover'}>
+            {tabList.map((item, index) => (
+              <Tab
+                key={'tab-' + index}
+                style={{
+                  fontSize: 15 * conversion + 'px',
+                  lineHeight: 15 * conversion + 'px',
+                }}
+              >
+                {item}
+              </Tab>
+            ))}
+          </TabList>
 
-            <TabPanels flex={'1'}>
-              {tabPanels.map((item, index) => (
-                <TabPanel key={'tabPanel-' + index} p={0} h={'100%'}>
+          <TabPanels h={'100%'} w={'100%'} position={'relative'}>
+            {tabPanels.map((items, index) => (
+              <TabPanel
+                key={'tabPanel-' + index}
+                p={0}
+                position={'relative'}
+                w={'100%'}
+                h={'100%'}
+                bg={'#FFF'}
+                position={'absolute'}
+                top={0}
+                left={0}
+                bottom={0}
+                right={0}
+              >
+                <ScalableText
+                  index={index}
+                  tabIndex={tabIndex}
+                  count={items.length}
+                >
                   <Box as={'ul'} sx={{ listStyle: 'none' }}>
-                    {item.map((variant) => (
-                      <li key={variant._id} className={variant._id}>
+                    {items.map((variant) => (
+                      <Box
+                        as={'li'}
+                        key={variant._id}
+                        className={variant._id}
+                        whiteSpace={'nowrap'}
+                      >
                         <Text
                           as={'span'}
                           fontSize={'inherit'}
@@ -125,14 +159,14 @@ export default function StylesModule({ value }: StylesModuleProps) {
                         >
                           {variant.optionName}
                         </Text>
-                      </li>
+                      </Box>
                     ))}
                   </Box>
-                </TabPanel>
-              ))}
-            </TabPanels>
-          </Tabs>
-        </ScalableText>
+                </ScalableText>
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
       </Flex>
     </>
   )
