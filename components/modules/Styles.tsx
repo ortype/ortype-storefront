@@ -61,113 +61,97 @@ export default function StylesModule({ value }: StylesModuleProps) {
 
   return (
     <>
-      <Flex
-        w={'100%'}
-        h={'100%'}
-        bg={'#FFF'}
-        position={'absolute'}
+      <Box
+        pos={'absolute'}
         top={0}
-        left={0}
-        bottom={0}
         right={0}
-        wrap={'wrap'}
-        alignContent={'flex-start'}
+        left={0}
         style={{
-          padding,
+          padding: `0 ${padding}`,
         }}
       >
-        <Box
-          pos={'absolute'}
-          top={0}
-          right={0}
-          left={0}
-          style={{
-            padding: `0 ${padding}`,
-          }}
+        <Heading
+          pt={'0.5rem'}
+          pb={'0.25rem'}
+          borderBottom={'1px solid #000'}
+          size={'xs'}
+          color={'red'}
+          textAlign={'center'}
+          fontWeight={'normal'}
+          textTransform={'uppercase'}
         >
-          <Heading
-            pt={'0.5rem'}
-            pb={'0.25rem'}
-            borderBottom={'1px solid #000'}
-            size={'xs'}
-            color={'red'}
-            textAlign={'center'}
-            fontWeight={'normal'}
-            textTransform={'uppercase'}
-          >
-            {value.title}
-          </Heading>
-        </Box>
-        <Tabs
-          index={tabIndex}
-          onChange={handleTabsChange}
-          display={'flex'}
-          flexDir={'column'}
-          // isLazy
-          h={'100%'}
-          w={'100%'}
-          variant={'solid-rounded'}
-          size={'sm'}
-          colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
-        >
-          <TabList zIndex={'popover'}>
-            {tabList.map((item, index) => (
-              <Tab
-                key={'tab-' + index}
-                style={{
-                  fontSize: 15 * conversion + 'px',
-                  lineHeight: 15 * conversion + 'px',
-                }}
-              >
-                {item}
-              </Tab>
-            ))}
-          </TabList>
+          {value.title}
+        </Heading>
+      </Box>
+      <Tabs
+        index={tabIndex}
+        onChange={handleTabsChange}
+        display={'flex'}
+        flexDir={'column'}
+        // isLazy
+        h={'100%'}
+        w={'100%'}
+        variant={'solid-rounded'}
+        size={'sm'}
+        colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
+      >
+        <TabList zIndex={'popover'}>
+          {tabList.map((item, index) => (
+            <Tab
+              key={'tab-' + index}
+              style={{
+                fontSize: 15 * conversion + 'px',
+                lineHeight: 15 * conversion + 'px',
+              }}
+            >
+              {item}
+            </Tab>
+          ))}
+        </TabList>
 
-          <TabPanels h={'100%'} w={'100%'} position={'relative'}>
-            {tabPanels.map((items, index) => (
-              <TabPanel
-                key={'tabPanel-' + index}
-                p={0}
-                position={'relative'}
-                w={'100%'}
-                h={'100%'}
-                bg={'#FFF'}
-                position={'absolute'}
-                top={0}
-                left={0}
-                bottom={0}
-                right={0}
+        <TabPanels h={'100%'} w={'100%'} position={'relative'}>
+          {tabPanels.map((items, index) => (
+            <TabPanel
+              key={'tabPanel-' + index}
+              p={0}
+              position={'relative'}
+              w={'100%'}
+              h={'100%'}
+              bg={'#FFF'}
+              position={'absolute'}
+              top={0}
+              left={0}
+              bottom={0}
+              right={0}
+            >
+              <ScalableText
+                index={index}
+                tabIndex={tabIndex}
+                count={items.length}
               >
-                <ScalableText
-                  index={index}
-                  tabIndex={tabIndex}
-                  count={items.length}
-                >
-                  <Box as={'ul'} sx={{ listStyle: 'none' }}>
-                    {items.map((variant) => (
-                      <Box
-                        as={'li'}
-                        key={variant._id}
-                        className={variant._id}
-                        whiteSpace={'nowrap'}
+                <Box as={'ul'} sx={{ listStyle: 'none' }}>
+                  {items.map((variant) => (
+                    <Box
+                      as={'li'}
+                      key={variant._id}
+                      className={variant._id}
+                      whiteSpace={'nowrap'}
+                    >
+                      <Text
+                        as={'span'}
+                        fontSize={'inherit'}
+                        lineHeight={'inherit'}
                       >
-                        <Text
-                          as={'span'}
-                          fontSize={'inherit'}
-                          lineHeight={'inherit'}
-                        >
-                          {variant.optionName}
-                        </Text>
-                      </Box>
-                    ))}
-                  </Box>
-                </ScalableText>
-              </TabPanel>
-            ))}
-          </TabPanels>
-        </Tabs>
-      </Flex>
+                        {variant.optionName}
+                      </Text>
+                    </Box>
+                  ))}
+                </Box>
+              </ScalableText>
+            </TabPanel>
+          ))}
+        </TabPanels>
+      </Tabs>
     </>
   )
 }

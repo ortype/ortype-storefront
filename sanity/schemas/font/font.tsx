@@ -3,6 +3,7 @@ import moduleContent from '@/sanity/schemas/objects/modules/content'
 import moduleFeatures from '@/sanity/schemas/objects/modules/features'
 import moduleInfo from '@/sanity/schemas/objects/modules/info'
 import moduleStyles from '@/sanity/schemas/objects/modules/styles'
+import moduleTester from '@/sanity/schemas/objects/modules/tester'
 import { BookIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 // import productImage from '../productImage'
@@ -108,6 +109,7 @@ export default defineType({
         defineArrayMember({ type: moduleFeatures.name, name: 'feature' }),
         defineArrayMember({ type: moduleInfo.name, name: 'info' }),
         defineArrayMember({ type: moduleStyles.name, name: 'styles' }),
+        defineArrayMember({ type: moduleTester.name, name: 'tester' }),
       ],
       group: 'presentation',
     },

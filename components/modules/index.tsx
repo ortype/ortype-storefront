@@ -11,6 +11,7 @@ import ContentModule from './Content'
 import FeaturesModule from './Features'
 import InfoModule from './Info'
 import StylesModule from './Styles'
+import TesterModule from './Tester'
 
 type PageDividerProps = {
   visible: boolean
@@ -45,7 +46,7 @@ const PageDivider: React.FC<PageDividerProps> = ({
   )
 }
 
-const SpreadPage = ({
+const DoublePage = ({
   children,
   _key,
   spreadMode = false,
@@ -115,13 +116,13 @@ const SpreadPage = ({
   )
 }
 
-const BookPage = ({ children, _key, ...props }) => {
-  const { pageAspect, padding, state } = useSpreadContainer()
+const SinglePage = ({ children, _key, ...props }) => {
+  const { pageAspect, padding, conversion, state } = useSpreadContainer()
   const itemState = state.items[_key]
 
   return (
     <Box
-      className={'spread-page'}
+      className={'single-page'}
       flex={{ base: '0 0 100%', lg: '0 0 50%' }} // responsive values
       mb={padding}
       position="relative"
@@ -142,7 +143,26 @@ const BookPage = ({ children, _key, ...props }) => {
       }}
       {...props}
     >
-      {children}
+      <Flex
+        className={`page-${itemState?.index}`}
+        w={'100%'}
+        h={'100%'}
+        bg={'#FFF'}
+        position={'absolute'}
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        wrap={'wrap'}
+        alignContent={'flex-start'}
+        style={{
+          padding,
+          fontSize: 25 * conversion + 'px',
+          lineHeight: 36 * conversion + 'px',
+        }}
+      >
+        {children}
+      </Flex>
       <PageDivider
         visible={itemState?.index % 2 == 0}
         overflowCol={false}
@@ -155,46 +175,41 @@ const BookPage = ({ children, _key, ...props }) => {
 const components = {
   types: {
     styles: (props) => (
-      <BookPage _key={props.value._key}>
+      <SinglePage _key={props.value._key}>
         <StylesModule {...props} />
-      </BookPage>
+      </SinglePage>
     ),
     info: (props) => (
-      <SpreadPage _key={props.value._key}>
+      <DoublePage _key={props.value._key}>
         <InfoModule {...props} />
-      </SpreadPage>
+      </DoublePage>
     ),
     content: (props) => (
-      <SpreadPage
+      <DoublePage
         _key={props.value._key}
         textAlign={props.value.centered ? 'center' : 'left'}
         overflowCol={props.value.overflowCol}
       >
         <ContentModule {...props} />
-      </SpreadPage>
+      </DoublePage>
     ),
     book: (props) => (
-      <BookPage _key={props.value._key}>
+      <SinglePage _key={props.value._key}>
         <BookModule {...props} />
-      </BookPage>
+      </SinglePage>
     ),
     // @TODO: rename to 'features'?
     feature: (props) => (
-      <BookPage _key={props.value._key}>
+      <SinglePage _key={props.value._key}>
         <FeaturesModule {...props} />
-      </BookPage>
+      </SinglePage>
     ),
     // @TODO: type tester module
-    /*
     tester: (props) => (
-      <SpreadPage
-        _key={props.value._key}
-        spreadMode={true}
-      >
+      <DoublePage _key={props.value._key} spreadMode={true}>
         <TesterModule {...props} />
-      </SpreadPage>
-    ),    
-    */
+      </DoublePage>
+    ),
   },
 }
 

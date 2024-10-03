@@ -36,23 +36,7 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
   const font = useFont()
   return (
     features?.length > 0 && (
-      <Flex
-        w={'100%'}
-        h={'100%'}
-        bg={'#FFF'}
-        position={'absolute'}
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        wrap={'nowrap'}
-        direction={'column'}
-        alignContent={'flex-start'}
-        style={{
-          padding,
-        }}
-        overflow={'hidden'}
-      >
+      <>
         <Box
           pos={'absolute'}
           top={0}
@@ -80,6 +64,7 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
           flexDir={'column'}
           // isLazy
           h={'100%'}
+          w={'100%'}
           variant={'solid-rounded'}
           size={'sm'}
           colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
@@ -152,7 +137,7 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
             ))}
           </TabPanels>
         </Tabs>
-      </Flex>
+      </>
     )
   )
 }

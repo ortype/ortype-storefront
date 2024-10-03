@@ -11,22 +11,7 @@ const RectoVerso: React.FC<{
   const font = useFont()
   const { padding, conversion, colWidth } = useSpreadContainer()
   return (
-    <Flex
-      className={`page-${label}`}
-      w={'100%'}
-      h={'100%'}
-      bg={'#FFF'}
-      position={'absolute'}
-      top={0}
-      left={0}
-      bottom={0}
-      right={0}
-      wrap={'wrap'}
-      alignContent={'flex-start'}
-      style={{
-        padding,
-      }}
-    >
+    <>
       {font.shortName && (
         <Box
           pos={'absolute'}
@@ -61,7 +46,7 @@ const RectoVerso: React.FC<{
             colWidth={colWidth}
           />
         ))}
-    </Flex>
+    </>
   )
 }
 
