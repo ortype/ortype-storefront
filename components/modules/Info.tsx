@@ -68,25 +68,7 @@ export default function InfoModule({ value }: InfoModuleProps) {
   const { padding, conversion } = useSpreadContainer()
   const font = useFont()
   return (
-    <Flex
-      w={'100%'}
-      h={'100%'}
-      bg={'#FFF'}
-      position={'absolute'}
-      top={0}
-      left={0}
-      bottom={0}
-      right={0}
-      wrap={'nowrap'}
-      direction={'column'}
-      alignContent={'flex-start'}
-      style={{
-        padding,
-        fontSize: 25 * conversion + 'px',
-        lineHeight: 36 * conversion + 'px',
-      }}
-      overflowY={'auto'}
-    >
+    <>
       {value.title && (
         <Box
           pos={'absolute'}
@@ -159,6 +141,6 @@ export default function InfoModule({ value }: InfoModuleProps) {
           </Text>
         </>
       )}
-    </Flex>
+    </>
   )
 }

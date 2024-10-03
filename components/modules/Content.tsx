@@ -10,21 +10,7 @@ const Content: React.FC<{
 }> = ({ value, index }) => {
   const { padding } = useSpreadContainer()
   return (
-    <Flex
-      w={'100%'}
-      h={'100%'}
-      bg={'#FFF'}
-      position={'absolute'}
-      top={0}
-      left={0}
-      bottom={0}
-      right={0}
-      wrap={'wrap'}
-      alignContent={'flex-start'}
-      style={{
-        padding,
-      }}
-    >
+    <>
       {
         // @TODO: in the case of `isSpread` we need a title for each 'column/page'
         value.title && (
@@ -59,7 +45,7 @@ const Content: React.FC<{
       >
         <PortableText value={value.body} />
       </OverflowDetector>
-    </Flex>
+    </>
   )
 }
 

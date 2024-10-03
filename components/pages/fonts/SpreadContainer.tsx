@@ -1,5 +1,6 @@
 import useDimensions from '@/components/hooks/useDimensions'
-import { Flex } from '@chakra-ui/react'
+import { MIN_DEFAULT_MQ } from '@/utils/presets'
+import { Flex, useBreakpointValue, useMediaQuery } from '@chakra-ui/react'
 import React, {
   createContext,
   Dispatch,
@@ -173,7 +174,16 @@ const SpreadContainerProvider = ({
   const pageHeight = 930
   const pageMargin = 46
   const ratio = pageWidth / pageHeight
-  const conversion = size.width / 2 / pageWidth
+
+  const conversion = useBreakpointValue(
+    {
+      base: size.width / pageWidth,
+      lg: size.width / 2 / pageWidth,
+    },
+    // @NOTE: useBreakpointValue renders the fallback first
+    { ssr: true } // `ssr: false` produces a window is not defined in nextjs
+  )
+
   const colWidth = 558
 
   // Transform the initialItems array into a state object keyed by '_key', including the index
@@ -204,11 +214,16 @@ const SpreadContainerProvider = ({
   // @TODO: this is the config for desktop '50% / 2-up display'
   // for base breakpoint these aspect values need to be halved or something
 
+  const [isLg] = useMediaQuery(MIN_DEFAULT_MQ)
+
   return (
     <SpreadContainerContext.Provider
       value={{
         colWidth,
         conversion,
+        /*spreadAspect: isLg
+          ? mapResponsive(ratio, (r) => `${(r / 1) * 100}%`)
+          : 'auto',*/
         spreadAspect: mapResponsive(ratio, (r) => `${(r / 1) * 100}%`),
         pageAspect: mapResponsive(ratio, (r) => `${(1 / r) * 100}%`),
         padding: `${pageMargin * conversion}px`,

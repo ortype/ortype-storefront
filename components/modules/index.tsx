@@ -1,7 +1,8 @@
 'use client'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import config from '@/sanity.config'
-import { Box } from '@chakra-ui/react'
+import { MIN_DEFAULT_MQ } from '@/utils/presets'
+import { Box, Flex } from '@chakra-ui/react'
 import { PortableText } from '@portabletext/react'
 import { type PortableTextBlock } from 'next-sanity'
 import { useEffect } from 'react'
@@ -51,7 +52,8 @@ const SpreadPage = ({
   overflowCol,
   ...props
 }) => {
-  const { spreadAspect, pageAspect, padding, state } = useSpreadContainer()
+  const { spreadAspect, conversion, pageAspect, padding, state } =
+    useSpreadContainer()
   const isOverflowing = state.items[_key]?.isOverflowing
   const itemState = state.items[_key]
   const isSpread = spreadMode || (isOverflowing && overflowCol)
@@ -67,8 +69,68 @@ const SpreadPage = ({
         height: 0,
         content: `""`,
         display: 'block',
-        // @TODO: no aspect for < lg breakpoint?
-        paddingBottom: isSpread ? spreadAspect : pageAspect,
+        // @TODO: no aspect for < lg breakpoint? only if it is not the book which
+        // always has an aspect?
+        // paddingBottom: isSpread ? spreadAspect : pageAspect,
+        paddingBottom: { base: 0, lg: isSpread ? spreadAspect : pageAspect },
+      }}
+      sx={{
+        p: {
+          // @NOTE: either manual enter line-breaks `/n` with shift+return
+          // in the editor or we define a maxW only when centered
+          // maxW: props.textAlign === 'center' ? '85%' : '100%',
+          // mx: 'auto',
+        },
+      }}
+      {...props}
+    >
+      <Flex
+        // @TODO: how to best make the w, h, top, left, bottom, right, etc. media query conditional
+        w={{ base: 'auto', lg: '100%' }}
+        h={{ base: 'auto', lg: '100%' }}
+        bg={'#FFF'}
+        position={{ base: 'relative', lg: 'absolute' }}
+        top={{ base: 'auto', lg: 0 }}
+        left={{ base: 'auto', lg: 0 }}
+        bottom={{ base: 'auto', lg: 0 }}
+        right={{ base: 'auto', lg: 0 }}
+        wrap={'nowrap'}
+        direction={'column'}
+        alignContent={'flex-start'}
+        style={{
+          padding,
+          fontSize: 25 * conversion + 'px',
+          lineHeight: 36 * conversion + 'px',
+        }}
+        overflow={'hidden'}
+      >
+        {children}
+      </Flex>
+      <PageDivider
+        visible={itemState?.index % 2 == 0}
+        overflowCol={overflowCol}
+        isOverflowing={isOverflowing}
+      />
+    </Box>
+  )
+}
+
+const BookPage = ({ children, _key, ...props }) => {
+  const { pageAspect, padding, state } = useSpreadContainer()
+  const itemState = state.items[_key]
+
+  return (
+    <Box
+      className={'spread-page'}
+      flex={{ base: '0 0 100%', lg: '0 0 50%' }} // responsive values
+      mb={padding}
+      position="relative"
+      // the before creates the height
+      _before={{
+        height: 0,
+        content: `""`,
+        display: 'block',
+        paddingBottom: pageAspect,
       }}
       sx={{
         p: {
@@ -83,8 +145,8 @@ const SpreadPage = ({
       {children}
       <PageDivider
         visible={itemState?.index % 2 == 0}
-        overflowCol={overflowCol}
-        isOverflowing={isOverflowing}
+        overflowCol={false}
+        isOverflowing={false}
       />
     </Box>
   )
@@ -93,9 +155,9 @@ const SpreadPage = ({
 const components = {
   types: {
     styles: (props) => (
-      <SpreadPage _key={props.value._key}>
+      <BookPage _key={props.value._key}>
         <StylesModule {...props} />
-      </SpreadPage>
+      </BookPage>
     ),
     info: (props) => (
       <SpreadPage _key={props.value._key}>
@@ -112,15 +174,15 @@ const components = {
       </SpreadPage>
     ),
     book: (props) => (
-      <SpreadPage _key={props.value._key}>
+      <BookPage _key={props.value._key}>
         <BookModule {...props} />
-      </SpreadPage>
+      </BookPage>
     ),
     // @TODO: rename to 'features'?
     feature: (props) => (
-      <SpreadPage _key={props.value._key}>
+      <BookPage _key={props.value._key}>
         <FeaturesModule {...props} />
-      </SpreadPage>
+      </BookPage>
     ),
     // @TODO: type tester module
     /*

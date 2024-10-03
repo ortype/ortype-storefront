@@ -1,12 +1,9 @@
 import { toPlainText } from '@portabletext/react'
 import { Metadata, ResolvingMetadata } from 'next'
-import dynamic from 'next/dynamic'
-import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import { FontPage } from '@/components/pages/fonts/FontPage'
 import { sanityFetch } from '@/sanity/lib/fetch'
-import { resolveOpenGraphImage } from '@/lib/sanity.utils'
 import { fontAndMoreFontsQuery } from '@/lib/sanity.queries'
 import { defineQuery } from 'groq'
 
