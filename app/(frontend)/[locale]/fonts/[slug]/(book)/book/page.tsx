@@ -90,6 +90,7 @@ const getAdminUserData = async () => {
   })
 
   if (data) {
+    console.log('getAdminUserData: data: ', data)
     return data
   } else {
     return false
