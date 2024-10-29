@@ -4,13 +4,13 @@
 // We also want to use the Customer context in the header for Account
 // import Cart from 'components/composite/Cart'
 // import CartContainer from 'components/composite/CartContainer'
-import { Box, ButtonGroup, Flex, Link as ChakraLink } from '@chakra-ui/react'
+import { CustomerProvider } from '@/components/data/CustomerProvider'
+import { SettingsProvider } from '@/components/data/SettingsProvider'
+import { Box, ButtonGroup, Link as ChakraLink, Flex } from '@chakra-ui/react'
+import { CommerceLayer } from '@commercelayer/react-components'
 import { Account } from 'components/composite/Account'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { CustomerProvider } from '@/components/data/CustomerProvider'
-import { SettingsProvider } from '@/components/data/SettingsProvider'
-import { CommerceLayer } from '@commercelayer/react-components'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -56,8 +56,8 @@ export const GlobalHeader: React.FC<Props> = ({ marketId }) => {
     return () => window.removeEventListener('beforeunload', onUnload)
   }, [])
 
-  const hideHeader =
-    pathname?.includes('/book') || pathname?.includes('/studio')
+  // const hideHeader = pathname?.includes('/book') || pathname?.includes('/studio')
+  const hideHeader = true // @TEMP: until we get back around to this
 
   return (
     !hideHeader && (
@@ -73,6 +73,9 @@ export const GlobalHeader: React.FC<Props> = ({ marketId }) => {
               ) : !settings.isValid ? (
                 <div>{'Invalid settings config'}</div>
               ) : (
+                <>
+                  {/*
+                // @TEMP: disable CL cart in header
                 <CommerceLayer
                   accessToken={settings.accessToken}
                   endpoint={config.endpoint}
@@ -90,7 +93,8 @@ export const GlobalHeader: React.FC<Props> = ({ marketId }) => {
                       </DynamicCartContainer>
                     </ButtonGroup>
                   </CustomerProvider>
-                </CommerceLayer>
+                </CommerceLayer>*/}
+                </>
               )
             }}
           </SettingsProvider>

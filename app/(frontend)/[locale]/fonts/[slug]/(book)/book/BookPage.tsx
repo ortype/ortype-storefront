@@ -1,5 +1,6 @@
 'use client'
 
+import { disableDraftMode } from '@/app/actions'
 import Spread from '@/components/composite/Book/Spread'
 import { useQuery } from '@apollo/client'
 import { Box, Center, Flex } from '@chakra-ui/react'
@@ -20,6 +21,13 @@ const BookPage = ({
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const bookLayoutStore = useBookLayoutStore()
+
+  // Disable draft mode when entering the book
+  useEffect(() => {
+    disableDraftMode().then(() => {
+      router.refresh()
+    })
+  }, [])
 
   /*  
   console.log(

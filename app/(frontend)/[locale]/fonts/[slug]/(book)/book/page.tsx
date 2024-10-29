@@ -78,27 +78,6 @@ const getData = ReactCache(async ({ slug }) => {
   return false
 })
 
-const getAdminUserData = async () => {
-  const nextCookies = cookies()
-  const token = nextCookies.get('authorizer-client-next')?.value
-  const authRef = new Authorizer(authorizerConfig)
-  if (!token) {
-    return false
-  }
-
-  const { data, errors } = await authRef.getProfile({
-    Authorization: `Bearer ${token}`,
-  })
-
-  if (data) {
-    console.log('getAdminUserData: data: ', data)
-    return data
-  } else {
-    return false
-    console.log('Authorization errors: ', errors)
-  }
-}
-
 interface BookLayout {
   _id: string
   name: string
@@ -119,7 +98,6 @@ interface DataProps {
 
 export default async function Page(props) {
   const data: DataProps | false = await getData({ slug: props.params.slug })
-  // const admin = await getAdminUserData()
   const session = await auth()
   console.log('book page session: ', session)
   // <pre>{JSON.stringify(session, null, 2)}</pre>

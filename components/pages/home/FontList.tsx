@@ -41,7 +41,10 @@ export default function FontIndex({
               key={key}
               fontId={font._id}
               variants={font.variants}
-              defaultVariantId={font.variants[0] && font.variants[0]._id}
+              defaultVariantId={
+                font.defaultVariant?._id ||
+                (font.variants[0] && font.variants[0]._id)
+              }
               index={key}
               title={font.name}
               slug={font.slug}
