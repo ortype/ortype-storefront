@@ -23,11 +23,14 @@ const BookPage = ({
   const bookLayoutStore = useBookLayoutStore()
 
   // Disable draft mode when entering the book
+  // @NOTE: this causes a loop, we need to trigger this or add a conditional
+  /*  
   useEffect(() => {
     disableDraftMode().then(() => {
       router.refresh()
     })
   }, [])
+  */
 
   /*  
   console.log(
