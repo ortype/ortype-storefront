@@ -338,7 +338,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         position: `absolute`,
         width: '100vw',
         top: 0,
-        zIndex: 1,
+        zIndex: 11, // @NOTE: 1 higher than chakra.popover
         backgroundColor: `#FFF`,
         padding: `0 1rem`,
         [`@media print`]: {
