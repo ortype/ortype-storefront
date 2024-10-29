@@ -135,14 +135,16 @@ const Column = observer(
           margin: `0 ${15 * conversion}px`,
         }}
         position={'relative'}
-        sx={{
+        _hover={{
           ['.colGuide']: {
             backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
           },
-          ['.addColumnButton']: {
-            visibility: bookLayoutStore.editMode && `visible`,
-          },
         }}
+        // _hover={{
+        //   ['.addColumnButton']: {
+        //     visibility: bookLayoutStore.editMode && `visible`,
+        //   },
+        // }}
       >
         <Box
           className={'colGuide'}
@@ -192,7 +194,7 @@ const Column = observer(
           <ColumnPopover update={update} blocks={blocks} />
         )}
         {renderBlocks()}
-        <Button
+        {/*<Button
           onClick={handleClick}
           // variant={'ghost'}
           fontSize={'2xl'}
@@ -200,7 +202,7 @@ const Column = observer(
           sx={{
             visibility: `hidden`,
             position: `absolute`,
-            bottom: `-1rem`,
+            bottom: `1rem`,
             left: `calc(50% - 1rem)`,
             padding: `.2rem`,
             width: `2rem`,
@@ -209,7 +211,7 @@ const Column = observer(
           }}
         >
           <InsertBelowIcon />
-        </Button>
+        </Button>*/}
       </Flex>
     )
   }

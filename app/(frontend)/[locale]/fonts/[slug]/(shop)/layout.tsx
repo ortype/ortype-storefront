@@ -36,6 +36,6 @@ export default async function Layout({
     slug: string
   }
 }) {
-  const marketId = (await getMarketId()) || ''
-  return <Providers marketId={marketId}>{children}</Providers>
+  // const marketId = (await getMarketId()) || ''
+  return children
 }

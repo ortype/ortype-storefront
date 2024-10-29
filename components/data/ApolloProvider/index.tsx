@@ -1,7 +1,7 @@
 // "use client";
 import { ApolloProvider } from '@apollo/client'
-import { useAuthorizer } from '@authorizerdev/authorizer-react'
 import { useApollo } from 'hooks/useApollo'
+import { useSession } from 'next-auth/react'
 import React from 'react'
 
 const ApolloProviderWrapper = ({
@@ -17,20 +17,20 @@ const ApolloProviderWrapper = ({
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
 }
 
-export const ApolloClientProvider = ({
+export const ApolloClientProvider = async ({
   children,
   initialApolloState,
 }: {
   initialApolloState: object
   children: React.ReactNode
 }) => {
-  const { token, loading } = useAuthorizer()
-  if (loading) return <div>{'loading..'}</div>
+  // @TODO: new auth logic here
+  // const { token, loading } = useAuthorizer()
+  const session = useSession()
+  console.log('ApolloClientProvider: session: ', session)
+
   return (
-    <ApolloProviderWrapper
-      initialApolloState={initialApolloState}
-      token={token?.id_token}
-    >
+    <ApolloProviderWrapper initialApolloState={initialApolloState} token={{}}>
       {children}
     </ApolloProviderWrapper>
   )

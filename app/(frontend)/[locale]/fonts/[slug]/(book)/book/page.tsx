@@ -1,4 +1,5 @@
-import Login from '@/components/composite/Book/Login'
+import AuthButton from '@/components/composite/Book/Auth.server'
+import { auth } from '@/lib/auth'
 import { Authorizer } from '@authorizerdev/authorizer-js'
 import authorizerConfig from 'authorizerConfig'
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
@@ -118,7 +119,9 @@ interface DataProps {
 
 export default async function Page(props) {
   const data: DataProps | false = await getData({ slug: props.params.slug })
-  const admin = await getAdminUserData()
-  return <BookPageWrapper data={data} admin={admin} />
-  // return admin ? <BookPage data={data} admin={admin} /> : <Login />
+  // const admin = await getAdminUserData()
+  const session = await auth()
+  console.log('book page session: ', session)
+  // <pre>{JSON.stringify(session, null, 2)}</pre>
+  return session?.user ? <BookPage data={data} /> : <AuthButton />
 }

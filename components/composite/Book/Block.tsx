@@ -38,7 +38,7 @@ const Block: React.FC<{
       }}
       sx={{
         ['.blockGuide']: {
-          backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
+          // backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
         },
         ['.configBlockButton']: {
           visibility: bookLayoutStore.editMode && `visible`,

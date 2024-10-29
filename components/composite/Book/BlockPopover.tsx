@@ -23,7 +23,12 @@ import { toJS } from 'mobx'
 import React, { useState } from 'react'
 import Select from 'react-select'
 
-import { EditIcon, RefreshIcon, TrashIcon } from '@sanity/icons'
+import {
+  EditIcon,
+  InsertBelowIcon,
+  RefreshIcon,
+  TrashIcon,
+} from '@sanity/icons'
 import { type BlockStyle, type LineParams, type Update } from './bookTypes'
 
 const pointFormat = (num) => `${num}pt`
@@ -236,6 +241,19 @@ const BlockPopover: React.FC<{
             </Checkbox>
           </Stack>
           <Divider />
+          <Box>
+            <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
+              <Button
+                width={'100%'}
+                onClick={() => bookLayoutStore.addBlock(page, col)}
+                leftIcon={
+                  <InsertBelowIcon width={'1.5rem'} height={'1.5rem'} />
+                }
+              >
+                <Text fontSize={'sm'}>Insert block below</Text>
+              </Button>
+            </ButtonGroup>
+          </Box>
           <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
             <Button
               width={'50%'}

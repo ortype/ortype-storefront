@@ -1,6 +1,7 @@
 import { cache } from 'react'
 import 'tailwindcss/tailwind.css'
-
+import { SessionProvider } from 'next-auth/react'
+import { BASE_PATH, auth } from '@/lib/auth'
 import Providers from '@/components/global/Providers'
 import { getIntegrationToken } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
@@ -64,11 +65,21 @@ async function RootLayout({
 }) {
   // @TODO: is it possible to server side cache this request?
   // we are getting HTTP errors durning development
+  const session = await auth()
+  console.log('layout: session: ', session)
+  if (session && session.user) {
+    session.user = {
+      name: session.user.name,
+      email: session.user.email,
+    }
+  }
   const marketId = (await getMarketId()) || ''
   return (
     <html lang="en">
       <body>
-        <Providers marketId={marketId}>{children}</Providers>
+        <SessionProvider basePath={BASE_PATH} session={session}>
+          <Providers marketId={marketId}>{children}</Providers>
+        </SessionProvider>
       </body>
     </html>
   )
