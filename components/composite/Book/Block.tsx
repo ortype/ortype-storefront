@@ -36,7 +36,7 @@ const Block: React.FC<{
         marginTop: layout.outerWrapperMarginTop,
         marginBottom: layout.outerWrapperMarginBottom,
       }}
-      _hover={{
+      sx={{
         ['.blockGuide']: {
           backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
         },

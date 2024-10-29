@@ -135,7 +135,7 @@ const Column = observer(
           margin: `0 ${15 * conversion}px`,
         }}
         position={'relative'}
-        _hover={{
+        sx={{
           ['.colGuide']: {
             backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
           },

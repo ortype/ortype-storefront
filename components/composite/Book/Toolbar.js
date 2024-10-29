@@ -73,6 +73,22 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
     setFontLoading(false)
   }, [font])
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'e') {
+        console.log('The "e" key was pressed.')
+        bookLayoutStore.setEditMode(!bookLayoutStore.editMode)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, []) // Empty dependency array to ensure this is only run once on mount
+
   // queries
   // get layout data from api
   const { loading: assignedLayoutsLoading, data: assignedLayouts } = useQuery(
