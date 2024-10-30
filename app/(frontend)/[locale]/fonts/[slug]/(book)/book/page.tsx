@@ -1,4 +1,3 @@
-import AuthButton from '@/components/composite/Book/Auth.server'
 import { auth, BASE_PATH } from '@/lib/auth'
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { createApolloClient } from 'hooks/useApollo'
