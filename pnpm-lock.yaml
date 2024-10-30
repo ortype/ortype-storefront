@@ -11,12 +11,6 @@ dependencies:
   '@apollo/client':
     specifier: ^3.8.1
     version: 3.8.1(graphql-ws@5.14.1)(graphql@16.8.0)(react-dom@18.3.1)(react@18.3.1)
-  '@authorizerdev/authorizer-js':
-    specifier: ^2.0.0
-    version: 2.0.0
-  '@authorizerdev/authorizer-react':
-    specifier: ^1.3.2
-    version: 1.3.2(react@18.3.1)
   '@babel/plugin-syntax-typescript':
     specifier: ^7.23.3
     version: 7.23.3(@babel/core@7.25.2)
@@ -412,37 +406,6 @@ packages:
       oauth4webapi: 3.1.2
       preact: 10.11.3
       preact-render-to-string: 5.2.3(preact@10.11.3)
-    dev: false
-
-  /@authorizerdev/authorizer-js@2.0.0:
-    resolution: {integrity: sha512-PTVuCrCkZkVPoo+l0+9PVFyP9frLp/L3FUtQDtAaN+ERuqx97DNF20tIH8khSvnXrkKv3lTJ/5iFWddy+dTAwg==}
-    engines: {node: '>=16'}
-    dependencies:
-      cross-fetch: 3.1.8
-    transitivePeerDependencies:
-      - encoding
-    dev: false
-
-  /@authorizerdev/authorizer-js@2.0.3:
-    resolution: {integrity: sha512-uencwr3Ea8mwfxVKDFf2ITRCRSmzvua+O2voRuiWQORtRQTgZQjkN3M+IEkEj+WP9M1iFIl+NDgzECsp8ptC/A==}
-    engines: {node: '>=16'}
-    dependencies:
-      cross-fetch: 3.1.8
-    transitivePeerDependencies:
-      - encoding
-    dev: false
-
-  /@authorizerdev/authorizer-react@1.3.2(react@18.3.1):
-    resolution: {integrity: sha512-3kMAygHBCa8Fc9Oo0lz1k88r+Pd6kx1PSn3NMYLwxQXy2jRt4xWn7iuGn+SDGFs3DzofaN71I61gRwQ+6dO1rw==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: '>=16'
-    dependencies:
-      '@authorizerdev/authorizer-js': 2.0.3
-      react: 18.3.1
-      validator: 13.12.0
-    transitivePeerDependencies:
-      - encoding
     dev: false
 
   /@babel/code-frame@7.18.6:
@@ -7195,14 +7158,6 @@ packages:
     resolution: {integrity: sha512-+BO9wPPi+DWTDcNYhr/W90myha8ptzftZT+LwcmUbbok0rcP/fequmFYCw8NMoH7pkAZQzU78b3kYrlua5a9eA==}
     dev: false
 
-  /cross-fetch@3.1.8:
-    resolution: {integrity: sha512-cvA+JwZoU0Xq+h6WkMvAUqPEYy92Obet6UdKLfW60qn99ftItKjB5T+BkyWOFWe2pUyfQ+IJHmpOTznqk1M6Kg==}
-    dependencies:
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - encoding
-    dev: false
-
   /cross-spawn@6.0.5:
     resolution: {integrity: sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==}
     engines: {node: '>=4.8'}
@@ -10366,18 +10321,6 @@ packages:
       lodash: 4.17.21
     dev: false
 
-  /node-fetch@2.7.0:
-    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
-    engines: {node: 4.x || >=6.0.0}
-    peerDependencies:
-      encoding: ^0.1.0
-    peerDependenciesMeta:
-      encoding:
-        optional: true
-    dependencies:
-      whatwg-url: 5.0.0
-    dev: false
-
   /node-html-parser@6.1.13:
     resolution: {integrity: sha512-qIsTMOY4C/dAa5Q5vsobRpOOvPfC4pB61UVW2uSwZNUp0QU/jCekTal1vMmbO0DgdHeLUJpv/ARmDqErVxA3Sg==}
     dependencies:
@@ -13255,10 +13198,6 @@ packages:
       url-parse: 1.5.10
     dev: false
 
-  /tr46@0.0.3:
-    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-    dev: false
-
   /tr46@5.0.0:
     resolution: {integrity: sha512-tk2G5R2KRwBd+ZN0zaEXpmzdKyOYksXwywulIX95MBODjSzMIuQnQ3m8JxgbhnL1LeVo7lqQKsYa1O3Htl7K5g==}
     engines: {node: '>=18'}
@@ -13712,11 +13651,6 @@ packages:
       builtins: 1.0.3
     dev: false
 
-  /validator@13.12.0:
-    resolution: {integrity: sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==}
-    engines: {node: '>= 0.10'}
-    dev: false
-
   /vite@4.5.3(@types/node@22.4.0):
     resolution: {integrity: sha512-kQL23kMeX92v3ph7IauVkXkikdDRsYMGTVl5KY2E9OY4ONLvkHf04MDTbnfo6NKxZiDLWzVpP5oTa8hQD8U3dg==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -13781,10 +13715,6 @@ packages:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
     dependencies:
       defaults: 1.0.4
-    dev: false
-
-  /webidl-conversions@3.0.1:
-    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
     dev: false
 
   /webidl-conversions@7.0.0:
@@ -13855,13 +13785,6 @@ packages:
     dependencies:
       tr46: 5.0.0
       webidl-conversions: 7.0.0
-    dev: false
-
-  /whatwg-url@5.0.0:
-    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
-    dependencies:
-      tr46: 0.0.3
-      webidl-conversions: 3.0.1
     dev: false
 
   /which-boxed-primitive@1.0.2:

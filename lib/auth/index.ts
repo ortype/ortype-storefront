@@ -1,16 +1,10 @@
-import jwt from 'jsonwebtoken'
+import jwt, { JWT } from 'jsonwebtoken'
 import NextAuth, { NextAuthConfig, Session, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 
-interface JWT {
-  name?: string
-  email?: string
-  picture?: string
-  sub?: string
-  accessToken?: string
-  iat?: number
-  exp?: number
-  jti?: string
+interface SessionWithToken extends Session {
+  id: string
+  token: string
 }
 
 export const BASE_PATH = '/api/auth'
@@ -26,18 +20,11 @@ const authOptions: NextAuthConfig = {
       async authorize(credentials): Promise<User | null> {
         const users = [
           {
-            id: 'test-user-1',
-            userName: 'test1',
-            name: 'Test 1',
-            password: 'pass',
-            email: 'test1@donotreply.com',
-          },
-          {
-            id: 'test-user-2',
-            userName: 'test2',
-            name: 'Test 2',
-            password: 'pass',
-            email: 'test2@donotreply.com',
+            id: 'book-admin-1',
+            userName: process.env.BOOK_USER,
+            name: 'Admin',
+            password: process.env.BOOK_PASS,
+            email: process.env.BOOK_USER,
           },
         ]
         const user = users.find(
@@ -46,20 +33,7 @@ const authOptions: NextAuthConfig = {
             user.password === credentials.password
         )
 
-        // If no user or authentication failed
-        if (!user) {
-          return null
-        }
-
-        // If successful, create a JWT token
-        const jwtToken = jwt.sign(user, process.env.JWT_SECRET, {
-          expiresIn: '3000h',
-        })
-
-        console.log('authorize: ', jwtToken)
-
-        // Return user object along with token
-        return { ...user, token: jwtToken }
+        return user ? { id: user.id, name: user.name, email: user.email } : null
       },
     }),
   ],
@@ -67,18 +41,25 @@ const authOptions: NextAuthConfig = {
     strategy: 'jwt', // Specify the JWT session strategy
   },
   callbacks: {
-    async jwt({ token, user }): Promise<JWT> {
-      console.log('callbacks!! jwt', token)
-      if (user) {
-        console.log('jwt: user: ', user)
-        token.accessToken = user.accessToken
+    async session({
+      session,
+      token,
+    }: {
+      session: Session
+      token: JWT
+    }): Promise<SessionWithToken> {
+      console.log('process.env.BOOK_USER: ', process.env.BOOK_USER)
+      console.log('process.env.BOOK_PASS: ', process.env.BOOK_PASS)
+      // encode a JWT token
+      const encodedToken = jwt.sign(token, process.env.NEXTAUTH_SECRET, {
+        algorithm: 'HS256',
+      })
+      return {
+        user: session.user,
+        expires: session.expires,
+        id: session.user?.id,
+        token: encodedToken,
       }
-      return token
-    },
-    async session({ session, token }): Promise<Session> {
-      console.log('callbacks!! session: accessToken: ', token.accessToken)
-      session.accessToken = token.accessToken
-      return session
     },
   },
   basePath: BASE_PATH,

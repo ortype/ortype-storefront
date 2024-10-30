@@ -11,8 +11,7 @@ export const ApolloClientProvider = ({
   children: React.ReactNode
 }) => {
   const session = useSession()
-  console.log('ApolloClientProvider: session: ', session)
-  const token = null
+  const token = session?.data?.token
   const apolloClient = useApollo(initialApolloState, token)
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
 }

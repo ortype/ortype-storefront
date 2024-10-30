@@ -1,8 +1,8 @@
 'use client'
 import { useSession } from 'next-auth/react'
 
-import { Button } from '@chakra-ui/react'
 import { signIn, signOut } from '@/lib/auth/helpers'
+import { AbsoluteCenter, Box, Button } from '@chakra-ui/react'
 
 export default function AuthButton() {
   const session = useSession()
@@ -17,6 +17,17 @@ export default function AuthButton() {
       {session.data?.user?.name} : Sign Out
     </Button>
   ) : (
-    <Button onClick={async () => await signIn()}>Sign In</Button>
+    <Box w={'100vw'} h={'100vh'}>
+      <AbsoluteCenter>
+        <Button
+          size={'md'}
+          fontWeight={'normal'}
+          variant={'outline'}
+          onClick={async () => await signIn()}
+        >
+          Sign In
+        </Button>
+      </AbsoluteCenter>
+    </Box>
   )
 }

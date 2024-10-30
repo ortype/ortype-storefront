@@ -1,7 +1,5 @@
 import AuthButton from '@/components/composite/Book/Auth.server'
 import { auth } from '@/lib/auth'
-import { Authorizer } from '@authorizerdev/authorizer-js'
-import authorizerConfig from 'authorizerConfig'
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { createApolloClient } from 'hooks/useApollo'
 
@@ -99,7 +97,8 @@ interface DataProps {
 export default async function Page(props) {
   const data: DataProps | false = await getData({ slug: props.params.slug })
   const session = await auth()
-  console.log('book page session: ', session)
-  // <pre>{JSON.stringify(session, null, 2)}</pre>
+  // @NOTE: how do we approach the design goal of redirecting to sign-in page if not authenticated
+  // without a client side button and a signIn function in the click handler
+  // is it a server action?
   return session?.user ? <BookPage data={data} /> : <AuthButton />
 }

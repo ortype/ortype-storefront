@@ -65,15 +65,9 @@ async function RootLayout({
 }) {
   // @TODO: is it possible to server side cache this request?
   // we are getting HTTP errors durning development
-  const session = await auth()
-  console.log('layout: session: ', session)
-  if (session && session.user) {
-    session.user = {
-      name: session.user.name,
-      email: session.user.email,
-    }
-  }
+  // ah, we actually had duplicate Providers wrapping, perhaps that was the issue
   const marketId = (await getMarketId()) || ''
+  const session = await auth()
   return (
     <html lang="en">
       <body>
