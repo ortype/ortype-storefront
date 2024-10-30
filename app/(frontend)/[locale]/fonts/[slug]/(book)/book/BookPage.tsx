@@ -3,7 +3,7 @@
 import { disableDraftMode } from '@/app/actions'
 import Spread from '@/components/composite/Book/Spread'
 import { useQuery } from '@apollo/client'
-import { Box, Center, Flex } from '@chakra-ui/react'
+import { Box, Center, Flex, Text } from '@chakra-ui/react'
 import Toolbar from 'components/composite/Book/Toolbar'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import { makeLocalStorage } from 'components/utils/makeLocalStorage'
@@ -96,12 +96,10 @@ const BookPage = ({
   */
 
   return (
-    <Suspense fallback={<div />}>
-      <Box bg={'#000'} height={'100%'}>
-        <Toolbar font={font} fonts={fonts} bookLayoutData={data} />
-        <Spread />
-      </Box>
-    </Suspense>
+    <Box bg={'#000'} height={'100%'}>
+      <Toolbar font={font} fonts={fonts} bookLayoutData={data} />
+      <Spread />
+    </Box>
   )
 }
 

@@ -12,7 +12,6 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { cache as ReactCache } from 'react'
 import BookPage from './BookPage'
-import BookPageWrapper from './BookPageWrapper'
 
 export const dynamicParams = false
 // export const dynamic = 'force-dynamic'
@@ -104,5 +103,5 @@ export default async function Page(props) {
     )}`
     redirect(url)
   }
-  return session?.user ? <BookPage data={data} /> : null
+  return <BookPage data={data} user={session.user} />
 }
