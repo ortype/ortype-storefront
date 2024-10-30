@@ -1,8 +1,7 @@
 import AuthButton from '@/components/composite/Book/Auth.server'
-import { auth } from '@/lib/auth'
+import { auth, BASE_PATH } from '@/lib/auth'
 import { GET_BOOK_LAYOUTS } from 'graphql/queries'
 import { createApolloClient } from 'hooks/useApollo'
-
 import {
   getAllFontsSlugs,
   getFontAndMoreFonts,
@@ -10,6 +9,7 @@ import {
 } from 'lib/sanity.client'
 import { Font } from 'lib/sanity.queries'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { cache as ReactCache } from 'react'
 import BookPage from './BookPage'
 import BookPageWrapper from './BookPageWrapper'
@@ -97,8 +97,12 @@ interface DataProps {
 export default async function Page(props) {
   const data: DataProps | false = await getData({ slug: props.params.slug })
   const session = await auth()
-  // @NOTE: how do we approach the design goal of redirecting to sign-in page if not authenticated
-  // without a client side button and a signIn function in the click handler
-  // is it a server action?
-  return session?.user ? <BookPage data={data} /> : <AuthButton />
+  if (!session) {
+    const pathname = `${process.env.NEXT_PUBIC_STOREFRONT_URL}/fonts/${props.params.slug}/book`
+    const url = `${BASE_PATH}/signin?callbackUrl=${encodeURIComponent(
+      pathname
+    )}`
+    redirect(url)
+  }
+  return session?.user ? <BookPage data={data} /> : null
 }

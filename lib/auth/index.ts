@@ -48,8 +48,6 @@ const authOptions: NextAuthConfig = {
       session: Session
       token: JWT
     }): Promise<SessionWithToken> {
-      console.log('process.env.BOOK_USER: ', process.env.BOOK_USER)
-      console.log('process.env.BOOK_PASS: ', process.env.BOOK_PASS)
       // encode a JWT token
       const encodedToken = jwt.sign(token, process.env.NEXTAUTH_SECRET, {
         algorithm: 'HS256',
