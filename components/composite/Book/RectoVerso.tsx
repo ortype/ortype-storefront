@@ -22,6 +22,7 @@ const RectoVerso: React.FC<{
       alignContent={'flex-start'}
       style={{
         padding: `${pageMargin * conversion}px`,
+        paddingTop: `${pageMargin - 14 * conversion}px`,
       }}
     >
       {page &&

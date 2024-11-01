@@ -36,21 +36,23 @@ export function mapResponsive(prop: any, mapper: (val: any) => any) {
   return null
 }
 
-type BottomGuideProps = {
+type GuideProps = {
+  placement: string
   label: string
-  bottom: number
+  value: number
   editMode: boolean
 }
 
-const BottomGuide: React.FC<BottomGuideProps> = ({
+const Guide: React.FC<GuideProps> = ({
   label,
-  bottom,
+  placement = 'bottom',
+  value,
   editMode,
 }) => {
   return (
     <>
       <Box
-        style={{ bottom: bottom + 'px' }}
+        style={{ [placement]: value + 'px' }}
         sx={{
           display: editMode ? 'block' : 'none',
           position: 'absolute',
@@ -60,19 +62,21 @@ const BottomGuide: React.FC<BottomGuideProps> = ({
           pointerEvents: 'none',
         }}
       />
-      <Box
-        style={{ bottom: -bottom + 'px' }}
-        sx={{
-          color: '#FFF',
-          position: 'absolute',
-          width: '100%',
-          textAlign: 'center',
-          fontSize: '12px',
-          pointerEvents: 'none',
-        }}
-      >
-        {label}
-      </Box>
+      {label && (
+        <Box
+          style={{ [placement]: -value + 'px' }}
+          sx={{
+            color: '#FFF',
+            position: 'absolute',
+            width: '100%',
+            textAlign: 'center',
+            fontSize: '12px',
+            pointerEvents: 'none',
+          }}
+        >
+          {label}
+        </Box>
+      )}
     </>
   )
 }
@@ -125,9 +129,10 @@ const Spread: React.FC<{}> = ({}) => {
           page={bookLayoutStore.spread.verso}
           label={'verso'}
         />
-        <BottomGuide
+        <Guide
           label={'Verso'}
-          bottom={pageMargin * conversion}
+          value={pageMargin * conversion}
+          placement={'bottom'}
           editMode={bookLayoutStore.editMode}
         />
       </Box>
@@ -150,9 +155,10 @@ const Spread: React.FC<{}> = ({}) => {
           page={bookLayoutStore.spread.recto}
         />
 
-        <BottomGuide
+        <Guide
           label={'Recto'}
-          bottom={pageMargin * conversion}
+          value={pageMargin * conversion}
+          placement={'bottom'}
           editMode={bookLayoutStore.editMode}
         />
       </Box>
