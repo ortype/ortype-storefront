@@ -64,7 +64,7 @@ const fontFields = defineQuery(`
   uid,
   version,
   metafields[]{key, value},
-  defaultVariant->{_id},
+  defaultVariant->{_id, optionName},
   modules[]{
     ..., 
     book->{variantId, snapshots},  

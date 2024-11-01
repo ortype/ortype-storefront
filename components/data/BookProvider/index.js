@@ -45,8 +45,8 @@ export const BookLayoutProvider = ({ data, children }) => {
       value: item._id,
     })),
     variantOption: {
-      label: font.variants[0].name,
-      value: font.variants[0]._id,
+      label: font.defaultVariant?.optionName,
+      value: font.defaultVariant?._id,
     },
     variantOptions: font.variants.map((variant) => ({
       label: variant.optionName,
@@ -272,8 +272,8 @@ export const BookLayoutProvider = ({ data, children }) => {
   useEffect(() => {
     // update store on `font` prop change
     store.setVariantOption({
-      label: font.variants[0].optionName,
-      value: font.variants[0]._id,
+      label: font.defaultVariant?.optionName,
+      value: font.defaultVariant?._id,
     })
     store.setVariantOptions(
       font.variants.map((variant) => ({
