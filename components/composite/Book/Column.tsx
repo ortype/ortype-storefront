@@ -187,7 +187,7 @@ const Column = observer(
           }}
         />
         {bookLayoutStore.editMode && (
-          <ColumnPopover update={update} blocks={blocks} />
+          <ColumnPopover update={update} blocks={blocks} width={width} />
         )}
         {renderBlocks()}
       </Flex>

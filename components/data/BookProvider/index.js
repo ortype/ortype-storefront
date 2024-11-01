@@ -196,6 +196,7 @@ export const BookLayoutProvider = ({ data, children }) => {
       }
     }),
     addColumn: action((page, width, location = 'end', index = 0) => {
+      // console.log('addColumn: ', page, width, location, index)
       switch (location) {
         case 'before':
           store.spread[page].splice(index, 0, defaultColumn())
@@ -208,6 +209,7 @@ export const BookLayoutProvider = ({ data, children }) => {
       }
     }),
     duplicateColumn: action((page, width, blocks, index = 0) => {
+      // console.log('duplicateColumn: ', page, width, blocks, index)
       // colId: 'col_xg4qvh7wi', width: 100, blocks: Array(6)
       store.spread[page].splice(index + 1, 0, {
         colId: `col_${uuid()}`,

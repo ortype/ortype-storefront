@@ -35,7 +35,8 @@ import {
 const ColumnPopover: React.FC<{
   blocks: BlockParams[]
   update: Update
-}> = observer(({ blocks, update: { page, col } }) => {
+  width: number
+}> = observer(({ blocks, update: { page, col }, width }) => {
   const bookLayoutStore = useBookLayoutStore()
 
   const handleChange = (key, value) => {
