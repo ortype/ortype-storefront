@@ -245,7 +245,13 @@ const BlockPopover: React.FC<{
             <Box>
               <Text fontSize={'xs'}>Insert block</Text>
 
-              <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
+              <ButtonGroup
+                mt={2}
+                isAttached
+                variant="outline"
+                spacing="2"
+                width={'100%'}
+              >
                 <Button
                   width={'50%'}
                   size={'sm'}

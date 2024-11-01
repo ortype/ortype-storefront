@@ -76,11 +76,17 @@ const Column = observer(
   ({ conversion, width, blocks, update }: ColumnProps) => {
     const bookLayoutStore = useBookLayoutStore()
 
-    // @TODO: account for 30px total x margin in column
-
     let hardCodedColumnWidth = 558 // the total page size not including margin left/right
-    if (width !== 100) {
-      hardCodedColumnWidth = hardCodedColumnWidth - 30
+    const marginW = 15 // single margin width
+    // if a page was composed of all columns of the same width count the inner margins
+    if (width === 66.67) {
+      hardCodedColumnWidth = hardCodedColumnWidth - marginW * 1
+    }
+    if (width === 50) {
+      hardCodedColumnWidth = hardCodedColumnWidth - marginW * 2
+    }
+    if (width === 33.33) {
+      hardCodedColumnWidth = hardCodedColumnWidth - marginW * 4
     }
 
     const queryWidth = Math.floor(Number((width / 100) * hardCodedColumnWidth))

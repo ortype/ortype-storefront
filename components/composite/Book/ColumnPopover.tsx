@@ -86,27 +86,27 @@ const ColumnPopover: React.FC<{
               <ButtonGroup isAttached>
                 <Button
                   variant={'outline'}
-                  onClick={() => handleChange('width', 30)}
+                  onClick={() => handleChange('width', 33.33)}
                 >
-                  <Text fontSize={'sm'}>{'30%'}</Text>
+                  <Text fontSize={'sm'}>{'1/3'}</Text>
                 </Button>
                 <Button
                   variant={'outline'}
                   onClick={() => handleChange('width', 50)}
                 >
-                  <Text fontSize={'sm'}>{'50%'}</Text>
+                  <Text fontSize={'sm'}>{'1/2'}</Text>
                 </Button>
                 <Button
                   variant={'outline'}
-                  onClick={() => handleChange('width', 70)}
+                  onClick={() => handleChange('width', 66.67)}
                 >
-                  <Text fontSize={'sm'}>{'70%'}</Text>
+                  <Text fontSize={'sm'}>{'2/3'}</Text>
                 </Button>
                 <Button
                   variant={'outline'}
                   onClick={() => handleChange('width', 100)}
                 >
-                  <Text fontSize={'sm'}>{'100%'}</Text>
+                  <Text fontSize={'sm'}>{'Full'}</Text>
                 </Button>
               </ButtonGroup>
             </Box>
