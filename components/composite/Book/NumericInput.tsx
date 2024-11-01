@@ -56,7 +56,7 @@ const NumericInput: React.FC<NumericInputProps> = (props) => {
   return (
     <Flex alignItems={`center`}>
       <NumberInput value={inputValue} onChange={handleInputChange}>
-        <NumberInputField />
+        <NumberInputField fontSize={'sm'} h={'2rem'} />
         <NumberInputStepper>
           <NumberIncrementStepper onClick={handleIncrementButton} />
           <NumberDecrementStepper onClick={handleDecrementButton} />

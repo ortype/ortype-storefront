@@ -111,7 +111,9 @@ const BlockPopover: React.FC<{
           />
           <SimpleGrid columns={3} spacing={3}>
             <Box>
-              <Text fontSize={'xs'}>Font size</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                Font size
+              </Text>
               <NumericInput
                 onChange={(value) => handleChange('fontSize', value)}
                 value={line.fontSize}
@@ -131,7 +133,9 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'xs'}>Line gap (↕)</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                Line gap (↕)
+              </Text>
               <NumericInput
                 onChange={(value) => handleChange('lineGap', value)}
                 value={line.lineGap}
@@ -150,7 +154,9 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'xs'}>Offset (↓)</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                Offset (↓)
+              </Text>
               <NumericInput
                 onChange={(value) => handleChange('marginBottom', value)}
                 value={line.marginBottom}
@@ -169,7 +175,9 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'xs'}>Word count</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                Word count
+              </Text>
               <NumericInput
                 disabled={line.isParagraph}
                 onChange={(value) => handleChange('wordCount', value)}
@@ -190,7 +198,9 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'xs'}>Line count</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                Line count
+              </Text>
               <NumericInput
                 onChange={(value) => handleChange('lineCount', value)}
                 value={line.lineCount}
@@ -212,7 +222,9 @@ const BlockPopover: React.FC<{
           <Stack mt={2} direction={'column'} spacing="2">
             <Divider />
             <Box>
-              <Text fontSize={'xs'}>Typecase</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                Typecase
+              </Text>
               <StyledSelect
                 width={'16rem'}
                 options={regexOptions}
@@ -228,22 +240,30 @@ const BlockPopover: React.FC<{
                 onChange={(option) => handleChange('regex', option.value)}
               />
             </Box>
-            <Text fontSize={'xs'}>Additional options</Text>
+            <Text as={'span'} fontSize={'xs'}>
+              Additional options
+            </Text>
             <Checkbox
               isChecked={line.isParagraph}
               onChange={(e) => handleChange('isParagraph', e.target.checked)}
             >
-              <Text fontSize={'xs'}>{'Paragraph mode'}</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                {'Paragraph mode'}
+              </Text>
             </Checkbox>
             <Checkbox
               isChecked={line.noSpace}
               onChange={(e) => handleChange('noSpace', e.target.checked)}
             >
-              <Text fontSize={'xs'}>{'No spaces'}</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                {'No spaces'}
+              </Text>
             </Checkbox>
             <Divider />
             <Box>
-              <Text fontSize={'xs'}>Insert block</Text>
+              <Text as={'span'} fontSize={'xs'}>
+                Insert block
+              </Text>
 
               <ButtonGroup
                 mt={2}
@@ -271,7 +291,7 @@ const BlockPopover: React.FC<{
                     () => bookLayoutStore.addBlock(page, col, 'after', block)
                     // bookLayoutStore.addColumn(page, 30, 'before', col)
                   }
-                  leftIcon={
+                  rightIcon={
                     <InsertBelowIcon width={'1.5rem'} height={'1.5rem'} />
                   }
                 >

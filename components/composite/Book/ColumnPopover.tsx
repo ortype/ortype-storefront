@@ -81,77 +81,107 @@ const ColumnPopover: React.FC<{
         </PopoverHeader>
         <PopoverBody>
           <VStack spacing={2} alignItems={'start'}>
-            <Box>
-              <Text fontSize={'sm'}>Width</Text>
-              <ButtonGroup isAttached>
+            <Box w={'100%'}>
+              <Text as={'span'} fontSize={'xs'}>
+                Width
+              </Text>
+              <ButtonGroup isAttached variant={'outline'} width={'100%'}>
                 <Button
-                  variant={'outline'}
+                  w={'25%'}
+                  size={'sm'}
                   onClick={() => handleChange('width', 33.33)}
                 >
-                  <Text fontSize={'sm'}>{'1/3'}</Text>
+                  <Text as={'span'} fontSize={'xs'}>
+                    {'1/3'}
+                  </Text>
                 </Button>
                 <Button
-                  variant={'outline'}
+                  w={'25%'}
+                  size={'sm'}
                   onClick={() => handleChange('width', 50)}
                 >
-                  <Text fontSize={'sm'}>{'1/2'}</Text>
+                  <Text as={'span'} fontSize={'xs'}>
+                    {'1/2'}
+                  </Text>
                 </Button>
                 <Button
-                  variant={'outline'}
+                  w={'25%'}
+                  size={'sm'}
                   onClick={() => handleChange('width', 66.67)}
                 >
-                  <Text fontSize={'sm'}>{'2/3'}</Text>
+                  <Text as={'span'} fontSize={'xs'}>
+                    {'2/3'}
+                  </Text>
                 </Button>
                 <Button
-                  variant={'outline'}
+                  w={'25%'}
+                  size={'sm'}
                   onClick={() => handleChange('width', 100)}
                 >
-                  <Text fontSize={'sm'}>{'Full'}</Text>
+                  <Text as={'span'} fontSize={'xs'}>
+                    {'Full'}
+                  </Text>
                 </Button>
               </ButtonGroup>
             </Box>
-            <Text fontSize={'sm'}>Insert Column</Text>
-            <ButtonGroup isAttached width={'100%'}>
-              <Button
-                variant={'outline'}
-                onClick={() =>
-                  bookLayoutStore.addColumn(page, 30, 'before', col)
-                }
-                fontSize={'2xl'}
-                leftIcon={<InsertAboveIcon />}
-              >
-                <Text fontSize={'sm'}>Before</Text>
-              </Button>
-              <Button
-                variant={'outline'}
-                onClick={() =>
-                  bookLayoutStore.addColumn(page, 30, 'after', col)
-                }
-                fontSize={'2xl'}
-                rightIcon={<InsertBelowIcon />}
-              >
-                <Text fontSize={'sm'}>After</Text>
-              </Button>
-            </ButtonGroup>
+            <Box w={'100%'}>
+              <Text as={'span'} fontSize={'xs'}>
+                Insert Column
+              </Text>
+              <ButtonGroup isAttached variant={'outline'} width={'100%'}>
+                <Button
+                  size={'sm'}
+                  w={'50%'}
+                  onClick={() =>
+                    bookLayoutStore.addColumn(page, 30, 'before', col)
+                  }
+                  fontSize={'2xl'}
+                  leftIcon={<InsertAboveIcon />}
+                >
+                  <Text as={'span'} fontSize={'xs'}>
+                    Before
+                  </Text>
+                </Button>
+                <Button
+                  size={'sm'}
+                  w={'50%'}
+                  onClick={() =>
+                    bookLayoutStore.addColumn(page, 30, 'after', col)
+                  }
+                  fontSize={'2xl'}
+                  rightIcon={<InsertBelowIcon />}
+                >
+                  <Text as={'span'} fontSize={'xs'}>
+                    After
+                  </Text>
+                </Button>
+              </ButtonGroup>
+            </Box>
             <Divider />
-            <ButtonGroup variant="outline" spacing="2" width={'100%'}>
+            <ButtonGroup variant={'outline'} spacing="2" width={'100%'}>
               <Button
                 width={'50%'}
                 leftIcon={<CopyIcon />}
                 fontSize={'2xl'}
+                size={'sm'}
                 onClick={() =>
                   bookLayoutStore.duplicateColumn(page, width, blocks, col)
                 }
               >
-                <Text fontSize={'sm'}>Duplicate</Text>
+                <Text as={'span'} fontSize={'xs'}>
+                  Duplicate
+                </Text>
               </Button>
               <Button
                 width={'50%'}
                 leftIcon={<TrashIcon />}
                 fontSize={'2xl'}
+                size={'sm'}
                 onClick={() => bookLayoutStore.removeColumn(page, col)}
               >
-                <Text fontSize={'sm'}>Remove</Text>
+                <Text as={'span'} fontSize={'xs'}>
+                  Remove
+                </Text>
               </Button>
             </ButtonGroup>
           </VStack>
