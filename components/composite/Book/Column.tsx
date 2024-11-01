@@ -120,10 +120,6 @@ const Column = observer(
         )
       })
 
-    const handleClick = () => {
-      bookLayoutStore.addBlock(update.page, update.col)
-    }
-
     return (
       <Flex
         className={'column'}
@@ -194,24 +190,6 @@ const Column = observer(
           <ColumnPopover update={update} blocks={blocks} />
         )}
         {renderBlocks()}
-        {/*<Button
-          onClick={handleClick}
-          // variant={'ghost'}
-          fontSize={'2xl'}
-          className={'addColumnButton'}
-          sx={{
-            visibility: `hidden`,
-            position: `absolute`,
-            bottom: `1rem`,
-            left: `calc(50% - 1rem)`,
-            padding: `.2rem`,
-            width: `2rem`,
-            height: `2rem`,
-            zIndex: 1,
-          }}
-        >
-          <InsertBelowIcon />
-        </Button>*/}
       </Flex>
     )
   }

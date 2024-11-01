@@ -185,8 +185,15 @@ export const BookLayoutProvider = ({ data, children }) => {
         (value, index) => index !== block
       )
     }),
-    addBlock: action((page, col) => {
-      store.spread[page][col].blocks.push(defaultBlock())
+    addBlock: action((page, col, location = 'after', index = 0) => {
+      switch (location) {
+        case 'before':
+          store.spread[page][col].blocks.splice(index, 0, defaultBlock())
+          break
+        default:
+          store.spread[page][col].blocks.push(defaultBlock())
+          break
+      }
     }),
     addColumn: action((page, width, location = 'end', index = 0) => {
       switch (location) {

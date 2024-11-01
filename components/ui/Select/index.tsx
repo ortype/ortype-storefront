@@ -79,8 +79,8 @@ function getCustomStyles({ width, maxWidth }) {
         ...base,
         width,
         maxWidth,
-        paddingTop: baseSpacing,
-        paddingBottom: mediumSpacing,
+        paddingTop: '0.25rem',
+        paddingBottom: baseSpacing,
         marginRight: `-0.1rem`,
       }
     },

@@ -25,6 +25,7 @@ import Select from 'react-select'
 
 import {
   EditIcon,
+  InsertAboveIcon,
   InsertBelowIcon,
   RefreshIcon,
   TrashIcon,
@@ -88,7 +89,7 @@ const BlockPopover: React.FC<{
           </Text>
         </PopoverHeader>
         <PopoverBody>
-          <Text fontSize={'sm'}>{bookLayoutStore.fontFamily?.label}</Text>
+          <Text fontSize={'xs'}>{bookLayoutStore.fontFamily?.label}</Text>
           <StyledSelect
             placeholder="Select style"
             options={
@@ -110,7 +111,7 @@ const BlockPopover: React.FC<{
           />
           <SimpleGrid columns={3} spacing={3}>
             <Box>
-              <Text fontSize={'sm'}>Font size</Text>
+              <Text fontSize={'xs'}>Font size</Text>
               <NumericInput
                 onChange={(value) => handleChange('fontSize', value)}
                 value={line.fontSize}
@@ -130,7 +131,7 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'sm'}>Line gap (↕)</Text>
+              <Text fontSize={'xs'}>Line gap (↕)</Text>
               <NumericInput
                 onChange={(value) => handleChange('lineGap', value)}
                 value={line.lineGap}
@@ -149,7 +150,7 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'sm'}>Offset (↓)</Text>
+              <Text fontSize={'xs'}>Offset (↓)</Text>
               <NumericInput
                 onChange={(value) => handleChange('marginBottom', value)}
                 value={line.marginBottom}
@@ -168,7 +169,7 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'sm'}>Word count</Text>
+              <Text fontSize={'xs'}>Word count</Text>
               <NumericInput
                 disabled={line.isParagraph}
                 onChange={(value) => handleChange('wordCount', value)}
@@ -189,7 +190,7 @@ const BlockPopover: React.FC<{
               />
             </Box>
             <Box>
-              <Text fontSize={'sm'}>Line count</Text>
+              <Text fontSize={'xs'}>Line count</Text>
               <NumericInput
                 onChange={(value) => handleChange('lineCount', value)}
                 value={line.lineCount}
@@ -208,9 +209,10 @@ const BlockPopover: React.FC<{
               />
             </Box>
           </SimpleGrid>
-          <Stack my={4} direction={'column'} spacing="2">
+          <Stack mt={2} direction={'column'} spacing="2">
+            <Divider />
             <Box>
-              <Text fontSize={'sm'}>Typecase</Text>
+              <Text fontSize={'xs'}>Typecase</Text>
               <StyledSelect
                 width={'16rem'}
                 options={regexOptions}
@@ -226,51 +228,72 @@ const BlockPopover: React.FC<{
                 onChange={(option) => handleChange('regex', option.value)}
               />
             </Box>
-            <Text fontSize={'sm'}>Additional options</Text>
+            <Text fontSize={'xs'}>Additional options</Text>
             <Checkbox
               isChecked={line.isParagraph}
               onChange={(e) => handleChange('isParagraph', e.target.checked)}
             >
-              {'Paragraph mode'}
+              <Text fontSize={'xs'}>{'Paragraph mode'}</Text>
             </Checkbox>
             <Checkbox
               isChecked={line.noSpace}
               onChange={(e) => handleChange('noSpace', e.target.checked)}
             >
-              {'No spaces'}
+              <Text fontSize={'xs'}>{'No spaces'}</Text>
             </Checkbox>
-          </Stack>
-          <Divider />
-          <Box>
-            <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
+            <Divider />
+            <Box>
+              <Text fontSize={'xs'}>Insert block</Text>
+
+              <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
+                <Button
+                  width={'50%'}
+                  size={'sm'}
+                  onClick={() =>
+                    bookLayoutStore.addBlock(page, col, 'before', block)
+                  }
+                  leftIcon={
+                    <InsertAboveIcon width={'1.5rem'} height={'1.5rem'} />
+                  }
+                >
+                  <Text fontSize={'xs'}>Above</Text>
+                </Button>
+                <Button
+                  width={'50%'}
+                  size={'sm'}
+                  onClick={
+                    () => bookLayoutStore.addBlock(page, col, 'after', block)
+                    // bookLayoutStore.addColumn(page, 30, 'before', col)
+                  }
+                  leftIcon={
+                    <InsertBelowIcon width={'1.5rem'} height={'1.5rem'} />
+                  }
+                >
+                  <Text fontSize={'xs'}>Below</Text>
+                </Button>
+              </ButtonGroup>
+            </Box>
+            <Divider />
+            <ButtonGroup variant="outline" spacing="2" width={'100%'}>
               <Button
-                width={'100%'}
-                onClick={() => bookLayoutStore.addBlock(page, col)}
-                leftIcon={
-                  <InsertBelowIcon width={'1.5rem'} height={'1.5rem'} />
-                }
+                width={'50%'}
+                size={'sm'}
+                onClick={() => refetch()}
+                leftIcon={<RefreshIcon width={'1.5rem'} height={'1.5rem'} />}
               >
-                <Text fontSize={'sm'}>Insert block below</Text>
+                <Text fontSize={'xs'}>Refresh</Text>
+              </Button>
+
+              <Button
+                width={'50%'}
+                size={'sm'}
+                onClick={() => bookLayoutStore.removeBlock(page, col, block)}
+                leftIcon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
+              >
+                <Text fontSize={'xs'}>Remove</Text>
               </Button>
             </ButtonGroup>
-          </Box>
-          <ButtonGroup mt={2} variant="outline" spacing="2" width={'100%'}>
-            <Button
-              width={'50%'}
-              onClick={() => refetch()}
-              leftIcon={<RefreshIcon width={'1.5rem'} height={'1.5rem'} />}
-            >
-              <Text fontSize={'sm'}>Refresh</Text>
-            </Button>
-
-            <Button
-              width={'50%'}
-              onClick={() => bookLayoutStore.removeBlock(page, col, block)}
-              leftIcon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
-            >
-              <Text fontSize={'sm'}>Remove</Text>
-            </Button>
-          </ButtonGroup>
+          </Stack>
         </PopoverBody>
       </PopoverContent>
     </Popover>
