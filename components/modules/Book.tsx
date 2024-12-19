@@ -4,9 +4,10 @@ import { Box } from '@chakra-ui/react'
 
 export interface BookModuleProps {
   value: any // @TODO: types
+  index: number
 }
 
-export default function BookModule({ value }: BookModuleProps) {
+export default function BookModule({ value, index }: BookModuleProps) {
   const { config, book } = value
   let page = null
   if (book?.snapshots[0]?.spread) {

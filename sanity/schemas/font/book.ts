@@ -61,6 +61,7 @@ export default defineType({
       name: 'snapshots',
       title: 'Snapshots',
       type: 'array',
+      // @TODO: is it possible to not permit adding snapshots manually?
       of: [
         {
           name: 'snapshot',

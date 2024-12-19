@@ -1,10 +1,15 @@
 'use client'
+import { useFont } from '@/components/pages/fonts/FontContainer'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import config from '@/sanity.config'
 import { MIN_DEFAULT_MQ } from '@/utils/presets'
 import { Box, Flex } from '@chakra-ui/react'
 import { PortableText } from '@portabletext/react'
-import { type PortableTextBlock } from 'next-sanity'
+import { createDataAttribute } from '@sanity/visual-editing'
+import {
+  type PortableTextBlock,
+  type PortableTextComponents,
+} from 'next-sanity'
 import { useEffect } from 'react'
 import BookModule from './Book'
 import ContentModule from './Content'
@@ -48,11 +53,12 @@ const PageDivider: React.FC<PageDividerProps> = ({
 
 const DoublePage = ({
   children,
-  _key,
+  value,
   spreadMode = false,
   overflowCol,
   ...props
 }) => {
+  const { _key } = value
   const { spreadAspect, conversion, pageAspect, padding, state } =
     useSpreadContainer()
   const isOverflowing = state.items[_key]?.isOverflowing
@@ -116,13 +122,20 @@ const DoublePage = ({
   )
 }
 
-const SinglePage = ({ children, _key, ...props }) => {
+const SinglePage = ({ children, _key, font, index, value, ...props }) => {
   const { pageAspect, padding, conversion, state } = useSpreadContainer()
   const itemState = state.items[_key]
+
+  const attr = createDataAttribute({
+    id: font?._id,
+    type: 'font',
+    path: 'modules',
+  })
 
   return (
     <Box
       className={'single-page'}
+      data-sanity={attr(`[${index}]`).toString()}
       flex={{ base: '0 0 100%', lg: '0 0 50%' }} // responsive values
       mb={padding}
       position="relative"
@@ -172,48 +185,50 @@ const SinglePage = ({ children, _key, ...props }) => {
   )
 }
 
-const components = {
-  types: {
-    styles: (props) => (
-      <SinglePage _key={props.value._key}>
-        <StylesModule {...props} />
-      </SinglePage>
-    ),
-    info: (props) => (
-      <DoublePage _key={props.value._key}>
-        <InfoModule {...props} />
-      </DoublePage>
-    ),
-    content: (props) => (
-      <DoublePage
-        _key={props.value._key}
-        textAlign={props.value.centered ? 'center' : 'left'}
-        overflowCol={props.value.overflowCol}
-      >
-        <ContentModule {...props} />
-      </DoublePage>
-    ),
-    book: (props) => (
-      <SinglePage _key={props.value._key}>
-        <BookModule {...props} />
-      </SinglePage>
-    ),
-    // @TODO: rename to 'features'?
-    feature: (props) => (
-      <SinglePage _key={props.value._key}>
-        <FeaturesModule {...props} />
-      </SinglePage>
-    ),
-    // @TODO: type tester module
-    tester: (props) => (
-      <DoublePage _key={props.value._key} spreadMode={true}>
-        <TesterModule {...props} />
-      </DoublePage>
-    ),
-  },
-}
-
 const Modules = ({ value }) => {
+  const font = useFont()
+
+  const components: PortableTextComponents = {
+    types: {
+      styles: (props) => (
+        <SinglePage font={font} value={props.value} index={props.index}>
+          <StylesModule {...props} />
+        </SinglePage>
+      ),
+      info: (props) => (
+        <DoublePage value={props.value}>
+          <InfoModule {...props} />
+        </DoublePage>
+      ),
+      content: (props) => (
+        <DoublePage
+          value={props.value}
+          textAlign={props.value.centered ? 'center' : 'left'}
+          overflowCol={props.value.overflowCol}
+        >
+          <ContentModule {...props} />
+        </DoublePage>
+      ),
+      book: (props) => (
+        <SinglePage font={font} value={props.value} index={props.index}>
+          <BookModule {...props} />
+        </SinglePage>
+      ),
+      // @TODO: rename to 'features'?
+      feature: (props) => (
+        <SinglePage font={font} value={props.value} index={props.index}>
+          <FeaturesModule {...props} />
+        </SinglePage>
+      ),
+      // @TODO: type tester module
+      tester: (props) => (
+        <DoublePage value={props.value} spreadMode={true}>
+          <TesterModule {...props} />
+        </DoublePage>
+      ),
+    },
+  }
+
   return (
     <PortableText
       value={value as PortableTextBlock[]}

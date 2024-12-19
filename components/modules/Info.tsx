@@ -105,6 +105,7 @@ export default function InfoModule({ value }: InfoModuleProps) {
             return (
               <>
                 <Box
+                  key={item.key}
                   as={'dt'}
                   float={'left'}
                   clear={'left'}
@@ -134,7 +135,7 @@ export default function InfoModule({ value }: InfoModuleProps) {
           </Heading>
           <Text fontSize={25 * conversion + 'px'}>
             {font.languages
-              .map(({ name }) => {
+              .map(({ name }, index) => {
                 return name
               })
               .join(', ')}

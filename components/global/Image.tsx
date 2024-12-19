@@ -18,7 +18,9 @@ export default function ImageSanityNext(props: ImageSanityNextProps) {
 
   return (
     <Image
+      data-sanity={props['data-sanity']}
       {...imageProps}
+      alt={'hi'}
       style={style || { width: '100%', height: 'auto' }} // "responsive"
       sizes={sizes || '(max-width: 800px) 100vw, 800px'}
     />

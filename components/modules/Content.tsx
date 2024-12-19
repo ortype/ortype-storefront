@@ -43,7 +43,7 @@ const Content: React.FC<{
         _key={value._key}
         overflowCol={value.overflowCol}
       >
-        <PortableText value={value.body} />
+        <PortableText value={value.body} index={index} />
       </OverflowDetector>
     </>
   )

@@ -10,6 +10,7 @@
 
 import config from '@/sanity.config'
 import { Link } from '@chakra-ui/next-js'
+import { createDataAttribute } from '@sanity/visual-editing'
 
 import {
   PortableText,
@@ -25,9 +26,11 @@ import { Box, Button, Heading, Text } from '@chakra-ui/react'
 export default function CustomPortableText({
   className,
   value,
+  index,
 }: {
   className?: string
   value: PortableTextBlock[]
+  index: number
 }) {
   const { conversion } = useSpreadContainer()
   const font = useFont()
@@ -61,6 +64,18 @@ export default function CustomPortableText({
         if (vertical) {
           style = { width: 'auto', height: '100%' }
         }
+
+        const attr = createDataAttribute({
+          id: font?._id,
+          type: 'font',
+          path: 'modules',
+        })
+        const attrVal = attr(
+          `[${index}]body[${props.index}][_key=="${props.value._key}"]`
+        ).toString()
+
+        // console.log('image createDataAttribute props: ', font?._id, attrVal)
+
         return (
           <Box
             as={'figure'}
@@ -69,6 +84,7 @@ export default function CustomPortableText({
             h={vertical ? '100%' : 'auto'}
           >
             <Image
+              data-sanity={attrVal}
               image={props.value}
               style={style}
               sizes={

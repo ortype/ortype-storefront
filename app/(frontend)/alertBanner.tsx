@@ -25,6 +25,7 @@ export default function AlertBanner() {
       top={0}
       left={0}
       bg={'#eee'}
+      zIndex={'popover'}
       w={'100%'}
       className={`${pending ? 'animate-pulse' : ''}`}
     >

@@ -24,7 +24,7 @@ export const client = createClient({
   perspective: 'published',
   stega: {
     studioUrl,
-    // logger: console,
+    logger: console,
     filter: (props) => {
       if (props.sourcePath.at(-1) === 'title') {
         return true
@@ -41,6 +41,11 @@ export const client = createClient({
       // @NOTE: stega ignore book docs b/c snapshots.$.spread had non-white space characters
       // which broke JSON.parse
       if (props.sourceDocument._type === 'book') {
+        return false
+      }
+
+      // remove all shortName paths from stega
+      if (props.sourcePath.includes('shortName')) {
         return false
       }
 
