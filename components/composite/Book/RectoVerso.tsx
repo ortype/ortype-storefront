@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react'
+import { Box, Flex, Heading } from '@chakra-ui/react'
 import Column from './Column'
 
 const RectoVerso: React.FC<{
@@ -7,7 +7,7 @@ const RectoVerso: React.FC<{
   pageMargin: number
   conversion: number
   page: any
-}> = ({ label, pageMargin, conversion, page, editMode }) => {
+}> = ({ label, pageMargin, conversion, page, editMode, header, padding }) => {
   return (
     <Flex
       w={'100%'}
@@ -22,9 +22,32 @@ const RectoVerso: React.FC<{
       alignContent={'flex-start'}
       style={{
         padding: `${pageMargin * conversion}px`,
-        paddingTop: `${pageMargin - 14 * conversion}px`,
       }}
     >
+      {header && (
+        <Box
+          pos={'absolute'}
+          top={0}
+          right={0}
+          left={0}
+          style={{
+            padding: `0 ${pageMargin * conversion}px`,
+          }}
+        >
+          <Heading
+            pt={'0.5rem'}
+            pb={'0.25rem'}
+            borderBottom={'1px solid #000'}
+            size={'xs'}
+            color={'#000'}
+            textAlign={'center'}
+            fontWeight={'normal'}
+            textTransform={'uppercase'}
+          >
+            {header}
+          </Heading>
+        </Box>
+      )}
       {page &&
         page.map((col, idx) => (
           <Column

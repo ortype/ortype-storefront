@@ -1,10 +1,10 @@
-import { Box, Container, Flex, Text } from '@chakra-ui/react'
-import React from 'react'
-import { useFont } from '@/components/pages/fonts/FontContainer'
 import {
   type BlockStyle,
   type LineParams,
 } from '@/components/composite/Book/bookTypes'
+import { useFont } from '@/components/pages/fonts/FontContainer'
+import { Box, Container, Flex, Text } from '@chakra-ui/react'
+import React from 'react'
 
 const Block: React.FC<{
   entry: string
@@ -26,6 +26,7 @@ const Block: React.FC<{
         style={{
           fontSize: `${12 * layout.conversion}px`,
           top: `${7 * layout.conversion}px`,
+          lineHeight: `1.5`,
         }}
         position={'absolute'}
       >

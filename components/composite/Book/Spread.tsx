@@ -128,6 +128,7 @@ const Spread: React.FC<{}> = ({}) => {
           conversion={conversion}
           page={bookLayoutStore.spread.verso}
           label={'verso'}
+          header={bookLayoutStore.fontFamily.label.replace(/or\s/i, '')}
         />
         <Guide
           label={'Verso'}
@@ -153,6 +154,7 @@ const Spread: React.FC<{}> = ({}) => {
           conversion={conversion}
           label={'recto'}
           page={bookLayoutStore.spread.recto}
+          header={bookLayoutStore.fontFamily.label.replace(/or\s/i, '')}
         />
 
         <Guide
