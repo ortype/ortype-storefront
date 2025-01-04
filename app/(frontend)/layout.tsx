@@ -54,7 +54,7 @@ const getMarketId = unstable_cache(async () => {
     // @TODO: look into error handling in RootLayout/Server Components Next.js
   }
   return null
-})
+}, ['commerce-layer-marketId'])
 
 async function RootLayout({
   // Layouts must accept a children prop.

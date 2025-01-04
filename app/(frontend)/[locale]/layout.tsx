@@ -6,8 +6,6 @@ import initTranslations from '@/app/i18n'
 import TranslationsProvider from '@/components/data/TranslationsProvider'
 import { VisualEditing, toPlainText, type PortableTextBlock } from 'next-sanity'
 
-// import { Footer } from '@/components/global/Footer'
-// import { Navbar } from '@/components/global/Navbar'
 import { homePageQuery, settingsQuery } from 'lib/sanity.queries'
 // @TODO: typegen
 // import type { HomePageQueryResult, SettingsQueryResult } from "@/sanity.types"
@@ -15,6 +13,7 @@ import { resolveOpenGraphImage } from '@/lib/sanity.utils'
 import AlertBanner from '../alertBanner'
 const i18nNamespaces = ['common']
 import { sanityFetch } from '@/sanity/lib/fetch'
+import { GlobalHeader } from '@/components/global/GlobalHeader'
 
 export async function generateMetadata(): Promise<Metadata> {
   const [{ settings }, { homePage }] = await Promise.all([
@@ -64,14 +63,9 @@ export default async function LocaleRoute({
         locale={locale}
         resources={resources}
       >
-        {/*<Suspense>
-          <Navbar />
-        </Suspense>*/}
         {draftMode().isEnabled && <AlertBanner />}
+        <GlobalHeader />
         <Suspense>{children}</Suspense>
-        {/*<Suspense>
-          <Footer />
-        </Suspense>*/}
         {draftMode().isEnabled && <VisualEditing />}
       </TranslationsProvider>
     </>

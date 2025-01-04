@@ -1,13 +1,19 @@
 'use client'
 import theme from '@/@chakra-ui/theme'
-import authorizerConfig from '@/authorizerConfig'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
 import { CustomerProvider } from '@/components/data/CustomerProvider'
 import { SettingsProvider } from '@/components/data/SettingsProvider'
-import { GlobalHeader } from '@/components/global/GlobalHeader'
 import Webfonts from '@/components/global/Webfonts'
 import { ChakraProvider } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
+
+const config = {
+  slug: process.env.NEXT_PUBLIC_CL_SLUG,
+  selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG,
+  clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
+  endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT,
+  domain: process.env.NEXT_PUBLIC_CL_DOMAIN,
+}
 
 function Providers({
   children,
@@ -20,8 +26,31 @@ function Providers({
     <>
       <ChakraProvider theme={theme} resetCSS={true}>
         <ApolloClientProvider initialApolloState={{}}>
-          <GlobalHeader marketId={marketId} />
-          <Webfonts>{children}</Webfonts>
+          <Webfonts>
+            <SettingsProvider config={{ ...config, marketId }}>
+              {({ settings, isLoading }) => {
+                return isLoading ? (
+                  <div>{'Loading...'}</div>
+                ) : !settings.isValid ? (
+                  <div>{'Invalid settings config'}</div>
+                ) : (
+                  <CommerceLayer
+                    accessToken={settings.accessToken}
+                    endpoint={config.endpoint}
+                  >
+                    <CustomerProvider
+                      customerId={settings.customerId}
+                      accessToken={settings.accessToken}
+                      domain={config.endpoint}
+                      {...config}
+                    >
+                      {children}
+                    </CustomerProvider>
+                  </CommerceLayer>
+                )
+              }}
+            </SettingsProvider>
+          </Webfonts>
         </ApolloClientProvider>
       </ChakraProvider>
     </>

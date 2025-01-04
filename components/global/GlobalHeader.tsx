@@ -1,11 +1,11 @@
+'use client'
 // Wrap Header in an "Order" container ?
 // The hosted cart just loads an order thats its logical extent
 // We have custom handlers for updating lineItem licenses that we need access to
 // We also want to use the Customer context in the header for Account
 // import Cart from 'components/composite/Cart'
 // import CartContainer from 'components/composite/CartContainer'
-import { CustomerProvider } from '@/components/data/CustomerProvider'
-import { SettingsProvider } from '@/components/data/SettingsProvider'
+import { useSettings } from '@/components/data/SettingsProvider'
 import { Box, ButtonGroup, Link as ChakraLink, Flex } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
 import { Account } from 'components/composite/Account'
@@ -13,14 +13,6 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-
-const config = {
-  slug: process.env.NEXT_PUBLIC_CL_SLUG,
-  selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG,
-  clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
-  endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT,
-  domain: process.env.NEXT_PUBLIC_CL_DOMAIN,
-}
 
 const DynamicCartContainer: any = dynamic(
   () => import('components/composite/CartContainer'),
@@ -36,17 +28,16 @@ const DynamicCart: any = dynamic(() => import('components/composite/Cart'), {
   },
 })
 
-interface Props {
-  marketId: string
-}
+interface Props {}
 
 function onUnload() {
   sessionStorage && sessionStorage.removeItem('sessionId')
 }
 
-export const GlobalHeader: React.FC<Props> = ({ marketId }) => {
-  const pathname = usePathname()
-
+export const GlobalHeader: React.FC<Props> = ({}) => {
+  // const pathname = usePathname()
+  const settings = useSettings()
+  /*
   useEffect(() => {
     sessionStorage &&
       sessionStorage.setItem(
@@ -55,49 +46,24 @@ export const GlobalHeader: React.FC<Props> = ({ marketId }) => {
       )
     return () => window.removeEventListener('beforeunload', onUnload)
   }, [])
-
+*/
   // const hideHeader = pathname?.includes('/book') || pathname?.includes('/studio')
-  const hideHeader = true // @TEMP: until we get back around to this
+  const hideHeader = false // @TEMP: until we get back around to this
 
   return (
     !hideHeader && (
       <>
         <Flex justify={'space-between'} p={4}>
-          <ChakraLink as={Link} href={'/'}>
+          <ChakraLink as={Link} href={'/'} fontSize={'xs'}>
             {'Or Type'}
           </ChakraLink>
-          <SettingsProvider config={{ ...config, marketId }}>
-            {({ settings, isLoading }) => {
-              return isLoading ? (
-                <div>{'Loading...'}</div>
-              ) : !settings.isValid ? (
-                <div>{'Invalid settings config'}</div>
-              ) : (
-                <>
-                  {/*
-                // @TEMP: disable CL cart in header
-                <CommerceLayer
-                  accessToken={settings.accessToken}
-                  endpoint={config.endpoint}
-                >
-                  <CustomerProvider
-                    customerId={settings.customerId}
-                    accessToken={settings.accessToken}
-                    domain={config.endpoint}
-                    {...config}
-                  >
-                    <ButtonGroup gap={'2'}>
-                      <Account />
-                      <DynamicCartContainer settings={settings}>
-                        <DynamicCart />
-                      </DynamicCartContainer>
-                    </ButtonGroup>
-                  </CustomerProvider>
-                </CommerceLayer>*/}
-                </>
-              )
-            }}
-          </SettingsProvider>
+
+          <ButtonGroup gap={'2'}>
+            <Account />
+            <DynamicCartContainer settings={{ settings }}>
+              <DynamicCart />
+            </DynamicCartContainer>
+          </ButtonGroup>
         </Flex>
       </>
     )
