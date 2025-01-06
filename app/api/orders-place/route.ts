@@ -3,7 +3,8 @@
 // e.g. https://owenhoskins.ngrok.app/api/orders-place
 
 import CommerceLayer, { LineItem } from '@commercelayer/sdk'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+
 import nodemailer from 'nodemailer'
 
 type CommerceLayerWebhookPayload = {
@@ -25,7 +26,7 @@ type CommerceLayerWebhookPayload = {
 
 export async function POST(
   request: Request,
-  response: NextResponse | Response
+  response: NextResponse<CommerceLayerWebhookPayload>
 ) {
   /*
   // with new route handlers this is not required (?)
@@ -57,7 +58,7 @@ export async function POST(
       // relationships: { line_items },
     },
     included,
-  } = request.body as CommerceLayerWebhookPayload
+  } = await request.json() as CommerceLayerWebhookPayload
 
   // const webhookPayload: CommerceLayerWebhookPayload = request.body
   console.log(
