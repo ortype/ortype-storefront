@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getIntegrationToken } from '@commercelayer/js-auth'
+import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer, {
   InventoryStockLocationCreate,
   MarketCreate,
@@ -22,7 +22,7 @@ export default async function config(
   res: NextApiResponse
 ) {
   try {
-    const token = await getIntegrationToken({
+    const token = await authenticate('client_credentials', {
       clientId: process.env.CL_SYNC_CLIENT_ID,
       clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
       endpoint: process.env.CL_ENDPOINT,

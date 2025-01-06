@@ -96,7 +96,7 @@ export const getSettings = async ({
   }
 
   return {
-    // config: { accessToekn, endpoint, slug, domain, etc... }
+    // config: { accessToken, endpoint, slug, domain, etc... }
     // consider grouping these into an config object
     config: {
       ...config,

@@ -4,7 +4,6 @@ import CommerceLayer, {
   type SkuOption,
 } from '@commercelayer/sdk'
 import { CartSettings, InvalidCartSettings } from 'CustomApp'
-import { changeLanguage } from 'i18next'
 import {
   createContext,
   FC,
@@ -120,7 +119,7 @@ export const CartProvider: FC<CartProviderProps> = ({
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const cl = CommerceLayer({
-    organization: slug,
+    organization: process.env.NEXT_PUBLIC_CL_SLUG || '',
     accessToken,
     domain,
   })

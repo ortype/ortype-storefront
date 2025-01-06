@@ -1,11 +1,11 @@
-import { getIntegrationToken } from '@commercelayer/js-auth'
+import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 
 let shippingCategory = undefined
 let market = undefined
 const skuLookup = {}
 
-const token = await getIntegrationToken({
+const token = await authenticate('client_credentials', {
   clientId: process.env.CL_SYNC_CLIENT_ID,
   clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
   endpoint: process.env.CL_ENDPOINT,
@@ -23,7 +23,7 @@ export async function getShippingCategory(fresh = false) {
     })
     shippingCategory = shippingCategories.shift()
   }
-  console.log(shippingCategory)
+  // console.log(shippingCategory)
   return shippingCategory
 }
 
@@ -60,14 +60,19 @@ export async function lookupSkuId(code, fresh = false) {
 }
 
 export async function jsonImport(resource_type, inputs) {
-  const importObject = await cl.imports.create({
-    resource_type,
-    inputs,
-  })
-  if (importObject.errors_count) {
-    console.error('Import Errors', importObject.errors_count)
+  try {
+    const importObject = await cl.imports.create({
+      resource_type,
+      inputs,
+    })
+    if (importObject.errors_count) {
+      console.error('Import Errors', importObject.errors_count)
+    }
+    return importObject
+  } catch (e) {
+    console.log('jsonImport error ', e)
+    return e
   }
-  return importObject
 }
 
 export async function getSkuObject(sanityVariant) {

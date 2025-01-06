@@ -38,6 +38,8 @@ export declare global {
      * When null it means the app is hosted by Commerce Layer.
      */
     selfHostedSlug?: string | null
+
+    scope?: string | null
   }
 }
 

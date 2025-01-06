@@ -7,8 +7,8 @@
 // import CartContainer from 'components/composite/CartContainer'
 import { useSettings } from '@/components/data/SettingsProvider'
 import { Box, ButtonGroup, Link as ChakraLink, Flex } from '@chakra-ui/react'
-import { CommerceLayer } from '@commercelayer/react-components'
-import { Account } from 'components/composite/Account'
+import { Account } from '@/commercelayer/components/composite/Account'
+// import { Account } from 'components/composite/Account'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -35,9 +35,10 @@ function onUnload() {
 }
 
 export const GlobalHeader: React.FC<Props> = ({}) => {
-  // const pathname = usePathname()
   const settings = useSettings()
   /*
+  // const pathname = usePathname()
+  // @TODO: move to a nested component (this is for tracking client sessionIds in our API) (??)
   useEffect(() => {
     sessionStorage &&
       sessionStorage.setItem(
@@ -60,7 +61,7 @@ export const GlobalHeader: React.FC<Props> = ({}) => {
 
           <ButtonGroup gap={'2'}>
             <Account />
-            <DynamicCartContainer settings={{ settings }}>
+            <DynamicCartContainer settings={settings}>
               <DynamicCart />
             </DynamicCartContainer>
           </ButtonGroup>
