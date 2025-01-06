@@ -43,17 +43,21 @@ type PriceCalculationResponse = {
   },
 */
 
+// https://docs.commercelayer.io/core/external-resources/external-prices
+// The request payload is a JSON:API-compliant object you can query to perform your own computation
+
 export async function POST(
-  request: NextRequest,
+  req: NextRequest,
   res: NextResponse<PriceCalculationResponse>
 ) {
-  console.log('Price request.body: ', request.body)
+  const body = await req.json()
+  // console.log('Price req.json(): body... ', body)
   const {
     data: {
-      attributes: { quantity, sku_code, unit_amount_cents, metadata },
+      attributes: { quantity, sku_code, metadata },
     },
     // included,
-  } = request.body as PriceCalculationRequest
+  } = body as PriceCalculationRequest
 
   // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
@@ -110,6 +114,7 @@ export async function POST(
 
     // return result.status(200).json({ success: true, data })
     return NextResponse.json({
+      success: true,
       status: 200,
       // revalidated: true, // what does this option do?
       now: Date.now(),
