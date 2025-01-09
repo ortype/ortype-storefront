@@ -27,11 +27,23 @@ const validationSchema = yup.object().shape({
 })
 
 export const LoginForm = (): JSX.Element => {
-  const { settings, config, handleLogin } = useIdentityContext()
+  const { settings, config, customer, isLoading, handleLogin } = useIdentityContext()
 
-  // get customerEmail from Context Provider (??)
-  const customerEmail = settings.customerEmail ?? ''
-  const resetPasswordUrl = config.resetPasswordUrl ?? ''
+  // Loading IdentityProvider settings
+  if (isLoading) {
+    return (
+      <div>Loading</div>
+    )
+  }  
+
+  // Loading IdentityProvider settings are valid?
+  if (!settings?.isValid) {
+    return <div>Application error (Commerce Layer).</div>
+  }  
+
+  const customerEmail = customer.email ?? ''
+  // @TODO: password reset flow (?)
+  const resetPasswordUrl = false // config.resetPasswordUrl ?? ''
 
   const form: UseFormReturn<LoginFormValues, UseFormProps> =
     useForm<LoginFormValues>({
@@ -42,9 +54,9 @@ export const LoginForm = (): JSX.Element => {
   const isSubmitting = form.formState.isSubmitting
   const onSubmit = form.handleSubmit(async (formData) => {
     await authenticate('password', {
-      clientId: settings.clientId,
+      clientId: config.clientId,
       domain: config.domain,
-      scope: settings.scope,
+      scope: config.scope, // marketId
       username: formData.customerEmail,
       password: formData.customerPassword
     })
@@ -66,7 +78,7 @@ export const LoginForm = (): JSX.Element => {
       })
   })
 
-  return (
+  return settings.isGuest ? (
     <FormProvider {...form}>
       <form
         className='mt-8 mb-0'
@@ -96,11 +108,8 @@ export const LoginForm = (): JSX.Element => {
           )}
         </div>
       </form>
-      {/*<div>
-        <p className='pt-6 text-base text-gray-500 font-medium'>
-          Don't have an account?{' '} - Sign up link
-        </p>
-      </div>*/}
-    </FormProvider>
+    </FormProvider>) : (
+    <>{`Logged in as ${customer.email}`}</>
+
   )
 }

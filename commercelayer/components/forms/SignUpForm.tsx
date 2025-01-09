@@ -33,10 +33,21 @@ const validationSchema = yup.object().shape({
 })
 
 export const SignUpForm = (): JSX.Element => {
-  const { settings, config, handleLogin } = useIdentityContext()
+  const { settings, config, isLoading, handleLogin, customer } = useIdentityContext()
   const [apiError, setApiError] = useState({})
-  // @TODO: where does customerEmail come from?
-  const customerEmail = settings.customerEmail ?? ''
+  const customerEmail = customer.email ?? ''
+
+  // Loading IdentityProvider settings
+  if (isLoading) {
+    return (
+      <div>Loading</div>
+    )
+  }  
+
+  // Loading IdentityProvider settings are valid?
+  if (!settings?.isValid) {
+    return <div>Application error (Commerce Layer).</div>
+  }   
 
   const form: UseFormReturn<SignUpFormValues, UseFormProps> =
     useForm<SignUpFormValues>({
@@ -65,9 +76,9 @@ export const SignUpForm = (): JSX.Element => {
 
     if (createCustomerResponse?.id != null) {
       await authenticate('password', {
-        clientId: settings.clientId,
+        clientId: config.clientId,
         domain: config.domain,
-        scope: settings.scope,
+        scope: config.scope,
         username: formData.customerEmail,
         password: formData.customerPassword
       })
@@ -115,11 +126,6 @@ export const SignUpForm = (): JSX.Element => {
           />
         </div>
       </form>
-      {/*<div>
-        <p className='pt-6 text-base text-gray-500 font-medium'>
-          Already have an account?{' '} Login link
-        </p>
-      </div>*/}
     </FormProvider>
   )
 }

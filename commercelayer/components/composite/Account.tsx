@@ -20,10 +20,8 @@ import {
   Switch,
   useDisclosure,
 } from '@chakra-ui/react'
-import { CustomerContext } from 'components/data/CustomerProvider'
-import { SettingsContext } from 'components/data/SettingsProvider'
 import Cookies from 'js-cookie'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { LoginForm } from '@/commercelayer/components/forms/LoginForm'
 import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
@@ -31,9 +29,7 @@ import { getStoredTokenKey } from '@/commercelayer/utils/oauthStorage'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 
 export const Account = () => {
-  const { settings, config, handleLogout } = useIdentityContext()
-  const customerCtx = useContext(CustomerContext)
-  const settingsCtx = useContext(SettingsContext)
+  const { settings, config, customer, handleLogout } = useIdentityContext()
 
   const {
     isOpen: isLoginOpen,
@@ -63,7 +59,7 @@ export const Account = () => {
   return (
     <>
       <Button onClick={onLoginOpen} size={'xs'}>
-        {customerCtx.customerId ? `Account` : `Login`}
+        {settings.customerId ? `Account` : `Login`}
       </Button>
       <Modal isOpen={isRegisterOpen} onClose={onRegisterClose} size={'lg'}>
         <ModalOverlay />
@@ -90,7 +86,7 @@ export const Account = () => {
           </ModalBody>
           <ModalFooter>
             <ButtonGroup gap={2}>
-              {customerCtx?.customerId && (
+              {settings?.customerId && (
                 <Button
                   as={Link}
                   href={`/account`}
@@ -100,7 +96,7 @@ export const Account = () => {
                   {'My account'}
                 </Button>
               )}
-              {customerCtx?.email ? (
+              {customer?.email ? (
                 <Button onClick={handleLogout}>{'Logout'}</Button>
               ) : (
                 <Button onClick={handleRegisterClick}>{'Register'}</Button>

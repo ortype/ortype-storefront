@@ -57,8 +57,6 @@ declare module 'CustomApp' {
    */
 
   export interface Settings {
-    domain: string
-    slug: string
     /**
      * Access Token for a sales channel API credentials to be used to authenticate all Commerce Layer API requests.
      * Read more at {@link https://docs.commercelayer.io/core/authentication/client-credentials#sales-channel}, {@link https://docs.commercelayer.io/core/authentication/password}
@@ -105,7 +103,7 @@ declare module 'CustomApp' {
      * Customer Id information picked by owner?.id property inside parsed accessToken.
      * Read more at {@link https://docs.commercelayer.io/core/authentication/password}
      */
-    customerId: string
+    customerId?: string
     /**
      * When `true` it indicates that current accessToken is not owned by a customer.
      * This conditional variable allows the application to show/hide or enable/disable

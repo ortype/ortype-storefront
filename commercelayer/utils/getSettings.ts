@@ -3,6 +3,7 @@ import type { Settings, InvalidSettings } from 'CustomApp'
 
 import { getOrganization } from './getOrganization'
 import { getStoredSalesChannelToken } from './oauthStorage'
+import { getInfoFromJwt } from './getInfoFromJWT'
 
 // default settings are by their nature not valid to show My Account data
 // they will be used as fallback for errors or 404 page
@@ -54,9 +55,15 @@ export const getSettings = async ({
     })
   )
 
+  if (!storedToken || !storedToken.access_token) {
+    return makeInvalidSettings()
+  }
+
   if (storedToken?.error != null) {
     return makeInvalidSettings()
   }
+
+  const { customerId } = getInfoFromJwt(storedToken.access_token)
 
   const client = CommerceLayer({
     organization: slug,
@@ -76,12 +83,12 @@ export const getSettings = async ({
   }
 
   return {
-    clientId,
-    scope,
     accessToken: storedToken?.access_token ?? '',
-    customerEmail: storedToken?.customerEmail ?? '',
+    isGuest: !customerId,
+    customerId: customerId,
+    endpoint: config.domain,
     isValid: true,
-    companySlug: slug,
+    language: 'en',
     companyName: organization?.name ?? defaultSettings.companyName,
     primaryColor: organization?.primary_color ?? defaultSettings.primaryColor,
     logoUrl: organization?.logo_url ?? '',

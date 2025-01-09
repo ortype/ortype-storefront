@@ -8,15 +8,15 @@ import Webfonts from '@/components/global/Webfonts'
 import { ChakraProvider } from '@chakra-ui/react'
 import { CommerceLayer } from '@commercelayer/react-components'
 
-const config = {
-  slug: process.env.NEXT_PUBLIC_CL_SLUG,
-  selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG,
-  clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
-  endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT,
-  domain: process.env.NEXT_PUBLIC_CL_DOMAIN,
+const config: CommerceLayerAppConfig = {
+  slug: process.env.NEXT_PUBLIC_CL_SLUG ?? '',
+  selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG ?? '',
+  clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID ?? '',
+  endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT ?? '',
+  domain: process.env.NEXT_PUBLIC_CL_DOMAIN ?? '',
   returnUrl: '/',
   resetPasswordUrl: '/',
-  // scope === marketId
+  // scope: props.marketId
 }
 
 function Providers({
@@ -26,13 +26,12 @@ function Providers({
   children: React.ReactNode
   marketId: string
 }) {
-  console.log('marektId: ', marketId)
   return (
     <>
       <ChakraProvider theme={theme} resetCSS={true}>
         <ApolloClientProvider initialApolloState={{}}>
           <Webfonts>
-          <IdentityProvider config={{ ...config, marketId }}>
+          <IdentityProvider config={{ ...config, scope: marketId }}>
             {(ctx) => (
               <SettingsProvider config={{ ...config, marketId }}>
                 {({ settings, isLoading }) => {

@@ -1,22 +1,22 @@
 import { createContext, useContext, useEffect, useReducer, useState } from 'react'
+import CommerceLayer from '@commercelayer/sdk'
 import type {
   IdentityProviderState,
-  IdentityProviderValue
+  IdentityProviderValue,
+  CustomerStateData
 } from './types'
 import type { ChildrenElement } from 'CustomApp'
 import { reducer } from './reducer'
 import { getSettings } from '@/commercelayer/utils/getSettings'
 import { getStoredTokenKey, setStoredCustomerToken } from '@/commercelayer/utils/oauthStorage'
+import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
 
-/*
-// @TODO: implement error page and loading skeleton (optional?)
-import { PageErrorLayout } from '@/commercelayer/components/layouts/PageErrorLayout'
-import { DefaultSkeleton as DefaultSkeletonFC } from '@/commercelayer/components/DefaultSkeleton'
-import {
-  SkeletonTemplate,
-  withSkeletonTemplate
-} from '@/commercelayer/components/SkeletonTemplate'
-*/
+const initialCustomerState: CustomerStateData = {
+  email: '',
+  hasPassword: false,
+  isLoading: true,
+  userMode: false
+}
 
 interface IdentityProviderProps {
   /**
@@ -39,6 +39,7 @@ const IdentityContext = createContext<IdentityProviderValue>(
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   {} as IdentityProviderValue
 )
+// @TODO: rename to something like `useCLayerSettings`
 export const useIdentityContext = (): IdentityProviderValue =>
   useContext(IdentityContext)
 
@@ -48,15 +49,18 @@ export function IdentityProvider({
 }: IdentityProviderProps): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const [state, dispatch] = useReducer(reducer, {
-    isLoading: true
+    isLoading: true,
+    settings: {}
   } as IdentityProviderState)
 
-  const [userMode, setUserMode] = useState(false)
+  // store customer email, userMode, etc.
+  const [customer, setCustomer] = useState(initialCustomerState)
 
   const clientId = config.clientId ?? ''
-  const scope = config.marketId ?? ''
+  const scope = config.scope ?? ''
   const returnUrl = config.returnUrl ?? ''
 
+  // get global CL settings and accessToken
   useEffect(() => {
     dispatch({ type: 'identity/onLoad' })
 
@@ -73,7 +77,42 @@ export function IdentityProvider({
           dispatch({ type: 'identity/onError' })
         })
     }
-  }, [clientId, scope, userMode])
+  }, [clientId, scope, customer.userMode])
+
+  // get customer
+  const fetchCustomerHandle = async (
+    customerId?: string,
+    accessToken?: string
+  ) => {
+    if (!customerId || !accessToken) {
+      return
+    }
+    setCustomer({ ...customer, isLoading: true })
+
+    const client = CommerceLayer({
+      accessToken: state.settings.accessToken,
+      organization: config.selfHostedSlug,
+      domain: config.domain,
+    })
+
+    return await getCustomerDetails({
+      client,
+      customerId,
+    }).then((customerResponse) => {
+      const customerDetails = customerResponse?.object
+      setCustomer({
+        ...customer,
+        userMode: true,
+        email: customerDetails?.email ?? '',
+        hasPassword: customerDetails?.has_password ?? false,
+        isLoading: false,
+      })
+    })
+  }  
+
+  useEffect(() => {
+    fetchCustomerHandle(state.settings.customerId, state.settings.accessToken)
+  }, [state.settings.customerId, state.settings.accessToken])
 
   if (clientId.length === 0 || scope.length === 0 || returnUrl.length === 0) {
     return (
@@ -81,6 +120,10 @@ export function IdentityProvider({
     )
   }
 
+  // @TODO: remove isLoading and isValid returns, so the entire app doesn't rerender 
+  // because we wrap the entire app, we need to check ctx.isLoading and ctx.settings.isValid
+  
+  /*
   if (state.isLoading) {
     // Skeleton loader
     return (
@@ -91,18 +134,21 @@ export function IdentityProvider({
   if (!state.settings?.isValid) {
     return <div>Error 500 - Application error.</div>
   }
+  */
 
   const value: IdentityProviderValue = {
     settings: state.settings,
+    isLoading: state.isLoading,
+    customer,
     config,
     handleLogin: (tokenData) => {
       setStoredCustomerToken({ app: 'identity', clientId, slug: config.selfHostedSlug, scope, tokenData }) 
-      setUserMode(true)
+      setCustomer({ ...customer, userMode: true })
     },
     handleLogout: () => {
       const storageKey = getStoredTokenKey({ app: 'identity', slug: config.selfHostedSlug, scope })
       localStorage.removeItem(storageKey)
-      setUserMode(false)
+      setCustomer({...initialCustomerState, isLoading: false, userMode: false })
     }
   }
   return (

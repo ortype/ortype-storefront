@@ -28,6 +28,7 @@ export declare global {
   }
 
   interface CommerceLayerAppConfig {
+    clientId: string
     /**
      * Specific domain to use for Commerce Layer API requests.
      * It must be set as `commercelayer.io`.
@@ -40,6 +41,11 @@ export declare global {
     selfHostedSlug?: string | null
 
     scope?: string | null
+
+    slug?: string
+    endpoint: string
+    returnUrl: string
+    resetPasswordUrl: string
   }
 }
 
