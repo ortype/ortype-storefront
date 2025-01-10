@@ -3,7 +3,7 @@ import type { Settings, InvalidSettings } from 'CustomApp'
 
 import { getOrganization } from './getOrganization'
 import { getStoredSalesChannelToken } from './oauthStorage'
-import { getInfoFromJwt } from './getInfoFromJWT'
+import { getInfoFromJwt } from './getInfoFromJwt'
 
 // default settings are by their nature not valid to show My Account data
 // they will be used as fallback for errors or 404 page
@@ -41,7 +41,6 @@ export const getSettings = async ({
   scope,
   config
 }: GetSettingsProps): Promise<Settings | InvalidSettings> => {
-  const hostname = window !== undefined ? window.location.hostname : ''
   const slug = config.selfHostedSlug || '' // only undefined if config isn't passed in
   const domain = config.domain
 
@@ -56,10 +55,12 @@ export const getSettings = async ({
   )
 
   if (!storedToken || !storedToken.access_token) {
+    console.warn('Identity: getSettings: storedToken/access_token is missing.')
     return makeInvalidSettings()
   }
 
   if (storedToken?.error != null) {
+    console.warn('Identity: getSettings: token error.')
     return makeInvalidSettings()
   }
 
@@ -79,6 +80,7 @@ export const getSettings = async ({
 
   // validating organization
   if (organization == null) {
+    console.warn('Identity: getSettings: Fetching organization probably failed due to invalid credentials')
     return makeInvalidSettings()
   }
 

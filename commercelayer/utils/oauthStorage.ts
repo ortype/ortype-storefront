@@ -13,7 +13,6 @@ export interface StoredOauthResponse {
   error_description?: string
   client_id?: string
   expires?: number
-  expires_in?: number
   owner_type?: string
   owner_id?: string
 }
@@ -83,7 +82,6 @@ interface GetStoredSalesChannelTokenConfig {
 interface CustomerStoredTokenData {
   access_token: string
   token_type: string
-  expires_in: number
   expires: number
   refresh_token: string
   scope: string
@@ -95,7 +93,6 @@ interface CustomerStoredTokenData {
 export interface CustomerTokenData {
 accessToken: string
 tokenType: string
-expiresIn: number
 refreshToken: string
 scope: string
 createdAt: number
@@ -122,14 +119,15 @@ export const setStoredCustomerToken = ({
   tokenData
 }: SetStoredSalesChannelTokenConfig): null => {
   if (tokenData?.accessToken != null && clientId) {
+
+    const decodedJWT = jwtDecode(tokenData.accessToken)
     // @NOTE: this clientId check could match `isValidStoredTokenData` check if we grab the current
     // localStorage and compare (this is in case clientId could possibly change I believe)
     const customerTokenData: StoredOauthResponse = {
       client_id: clientId,
       access_token: tokenData.accessToken,
       refresh_token: tokenData.refreshToken,
-      expires: tokenData.expires,
-      expires_in: tokenData.expiresIn,
+      expires: decodedJWT.payload.exp,
       scope: scope,
       token_type: tokenData.tokenType,
       owner_type: tokenData.ownerType,
