@@ -5,7 +5,7 @@ import {
   ShippingMethod,
   SkuOption,
 } from '@commercelayer/sdk'
-import { AppStateData } from 'components/data/BuyProvider'
+import { AppStateData } from '@/commercelayer/providers/Buy'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',

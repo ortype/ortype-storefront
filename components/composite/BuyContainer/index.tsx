@@ -1,5 +1,5 @@
 import { OrderContainer, OrderStorage } from '@commercelayer/react-components'
-import { BuyProvider } from 'components/data/BuyProvider'
+import { BuyProvider } from '@/commercelayer/providers/Buy'
 
 interface Props {
   font: object

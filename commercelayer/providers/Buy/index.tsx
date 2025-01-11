@@ -4,7 +4,6 @@ import CommerceLayer, {
   type Order,
   type SkuOption,
 } from '@commercelayer/sdk'
-import { BuySettings, InvalidBuySettings } from 'CustomApp'
 import {
   createContext,
   FC,
@@ -16,11 +15,12 @@ import {
   useState,
 } from 'react'
 
-import { ActionType, reducer } from 'components/data/BuyProvider/reducer'
+import { ActionType, reducer } from '@/commercelayer/providers/Buy/reducer'
 import {
+  addLineItemLicenseTypes,
   calculateSettings,
   createOrUpdateOrder,
-} from 'components/data/BuyProvider/utils'
+} from '@/commercelayer/providers/Buy/utils'
 
 import {
   fetchOrder,
@@ -37,6 +37,7 @@ export type LicenseSize = {
 }
 
 import { Font } from 'lib/sanity.queries'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 
 export interface BuyProviderData {
   /**
@@ -63,7 +64,10 @@ export interface BuyProviderData {
   addLineItem: (params: { skuCode: string }) => void
   deleteLineItem: (params: { lineItemId: string }) => void
   skuOptions: SkuOption[]
-  selectedSkuOptions: SkuOption[]
+  selectedSkuOptions: SkuOption[] 
+  // @NOTE: state.selectedSkuOptions is reset on page reload 
+  // that's good or bad? for testing its weird since I refresh a lot but probably not an issue for the end-user)
+
 }
 
 interface BuyProviderProps {
@@ -108,11 +112,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
 
   const { addToCart, createOrder, updateOrder } = useOrderContainer()
 
-  const {
-    settings: { accessToken, domain, slug },
-  } = useContext(SettingsContext)
-  const orderId = localStorage.getItem('order')
-  // const { order } = useOrderContainer()
+  const { settings: { accessToken }, config: { domain, slug } } = useIdentityContext()
+
+  const orderId = localStorage.getItem('order') ?? ''
 
   const cl = CommerceLayer({
     organization: slug,
@@ -244,22 +246,10 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const addLineItem = async (params: { skuCode: string }) => {
     dispatch({ type: ActionType.START_LOADING })
     try {
+      // @types
+      // https://github.com/commercelayer/commercelayer-react-components/blob/main/packages/react-components/src/reducers/OrderReducer.ts#L383
       const attrs = {
         skuCode: params.skuCode,
-        /*
-        lineItemOptions: state.selectedSkuOptions.map(({ id }) => ({
-          skuOptionId: id,
-          options: {},
-          quantity: 1,
-        })),
-        lineItemOption: {
-          skuOptionId: state.selectedSkuOptions[0].id,
-          options: state.selectedSkuOptions.map(({ id }) => ({
-            skuOptionId: id,
-          })),
-          quantity: 1
-        },
-        */
         lineItem: {
           externalPrice: true,
           metadata: {
@@ -272,13 +262,30 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         orderMetadata: { license: { size: state.licenseSize } },
         quantity: 1,
       }
+      console.log('addLineItem addToCart attrs: ', attrs)
       await addToCart(attrs)
+      const order = await fetchOrder(cl, orderId)
+      console.log('addLineItem order: ', order)
 
-      dispatch({
-        type: ActionType.ADD_LINE_ITEM,
-        payload: { order: await fetchOrder(cl, orderId) },
-        // @TODO: maybe need to update `state.itemsCount` here
-      })
+      if (order && order.line_items) {
+        // use the param `skuCode` to match the right `order.lineItems`
+        const lineItem = order.line_items.find(({sku_code}) => sku_code === params.skuCode)
+        console.log('addLineItem lineItem: ', lineItem)
+        if (lineItem) {
+          const res = await addLineItemLicenseTypes({
+            cl,
+            lineItem,
+            selectedSkuOptions: state.selectedSkuOptions,
+          })
+        
+          dispatch({
+            type: ActionType.ADD_LINE_ITEM,
+            payload: { order: await fetchOrder(cl, orderId) },
+            // @TODO: maybe need to update `state.itemsCount` here
+          })
+        }
+      }
+
     } catch (error: any) {
       console.log('addLineItem error: ', error)
     }
