@@ -1,9 +1,9 @@
 import CommerceLayer from '@commercelayer/sdk'
-import type { Settings, InvalidSettings } from 'CustomApp'
+import type { InvalidSettings, Settings } from 'CustomApp'
 
+import { getInfoFromJwt } from './getInfoFromJwt'
 import { getOrganization } from './getOrganization'
 import { getStoredSalesChannelToken } from './oauthStorage'
-import { getInfoFromJwt } from './getInfoFromJwt'
 
 // default settings are by their nature not valid to show My Account data
 // they will be used as fallback for errors or 404 page
@@ -14,12 +14,12 @@ export const defaultSettings: InvalidSettings = {
     'https://data.commercelayer.app/assets/images/favicons/favicon-32x32.png',
   companyName: 'Or Type',
   isValid: false,
-  retryable: false
+  retryable: false,
 }
 
 const makeInvalidSettings = (): InvalidSettings => ({
   ...defaultSettings,
-  retryable: false
+  retryable: false,
 })
 
 type GetSettingsProps = Pick<Settings, 'clientId' | 'scope'> & {
@@ -39,9 +39,9 @@ type GetSettingsProps = Pick<Settings, 'clientId' | 'scope'> & {
 export const getSettings = async ({
   clientId,
   scope,
-  config
+  config,
 }: GetSettingsProps): Promise<Settings | InvalidSettings> => {
-  const slug = config.selfHostedSlug || '' // only undefined if config isn't passed in
+  const slug = config.slug || '' // only undefined if config isn't passed in
   const domain = config.domain
 
   const storedToken = await Promise.resolve(
@@ -50,7 +50,7 @@ export const getSettings = async ({
       slug,
       domain,
       clientId,
-      scope
+      scope,
     })
   )
 
@@ -69,18 +69,20 @@ export const getSettings = async ({
   const client = CommerceLayer({
     organization: slug,
     accessToken: storedToken?.access_token ?? '',
-    domain
+    domain,
   })
 
   const organization = await Promise.resolve(
     getOrganization({
-      client
+      client,
     })
   )
 
   // validating organization
   if (organization == null) {
-    console.warn('Identity: getSettings: Fetching organization probably failed due to invalid credentials')
+    console.warn(
+      'Identity: getSettings: Fetching organization probably failed due to invalid credentials'
+    )
     return makeInvalidSettings()
   }
 
@@ -94,6 +96,6 @@ export const getSettings = async ({
     companyName: organization?.name ?? defaultSettings.companyName,
     primaryColor: organization?.primary_color ?? defaultSettings.primaryColor,
     logoUrl: organization?.logo_url ?? '',
-    faviconUrl: organization?.favicon_url ?? defaultSettings.faviconUrl
+    faviconUrl: organization?.favicon_url ?? defaultSettings.faviconUrl,
   }
 }

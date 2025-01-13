@@ -27,7 +27,7 @@ interface CommerceLayerAppConfig {
   endpoint: string
   marketId: string
   domain: string
-  selfHostedSlug: string
+  slug: string
 }
 
 type GetSettingsProps = Pick<Settings, 'accessToken'> & {
@@ -47,10 +47,10 @@ export const getSettings = async ({
   config,
 }: GetSettingsProps): Promise<Settings | InvalidSettings> => {
   const domain = config.domain
-  const slug = config.selfHostedSlug
+  const slug = config.slug
   const { kind, customerId, isTest } = getInfoFromJwt(accessToken)
 
-  console.log('getSettings: ', config, slug, accessToken, customerId, kind)
+  // console.log('getSettings: ', config, slug, accessToken, customerId, kind)
 
   if (!slug) {
     return makeInvalidSettings()
@@ -71,7 +71,7 @@ export const getSettings = async ({
     !isValidHost({
       hostname,
       accessToken,
-      selfHostedSlug: config.selfHostedSlug,
+      slug: config.slug,
     })
   ) {
     return makeInvalidSettings()

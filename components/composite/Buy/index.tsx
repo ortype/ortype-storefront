@@ -1,3 +1,5 @@
+import { BuyContext } from '@/commercelayer/providers/Buy'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
   Container,
   Flex,
@@ -7,9 +9,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { OrderContainer, OrderStorage } from '@commercelayer/react-components'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
-import { BuyContext } from 'components/data/BuyProvider'
 import { CustomerContext } from 'components/data/CustomerProvider'
 import React, { useContext, useEffect, useState } from 'react'
 import { BuySummary } from './BuySummary'
@@ -18,9 +18,9 @@ import { LicenseTypeSelect } from './LicenseTypeSelect'
 import { SingleStyles } from './SingleStyles'
 
 export const Buy = () => {
+  const { order, licenseSize } = useOrderContext()
   const {
     font,
-    order,
     accessToken,
     skuOptions,
     selectedSkuOptions,
@@ -28,7 +28,6 @@ export const Buy = () => {
     setLicenseSize,
     addLineItem,
     deleteLineItem,
-    licenseSize,
   } = useContext(BuyContext)
 
   let cl

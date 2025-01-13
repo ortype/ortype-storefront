@@ -1,3 +1,4 @@
+import { AppStateData } from '@/commercelayer/providers/Buy'
 import {
   LineItem,
   Order,
@@ -5,11 +6,9 @@ import {
   ShippingMethod,
   SkuOption,
 } from '@commercelayer/sdk'
-import { AppStateData } from '@/commercelayer/providers/Buy'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',
-  SET_ORDER = 'SET_ORDER',
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
   SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
@@ -20,13 +19,6 @@ export enum ActionType {
 export type Action =
   | { type: ActionType.START_LOADING }
   | { type: ActionType.STOP_LOADING }
-  | {
-      type: ActionType.SET_ORDER
-      payload: {
-        order: Order
-        others: Partial<AppStateData>
-      }
-    }
   | {
       type: ActionType.SET_LICENSE_SIZE
       payload: {
@@ -73,16 +65,6 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
     case ActionType.STOP_LOADING:
       return {
         ...state,
-        isLoading: false,
-      }
-    case ActionType.SET_ORDER:
-      return {
-        ...state,
-        order: action.payload.order,
-        // FIX saving customerAddresses because we don't receive
-        // them from fetchORder
-        ...action.payload.others,
-        isFirstLoading: false,
         isLoading: false,
       }
     case ActionType.SET_LICENSE_SIZE: {

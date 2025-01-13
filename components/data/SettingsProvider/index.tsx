@@ -1,7 +1,7 @@
 import type { InvalidSettings, Settings } from 'CustomApp'
 import { useGetToken } from 'hooks/GetToken'
-import { defaultSettings, getSettings } from 'utils/getSettings'
 import { createContext, useContext, useEffect, useState } from 'react'
+import { defaultSettings, getSettings } from 'utils/getSettings'
 
 interface SettingsProviderValue {
   settings: Settings | InvalidSettings
@@ -14,9 +14,8 @@ interface SettingsProviderValue {
 interface CommerceLayerAppConfig {
   clientId: string
   endpoint: string
-  marketId: string
   domain: string
-  selfHostedSlug: string
+  slug: string
 }
 
 interface SettingsProviderProps {

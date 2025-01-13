@@ -24,7 +24,7 @@ import {
 
 import {
   fetchOrder,
-  FetchOrderByIdResponse,
+  type FetchOrderByIdResponse,
   updateLineItemLicenseTypes,
   updateLineItemsLicenseSize,
 } from 'components/data/CheckoutProvider/utils'
@@ -36,8 +36,9 @@ export type LicenseSize = {
   modifier: number
 }
 
-import { Font } from 'lib/sanity.queries'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { Font } from 'lib/sanity.queries'
+import { useOrderContext } from '../Order'
 
 export interface BuyProviderData {
   /**
@@ -45,17 +46,13 @@ export interface BuyProviderData {
    * It can be used to control the UI state.
    */
   font: Font
-  order: Order
   licenseSize: LicenseSize
   itemsCount: number
   isLoading: boolean
-  orderId: string
   accessToken: string
   slug: string
   domain: string
   isFirstLoading: boolean
-  getOrder: (order: Order) => void
-  getOrderFromRef: () => Promise<Order>
   setLicenseSize: (params: { order?: Order; licenseSize?: LicenseSize }) => void
   setSelectedSkuOptions: (params: {
     order?: Order
@@ -64,10 +61,9 @@ export interface BuyProviderData {
   addLineItem: (params: { skuCode: string }) => void
   deleteLineItem: (params: { lineItemId: string }) => void
   skuOptions: SkuOption[]
-  selectedSkuOptions: SkuOption[] 
-  // @NOTE: state.selectedSkuOptions is reset on page reload 
+  selectedSkuOptions: SkuOption[]
+  // @NOTE: state.selectedSkuOptions is reset on page reload
   // that's good or bad? for testing its weird since I refresh a lot but probably not an issue for the end-user)
-
 }
 
 interface BuyProviderProps {
@@ -107,47 +103,21 @@ export const useBuy = (): BuyProviderData => {
 }
 
 export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
-  const orderRef = useRef<Order>()
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const { addToCart, createOrder, updateOrder } = useOrderContainer()
 
-  const { settings: { accessToken }, config: { domain, slug } } = useIdentityContext()
-
-  const orderId = localStorage.getItem('order') ?? ''
+  const {
+    settings: { accessToken },
+    config: { domain, slug },
+  } = useIdentityContext()
+  const { orderId, order, refetchOrder } = useOrderContext()
 
   const cl = CommerceLayer({
     organization: slug,
     accessToken,
     domain,
   })
-
-  const getOrder = (order: Order) => {
-    orderRef.current = order
-  }
-
-  const fetchInitialOrder = async (orderId?: string, accessToken?: string) => {
-    if (!orderId || !accessToken) {
-      return
-    }
-    dispatch({ type: ActionType.START_LOADING })
-    const order = await getOrderFromRef()
-
-    console.log('BUY: fetchInitialOrder settings: ', order)
-
-    const others = calculateSettings(order, state)
-
-    dispatch({
-      type: ActionType.SET_ORDER,
-      payload: {
-        order,
-        others: {
-          itemsCount: (order.line_items || []).length,
-          ...others,
-        },
-      },
-    })
-  }
 
   const fetchSkuOptions = async () => {
     dispatch({ type: ActionType.START_LOADING })
@@ -172,7 +142,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
 
   const setLicenseSize = async (params: { licenseSize?: LicenseSize }) => {
     dispatch({ type: ActionType.START_LOADING })
-    const order = await fetchOrder(cl, orderId)
+    const order = await refetchOrder()
     // @TODO: dispatch a notifcation to the user that "All your bag items will be adjusted"
     await createOrUpdateOrder({
       createOrder,
@@ -190,17 +160,15 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       type: ActionType.SET_LICENSE_SIZE,
       payload: {
         licenseSize: params.licenseSize,
-        order: await fetchOrder(cl, orderId),
+        order: await refetchOrder(),
       },
     })
   }
 
   const setSelectedSkuOptions = async (params: {
     selectedSkuOptions: SkuOption[]
-    order?: Order
   }) => {
     dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = params.order ?? (await getOrderFromRef())
 
     console.log('params.selectedSkuOptions: ', params.selectedSkuOptions)
     if (params.selectedSkuOptions && params.selectedSkuOptions.length > 0) {
@@ -212,9 +180,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       // Alternatively: add a inline notification to skus that have already been added to the cart,
       // with a calculated price based on that line_items skuOptions
 
-      if (currentOrder.line_items?.length > 0) {
+      if (order.line_items?.length > 0) {
         // Find line items from this font
-        const lineItemsOfFont = currentOrder.line_items.filter((lineItem) =>
+        const lineItemsOfFont = order.line_items.filter((lineItem) =>
           font.variants.some(
             (fontVariant) => fontVariant._id === lineItem.sku_code
           )
@@ -224,7 +192,6 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
           await updateLineItemLicenseTypes({
             cl,
             lineItem,
-            order: currentOrder,
             selectedSkuOptions: params.selectedSkuOptions,
           })
         }
@@ -234,7 +201,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     dispatch({
       type: ActionType.SET_LICENSE_TYPES,
       payload: {
-        order: await fetchOrder(cl, orderId),
+        order: await refetchOrder(),
         others: {
           selectedSkuOptions: params.selectedSkuOptions,
         },
@@ -264,12 +231,14 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       }
       console.log('addLineItem addToCart attrs: ', attrs)
       await addToCart(attrs)
-      const order = await fetchOrder(cl, orderId)
+      const order = await refetchOrder()
       console.log('addLineItem order: ', order)
 
       if (order && order.line_items) {
         // use the param `skuCode` to match the right `order.lineItems`
-        const lineItem = order.line_items.find(({sku_code}) => sku_code === params.skuCode)
+        const lineItem = order.line_items.find(
+          ({ sku_code }) => sku_code === params.skuCode
+        )
         console.log('addLineItem lineItem: ', lineItem)
         if (lineItem) {
           const res = await addLineItemLicenseTypes({
@@ -277,15 +246,14 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
             lineItem,
             selectedSkuOptions: state.selectedSkuOptions,
           })
-        
+
           dispatch({
             type: ActionType.ADD_LINE_ITEM,
-            payload: { order: await fetchOrder(cl, orderId) },
+            payload: { order: await refetchOrder() },
             // @TODO: maybe need to update `state.itemsCount` here
           })
         }
       }
-
     } catch (error: any) {
       console.log('addLineItem error: ', error)
     }
@@ -297,7 +265,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       await cl.line_items.delete(params.lineItemId)
       dispatch({
         type: ActionType.DELETE_LINE_ITEM,
-        payload: { order: await fetchOrder(cl, orderId) },
+        payload: { order: await refetchOrder() },
         // @TODO: maybe need to update `state.itemsCount` here
       })
     } catch (error: any) {
@@ -305,14 +273,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     }
   }
 
-  const getOrderFromRef = async () => {
-    return orderRef.current || (await fetchOrder(cl, orderId))
-  }
-
   useEffect(() => {
     const unsubscribe = () => {
       fetchSkuOptions()
-      fetchInitialOrder(orderId, accessToken)
     }
     return unsubscribe()
   }, [orderId, accessToken])
@@ -324,12 +287,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       value={{
         ...state,
         font,
-        orderId,
         accessToken,
         slug,
         domain,
-        getOrderFromRef,
-        getOrder,
         setLicenseSize,
         setSelectedSkuOptions,
         addLineItem,

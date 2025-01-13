@@ -1,21 +1,30 @@
-import { createContext, useContext, useEffect, useReducer, useState } from 'react'
+import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
+import { getSettings } from '@/commercelayer/utils/getSettings'
+import {
+  getStoredTokenKey,
+  setStoredCustomerToken,
+} from '@/commercelayer/utils/oauthStorage'
 import CommerceLayer from '@commercelayer/sdk'
+import type { ChildrenElement } from 'CustomApp'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react'
+import { reducer } from './reducer'
 import type {
+  CustomerStateData,
   IdentityProviderState,
   IdentityProviderValue,
-  CustomerStateData
 } from './types'
-import type { ChildrenElement } from 'CustomApp'
-import { reducer } from './reducer'
-import { getSettings } from '@/commercelayer/utils/getSettings'
-import { getStoredTokenKey, setStoredCustomerToken } from '@/commercelayer/utils/oauthStorage'
-import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
 
 const initialCustomerState: CustomerStateData = {
   email: '',
   hasPassword: false,
   isLoading: true,
-  userMode: false
+  userMode: false,
 }
 
 interface IdentityProviderProps {
@@ -45,12 +54,12 @@ export const useIdentityContext = (): IdentityProviderValue =>
 
 export function IdentityProvider({
   config,
-  children
+  children,
 }: IdentityProviderProps): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const [state, dispatch] = useReducer(reducer, {
     isLoading: true,
-    settings: {}
+    settings: {},
   } as IdentityProviderState)
 
   // store customer email, userMode, etc.
@@ -91,7 +100,7 @@ export function IdentityProvider({
 
     const client = CommerceLayer({
       accessToken: state.settings.accessToken,
-      organization: config.selfHostedSlug,
+      organization: config.slug,
       domain: config.domain,
     })
 
@@ -108,33 +117,15 @@ export function IdentityProvider({
         isLoading: false,
       })
     })
-  }  
+  }
 
   useEffect(() => {
     fetchCustomerHandle(state.settings.customerId, state.settings.accessToken)
   }, [state.settings.customerId, state.settings.accessToken])
 
   if (clientId.length === 0 || scope.length === 0 || returnUrl.length === 0) {
-    return (
-      <div>Error 500 - Missing required parameter.</div>
-    )
+    return <div>Error 500 - Missing required parameter.</div>
   }
-
-  // @TODO: remove isLoading and isValid returns, so the entire app doesn't rerender 
-  // because we wrap the entire app, we need to check ctx.isLoading and ctx.settings.isValid
-  
-  /*
-  if (state.isLoading) {
-    // Skeleton loader
-    return (
-      <div>Loading</div>
-    )
-  }
-
-  if (!state.settings?.isValid) {
-    return <div>Error 500 - Application error.</div>
-  }
-  */
 
   const value: IdentityProviderValue = {
     settings: state.settings,
@@ -142,14 +133,28 @@ export function IdentityProvider({
     customer,
     config,
     handleLogin: (tokenData) => {
-      setStoredCustomerToken({ app: 'identity', clientId, slug: config.selfHostedSlug, scope, tokenData }) 
+      setStoredCustomerToken({
+        app: 'identity',
+        clientId,
+        slug: config.slug,
+        scope,
+        tokenData,
+      })
       setCustomer({ ...customer, userMode: true })
     },
     handleLogout: () => {
-      const storageKey = getStoredTokenKey({ app: 'identity', slug: config.selfHostedSlug, scope })
+      const storageKey = getStoredTokenKey({
+        app: 'identity',
+        slug: config.slug,
+        scope,
+      })
       localStorage.removeItem(storageKey)
-      setCustomer({...initialCustomerState, isLoading: false, userMode: false })
-    }
+      setCustomer({
+        ...initialCustomerState,
+        isLoading: false,
+        userMode: false,
+      })
+    },
   }
   return (
     <IdentityContext.Provider value={value}>
