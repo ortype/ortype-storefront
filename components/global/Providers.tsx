@@ -7,7 +7,11 @@ import { CustomerProvider } from '@/components/data/CustomerProvider'
 import { SettingsProvider } from '@/components/data/SettingsProvider'
 import Webfonts from '@/components/global/Webfonts'
 import { ChakraProvider } from '@chakra-ui/react'
-import { CommerceLayer, OrderStorage } from '@commercelayer/react-components'
+import {
+  CommerceLayer,
+  OrderContainer,
+  OrderStorage,
+} from '@commercelayer/react-components'
 
 const config: CommerceLayerAppConfig = {
   slug: process.env.NEXT_PUBLIC_CL_SLUG ?? '',
@@ -38,36 +42,38 @@ function Providers({
               }}
             >
               {(ctx) => (
-                <OrderProvider
-                  {...config}
+                <CommerceLayer
                   accessToken={ctx.settings.accessToken}
+                  endpoint={config.endpoint}
                 >
                   <OrderStorage persistKey={`order`}>
-                    <SettingsProvider config={{ ...config, marketId }}>
-                      {({ settings, isLoading }) => {
-                        return isLoading ? (
-                          <div>{'Loading...'}</div>
-                        ) : !settings.isValid ? (
-                          <div>{'Invalid settings config'}</div>
-                        ) : (
-                          <CommerceLayer
-                            accessToken={settings.accessToken}
-                            endpoint={config.endpoint}
-                          >
-                            <CustomerProvider
-                              customerId={settings.customerId}
-                              accessToken={settings.accessToken}
-                              domain={config.endpoint}
-                              {...config}
-                            >
-                              {children}
-                            </CustomerProvider>
-                          </CommerceLayer>
-                        )
-                      }}
-                    </SettingsProvider>
+                    <OrderContainer>
+                      <OrderProvider
+                        {...config}
+                        accessToken={ctx.settings.accessToken}
+                      >
+                        <SettingsProvider config={{ ...config, marketId }}>
+                          {({ settings, isLoading }) => {
+                            return isLoading ? (
+                              <div>{'Loading...'}</div>
+                            ) : !settings.isValid ? (
+                              <div>{'Invalid settings config'}</div>
+                            ) : (
+                              <CustomerProvider
+                                customerId={settings.customerId}
+                                accessToken={settings.accessToken}
+                                domain={config.endpoint}
+                                {...config}
+                              >
+                                {children}
+                              </CustomerProvider>
+                            )
+                          }}
+                        </SettingsProvider>
+                      </OrderProvider>
+                    </OrderContainer>
                   </OrderStorage>
-                </OrderProvider>
+                </CommerceLayer>
               )}
             </IdentityProvider>
           </Webfonts>

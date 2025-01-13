@@ -1,3 +1,4 @@
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
   Box,
   Button,
@@ -24,7 +25,7 @@ import {
 import type { Order } from '@commercelayer/sdk'
 import { CartItem } from 'components/composite/Cart/CartItem'
 import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
-import { CartContext, useCart } from 'components/data/CartProvider'
+import { CartContext } from 'components/data/CartProvider'
 import { useRapidForm } from 'rapid-form'
 import { useContext, useState } from 'react'
 
@@ -32,10 +33,9 @@ const LicenseOwnerInput = () => {
   const [isLocalLoader, setIsLocalLoader] = useState(false)
   const { handleSubmit, submitValidation, validation, values, errors } =
     useRapidForm()
-  const { updateOrder } = useOrderContainer()
-  const { order, orderId, licenseOwner, setLicenseOwner } = useCart()
+  const { order, orderId, licenseOwner, setLicenseOwner, updateOrder } =
+    useOrderContext()
 
-  console.log('useOrderContainer(): ', useOrderContainer())
   const s = async (values, err, e) => {
     setIsLocalLoader(true)
     console.log('LicenseOwnerInput: ', order, licenseOwner)
@@ -44,6 +44,8 @@ const LicenseOwnerInput = () => {
       // @TODO: updateOrder returns an order object without `line_items`
       // consider using the CartProvider reducer with utils to update the order directly
       // we pass the `owner` and `orderId` and call the API and re-fetch the order
+      // @NOTE: we are now using a custom updateOrder that should return line_items...
+      // what else do we need for this usecase here... maybe we are good?
       const { order: updatedOrder } = await updateOrder({
         id: orderId,
         attributes: {
@@ -102,8 +104,7 @@ const Cart = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cartCtx = useContext(CartContext)
   const { orderId, order, itemsCount, licenseOwner, setLicenseOwner } =
-    useCart()
-  // console.log('useCart(): order', order)
+    useOrderContext()
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
   if (!orderId || !order) {
@@ -112,7 +113,7 @@ const Cart = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>{`Cart (${itemsCount})`}</Button>
+      <Button onClick={onOpen} size={'xs'}>{`Cart (${itemsCount})`}</Button>
       <Modal isOpen={isOpen} onClose={onClose} size={'full'}>
         <ModalOverlay />
         <ModalContent>
@@ -122,7 +123,7 @@ const Cart = () => {
             <LicenseOwnerInput />
             <FormControl>
               <FormLabel>{'Company size of the license owner'}</FormLabel>
-              <SelectLicenseSize ctx={cartCtx} />
+              <SelectLicenseSize />
             </FormControl>
             {
               // @TODO: this check for order being defined shouldn't be needed

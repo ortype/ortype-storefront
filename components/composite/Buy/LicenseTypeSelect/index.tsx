@@ -8,11 +8,13 @@ interface Props {
   cl: CommerceLayerClient
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
-  // setSelectedSkuOptions: () => void
+  font: any
+  setSelectedSkuOptions: () => void
 }
 
 export const LicenseTypeSelect: React.FC<Props> = ({
   cl,
+  font,
   skuOptions,
   selectedSkuOptions,
   setSelectedSkuOptions,
@@ -44,7 +46,7 @@ export const LicenseTypeSelect: React.FC<Props> = ({
     setSelectedTypes(selectedOptions) // update Select component state
 
     console.log('selectedSkuOptions: ', selectedSkuOptions)
-    setSelectedSkuOptions({ selectedSkuOptions })
+    setSelectedSkuOptions({ selectedSkuOptions, font })
     // @TODO: on changing selected SKU options, update all line_items on the order
   }
 

@@ -1,23 +1,21 @@
-import { z } from "zod"
+import { z } from 'zod'
 
 /**
  * OrderSectionEnum represents all the possible identifiers of accordion sections available in order's detail page.
  */
-type OrderSectionEnum = "Summary" | "Addresses" | "Shipments" | "Payments"
-
+type OrderSectionEnum = 'Summary' | 'Addresses' | 'Shipments' | 'Payments'
 
 export type AddressFormFields =
-  | "first_name"
-  | "last_name"
-  | "line_1"
-  | "line_2"
-  | "city"
-  | "country_code"
-  | "state_code"
-  | "zip_code"
-  | "phone"
-  | "billing_info"
-
+  | 'first_name'
+  | 'last_name'
+  | 'line_1'
+  | 'line_2'
+  | 'city'
+  | 'country_code'
+  | 'state_code'
+  | 'zip_code'
+  | 'phone'
+  | 'billing_info'
 
 export declare global {
   interface Window {
@@ -44,8 +42,6 @@ export declare global {
 
     slug?: string
     endpoint: string
-    returnUrl: string
-    resetPasswordUrl: string
   }
 }
 
@@ -58,7 +54,7 @@ const trackingLocationSchema = z.object({
 })
 
 const dateSchema = z.preprocess((arg) => {
-  if (typeof arg === "string" || arg instanceof Date) return new Date(arg)
+  if (typeof arg === 'string' || arg instanceof Date) return new Date(arg)
 }, z.date())
 export type DateTimeSchema = z.infer<typeof dateSchema>
 
@@ -80,4 +76,3 @@ export const rawDataParcelDetailsSchema = parcelDetailsSchema
 
 export type RawDataParcelDetail = z.infer<typeof parcelDetailSchema>
 export type RawDataParcelDetails = z.infer<typeof parcelDetailsSchema>
-

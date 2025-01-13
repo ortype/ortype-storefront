@@ -1,4 +1,4 @@
-import { BuyContext } from '@/commercelayer/providers/Buy'
+import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
   Container,
@@ -7,28 +7,25 @@ import {
   FormLabel,
   SimpleGrid,
   Stack,
-  Text,
 } from '@chakra-ui/react'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
-import { CustomerContext } from 'components/data/CustomerProvider'
-import React, { useContext, useEffect, useState } from 'react'
+import React from 'react'
 import { BuySummary } from './BuySummary'
 import { LicenseSizeSelect } from './LicenseSizeSelect'
 import { LicenseTypeSelect } from './LicenseTypeSelect'
 import { SingleStyles } from './SingleStyles'
 
 export const Buy = () => {
-  const { order, licenseSize } = useOrderContext()
   const {
-    font,
-    accessToken,
+    order,
+    licenseSize,
     skuOptions,
+    setLicenseSize,
+    deleteLineItem,
     selectedSkuOptions,
     setSelectedSkuOptions,
-    setLicenseSize,
-    addLineItem,
-    deleteLineItem,
-  } = useContext(BuyContext)
+  } = useOrderContext()
+  const { font, accessToken, addLineItem } = useBuyContext()
 
   let cl
   if (accessToken) {
@@ -53,6 +50,7 @@ export const Buy = () => {
               <FormLabel>{'A license for?'}</FormLabel>
               <LicenseTypeSelect
                 cl={cl}
+                font={font}
                 skuOptions={skuOptions}
                 selectedSkuOptions={selectedSkuOptions}
                 setSelectedSkuOptions={setSelectedSkuOptions}

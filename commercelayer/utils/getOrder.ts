@@ -50,6 +50,11 @@ export const getAsyncOrder = async (
         'metadata',
       ],
     },
-    include: ['shipping_address', 'billing_address', 'line_items'],
+    include: [
+      'shipping_address',
+      'billing_address',
+      'line_items',
+      'line_items.line_item_options.sku_option',
+    ],
   })
 }

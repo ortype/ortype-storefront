@@ -8,10 +8,10 @@ interface Props {
 }
 
 const BuyContainer = ({ font, children }: Props): JSX.Element => {
-  const { isLoading, isInvalid } = useOrderContext()
+  // const { isLoading, isInvalid } = useOrderContext()
   return (
     <OrderContainer>
-      {!isLoading && <BuyProvider font={font}>{children}</BuyProvider>}
+      <BuyProvider font={font}>{children}</BuyProvider>
     </OrderContainer>
   )
 }

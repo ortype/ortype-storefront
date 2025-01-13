@@ -8,7 +8,7 @@ import {
   type SkuOption,
 } from '@commercelayer/sdk'
 import { sizes } from 'lib/settings'
-import { AddLineItemLicenseTypes } from "./types"
+import { AddLineItemLicenseTypes } from './types'
 
 // @NOTE: move these utils to @/commmercelayer/utils in named files (??)
 // like buy.ts, or addLineItemLicenseTypes.ts to not scope it by buy/cart/checkout (??)
@@ -19,7 +19,10 @@ export async function addLineItemLicenseTypes({
   selectedSkuOptions,
 }: AddLineItemLicenseTypes) {
   if (selectedSkuOptions.length > 0) {
-    console.log('addLineItemLicenseTypes selectedSkuOptions:', selectedSkuOptions)
+    console.log(
+      'addLineItemLicenseTypes selectedSkuOptions:',
+      selectedSkuOptions
+    )
     const lineItemRel = await cl.line_items.relationship(lineItem.id)
     for (const skuOption of selectedSkuOptions) {
       const skuOptionRel = await cl.sku_options.relationship(skuOption.id)
@@ -29,7 +32,10 @@ export async function addLineItemLicenseTypes({
         sku_option: skuOptionRel,
         line_item: lineItemRel,
       }
-      console.log('addLineItemLicenseTypes lineItemOptionsAttributes: ', lineItemOptionsAttributes)
+      console.log(
+        'addLineItemLicenseTypes lineItemOptionsAttributes: ',
+        lineItemOptionsAttributes
+      )
       await cl.line_item_options.create(lineItemOptionsAttributes)
     }
   }
@@ -43,7 +49,10 @@ export async function createOrUpdateOrder({
 }) {
   console.log('order: ', order)
   const localStorageOrderId = localStorage.getItem('order')
-  let result
+  let result = {
+    order: {},
+    success: false,
+  }
   // create a new order
   if (!order?.id && !localStorageOrderId) {
     // const resultAttrs: OrderCreate = {
@@ -77,12 +86,4 @@ export async function createOrUpdateOrder({
     console.log('Updated order: ', result)
   }
   return result.order.id
-}
-
-export function calculateSettings(order: Order, state) {
-  return {
-    // licenseTypes: [],
-    // selectedSkuOptions: state.selectedSkuOptions,
-    licenseSize: order.metadata?.license?.size || sizes[0],
-  }
 }

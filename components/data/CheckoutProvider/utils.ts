@@ -175,7 +175,6 @@ export async function updateLineItemsLicenseSize({
 
 export async function updateLineItemLicenseTypes({
   cl,
-  order,
   lineItem,
   selectedSkuOptions,
 }: UpdateLineItemLicenseTypes) {

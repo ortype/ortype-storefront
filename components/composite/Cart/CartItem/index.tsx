@@ -1,3 +1,4 @@
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
   Box,
   Button,
@@ -17,7 +18,6 @@ import { CheckoutContext } from 'components/data/CheckoutProvider'
 import { Size, sizes, Type, types } from 'lib/settings'
 import React, { useContext, useEffect, useState } from 'react'
 import Select from 'react-select'
-import { useCart } from 'components/data/CartProvider'
 
 interface Props {
   types: Type[]
@@ -29,7 +29,8 @@ interface CartItemProps {
 }
 
 export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
-  const { skuOptions, licenseSize, setLicenseTypes, deleteLineItem } = useCart()
+  const { skuOptions, licenseSize, setLicenseTypes, deleteLineItem } =
+    useOrderContext()
 
   const formattedTypeOptions = skuOptions
     .sort(
