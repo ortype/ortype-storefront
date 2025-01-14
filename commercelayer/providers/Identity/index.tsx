@@ -126,7 +126,8 @@ export function IdentityProvider({
   }, [state.settings.customerId, state.settings.accessToken])
 
   if (clientId.length === 0 || scope.length === 0) {
-    return <div>Error 500 - Missing required parameter.</div>
+    console.log('IdentityProvider: Missing required parameter.')
+    // return <div>Error 500 - Missing required parameter.</div>
   }
 
   const value: IdentityProviderValue = {

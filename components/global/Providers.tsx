@@ -36,9 +36,9 @@ function Providers({
             <IdentityProvider
               config={{
                 ...config,
+                scope: marketId,
                 returnUrl: '/',
                 resetPasswordUrl: '/',
-                scope: marketId,
               }}
             >
               {(ctx) => (

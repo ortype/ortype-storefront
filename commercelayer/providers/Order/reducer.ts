@@ -1,5 +1,8 @@
+import {
+  LicenseOwnerInput,
+  OrderStateData,
+} from '@/commercelayer/providers/Order'
 import { Order, SkuOption } from '@commercelayer/sdk'
-import { LicenseOwner, OrderStateData } from '@/commercelayer/providers/Order'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',
@@ -33,7 +36,7 @@ export type Action =
       type: ActionType.SET_LICENSE_OWNER
       payload: {
         order: Order
-        licenseOwner: LicenseOwner
+        // others: Partial<OrderStateData>
       }
     }
   | {
@@ -94,9 +97,6 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       return {
         ...state,
         order: action.payload.order,
-        licenseOwner: action.payload.licenseOwner,
-        hasLicenseOwner: true,
-        isLicenseForClient: action.payload.licenseOwner.is_client,
         isLoading: false,
       }
     }

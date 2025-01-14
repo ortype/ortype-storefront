@@ -15,7 +15,7 @@ const CartContainer = ({ children }: Props): JSX.Element => {
   const { order, orderId, isLoading } = useOrderContext()
   const { validCart } = isValidCart(orderId, order)
 
-  if (isLoading) return <>{'Cart: Loading...'}</>
+  // if (isLoading) return <>{'Cart: Loading...'}</>
 
   if (!validCart) {
     return (

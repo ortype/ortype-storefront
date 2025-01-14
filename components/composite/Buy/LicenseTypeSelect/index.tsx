@@ -5,15 +5,16 @@ import React, { useState } from 'react'
 import Select from 'react-select'
 
 interface Props {
-  cl: CommerceLayerClient
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
   font: any
-  setSelectedSkuOptions: () => void
+  setSelectedSkuOptions: (params: {
+    font: any // @TODO: font type
+    selectedSkuOptions: SkuOption[]
+  }) => void
 }
 
 export const LicenseTypeSelect: React.FC<Props> = ({
-  cl,
   font,
   skuOptions,
   selectedSkuOptions,
@@ -34,7 +35,20 @@ export const LicenseTypeSelect: React.FC<Props> = ({
       })
     )
 
-  const [selectedTypes, setSelectedTypes] = useState<Type[]>([typeOptions[0]])
+  const savedSelection = selectedSkuOptions
+    .sort(
+      (a, b) =>
+        parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
+    )
+    ?.map(
+      ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
+        value,
+        label,
+        basePrice,
+      })
+    )
+
+  const [selectedTypes, setSelectedTypes] = useState<Type[]>(savedSelection)
 
   const handleTypeChange = (selectedOptions: any) => {
     console.log('selectedOptions: ', selectedOptions)

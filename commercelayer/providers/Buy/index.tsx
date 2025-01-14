@@ -5,8 +5,8 @@ import { ActionType, reducer } from '@/commercelayer/providers/Buy/reducer'
 import { addLineItemLicenseTypes } from '@/commercelayer/providers/Buy/utils'
 
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
-import { updateLineItemLicenseTypes } from '@/components/data/CheckoutProvider/utils'
-import CommerceLayer, { Order, SkuOption } from '@commercelayer/sdk'
+import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
+import { Order, SkuOption } from '@commercelayer/sdk'
 import { Font } from 'lib/sanity.queries'
 import { useOrderContext } from '../Order'
 
@@ -18,9 +18,6 @@ export interface BuyProviderData {
   font: Font
   itemsCount: number
   isLoading: boolean
-  accessToken: string
-  slug: string
-  domain: string
   addLineItem: (params: { skuCode: string }) => void
 }
 
@@ -51,22 +48,17 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
 
   const {
     settings: { accessToken },
-    config: { domain, slug },
+    clientConfig: config,
   } = useIdentityContext()
 
   const { orderId, order, refetchOrder, selectedSkuOptions, licenseSize } =
     useOrderContext()
 
-  const cl = CommerceLayer({
-    organization: slug,
-    accessToken,
-    domain,
-  })
-
-  // @TODO: addLineItem
   const addLineItem = async (params: { skuCode: string }) => {
     dispatch({ type: ActionType.START_LOADING })
+    const cl = config != null ? getCommerceLayer(config) : undefined
     try {
+      if (config == null) return
       // @types
       // https://github.com/commercelayer/commercelayer-react-components/blob/main/packages/react-components/src/reducers/OrderReducer.ts#L383
       const attrs = {
@@ -85,7 +77,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       }
       console.log('addLineItem addToCart attrs: ', attrs)
       await addToCart(attrs)
-      const order = await refetchOrder()
+      const { order } = await refetchOrder()
       console.log('addLineItem order: ', order)
 
       if (order && order.line_items) {
@@ -101,11 +93,13 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
             selectedSkuOptions: selectedSkuOptions,
           })
 
-          dispatch({
-            type: ActionType.ADD_LINE_ITEM,
-            payload: { order: await refetchOrder() },
-            // @TODO: maybe need to update `state.itemsCount` here
-          })
+          const { order } = await refetchOrder()
+          order &&
+            dispatch({
+              type: ActionType.ADD_LINE_ITEM,
+              payload: { order },
+              // @TODO: maybe need to update `state.itemsCount` here
+            })
         }
       }
     } catch (error: any) {
@@ -118,9 +112,6 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       value={{
         ...state,
         font,
-        accessToken,
-        slug,
-        domain,
         addLineItem,
       }}
     >

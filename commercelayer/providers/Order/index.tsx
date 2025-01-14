@@ -27,6 +27,8 @@ import {
   useState,
 } from 'react'
 
+export type LicenseOwnerInput = Pick<LicenseOwner, 'is_client' | 'full_name'>
+
 export type LicenseSize = {
   label: string
   value: string
@@ -46,7 +48,10 @@ type OrderProviderData = {
   isLoading: boolean
   isInvalid: boolean
   licenseSize: LicenseSize
-  refetchOrder: () => Promise<void>
+  refetchOrder: () => Promise<{
+    success: boolean
+    order?: Order
+  }>
   updateOrder: (params: UpdateOrderArgs) => Promise<{
     success: boolean
     error?: unknown
@@ -54,11 +59,8 @@ type OrderProviderData = {
   }>
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
-  setLicenseOwner: (params: {
-    order?: Order
-    licenseOwner?: LicenseOwner
-  }) => void
-  setLicenseSize: (params: { order?: Order; licenseSize?: LicenseSize }) => void
+  setLicenseOwner: (params: { licenseOwner?: LicenseOwnerInput }) => void
+  setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
   setLicenseTypes: (params: {
     order?: Order
     lineItem: LineItem
@@ -76,8 +78,9 @@ type OrderProviderData = {
 export type OrderStateData = {
   order?: Order
   orderId?: string
-  licenseOwner: LicenseOwner
+  licenseOwner: LicenseOwnerInput
   hasLicenseOwner?: boolean
+  isLicenseForClient?: boolean
   licenseSize: LicenseSize
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
@@ -90,7 +93,7 @@ const initialState: OrderStateData = {
   order: undefined,
   orderId: undefined,
   hasLicenseOwner: false,
-  licenseOwner: {},
+  licenseOwner: { is_client: false, full_name: '' },
   licenseSize: {},
   selectedSkuOptions: [],
   skuOptions: [],
@@ -242,15 +245,34 @@ export function OrderProvider({
     } catch (e) {}
   }, [config])
 
-  const setLicenseOwner = async (params: { licenseOwner?: LicenseOwner }) => {
-    if (!params.licenseOwner) return
-    dispatch({ type: ActionType.START_LOADING })
-    state.order &&
-      dispatch({
-        type: ActionType.SET_LICENSE_OWNER,
-        payload: { licenseOwner: params.licenseOwner, order: state.order },
-      })
-  }
+  const setLicenseOwner = useCallback(
+    async (params: { licenseOwner?: LicenseOwnerInput }): Promise<void> => {
+      dispatch({ type: ActionType.START_LOADING })
+      try {
+        if (!params.licenseOwner || !state.orderId) return
+        const { order: updatedOrder } = await updateOrder({
+          id: state.orderId,
+          attributes: {
+            metadata: {
+              license: {
+                ...state.order?.metadata?.license,
+                owner: params.licenseOwner,
+              },
+            },
+          },
+        })
+
+        updatedOrder &&
+          dispatch({
+            type: ActionType.SET_LICENSE_OWNER,
+            payload: {
+              order: updatedOrder,
+            },
+          })
+      } catch (e) {}
+    },
+    [updateOrder]
+  )
 
   const setLicenseSize = useCallback(
     async (params: { licenseSize?: LicenseSize }): Promise<void> => {
@@ -395,6 +417,13 @@ export function OrderProvider({
     ]
   )
 
+  const refetchOrder = useCallback(async (): Promise<{
+    success: boolean
+    order?: Order
+  }> => {
+    return await fetchOrder()
+  }, [fetchOrder])
+
   useEffect(() => {
     dispatch({ type: ActionType.START_LOADING })
     const unsubscribe = () => {
@@ -406,13 +435,19 @@ export function OrderProvider({
     return unsubscribe()
   }, [config.accessToken, fetchOrder, fetchSkuOptions])
 
+  const hasLicenseOwner = state.order?.metadata?.license?.owner
+  const licenseOwner = {
+    // licenseOwner: state.order?.metadata?.license?.owner.full_name,
+    isLicenseForClient: state.order?.metadata?.license?.owner.is_client,
+    hasLicenseOwner,
+  }
+
   const value = {
     ...state,
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
-    refetchOrder: async () => {
-      return await fetchOrder()
-    },
+    ...licenseOwner,
+    refetchOrder,
     updateOrder,
     setLicenseOwner,
     setLicenseSize,
