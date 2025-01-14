@@ -48,10 +48,7 @@ function Providers({
                 >
                   <OrderStorage persistKey={`order`}>
                     <OrderContainer>
-                      <OrderProvider
-                        {...config}
-                        accessToken={ctx.settings.accessToken}
-                      >
+                      <OrderProvider config={ctx.clientConfig}>
                         <SettingsProvider config={{ ...config, marketId }}>
                           {({ settings, isLoading }) => {
                             return isLoading ? (

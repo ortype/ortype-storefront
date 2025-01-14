@@ -1,6 +1,12 @@
 import { CustomerTokenData } from '@/commercelayer/utils/oauthStorage'
 import type { Settings } from 'CustomApp'
 
+export interface CLayerClientConfig {
+  accessToken?: string
+  domain?: string
+  organization?: string
+}
+
 export interface IdentityProviderState {
   settings: Settings
   isLoading: boolean
@@ -9,8 +15,9 @@ export interface IdentityProviderState {
 export interface IdentityProviderValue {
   settings: Settings
   isLoading: boolean
-  customer: CustomerStateData 
+  customer: CustomerStateData
   config: CommerceLayerAppConfig
+  clientConfig: CLayerClientConfig
   handleLogin: (data: CustomerTokenData) => void
   handleLogout: () => void
 }

@@ -60,7 +60,6 @@ interface UpdateLineItemsLicenseSize {
 
 interface UpdateLineItemLicenseTypes {
   cl: CommerceLayerClient
-  order: Order
   lineItem: LineItem
   selectedSkuOptions: SkuOption[]
 }

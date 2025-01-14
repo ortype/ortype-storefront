@@ -1,3 +1,4 @@
+import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
 import { getSettings } from '@/commercelayer/utils/getSettings'
 import {
@@ -6,6 +7,7 @@ import {
 } from '@/commercelayer/utils/oauthStorage'
 import CommerceLayer from '@commercelayer/sdk'
 import type { ChildrenElement } from 'CustomApp'
+import { access } from 'fs'
 import {
   createContext,
   useContext,
@@ -15,6 +17,7 @@ import {
 } from 'react'
 import { reducer } from './reducer'
 import type {
+  CLayerClientConfig,
   CustomerStateData,
   IdentityProviderState,
   IdentityProviderValue,
@@ -42,6 +45,7 @@ interface IdentityProviderProps {
     | ((props: IdentityProviderValue) => ChildrenElement)
     | ChildrenElement
   config: CommerceLayerAppConfig
+  clientConfig: CLayerClientConfig
 }
 
 const IdentityContext = createContext<IdentityProviderValue>(
@@ -67,7 +71,12 @@ export function IdentityProvider({
 
   const clientId = config.clientId ?? ''
   const scope = config.scope ?? ''
-  const returnUrl = config.returnUrl ?? ''
+
+  const clientConfig = {
+    accessToken: state.settings.accessToken,
+    domain: config.domain,
+    organization: config.slug,
+  }
 
   // get global CL settings and accessToken
   useEffect(() => {
@@ -89,20 +98,13 @@ export function IdentityProvider({
   }, [clientId, scope, customer.userMode])
 
   // get customer
-  const fetchCustomerHandle = async (
-    customerId?: string,
-    accessToken?: string
-  ) => {
-    if (!customerId || !accessToken) {
+  const fetchCustomerHandle = async (customerId?: string) => {
+    const client =
+      clientConfig != null ? getCommerceLayer(clientConfig) : undefined
+    if (!customerId || client == null) {
       return
     }
     setCustomer({ ...customer, isLoading: true })
-
-    const client = CommerceLayer({
-      accessToken: state.settings.accessToken,
-      organization: config.slug,
-      domain: config.domain,
-    })
 
     return await getCustomerDetails({
       client,
@@ -120,10 +122,10 @@ export function IdentityProvider({
   }
 
   useEffect(() => {
-    fetchCustomerHandle(state.settings.customerId, state.settings.accessToken)
+    state.settings.accessToken && fetchCustomerHandle(state.settings.customerId)
   }, [state.settings.customerId, state.settings.accessToken])
 
-  if (clientId.length === 0 || scope.length === 0 || returnUrl.length === 0) {
+  if (clientId.length === 0 || scope.length === 0) {
     return <div>Error 500 - Missing required parameter.</div>
   }
 
@@ -131,6 +133,7 @@ export function IdentityProvider({
     settings: state.settings,
     isLoading: state.isLoading,
     customer,
+    clientConfig,
     config,
     handleLogin: (tokenData) => {
       setStoredCustomerToken({

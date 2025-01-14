@@ -1,9 +1,10 @@
 import { Order, SkuOption } from '@commercelayer/sdk'
-import { OrderStateData } from '@/commercelayer/providers/Order'
+import { LicenseOwner, OrderStateData } from '@/commercelayer/providers/Order'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',
   SET_ORDER = 'SET_ORDER',
+  UPDATE_ORDER = 'UPDATE_ORDER',
   SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
@@ -25,7 +26,7 @@ export type Action =
       type: ActionType.UPDATE_ORDER
       payload: {
         order: Order
-        others: Partial<OrderStateData>
+        // others: Partial<OrderStateData>
       }
     }
   | {
@@ -40,6 +41,13 @@ export type Action =
       payload: {
         order: Order
         licenseSize: string
+      }
+    }
+  | {
+      type: ActionType.SET_LICENSE_TYPES
+      payload: {
+        order: Order
+        others?: Partial<OrderStateData>
       }
     }
   | {
