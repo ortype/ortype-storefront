@@ -7,11 +7,6 @@ import {
   Input,
   Stack,
 } from '@chakra-ui/react'
-import {
-  LineItem,
-  LineItemsContainer,
-  useOrderContainer,
-} from '@commercelayer/react-components'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
@@ -24,6 +19,7 @@ import { CartItem } from './CartItem'
 
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 
 interface Props {
   className?: string
@@ -73,7 +69,7 @@ export const StepCart: React.FC<Props> = () => {
   const accordionCtx = useContext(AccordionContext)
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
-  const { updateOrder } = useOrderContainer()
+  const { updateOrder } = useOrderContext()
 
   const { handleSubmit, submitValidation, validation, values, errors } =
     useRapidForm()

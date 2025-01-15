@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSkuObject, jsonImport } from '@/commercelayer/utils'
+import { getSkuObject, jsonImport } from '@/commercelayer/utils/import'
 import { getAllFontVariants } from '@/lib/sanity.client'
 import { parseBody } from "next-sanity/webhook"
 

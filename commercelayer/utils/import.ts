@@ -1,11 +1,11 @@
-import { getIntegrationToken } from '@commercelayer/js-auth'
+import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 
 let shippingCategory = undefined
 let market = undefined
 const skuLookup = {}
 
-const token = await getIntegrationToken({
+const token = await authenticate('client_credentials', {
   clientId: process.env.CL_SYNC_CLIENT_ID,
   clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
   endpoint: process.env.CL_ENDPOINT,

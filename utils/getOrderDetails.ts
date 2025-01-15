@@ -29,7 +29,7 @@ const getAsyncOrder = async (client: CommerceLayerClient, orderId: string) => {
     fields: {
       orders: [
         'id',
-        'autorefresh',
+        'autorefresh', // @INTERESTING
         'status',
         'number',
         'guest',

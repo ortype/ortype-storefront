@@ -1,39 +1,31 @@
+import { useOrderContext } from '@/commercelayer/providers/Order'
+import { isValidCart } from '@/commercelayer/utils/isValidCart'
+import { Text } from '@chakra-ui/react'
 import { OrderContainer, OrderStorage } from '@commercelayer/react-components'
 import CommerceLayer from '@commercelayer/react-components/auth/CommerceLayer'
 import Cart from 'components/composite/Cart'
-import { CartProvider, useCart } from 'components/data/CartProvider'
-import { useCartSettingsOrInvalid } from 'components/hooks/useCartSettingsOrInvalid'
+import { CartProvider } from 'components/data/CartProvider'
 
 interface Props {
-  settings: CheckoutSettings
+  // settings: CheckoutSettings
   children: JSX.Element[] | JSX.Element
 }
 
-const CartContainer = ({ settings, children }: Props): JSX.Element => {
-  const {
-    settings: cartSettings,
-    isLoading,
-    retryOnError,
-  } = useCartSettingsOrInvalid(settings)
+const CartContainer = ({ children }: Props): JSX.Element => {
+  const { order, orderId, isLoading } = useOrderContext()
+  const { validCart } = isValidCart(orderId, order)
 
-  // console.log('useCartSettings isLoading: ', isLoading, cartSettings)
-  if (isLoading || (!cartSettings && !retryOnError))
-    return <>{'Cart: Loading... or no orderId'}</>
+  // if (isLoading) return <>{'Cart: Loading...'}</>
 
-  if (!cartSettings) {
-    if (retryOnError) {
-      return <div>{'Retry error'}</div>
-    }
-    return <div>{'Retry error'}</div>
+  if (!validCart) {
+    return (
+      <Text fontSize={'xs'} color={'red'}>
+        {'Invalid cart'}
+      </Text>
+    )
   }
 
-  return (
-    <CartProvider {...settings} {...cartSettings}>
-      <OrderStorage persistKey={`order`}>
-        <OrderContainer>{children}</OrderContainer>
-      </OrderStorage>
-    </CartProvider>
-  )
+  return children
 }
 
 export default CartContainer

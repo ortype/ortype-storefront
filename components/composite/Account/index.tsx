@@ -1,24 +1,24 @@
 import {
-    Box,
-    Button,
-    ButtonGroup,
-    Container,
-    FormControl,
-    FormLabel,
-    Heading,
-    Input,
-    Link,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    SimpleGrid,
-    Stack,
-    Switch,
-    useDisclosure
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Stack,
+  Switch,
+  useDisclosure,
 } from '@chakra-ui/react'
 import CommerceLayer, { CustomerCreate } from '@commercelayer/sdk'
 import { CustomerContext } from 'components/data/CustomerProvider'
@@ -65,7 +65,7 @@ export const Account = () => {
 
   return (
     <>
-      <Button onClick={onLoginOpen}>
+      <Button onClick={onLoginOpen} size={'xs'}>
         {customerCtx.customerId ? `Account` : `Login`}
       </Button>
       <Modal isOpen={isRegisterOpen} onClose={onRegisterClose} size={'lg'}>

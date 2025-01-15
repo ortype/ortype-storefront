@@ -1,17 +1,17 @@
+import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
+import { useBuyContext } from '@/commercelayer/providers/Buy'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
+  Box,
   Container,
   Flex,
   FormControl,
   FormLabel,
   SimpleGrid,
   Stack,
-  Text,
 } from '@chakra-ui/react'
-import { OrderContainer, OrderStorage } from '@commercelayer/react-components'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
-import { BuyContext } from 'components/data/BuyProvider'
-import { CustomerContext } from 'components/data/CustomerProvider'
-import React, { useContext, useEffect, useState } from 'react'
+import React from 'react'
 import { BuySummary } from './BuySummary'
 import { LicenseSizeSelect } from './LicenseSizeSelect'
 import { LicenseTypeSelect } from './LicenseTypeSelect'
@@ -19,25 +19,15 @@ import { SingleStyles } from './SingleStyles'
 
 export const Buy = () => {
   const {
-    font,
     order,
-    accessToken,
+    licenseSize,
     skuOptions,
+    setLicenseSize,
+    deleteLineItem,
     selectedSkuOptions,
     setSelectedSkuOptions,
-    setLicenseSize,
-    addLineItem,
-    deleteLineItem,
-    licenseSize,
-  } = useContext(BuyContext)
-
-  let cl
-  if (accessToken) {
-    cl = CommerceLayer({
-      organization: process.env.NEXT_PUBLIC_CL_SLUG || '',
-      accessToken: accessToken,
-    })
-  }
+  } = useOrderContext()
+  const { font, addLineItem } = useBuyContext()
 
   // @TODO: on changing selected SKU options, update all line_items on the order
 
@@ -50,10 +40,13 @@ export const Buy = () => {
       <Container maxW="container.lg">
         <Stack direction={'column'}>
           <SimpleGrid columns={2} spacing={2}>
+            <Box bg={'white'}>
+              <LicenseOwnerInput />
+            </Box>
             <FormControl>
               <FormLabel>{'A license for?'}</FormLabel>
               <LicenseTypeSelect
-                cl={cl}
+                font={font}
                 skuOptions={skuOptions}
                 selectedSkuOptions={selectedSkuOptions}
                 setSelectedSkuOptions={setSelectedSkuOptions}
@@ -63,7 +56,6 @@ export const Buy = () => {
               <FormLabel>{'How big is your company?'}</FormLabel>
               {licenseSize && (
                 <LicenseSizeSelect
-                  cl={cl}
                   setLicenseSize={setLicenseSize}
                   licenseSize={licenseSize}
                 />

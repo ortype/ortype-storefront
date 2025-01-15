@@ -1,5 +1,6 @@
-import { OrderContainer, OrderStorage } from '@commercelayer/react-components'
-import { BuyProvider } from 'components/data/BuyProvider'
+import { BuyProvider } from '@/commercelayer/providers/Buy'
+import { useOrderContext } from '@/commercelayer/providers/Order'
+import { OrderContainer } from '@commercelayer/react-components'
 
 interface Props {
   font: object
@@ -7,12 +8,11 @@ interface Props {
 }
 
 const BuyContainer = ({ font, children }: Props): JSX.Element => {
+  // const { isLoading, isInvalid } = useOrderContext()
   return (
-    <OrderStorage persistKey={`order`}>
-      <OrderContainer>
-        <BuyProvider font={font}>{children}</BuyProvider>
-      </OrderContainer>
-    </OrderStorage>
+    <OrderContainer>
+      <BuyProvider font={font}>{children}</BuyProvider>
+    </OrderContainer>
   )
 }
 

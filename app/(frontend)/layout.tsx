@@ -3,7 +3,7 @@ import 'tailwindcss/tailwind.css'
 import { SessionProvider } from 'next-auth/react'
 import { BASE_PATH, auth } from '@/lib/auth'
 import Providers from '@/components/global/Providers'
-import { getIntegrationToken } from '@commercelayer/js-auth'
+import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
@@ -17,10 +17,9 @@ export const metadata: Metadata = {
 
 const getMarketId = unstable_cache(async () => {
   try {
-    const token = await getIntegrationToken({
+    const token = await authenticate('client_credentials',{
       clientId: process.env.CL_SYNC_CLIENT_ID || '',
       clientSecret: process.env.CL_SYNC_CLIENT_SECRET || '',
-      endpoint: process.env.CL_ENDPOINT || '',
     })
 
     const cl = CommerceLayer({

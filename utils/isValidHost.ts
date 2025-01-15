@@ -20,7 +20,7 @@ const isProduction = (forceProductionEnv?: boolean) =>
  * @param hostname - The full `window.location.hostname` Example: "my-org.cart.commercelayer.app"
  * @param accessToken - The JWT used to authenticate Commerce Layer Api requests
  * @param forceProductionEnv - To be used to emulate production deployment during E2E tests
- * @param selfHostedSlug - The organization slug used to generate the accessToken.
+ * @param slug - The organization slug used to generate the accessToken.
  *
  * @returns a boolean flag set as `true` in case app is loaded from a valid URL.
  */
@@ -28,14 +28,14 @@ export const isValidHost = ({
   hostname,
   accessToken,
   forceProductionEnv,
-  selfHostedSlug,
+  slug,
 }: {
   hostname: string
   accessToken: string
   forceProductionEnv?: boolean
-  selfHostedSlug?: string | null
+  slug?: string | null
 }) => {
-  const { slug, kind } = getInfoFromJwt(accessToken)
+  const { kind } = getInfoFromJwt(accessToken)
 
   const isInvalidChannel = kind !== 'sales_channel'
   if (isInvalidChannel) {
@@ -43,11 +43,9 @@ export const isValidHost = ({
   }
 
   // when app is not hosted by CL we can't rely on subdomain to match organization slug
-  // so we require to fill `selfHostedSlug` prop in `public/config.json`
-  const isCommerceLayerHosted = selfHostedSlug == null
-  const subdomain = isCommerceLayerHosted
-    ? makeSubdomain(hostname)
-    : selfHostedSlug
+  // so we require to fill `slug` prop in `public/config.json`
+  const isCommerceLayerHosted = slug == null
+  const subdomain = isCommerceLayerHosted ? makeSubdomain(hostname) : slug
 
   const isInvalidSubdomain = subdomain !== slug
   if (isProduction(forceProductionEnv) && isInvalidSubdomain) {

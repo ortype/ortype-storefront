@@ -1,17 +1,14 @@
-import { CommerceLayerClient, LineItemUpdate } from '@commercelayer/sdk'
-import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
+import { LicenseSize } from '@/commercelayer/providers/Order'
 import { Size, sizes } from 'lib/settings'
-import React, { Dispatch, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
 
 interface Props {
-  cl: CommerceLayerClient
   licenseSize: Size
-  // selectLicenseSize: Dispatch // @TODO: how to type a dispatch function
+  setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
 }
 
 export const LicenseSizeSelect: React.FC<Props> = ({
-  cl,
   licenseSize,
   setLicenseSize,
 }) => {

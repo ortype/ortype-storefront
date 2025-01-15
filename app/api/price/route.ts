@@ -1,4 +1,4 @@
-import { getIntegrationToken } from '@commercelayer/js-auth'
+import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { sizes } from 'lib/settings'
 import { NextRequest, NextResponse } from 'next/server'
@@ -63,7 +63,7 @@ export async function POST(
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
 
   try {
-    const token = await getIntegrationToken({
+    const token = await authenticate('client_credentials', {
       clientId: process.env.CL_SYNC_CLIENT_ID,
       clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
       endpoint: process.env.CL_ENDPOINT,

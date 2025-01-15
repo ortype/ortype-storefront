@@ -10,7 +10,6 @@ import {
   Stack,
   Switch,
 } from '@chakra-ui/react'
-import { useOrderContainer } from '@commercelayer/react-components'
 // @TODO: Look at exporting this from package
 // import { getCountries } from '@commercelayer/react-components/utils/countryStateCity'
 import type { Order } from '@commercelayer/sdk'
@@ -23,6 +22,7 @@ import { useRapidForm } from 'rapid-form'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SelectLicenseSize } from './SelectLicenseSize'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 
 interface Props {
   className?: string
@@ -75,7 +75,7 @@ export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
 export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
-  const { updateOrder } = useOrderContainer()
+  const { updateOrder } = useOrderContext()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
 

@@ -1,20 +1,18 @@
 import {
-  LineItem,
-  Order,
-  PaymentMethod,
-  ShippingMethod,
-  SkuOption,
-} from '@commercelayer/sdk'
-import { AppStateData } from 'components/data/BuyProvider'
+  LicenseOwnerInput,
+  OrderStateData,
+} from '@/commercelayer/providers/Order'
+import { Order, SkuOption } from '@commercelayer/sdk'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',
   SET_ORDER = 'SET_ORDER',
+  UPDATE_ORDER = 'UPDATE_ORDER',
+  SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
   SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
   DELETE_LINE_ITEM = 'DELETE_LINE_ITEM',
-  ADD_LINE_ITEM = 'ADD_LINE_ITEM',
 }
 
 export type Action =
@@ -24,7 +22,21 @@ export type Action =
       type: ActionType.SET_ORDER
       payload: {
         order: Order
-        others: Partial<AppStateData>
+        others: Partial<OrderStateData>
+      }
+    }
+  | {
+      type: ActionType.UPDATE_ORDER
+      payload: {
+        order: Order
+        // others: Partial<OrderStateData>
+      }
+    }
+  | {
+      type: ActionType.SET_LICENSE_OWNER
+      payload: {
+        order: Order
+        // others: Partial<OrderStateData>
       }
     }
   | {
@@ -38,16 +50,14 @@ export type Action =
       type: ActionType.SET_LICENSE_TYPES
       payload: {
         order: Order
-        // lineItem: LineItem
-        others: Partial<AppStateData>
-        // licenseTypes: string[]
+        others?: Partial<OrderStateData>
       }
     }
   | {
       type: ActionType.SET_SKU_OPTIONS
       payload: {
         skuOptions: SkuOption[]
-        others: Partial<AppStateData>
+        others: Partial<OrderStateData>
       }
     }
   | {
@@ -56,14 +66,8 @@ export type Action =
         order: Order
       }
     }
-  | {
-      type: ActionType.ADD_LINE_ITEM
-      payload: {
-        order: Order
-      }
-    }
 
-export function reducer(state: AppStateData, action: Action): AppStateData {
+export function reducer(state: OrderStateData, action: Action): OrderStateData {
   switch (action.type) {
     case ActionType.START_LOADING:
       return {
@@ -79,12 +83,23 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
       return {
         ...state,
         order: action.payload.order,
-        // FIX saving customerAddresses because we don't receive
-        // them from fetchORder
         ...action.payload.others,
-        isFirstLoading: false,
         isLoading: false,
       }
+    case ActionType.UPDATE_ORDER:
+      return {
+        ...state,
+        order: action.payload.order,
+        isLoading: false,
+      }
+    case ActionType.SET_LICENSE_OWNER: {
+      console.log('SET_LICENSE_OWNER: action.payload: ', action.payload)
+      return {
+        ...state,
+        order: action.payload.order,
+        isLoading: false,
+      }
+    }
     case ActionType.SET_LICENSE_SIZE: {
       console.log('SET_LICENSE_SIZE: action.payload: ', action.payload)
       return {
@@ -112,13 +127,6 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
       }
     }
     case ActionType.DELETE_LINE_ITEM: {
-      return {
-        ...state,
-        order: action.payload.order,
-        isLoading: false,
-      }
-    }
-    case ActionType.ADD_LINE_ITEM: {
       return {
         ...state,
         order: action.payload.order,

@@ -60,7 +60,6 @@ interface UpdateLineItemsLicenseSize {
 
 interface UpdateLineItemLicenseTypes {
   cl: CommerceLayerClient
-  order: Order
   lineItem: LineItem
   selectedSkuOptions: SkuOption[]
 }
@@ -175,7 +174,6 @@ export async function updateLineItemsLicenseSize({
 
 export async function updateLineItemLicenseTypes({
   cl,
-  order,
   lineItem,
   selectedSkuOptions,
 }: UpdateLineItemLicenseTypes) {

@@ -1,4 +1,4 @@
-import { getSalesChannelToken } from '@commercelayer/js-auth'
+import { authenticate } from '@commercelayer/js-auth'
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 import { useLocalStorageToken } from './useLocalStorageToken'
@@ -51,14 +51,17 @@ export const useGetToken: UseGetToken = ({
     if (!getCookieToken && clientId && endpoint) {
       const getToken = async (): Promise<void> => {
         try {
-          const auth = await getSalesChannelToken(
+          const auth = user ? await authenticate('password',
             {
               clientId,
-              endpoint,
               scope,
+              ...user
             },
-            user // @TODO: with user active the token seems to expire / throw an error by the next day
-          )
+          ) : await authenticate('client_credentials',
+            {
+              clientId,
+              scope
+            })
           setToken(auth?.accessToken as string)
           console.log('auth: ', auth)
           Cookies.set(`clAccessToken`, auth?.accessToken as string, {

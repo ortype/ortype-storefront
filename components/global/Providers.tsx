@@ -1,18 +1,24 @@
 'use client'
 import theme from '@/@chakra-ui/theme'
+import { IdentityProvider } from '@/commercelayer/providers/Identity'
+import { OrderProvider } from '@/commercelayer/providers/Order'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
 import { CustomerProvider } from '@/components/data/CustomerProvider'
 import { SettingsProvider } from '@/components/data/SettingsProvider'
 import Webfonts from '@/components/global/Webfonts'
 import { ChakraProvider } from '@chakra-ui/react'
-import { CommerceLayer } from '@commercelayer/react-components'
+import {
+  CommerceLayer,
+  OrderContainer,
+  OrderStorage,
+} from '@commercelayer/react-components'
 
-const config = {
-  slug: process.env.NEXT_PUBLIC_CL_SLUG,
-  selfHostedSlug: process.env.NEXT_PUBLIC_CL_SLUG,
-  clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID,
-  endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT,
-  domain: process.env.NEXT_PUBLIC_CL_DOMAIN,
+const config: CommerceLayerAppConfig = {
+  slug: process.env.NEXT_PUBLIC_CL_SLUG ?? '',
+  clientId: process.env.NEXT_PUBLIC_CL_CLIENT_ID ?? '',
+  endpoint: process.env.NEXT_PUBLIC_CL_ENDPOINT ?? '',
+  domain: process.env.NEXT_PUBLIC_CL_DOMAIN ?? '',
+  // scope: props.marketId
 }
 
 function Providers({
@@ -27,29 +33,46 @@ function Providers({
       <ChakraProvider theme={theme} resetCSS={true}>
         <ApolloClientProvider initialApolloState={{}}>
           <Webfonts>
-            <SettingsProvider config={{ ...config, marketId }}>
-              {({ settings, isLoading }) => {
-                return isLoading ? (
-                  <div>{'Loading...'}</div>
-                ) : !settings.isValid ? (
-                  <div>{'Invalid settings config'}</div>
-                ) : (
-                  <CommerceLayer
-                    accessToken={settings.accessToken}
-                    endpoint={config.endpoint}
-                  >
-                    <CustomerProvider
-                      customerId={settings.customerId}
-                      accessToken={settings.accessToken}
-                      domain={config.endpoint}
-                      {...config}
-                    >
-                      {children}
-                    </CustomerProvider>
-                  </CommerceLayer>
-                )
+            <IdentityProvider
+              config={{
+                ...config,
+                scope: marketId,
+                returnUrl: '/',
+                resetPasswordUrl: '/',
               }}
-            </SettingsProvider>
+            >
+              {(ctx) => (
+                <CommerceLayer
+                  accessToken={ctx.settings.accessToken}
+                  endpoint={config.endpoint}
+                >
+                  <OrderStorage persistKey={`order`}>
+                    <OrderContainer>
+                      <OrderProvider config={ctx.clientConfig}>
+                        <SettingsProvider config={{ ...config, marketId }}>
+                          {({ settings, isLoading }) => {
+                            return isLoading ? (
+                              <div>{'Loading...'}</div>
+                            ) : !settings.isValid ? (
+                              <div>{'Invalid settings config'}</div>
+                            ) : (
+                              <CustomerProvider
+                                customerId={settings.customerId}
+                                accessToken={settings.accessToken}
+                                domain={config.endpoint}
+                                {...config}
+                              >
+                                {children}
+                              </CustomerProvider>
+                            )
+                          }}
+                        </SettingsProvider>
+                      </OrderProvider>
+                    </OrderContainer>
+                  </OrderStorage>
+                </CommerceLayer>
+              )}
+            </IdentityProvider>
           </Webfonts>
         </ApolloClientProvider>
       </ChakraProvider>
