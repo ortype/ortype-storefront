@@ -178,6 +178,7 @@ export default defineType({
               title: 'Name',
               name: 'groupName',
               type: 'string',
+              description: '',
             },
             {
               name: 'variants',
@@ -193,10 +194,15 @@ export default defineType({
                       const group = document.styleGroups?.filter(
                         (group) => group._key === parentPath[1]?._key
                       )[0]
+                      let filter =
+                        '!(_id in $selected) && uid match $groupName && !(uid match "*Italic") && parentUid == $parentUid'
+                      if (group.groupName == 'Standard') {
+                        filter =
+                          '!(_id in $selected) && !(uid match "*Italic") && parentUid == $parentUid'
+                      }
                       return {
                         // filtering by the groups `groupName`
-                        filter:
-                          '!(_id in $selected) && uid match $groupName && !(uid match "*Italic") && parentUid == $parentUid',
+                        filter,
                         params: {
                           groupName: group.groupName
                             ? `*${group.groupName}`
@@ -217,6 +223,8 @@ export default defineType({
               name: 'italicVariants',
               title: 'Italic Variants',
               type: 'array',
+              description:
+                'This list is filtered by variants that contain the word "Italic"',
               of: [
                 {
                   type: 'reference',
@@ -241,10 +249,15 @@ export default defineType({
                         // 2. How to use the resulting `groupName` to filter the 
                         
                       */
+                      let filter =
+                        '!(_id in $selected) && uid match $groupName && uid match "*Italic" && parentUid == $parentUid'
+                      if (group.groupName == 'Standard') {
+                        filter =
+                          '!(_id in $selected) && uid match "*Italic" && parentUid == $parentUid'
+                      }
                       return {
                         // @TODO: for some reason the `selected` filter does not prevent duplicates in the search
-                        filter:
-                          '!(_id in $selected) && uid match $groupName && uid match "*Italic" && parentUid == $parentUid',
+                        filter,
                         params: {
                           groupName: group.groupName
                             ? `*${group.groupName}`

@@ -19,7 +19,7 @@ export interface StylesModuleProps {
 }
 
 export default function StylesModule({ value }: StylesModuleProps) {
-  const { title } = value
+  const { title, config } = value
   const { padding, conversion, state } = useSpreadContainer()
   const itemState = state.items[value._key]
   const font = useFont()
@@ -45,10 +45,17 @@ export default function StylesModule({ value }: StylesModuleProps) {
       )
       font.styleGroups.forEach((styleGroup) => {
         // protect against empty objects, especially when editing the document in presentation mode
-        if (styleGroup.variants?.length > 0) {
-          const items = styleGroup.variants
-            .map((variant) => variant)
+        if (
+          styleGroup.variants?.length > 0 ||
+          styleGroup.italicVariants?.length > 0
+        ) {
+          const uprightVariants = styleGroup.variants
+            ?.map((variant) => variant)
             .filter((item) => item?._id)
+          const italicVariants = styleGroup.italicVariants
+            ?.map((variant) => variant)
+            .filter((item) => item?._id)
+          const items = [...uprightVariants, ...italicVariants]
           tabPanels.push(items)
         }
       })
@@ -58,6 +65,8 @@ export default function StylesModule({ value }: StylesModuleProps) {
       tabPanels.push(font.variants.map((variant) => variant))
     }
   }
+
+  console.log('tabPanels: ', tabPanels)
 
   return (
     <>

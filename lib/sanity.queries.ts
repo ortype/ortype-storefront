@@ -83,7 +83,8 @@ const fontFields = defineQuery(`
   styleGroups[]{
     _type,
     groupName,
-    variants[]->{_id, optionName}
+    variants[]->{_id, optionName},
+    italicVariants[]->{_id, optionName}
   },
 `)
 
@@ -170,6 +171,7 @@ export interface Metrics {
 type StyleGroup = {
   groupName: string
   variants: { _id: string; optionName: string }[]
+  italicVariants: { _id: string; optionName: string }[]
 }
 
 export interface Font {
