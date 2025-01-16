@@ -1,91 +1,83 @@
 import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
   Box,
   Button,
-  ButtonGroup,
   Container,
-  FormControl,
-  FormLabel,
+  Group,
   Heading,
   Input,
   Link,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   SimpleGrid,
   Stack,
   Switch,
   useDisclosure,
 } from '@chakra-ui/react'
-import Cookies from 'js-cookie'
 import React, { useEffect, useState } from 'react'
 
 import { LoginForm } from '@/commercelayer/components/forms/LoginForm'
 import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
-import { getStoredTokenKey } from '@/commercelayer/utils/oauthStorage'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { getStoredTokenKey } from '@/commercelayer/utils/oauthStorage'
 
 export const Account = () => {
   const { settings, config, customer, handleLogout } = useIdentityContext()
 
-  const {
-    isOpen: isLoginOpen,
-    onOpen: onLoginOpen,
-    onClose: onLoginClose,
-  } = useDisclosure()
-  const {
-    isOpen: isRegisterOpen,
-    onOpen: onRegisterOpen,
-    onClose: onRegisterClose,
-  } = useDisclosure()
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [registerOpen, setRegisterOpen] = useState(false)
 
   const handleRegisterClick = () => {
-    onLoginClose()
+    setLoginOpen(false)
     setTimeout(() => {
-      onRegisterOpen()
+      setRegisterOpen(true)
     }, 500)
   }
 
   const handleLoginClick = () => {
-    onRegisterClose()
+    setRegisterOpen(false)
     setTimeout(() => {
-      onLoginOpen()
+      setLoginOpen(true)
     }, 500)
   }
 
   return (
     <>
-      <Button onClick={onLoginOpen} size={'xs'}>
+      <Button onClick={() => setLoginOpen(true)} size={'xs'}>
         {settings.customerId ? `Account` : `Login`}
       </Button>
-      <Modal isOpen={isRegisterOpen} onClose={onRegisterClose} size={'lg'}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Register</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      <DialogRoot open={registerOpen} size={'md'}>
+        {/*<DialogBackdrop />*/}
+        <DialogContent bg={'white'}>
+          <DialogHeader>Register</DialogHeader>
+          <DialogCloseTrigger onClick={() => setRegisterOpen(false)} />
+          <DialogBody>
             <SignUpForm />
-          </ModalBody>
-          <ModalFooter>
+          </DialogBody>
+          <DialogFooter>
             <Button size={'sm'} onClick={handleLoginClick}>
               {'Login'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <Modal isOpen={isLoginOpen} onClose={onLoginClose} size={'lg'}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Login</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
+      <DialogRoot open={loginOpen} size={'md'}>
+        {/*<DialogBackdrop />*/}
+        <DialogContent bg={'white'}>
+          <DialogHeader>Login</DialogHeader>
+          <DialogCloseTrigger onClick={() => setLoginOpen(false)} />
+          <DialogBody>
             <LoginForm />
-          </ModalBody>
-          <ModalFooter>
-            <ButtonGroup gap={2}>
+          </DialogBody>
+          <DialogFooter>
+            <Group gap={2}>
               {settings?.customerId && (
                 <Button
                   as={Link}
@@ -101,10 +93,10 @@ export const Account = () => {
               ) : (
                 <Button onClick={handleRegisterClick}>{'Register'}</Button>
               )}
-            </ButtonGroup>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            </Group>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   )
 }

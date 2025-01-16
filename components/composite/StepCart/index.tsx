@@ -1,8 +1,7 @@
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
+  Fieldset,
   Heading,
   Input,
   Stack,
@@ -133,8 +132,7 @@ export const StepCart: React.FC<Props> = () => {
                 autoComplete="off"
                 onSubmit={handleSubmit(s)}
               >
-                <FormControl>
-                  <FormLabel>{'License Owner/Company*'}</FormLabel>
+                <Fieldset.Root>
                   <Input
                     name={'full_name'}
                     type={'text'}
@@ -142,14 +140,11 @@ export const StepCart: React.FC<Props> = () => {
                     size={'lg'}
                     defaultValue={order?.metadata?.license?.owner?.full_name}
                   />
-                </FormControl>
-                <Button type={'submit'}>Save</Button>
+                </Fieldset.Root>
               </form>
-              <FormControl>
-                <FormLabel>{'Company size of the license owner'}</FormLabel>
+              <Fieldset.Root>
                 <SelectLicenseSize ctx={checkoutCtx} />
-              </FormControl>
-              {order.line_items &&
+              </Fieldset.Root>
                 order.line_items.map((lineItem) => (
                   <CartItem key={lineItem.id} lineItem={lineItem} />
                 ))}

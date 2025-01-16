@@ -1,7 +1,7 @@
 import { useFont } from '@/components/pages/fonts/FontContainer'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import config from '@/sanity.config'
-import { Link } from '@chakra-ui/next-js'
+import Link from 'next/link'
 import { Box, Center, Flex, Heading, Text } from '@chakra-ui/react'
 
 import {
@@ -83,7 +83,8 @@ export default function InfoModule({ value }: InfoModuleProps) {
             pt={'0.5rem'}
             pb={'0.25rem'}
             borderBottom={'1px solid #000'}
-            size={'xs'}
+            fontSize={`${13 * conversion}px`}
+            lineHeight={`1.5`}
             color={'red'}
             textAlign={'center'}
             fontWeight={'normal'}

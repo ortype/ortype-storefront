@@ -1,9 +1,9 @@
+import { Field } from '@/components/ui/field'
 import {
   Box,
   Button,
   Container,
-  FormControl,
-  FormLabel,
+  Fieldset,
   Heading,
   Input,
   Link,
@@ -77,28 +77,30 @@ export const RegisterForm: React.FC<Props> = ({ emailAddress }) => {
       >
         {'New User'}
       </Heading>
-      <FormControl>
-        <FormLabel>{'Email'}</FormLabel>
-        <Input
-          // placeholder={customer.username}
-          name={'email'}
-          type={'email'}
-          onBlur={handleOnBlur}
-          ref={validation}
-          size={'lg'}
-          defaultValue={emailAddress}
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>{'Password'}</FormLabel>
-        <Input
-          // placeholder={customer.password}
-          name={'password'}
-          onBlur={handleOnBlur}
-          ref={validation}
-          size={'lg'}
-        />
-      </FormControl>
+      <Fieldset.Root>
+        <Field label={'Email'}>
+          <Input
+            // placeholder={customer.username}
+            name={'email'}
+            type={'email'}
+            onBlur={handleOnBlur}
+            ref={validation}
+            size={'lg'}
+            defaultValue={emailAddress}
+          />
+        </Field>
+      </Fieldset.Root>
+      <Fieldset.Root>
+        <Field label={'Password'}>
+          <Input
+            // placeholder={customer.password}
+            name={'password'}
+            onBlur={handleOnBlur}
+            ref={validation}
+            size={'lg'}
+          />
+        </Field>
+      </Fieldset.Root>
       <Stack my={4} direction={'row'} spacing={4}>
         <Button type={'submit'}>Sign up</Button>
       </Stack>
@@ -148,28 +150,30 @@ export const LoginForm: React.FC<Props> = ({ emailAddress }) => {
       >
         {'Exisiting User'}
       </Heading>
-      <FormControl>
-        <FormLabel>{'Email'}</FormLabel>
-        <Input
-          // placeholder={customer.username}
-          name={'email'}
-          type={'email'}
-          // onBlur={handleOnBlur}
-          ref={validation}
-          size={'lg'}
-          defaultValue={emailAddress}
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>{'Password'}</FormLabel>
-        <Input
-          // placeholder={customer.password}
-          name={'password'}
-          // onBlur={handleOnBlur}
-          ref={validation}
-          size={'lg'}
-        />
-      </FormControl>
+      <Fieldset.Root>
+        <Field label={'Email'}>
+          <Input
+            // placeholder={customer.username}
+            name={'email'}
+            type={'email'}
+            // onBlur={handleOnBlur}
+            ref={validation}
+            size={'lg'}
+            defaultValue={emailAddress}
+          />
+        </Field>
+      </Fieldset.Root>
+      <Fieldset.Root>
+        <Field label={'Password'}>
+          <Input
+            // placeholder={customer.password}
+            name={'password'}
+            // onBlur={handleOnBlur}
+            ref={validation}
+            size={'lg'}
+          />
+        </Field>
+      </Fieldset.Root>
       <Stack my={4} direction={'row'} spacing={4}>
         <Button type={'submit'}>Login</Button>
       </Stack>

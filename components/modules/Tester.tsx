@@ -1,19 +1,5 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
-import {
-  Box,
-  Center,
-  Editable,
-  EditablePreview,
-  EditableTextarea,
-  Flex,
-  Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Center, Editable, Flex, Heading, Text } from '@chakra-ui/react'
 import { useRef, useState } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
 
@@ -45,7 +31,8 @@ export default function TesterModule({ value }: TesterModuleProps) {
           pt={'0.5rem'}
           pb={'0.25rem'}
           borderBottom={'1px solid #000'}
-          size={'xs'}
+          fontSize={`${13 * conversion}px`}
+          lineHeight={`1.5`}
           color={'red'}
           textAlign={'center'}
           fontWeight={'normal'}
@@ -55,7 +42,7 @@ export default function TesterModule({ value }: TesterModuleProps) {
         </Heading>
       </Box>
 
-      <Editable
+      <Editable.Root
         defaultValue={'Test me'}
         textAlign={'center'}
         fontSize={`${140 * conversion}px`}
@@ -64,10 +51,10 @@ export default function TesterModule({ value }: TesterModuleProps) {
         className={font?.defaultVariant?._id}
       >
         <Center h={'100%'}>
-          <EditablePreview flex={1} p={0} border={'none'} />
-          <EditableTextarea flex={1} p={0} border={'none'} w={'100%'} />
+          <Editable.Preview flex={1} p={0} border={'none'} />
+          <Editable.Input flex={1} p={0} border={'none'} w={'100%'} />
         </Center>
-      </Editable>
+      </Editable.Root>
     </>
   )
 }

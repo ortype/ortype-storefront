@@ -26,7 +26,8 @@ const RectoVerso: React.FC<{
             pt={'0.5rem'}
             pb={'0.25rem'}
             borderBottom={'1px solid #000'}
-            size={'xs'}
+            fontSize={`${13 * conversion}px`}
+            lineHeight={`1.5`}
             color={'#000'}
             textAlign={'center'}
             fontWeight={'normal'}

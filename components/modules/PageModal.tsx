@@ -1,17 +1,5 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
-import {
-  Box,
-  Button,
-  Center,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { Box, Button, Center, Dialog, useDisclosure } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { ReactNode, useRef, useState } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
@@ -92,7 +80,7 @@ export default function PageModal({
           {'+'}
         </Button>
       </Center>
-      <Modal
+      <Dialog.Root
         // portalProps={{ containerRef }}
         onClose={closeModal}
         // initialFocusRef on something other than the close button
@@ -103,7 +91,7 @@ export default function PageModal({
         size={'xl'}
         motionPreset={'none'}
       >
-        <ModalOverlay
+        <Dialog.Backdrop
           bg={'#000'}
           motionProps={{
             initial: 'initial',
@@ -121,7 +109,7 @@ export default function PageModal({
             },
           }}
         />
-        <ModalContent
+        <Dialog.Content
           as={motion.div}
           layout // @NOTE: not sure if this is needed
           display={'flex'}
@@ -131,7 +119,7 @@ export default function PageModal({
           my={'auto'}
           borderRadius={'none'}
           maxW={'auto'}
-          sx={{ transformOrigin: 'bottom' }}
+          css={{ transformOrigin: 'bottom' }}
           motionProps={{
             initial: 'initial',
             animate: 'animate',
@@ -163,7 +151,7 @@ export default function PageModal({
           >
             {children}
           </Box>
-          <ModalCloseButton
+          <Dialog.CloseTrigger
             top={'-1.5rem'}
             right={'-6rem'}
             w={'4rem'}
@@ -172,8 +160,8 @@ export default function PageModal({
             color={'#FFF'}
             zIndex={'popover'}
           />
-        </ModalContent>
-      </Modal>
+        </Dialog.Content>
+      </Dialog.Root>
     </>
   )
 }

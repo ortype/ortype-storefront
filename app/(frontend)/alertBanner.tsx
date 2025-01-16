@@ -38,8 +38,8 @@ export default function AlertBanner() {
           'Disabling draft mode...'
         ) : (
           <>
-            <Text fontSize={'sm'} as={'span'}>
-              {'Previewing drafts. '}
+            <Text fontSize={'sm'} asChild>
+              <span>{'Previewing drafts. '}</span>
             </Text>
             <Button
               variant={'outline'}

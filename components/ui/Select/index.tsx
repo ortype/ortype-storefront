@@ -1,4 +1,4 @@
-import { Box, Indicator, Spinner } from '@chakra-ui/react'
+import { Box, Spinner } from '@chakra-ui/react'
 import Select, { components, DropdownIndicatorProps } from 'react-select'
 
 const Arrow = (props) => (
@@ -37,7 +37,7 @@ const DropdownIndicator = (props: DropdownIndicatorProps) => {
   return (
     <components.DropdownIndicator {...props}>
       <Arrow
-        sx={{
+        css={{
           pointerEvents: `none`,
           // position: `absolute`,
           // top: `calc(50% - 16px)`,
@@ -54,7 +54,7 @@ const DropdownIndicator = (props: DropdownIndicatorProps) => {
 const CustomDropdownIndicator = ({ ...props }) => (
   <DropdownIndicator {...props}>
     <Arrow
-      sx={{
+      css={{
         pointerEvents: `none`,
         position: `absolute`,
         top: `calc(50% - 16px)`,

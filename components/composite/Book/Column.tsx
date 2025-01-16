@@ -150,7 +150,7 @@ const Column = observer(
       >
         <Box
           className={'colGuide'}
-          sx={{
+          css={{
             position: 'absolute',
             left: 0,
             right: 0,
@@ -161,7 +161,7 @@ const Column = observer(
         />
         <Box
           className={'colGuide'}
-          sx={{
+          css={{
             position: 'absolute',
             right: 0,
             left: 0,
@@ -172,7 +172,7 @@ const Column = observer(
         />
         <Box
           className={'colGuide'}
-          sx={{
+          css={{
             position: 'absolute',
             left: 0,
             top: 0,
@@ -183,7 +183,7 @@ const Column = observer(
         />
         <Box
           className={'colGuide'}
-          sx={{
+          css={{
             position: 'absolute',
             right: 0,
             top: 0,

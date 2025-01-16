@@ -8,7 +8,7 @@ const Content: React.FC<{
   value: any
   index: number
 }> = ({ value, index }) => {
-  const { padding } = useSpreadContainer()
+  const { padding, conversion } = useSpreadContainer()
   return (
     <>
       {
@@ -27,7 +27,8 @@ const Content: React.FC<{
               pt={'0.5rem'}
               pb={'0.25rem'}
               borderBottom={'1px solid #000'}
-              size={'xs'}
+              fontSize={`${13 * conversion}px`}
+              lineHeight={`1.5`}
               color={'red'}
               textAlign={'center'}
               fontWeight={'normal'}

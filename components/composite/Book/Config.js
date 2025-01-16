@@ -70,7 +70,7 @@ const Config = () => {
         </PopoverTrigger>
         <Portal>
           <PopoverContent
-            sx={{
+            css={{
               border: `.1rem solid #000`,
               boxShadow: `2px 2px 0px #000`,
               backgroundColor: `#fff`,

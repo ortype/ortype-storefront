@@ -9,7 +9,6 @@
  */
 
 import config from '@/sanity.config'
-import { Link } from '@chakra-ui/next-js'
 import { createDataAttribute } from '@sanity/visual-editing'
 
 import {
@@ -17,6 +16,8 @@ import {
   type PortableTextBlock,
   type PortableTextComponents,
 } from 'next-sanity'
+
+import Link from 'next/link'
 
 import Image from '@/components/global/Image'
 import { useFont } from '@/components/pages/fonts/FontContainer'
@@ -46,6 +47,7 @@ export default function CustomPortableText({
           fontSize={38 * conversion + 'px'}
           lineHeight={49 * conversion + 'px'}
           className={font?.defaultVariant?._id}
+          css={{ hyphens: 'auto' }}
           // noOfLines={17}
         >
           {children}
@@ -78,27 +80,29 @@ export default function CustomPortableText({
 
         return (
           <Box
-            as={'figure'}
-            sx={{ img: { mx: 'auto' } }}
+            asChild
+            css={{ img: { mx: 'auto' } }}
             textAlign={thumbnail ? 'center' : 'left'}
             h={vertical ? '100%' : 'auto'}
           >
-            <Image
-              data-sanity={attrVal}
-              image={props.value}
-              style={style}
-              sizes={
-                // if thumbnail set width or height to max-width instead of width
-                thumbnail
-                  ? `(max-width: ${thumbW}) 100vw, ${thumbW}`
-                  : '(max-width: 800px) 100vw, 800px'
-              }
-            />
-            {props.value.caption && (
-              <Text as={'figcaption'} fontSize={11 * conversion + 'px'}>
-                {props.value.caption}
-              </Text>
-            )}
+            <figure>
+              <Image
+                data-sanity={attrVal}
+                image={props.value}
+                style={style}
+                sizes={
+                  // if thumbnail set width or height to max-width instead of width
+                  thumbnail
+                    ? `(max-width: ${thumbW}) 100vw, ${thumbW}`
+                    : '(max-width: 800px) 100vw, 800px'
+                }
+              />
+              {props.value.caption && (
+                <Text asChild fontSize={11 * conversion + 'px'}>
+                  <figcaption>{props.value.caption}</figcaption>
+                </Text>
+              )}
+            </figure>
           </Box>
         )
       },

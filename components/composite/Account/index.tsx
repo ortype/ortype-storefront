@@ -3,18 +3,10 @@ import {
   Button,
   ButtonGroup,
   Container,
-  FormControl,
-  FormLabel,
+  Dialog,
   Heading,
   Input,
   Link,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   SimpleGrid,
   Stack,
   Switch,
@@ -68,30 +60,34 @@ export const Account = () => {
       <Button onClick={onLoginOpen} size={'xs'}>
         {customerCtx.customerId ? `Account` : `Login`}
       </Button>
-      <Modal isOpen={isRegisterOpen} onClose={onRegisterClose} size={'lg'}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Register</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      <Dialog.Root
+        isOpen={isRegisterOpen}
+        onClose={onRegisterClose}
+        size={'lg'}
+      >
+        <Dialog.Backdrop />
+        <Dialog.Content>
+          <Dialog.Header>Register</Dialog.Header>
+          <Dialog.CloseTrigger />
+          <Dialog.Body>
             <RegisterForm />
-          </ModalBody>
-          <ModalFooter>
+          </Dialog.Body>
+          <Dialog.Footer>
             <Button size={'sm'} onClick={handleLoginClick}>
               {'Login'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <Modal isOpen={isLoginOpen} onClose={onLoginClose} size={'lg'}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Login</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog.Root>
+      <Dialog.Root isOpen={isLoginOpen} onClose={onLoginClose} size={'lg'}>
+        <Dialog.Backdrop />
+        <Dialog.Content>
+          <Dialog.Header>Login</Dialog.Header>
+          <Dialog.CloseTrigger />
+          <Dialog.Body>
             <LoginForm />
-          </ModalBody>
-          <ModalFooter>
+          </Dialog.Body>
+          <Dialog.Footer>
             <ButtonGroup gap={2}>
               {customerCtx?.customerId && (
                 <Button
@@ -109,9 +105,9 @@ export const Account = () => {
                 <Button onClick={handleRegisterClick}>{'Register'}</Button>
               )}
             </ButtonGroup>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog.Root>
     </>
   )
 }

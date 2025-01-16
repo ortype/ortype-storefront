@@ -1,36 +1,26 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
-import {
-  Box,
-  Center,
-  Flex,
-  Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Center, Flex, Heading, Tabs, Text } from '@chakra-ui/react'
 import { useFont } from '../pages/fonts/FontContainer'
 
 export interface FeaturesModuleProps {
   value: any // @TODO: types
 }
+/*
+features:[…] 1 item
+0:{…} 5 properties
+_key:4e2ab31a1fa2
+_type:feature
+example:Über
+tag:ss01
+title:Ü
+label:Special Features
+*/
 
 export default function FeaturesModule({ value }: FeaturesModuleProps) {
   const { label, features } = value
 
   // features mapped to a subnav of tabs
   // features mapped to boxes
-
-  /*
-   */
-  // Shoot the documentation is confusing with the new v3
-  // https://v2.chakra-ui.com/docs/components/tabs (this is v3)
-  // this is v1... but not sure about v2
-  // https://v1.chakra-ui.com/docs/components/disclosure/tabs#creating-custom-tab-components
-  // ...
-  // my initial attempt at v1/v2 tabs is not working consistently with a map...
 
   const { padding, conversion } = useSpreadContainer()
   const font = useFont()
@@ -50,7 +40,8 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
             pt={'0.5rem'}
             pb={'0.25rem'}
             borderBottom={'1px solid #000'}
-            size={'xs'}
+            fontSize={`${13 * conversion}px`}
+            lineHeight={`1.5`}
             color={'red'}
             textAlign={'center'}
             fontWeight={'normal'}
@@ -59,33 +50,51 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
             {'Special Features'}
           </Heading>
         </Box>
-        <Tabs
+        <Tabs.Root
+          // onValueChange={(e) => setValue(e.value)}
           display={'flex'}
           flexDir={'column'}
           // isLazy
           h={'100%'}
           w={'100%'}
-          variant={'solid-rounded'}
+          variant={'subtle'}
+          colorPalette={'brand'}
+          defaultValue={'tab-0'}
+          orientation={'vertical'}
           size={'sm'}
           colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
         >
-          <TabList>
+          <Tabs.List
+            zIndex={'docked'}
+            h={'100%'}
+            justifyContent={'center'}
+            pos={'absolute'}
+            // @TODO: left or right
+            left={`calc(100% + ${padding} + 0.5rem)`}
+          >
             {features.map((feature, index) => (
-              <Tab
+              <Tabs.Trigger
                 key={'tab-' + feature.tag + index}
                 style={{
                   fontSize: 15 * conversion + 'px',
                   lineHeight: 15 * conversion + 'px',
                 }}
+                value={'tab-' + index}
               >
                 {feature.title}
-              </Tab>
+              </Tabs.Trigger>
             ))}
-          </TabList>
+            <Tabs.Indicator rounded={'l2'} />
+          </Tabs.List>
 
-          <TabPanels flex={'1'}>
+          <Tabs.ContentGroup flex={'1'}>
             {features.map((feature, index) => (
-              <TabPanel key={feature.tag + index} p={0} h={'100%'}>
+              <Tabs.Content
+                key={feature.tag + index}
+                value={'tab-' + index}
+                p={0}
+                h={'100%'}
+              >
                 <Flex direction={'column'} h={'100%'}>
                   <Flex flex={'1 1 50%'} direction={'column'} mb={'2rem'}>
                     <Text
@@ -133,10 +142,10 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
                     </Box>
                   </Flex>
                 </Flex>
-              </TabPanel>
+              </Tabs.Content>
             ))}
-          </TabPanels>
-        </Tabs>
+          </Tabs.ContentGroup>
+        </Tabs.Root>
       </>
     )
   )

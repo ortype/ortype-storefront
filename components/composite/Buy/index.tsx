@@ -5,11 +5,11 @@ import {
   Box,
   Container,
   Flex,
-  FormControl,
-  FormLabel,
+  Fieldset,
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
+import { Field } from '@/components/ui/field'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
@@ -43,24 +43,26 @@ export const Buy = () => {
             <Box bg={'white'}>
               <LicenseOwnerInput />
             </Box>
-            <FormControl>
-              <FormLabel>{'A license for?'}</FormLabel>
-              <LicenseTypeSelect
-                font={font}
-                skuOptions={skuOptions}
-                selectedSkuOptions={selectedSkuOptions}
-                setSelectedSkuOptions={setSelectedSkuOptions}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>{'How big is your company?'}</FormLabel>
-              {licenseSize && (
-                <LicenseSizeSelect
-                  setLicenseSize={setLicenseSize}
-                  licenseSize={licenseSize}
+            <Fieldset.Root>
+              <Field label={'A license for?'}>
+                <LicenseTypeSelect
+                  font={font}
+                  skuOptions={skuOptions}
+                  selectedSkuOptions={selectedSkuOptions}
+                  setSelectedSkuOptions={setSelectedSkuOptions}
                 />
-              )}
-            </FormControl>
+              </Field>
+            </Fieldset.Root>
+            <Fieldset.Root>
+              <Field label={'How big is your company?'}>
+                {licenseSize && (
+                  <LicenseSizeSelect
+                    setLicenseSize={setLicenseSize}
+                    licenseSize={licenseSize}
+                  />
+                )}
+              </Field>
+            </Fieldset.Root>
           </SimpleGrid>
           {font.variants?.map((variant) => (
             <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>

@@ -1,12 +1,11 @@
 'use client'
-import theme from '@/@chakra-ui/theme'
 import { IdentityProvider } from '@/commercelayer/providers/Identity'
 import { OrderProvider } from '@/commercelayer/providers/Order'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
 import { CustomerProvider } from '@/components/data/CustomerProvider'
 import { SettingsProvider } from '@/components/data/SettingsProvider'
 import Webfonts from '@/components/global/Webfonts'
-import { ChakraProvider } from '@chakra-ui/react'
+import { Provider as ChakraProvider } from '@/components/ui/provider'
 import {
   CommerceLayer,
   OrderContainer,
@@ -30,7 +29,7 @@ function Providers({
 }) {
   return (
     <>
-      <ChakraProvider theme={theme} resetCSS={true}>
+      <ChakraProvider>
         <ApolloClientProvider initialApolloState={{}}>
           <Webfonts>
             <IdentityProvider

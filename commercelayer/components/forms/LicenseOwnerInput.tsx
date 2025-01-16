@@ -1,7 +1,8 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { Box, Button, FormControl, FormLabel, Input } from '@chakra-ui/react'
+import { Box, Button, Fieldset, Input } from '@chakra-ui/react'
 import { useRapidForm } from 'rapid-form'
 import { useState } from 'react'
+import { Field } from '@/components/ui/field'
 
 const LicenseOwnerInput = () => {
   const [isLocalLoader, setIsLocalLoader] = useState(false)
@@ -23,16 +24,17 @@ const LicenseOwnerInput = () => {
       autoComplete="off"
       onSubmit={handleSubmit(s)}
     >
-      <FormControl>
-        <FormLabel>{'License Owner/Company*'}</FormLabel>
-        <Input
-          name={'full_name'}
-          type={'text'}
-          ref={validation}
-          size={'lg'}
-          defaultValue={order?.metadata?.license?.owner?.full_name}
-        />
-      </FormControl>
+      <Fieldset.Root>
+        <Field label={'License Owner/Company*'}>
+          <Input
+            name={'full_name'}
+            type={'text'}
+            ref={validation}
+            size={'lg'}
+            defaultValue={order?.metadata?.license?.owner?.full_name}
+          />
+        </Field>
+      </Fieldset.Root>
       <Button type={'submit'}>Save</Button>
     </form>
   )

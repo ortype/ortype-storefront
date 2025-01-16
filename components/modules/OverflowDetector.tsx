@@ -75,7 +75,7 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
       <Box
         className={'overflow-detector'}
         aria-hidden="true"
-        sx={{
+        css={{
           position: 'absolute',
           visibility: 'hidden',
           pointerEvents: 'none',
@@ -96,7 +96,7 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
           ref={hiddenRef}
           position={'absolute'}
           overflow={'auto'}
-          sx={{
+          css={{
             top: 0,
             left: 0,
             bottom: 0,

@@ -53,7 +53,7 @@ const Guide: React.FC<GuideProps> = ({
     <>
       <Box
         style={{ [placement]: value + 'px' }}
-        sx={{
+        css={{
           display: editMode ? 'block' : 'none',
           position: 'absolute',
           height: '1px',
@@ -65,7 +65,7 @@ const Guide: React.FC<GuideProps> = ({
       {label && (
         <Box
           style={{ [placement]: -value + 'px' }}
-          sx={{
+          css={{
             color: '#FFF',
             position: 'absolute',
             width: '100%',
@@ -166,7 +166,7 @@ const Spread: React.FC<{}> = ({}) => {
       </Box>
       <Box
         style={{ top: state.elementY + 'px' }}
-        sx={{
+        css={{
           display: bookLayoutStore.editMode ? 'block' : 'none',
           position: 'absolute',
           height: '1px',

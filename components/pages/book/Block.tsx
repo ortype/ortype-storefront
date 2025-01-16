@@ -24,9 +24,9 @@ const Block: React.FC<{
       <Text
         as={'span'}
         style={{
-          fontSize: `${12 * layout.conversion}px`,
+          fontSize: `${11 * layout.conversion}px`,
           top: `${7 * layout.conversion}px`,
-          lineHeight: `1.5`,
+          lineHeight: `1.25`,
         }}
         position={'absolute'}
       >
@@ -45,7 +45,7 @@ const Block: React.FC<{
           style={{
             top: `${layout.offsetValue}`,
           }}
-          sx={{
+          css={{
             position: 'absolute',
             left: 0,
             right: 0,
@@ -56,7 +56,7 @@ const Block: React.FC<{
             as={'div'}
             whiteSpace={'pre-wrap'}
             dangerouslySetInnerHTML={{ __html: entry }}
-            sx={{
+            css={{
               span: {
                 display: 'block',
                 mt: `${line.lineGap * layout.conversion}px`,

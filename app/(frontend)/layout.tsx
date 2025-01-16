@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 const getMarketId = unstable_cache(async () => {
   try {
-    const token = await authenticate('client_credentials',{
+    const token = await authenticate('client_credentials', {
       clientId: process.env.CL_SYNC_CLIENT_ID || '',
       clientSecret: process.env.CL_SYNC_CLIENT_SECRET || '',
     })
@@ -68,7 +68,7 @@ async function RootLayout({
   const marketId = (await getMarketId()) || ''
   const session = await auth()
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <SessionProvider basePath={BASE_PATH} session={session}>
           <Providers marketId={marketId}>{children}</Providers>

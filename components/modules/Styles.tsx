@@ -1,15 +1,5 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
-import {
-  Box,
-  Flex,
-  Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Flex, Heading, Tabs, Text } from '@chakra-ui/react'
 import { useRef, useState } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
 import ScalableText from './ScalableText'
@@ -21,18 +11,10 @@ export interface StylesModuleProps {
 export default function StylesModule({ value }: StylesModuleProps) {
   const { title, config } = value
   const { padding, conversion, state } = useSpreadContainer()
-  const itemState = state.items[value._key]
+  // const itemState = state.items[value._key]
   const font = useFont()
 
-  const [tabIndex, setTabIndex] = useState(0)
-
-  const handleSliderChange = (event) => {
-    setTabIndex(parseInt(event.target.value, 10))
-  }
-
-  const handleTabsChange = (index) => {
-    setTabIndex(index)
-  }
+  const [tabValue, setValue] = useState<string | null>('tab-0')
 
   const tabList: string[] = []
   const tabPanels: { _id: string; optionName: string }[][] = []
@@ -66,8 +48,6 @@ export default function StylesModule({ value }: StylesModuleProps) {
     }
   }
 
-  console.log('tabPanels: ', tabPanels)
-
   return (
     <>
       <Box
@@ -83,7 +63,8 @@ export default function StylesModule({ value }: StylesModuleProps) {
           pt={'0.5rem'}
           pb={'0.25rem'}
           borderBottom={'1px solid #000'}
-          size={'xs'}
+          fontSize={`${13 * conversion}px`}
+          lineHeight={`1.5`}
           color={'red'}
           textAlign={'center'}
           fontWeight={'normal'}
@@ -92,35 +73,50 @@ export default function StylesModule({ value }: StylesModuleProps) {
           {value.title}
         </Heading>
       </Box>
-      <Tabs
-        index={tabIndex}
-        onChange={handleTabsChange}
+      <Tabs.Root
+        onValueChange={(e) => setValue(e.value)}
         display={'flex'}
         flexDir={'column'}
         // isLazy
         h={'100%'}
         w={'100%'}
-        variant={'solid-rounded'}
+        orientation={'vertical'}
+        variant={'subtle'}
+        colorPalette={'brand'}
+        defaultValue={'tab-0'}
         size={'sm'}
+        lazyMount
+        unmountOnExit
+        //activationMode={'manual'}
         colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
       >
-        <TabList zIndex={'popover'}>
+        <Tabs.List
+          zIndex={'docked'}
+          pos={'absolute'}
+          h={'100%'}
+          justifyContent={'center'}
+          left={`calc(100% + ${padding} + 0.5rem)`}
+        >
           {tabList.map((item, index) => (
-            <Tab
+            <Tabs.Trigger
+              textAlign={'left'}
               key={'tab-' + index}
+              value={'tab-' + index}
               style={{
                 fontSize: 15 * conversion + 'px',
                 lineHeight: 15 * conversion + 'px',
               }}
             >
               {item}
-            </Tab>
+            </Tabs.Trigger>
           ))}
-        </TabList>
+          <Tabs.Indicator rounded={'l2'} />
+        </Tabs.List>
 
-        <TabPanels h={'100%'} w={'100%'} position={'relative'}>
+        <Tabs.ContentGroup h={'100%'} w={'100%'} position={'relative'}>
           {tabPanels.map((items, index) => (
-            <TabPanel
+            <Tabs.Content
+              value={'tab-' + index}
               key={'tabPanel-' + index}
               p={0}
               position={'relative'}
@@ -135,10 +131,10 @@ export default function StylesModule({ value }: StylesModuleProps) {
             >
               <ScalableText
                 index={index}
-                tabIndex={tabIndex}
+                tabIndex={tabValue}
                 count={items.length}
               >
-                <Box as={'ul'} sx={{ listStyle: 'none' }}>
+                <Box as={'ul'} css={{ listStyle: 'none' }}>
                   {items.map((variant) => (
                     <Box
                       as={'li'}
@@ -157,10 +153,10 @@ export default function StylesModule({ value }: StylesModuleProps) {
                   ))}
                 </Box>
               </ScalableText>
-            </TabPanel>
+            </Tabs.Content>
           ))}
-        </TabPanels>
-      </Tabs>
+        </Tabs.ContentGroup>
+      </Tabs.Root>
     </>
   )
 }

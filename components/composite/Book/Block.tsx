@@ -36,7 +36,7 @@ const Block: React.FC<{
         marginTop: layout.outerWrapperMarginTop,
         marginBottom: layout.outerWrapperMarginBottom,
       }}
-      sx={{
+      css={{
         ['.blockGuide']: {
           // backgroundColor: bookLayoutStore.editMode && `#dcbaff`,
         },
@@ -47,7 +47,7 @@ const Block: React.FC<{
     >
       <Box
         className={'blockGuide'}
-        sx={{
+        css={{
           position: 'absolute',
           left: 0,
           right: 0,
@@ -58,7 +58,7 @@ const Block: React.FC<{
       />
       <Box
         className={'blockGuide'}
-        sx={{
+        css={{
           position: 'absolute',
           left: 0,
           right: 0,
@@ -102,7 +102,7 @@ const Block: React.FC<{
           style={{
             top: `${layout.offsetValue}`,
           }}
-          sx={{
+          css={{
             position: 'absolute',
             left: 0,
             right: 0,
@@ -120,7 +120,7 @@ const Block: React.FC<{
               // whiteSpace={line.lineCount === 1 ? 'nowrap' : 'pre-wrap'}
               whiteSpace={'pre-wrap'}
               dangerouslySetInnerHTML={{ __html: entry }}
-              sx={{
+              css={{
                 span: {
                   display: 'block',
                   mt: `${line.lineGap * layout.conversion}px`,

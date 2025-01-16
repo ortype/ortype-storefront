@@ -334,7 +334,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
 
   return (
     <Box
-      sx={{
+      css={{
         position: `absolute`,
         width: '100vw',
         top: 0,
@@ -461,7 +461,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         </>
       )}
       <IconButton
-        sx={{
+        css={{
           position: `fixed`,
           right: `1.5rem`,
           bottom: `1.5rem`,

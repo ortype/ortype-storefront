@@ -1,12 +1,12 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import { Box } from '@chakra-ui/react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 
-interface ScalableTextProps {
+interface OverflowDetectorProps {
   children: ReactNode
   count: number
   index: number
-  tabIndex: number
+  tabIndex: string
 }
 
 const ScalableText: React.FC<OverflowDetectorProps> = ({
@@ -18,87 +18,71 @@ const ScalableText: React.FC<OverflowDetectorProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null)
   const innerRef = useRef<HTMLDivElement>(null)
 
-  // Use an inverse relationship. Here’s a simple example using a basic inverse proportion:
-
-  const maxFontSize = 160 // max font size
-
-  // Adjust these minimum and maximum values to suit your needs
+  const maxFontSize = 160
   const minFontSize = 12
-
-  // Ensure that count is always greater than 0 to avoid division by zero
   const initialFontSize = parseInt(maxFontSize / (1 + count / 20))
-
-  console.log(`Calculated Font Size: ${initialFontSize} for ${count} items`)
-
   const lineHeightConversion = 64 / 60 // base font size for ratio calculation
-  const [fontSize, setFontSize] = useState(initialFontSize) // Initial font size
   const { padding, pageAspect, conversion } = useSpreadContainer()
-  const container = containerRef.current
-  const innerContainer = innerRef.current
+
+  const [fontSize, setFontSize] = useState(initialFontSize)
 
   useEffect(() => {
     const resizeFont = () => {
-      if (container) {
-        let newFontSize = fontSize
+      const container = containerRef.current
+      const innerContainer = innerRef.current
+
+      if (!container || !innerContainer || isNaN(conversion)) return
+
+      let newFontSize = initialFontSize // Start from initial size
+
+      const calculateOverflow = (size: number) => {
+        // Apply the font size
+        innerContainer.style.fontSize = `${size * conversion}px`
+        innerContainer.style.lineHeight = `${
+          size * lineHeightConversion * conversion
+        }px`
+
         const containerHeight = container.clientHeight
         const containerWidth = container.clientWidth
         const textHeight = innerContainer.clientHeight
         const textWidth = innerContainer.clientWidth
 
-        console.log(
-          'ScalableText (',
-          index,
-          ')',
-          'ScalableText height: ',
-          containerHeight,
-          textHeight,
-          ' and width: ',
-          containerWidth,
-          textWidth
-        )
+        return textWidth > containerWidth || textHeight > containerHeight
+      }
 
-        // @NOTE: there is an issue with this if condition
-        if (
-          (textWidth > containerWidth || textHeight > containerHeight) &&
-          newFontSize > minFontSize
-        ) {
-          newFontSize -= 1
-          console.log(
-            'ScalableText: container:',
-            containerHeight,
-            ' text height:',
-            textHeight,
-            ' new font size: ',
-            newFontSize
-          )
-          // textHeight = innerContainer.clientHeight
-          // textWidth = innerContainer.clientWidth
-          if (fontSize !== newFontSize) {
-            console.log('ScalableText setFontSize(): ', newFontSize)
-            setFontSize(newFontSize)
-          }
+      // Binary search approach for faster convergence
+      let low = minFontSize
+      let high = newFontSize
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2)
+
+        if (calculateOverflow(mid)) {
+          // If text overflows, try a smaller size
+          high = mid - 1
+        } else {
+          // If text fits, this might be our size, but try if we can go larger
+          newFontSize = mid
+          low = mid + 1
         }
       }
+
+      setFontSize(newFontSize)
     }
 
     resizeFont()
   }, [
     tabIndex,
-    fontSize,
     conversion,
-    container?.clientHeight,
-    container?.clientWidth,
-    innerContainer?.clientHeight,
-    innerContainer?.clientWidth,
+    initialFontSize,
+    // Only include dependencies that should trigger a resize
+    containerRef.current?.clientWidth,
+    containerRef.current?.clientHeight,
   ])
 
   return (
     <Box
-      overflow={'auto'}
-      style={{
-        fontSize: `${fontSize * conversion}px`,
-        lineHeight: fontSize * lineHeightConversion * conversion + 'px',
-      }}
+      overflow={'hidden'}
       position={'absolute'}
       top={0}
       left={0}
@@ -110,6 +94,10 @@ const ScalableText: React.FC<OverflowDetectorProps> = ({
       <Box
         className={'inner-container'}
         display={'inline-block'}
+        style={{
+          fontSize: `${fontSize * conversion}px`,
+          lineHeight: `${fontSize * lineHeightConversion * conversion}px`,
+        }}
         ref={innerRef}
       >
         {children}

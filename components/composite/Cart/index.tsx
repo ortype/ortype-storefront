@@ -1,23 +1,19 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { Field } from '@/components/ui/field'
+import { Button, Fieldset, Link } from '@chakra-ui/react'
+
 import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Link,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-  useDisclosure,
-} from '@chakra-ui/react'
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+
 import {
   LineItem,
   LineItemsContainer,
@@ -39,7 +35,6 @@ const CheckoutButton = ({ isDisabled, order }) => {
 }
 
 const Cart = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
   const cartCtx = useContext(CartContext)
   const { orderId, order, itemsCount } = useOrderContext()
 
@@ -50,18 +45,26 @@ const Cart = () => {
 
   return (
     <>
-      <Button onClick={onOpen} size={'xs'}>{`Cart (${itemsCount})`}</Button>
-      <Modal isOpen={isOpen} onClose={onClose} size={'full'}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Cart or Bag Or Basket</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      <DialogRoot
+        size={'cover'}
+        placement="center"
+        motionPreset="slide-in-bottom"
+        modal
+      >
+        {/*<DialogBackdrop />*/}
+        <DialogTrigger asChild>
+          <Button size={'xs'}>{`Cart (${itemsCount})`}</Button>
+        </DialogTrigger>
+        <DialogContent bg={'white'}>
+          <DialogHeader>Cart or Bag Or Basket</DialogHeader>
+          <DialogCloseTrigger />
+          <DialogBody>
             <LicenseOwnerInput />
-            <FormControl>
-              <FormLabel>{'Company size of the license owner'}</FormLabel>
-              <SelectLicenseSize />
-            </FormControl>
+            <Fieldset.Root>
+              <Field label={'Company size of the license owner'}>
+                <SelectLicenseSize />
+              </Field>
+            </Fieldset.Root>
             {
               // @TODO: this check for order being defined shouldn't be needed
               order.line_items &&
@@ -69,12 +72,12 @@ const Cart = () => {
                   <CartItem key={lineItem.id} lineItem={lineItem} />
                 ))
             }
-          </ModalBody>
-          <ModalFooter>
+          </DialogBody>
+          <DialogFooter>
             <CheckoutButton order={order} isDisabled={false} />
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   )
 }

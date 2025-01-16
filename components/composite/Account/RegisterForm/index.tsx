@@ -1,9 +1,9 @@
+import { Field } from '@/components/ui/field'
 import {
   Box,
   Button,
   Container,
-  FormControl,
-  FormLabel,
+  Fieldset,
   Heading,
   Input,
   Link,
@@ -75,28 +75,30 @@ export const RegisterForm: React.FC<Props> = () => {
       >
         {'New User'}
       </Heading>
-      <FormControl>
-        <FormLabel>{'Email'}</FormLabel>
-        <Input
-          // placeholder={customer.username}
-          name={'email'}
-          type={'email'}
-          onBlur={handleOnBlur}
-          ref={validation}
-          size={'lg'}
-          defaultValue={customerContext.email}
-        />
-      </FormControl>
-      <FormControl>
-        <FormLabel>{'Password'}</FormLabel>
-        <Input
-          // placeholder={customer.password}
-          name={'password'}
-          onBlur={handleOnBlur}
-          ref={validation}
-          size={'lg'}
-        />
-      </FormControl>
+      <Fieldset.Root>
+        <Field label={'Email'}>
+          <Input
+            // placeholder={customer.username}
+            name={'email'}
+            type={'email'}
+            onBlur={handleOnBlur}
+            ref={validation}
+            size={'lg'}
+            defaultValue={customerContext.email}
+          />
+        </Field>
+      </Fieldset.Root>
+      <Fieldset.Root>
+        <Field label={'Password'}>
+          <Input
+            // placeholder={customer.password}
+            name={'password'}
+            onBlur={handleOnBlur}
+            ref={validation}
+            size={'lg'}
+          />
+        </Field>
+      </Fieldset.Root>
       <Stack my={4} direction={'row'} spacing={4}>
         <Button type={'submit'}>Sign up</Button>
       </Stack>

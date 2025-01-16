@@ -35,7 +35,7 @@ const PageDivider: React.FC<PageDividerProps> = ({
   return (
     <Box
       className={'page-divider'}
-      sx={{
+      css={{
         display: visible ? 'block' : 'none',
         position: 'absolute',
         width: '2px',
@@ -81,7 +81,7 @@ const DoublePage = ({
         // paddingBottom: isSpread ? spreadAspect : pageAspect,
         paddingBottom: { base: 0, lg: isSpread ? spreadAspect : pageAspect },
       }}
-      sx={{
+      css={{
         p: {
           // @NOTE: either manual enter line-breaks `/n` with shift+return
           // in the editor or we define a maxW only when centered
@@ -146,7 +146,7 @@ const SinglePage = ({ children, _key, font, index, value, ...props }) => {
         display: 'block',
         paddingBottom: pageAspect,
       }}
-      sx={{
+      css={{
         p: {
           // @NOTE: either manual enter line-breaks `/n` with shift+return
           // in the editor or we define a maxW only when centered

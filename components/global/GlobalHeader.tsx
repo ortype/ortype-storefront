@@ -8,10 +8,10 @@
 // import CartContainer from 'components/composite/CartContainer'
 import { Account } from '@/commercelayer/components/composite/Account'
 import { useSettings } from '@/components/data/SettingsProvider'
-import { Box, ButtonGroup, Link as ChakraLink, Flex } from '@chakra-ui/react'
+import { Box, Flex, Group, Link } from '@chakra-ui/react'
 // import { Account } from 'components/composite/Account'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -55,16 +55,16 @@ export const GlobalHeader: React.FC<Props> = ({}) => {
     !hideHeader && (
       <>
         <Flex justify={'space-between'} p={4}>
-          <ChakraLink as={Link} href={'/'} fontSize={'xs'}>
-            {'Or Type'}
-          </ChakraLink>
+          <Link asChild href={'/'} fontSize={'xs'}>
+            <NextLink>{'Or Type'}</NextLink>
+          </Link>
 
-          <ButtonGroup gap={'2'}>
+          <Group gap={'2'}>
             <Account />
             <DynamicCartContainer>
               <DynamicCart />
             </DynamicCartContainer>
-          </ButtonGroup>
+          </Group>
         </Flex>
       </>
     )
