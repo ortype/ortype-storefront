@@ -1,15 +1,15 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { Field } from '@/components/ui/field'
 import {
   Box,
   Container,
-  Flex,
   Fieldset,
+  Flex,
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
-import { Field } from '@/components/ui/field'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
@@ -37,46 +37,48 @@ export const Buy = () => {
 
   return (
     <>
-      <Container maxW="container.lg">
+      <Container maxW="container.lg" bg={'white'}>
         <Stack direction={'column'}>
           <SimpleGrid columns={2} spacing={2}>
-            <Box bg={'white'}>
+            <Box p={'1rem'}>
               <LicenseOwnerInput />
-            </Box>
-            <Fieldset.Root>
-              <Field label={'A license for?'}>
-                <LicenseTypeSelect
-                  font={font}
-                  skuOptions={skuOptions}
-                  selectedSkuOptions={selectedSkuOptions}
-                  setSelectedSkuOptions={setSelectedSkuOptions}
-                />
-              </Field>
-            </Fieldset.Root>
-            <Fieldset.Root>
-              <Field label={'How big is your company?'}>
-                {licenseSize && (
-                  <LicenseSizeSelect
-                    setLicenseSize={setLicenseSize}
-                    licenseSize={licenseSize}
+              <Fieldset.Root>
+                <Field label={'A license for?'}>
+                  <LicenseTypeSelect
+                    font={font}
+                    skuOptions={skuOptions}
+                    selectedSkuOptions={selectedSkuOptions}
+                    setSelectedSkuOptions={setSelectedSkuOptions}
                   />
-                )}
-              </Field>
-            </Fieldset.Root>
+                </Field>
+              </Fieldset.Root>
+              <Fieldset.Root>
+                <Field label={'How big is your company?'}>
+                  {licenseSize && (
+                    <LicenseSizeSelect
+                      setLicenseSize={setLicenseSize}
+                      licenseSize={licenseSize}
+                    />
+                  )}
+                </Field>
+              </Fieldset.Root>
+            </Box>
+            <Box>
+              {font.variants?.map((variant) => (
+                <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>
+                  <SingleStyles
+                    order={order}
+                    name={variant.name}
+                    skuCode={variant._id}
+                    addLineItem={addLineItem}
+                    deleteLineItem={deleteLineItem}
+                    licenseSize={licenseSize}
+                    selectedSkuOptions={selectedSkuOptions}
+                  />
+                </Flex>
+              ))}
+            </Box>
           </SimpleGrid>
-          {font.variants?.map((variant) => (
-            <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>
-              <SingleStyles
-                order={order}
-                name={variant.name}
-                skuCode={variant._id}
-                addLineItem={addLineItem}
-                deleteLineItem={deleteLineItem}
-                licenseSize={licenseSize}
-                selectedSkuOptions={selectedSkuOptions}
-              />
-            </Flex>
-          ))}
           {/*<BuySummary />*/}
         </Stack>
       </Container>

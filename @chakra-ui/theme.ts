@@ -34,9 +34,6 @@ const colors = {
     800: { value: '#333333' },
     900: { value: '#000000' }, // Darker black
   },
-  gray: {
-    600: { value: '#000000' },
-  },
 }
 
 const globalCss = {

@@ -1,8 +1,8 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { Field } from '@/components/ui/field'
 import { Box, Button, Fieldset, Input } from '@chakra-ui/react'
 import { useRapidForm } from 'rapid-form'
 import { useState } from 'react'
-import { Field } from '@/components/ui/field'
 
 const LicenseOwnerInput = () => {
   const [isLocalLoader, setIsLocalLoader] = useState(false)
@@ -17,6 +17,10 @@ const LicenseOwnerInput = () => {
     setIsLocalLoader(false)
   }
 
+  // @TODO: convert to react-hook-form
+  // https://www.chakra-ui.com/docs/components/input#hook-form
+  // @TODO: save input changes on blur
+
   return (
     <form
       as={Box}
@@ -29,7 +33,11 @@ const LicenseOwnerInput = () => {
           <Input
             name={'full_name'}
             type={'text'}
+            bg={'#eee'}
             ref={validation}
+            borderRadius={0}
+            colorPalette={'gray'}
+            variant={'subtle'}
             size={'lg'}
             defaultValue={order?.metadata?.license?.owner?.full_name}
           />

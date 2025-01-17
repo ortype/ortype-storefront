@@ -33,9 +33,9 @@ const FontWrapper = ({ moreFonts, font }) => {
           </SpreadContainerProvider>
         )}
       </FontContainer>
-      {/*<DynamicBuyContainer font={font}>
+      <DynamicBuyContainer font={font}>
         <DynamicBuy />
-      </DynamicBuyContainer>*/}
+      </DynamicBuyContainer>
     </Box>
   )
 }
