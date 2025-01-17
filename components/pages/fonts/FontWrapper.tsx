@@ -29,7 +29,13 @@ const FontWrapper = ({ moreFonts, font }) => {
       <FontContainer font={font} moreFonts={moreFonts}>
         {font?.modules && (
           <SpreadContainerProvider initialItems={font.modules}>
-            <Modules value={font.modules} />
+            {(ctx) => {
+              return ctx.isLoading ? (
+                <div>{'Loading...'}</div>
+              ) : (
+                <Modules value={font.modules} />
+              )
+            }}
           </SpreadContainerProvider>
         )}
       </FontContainer>

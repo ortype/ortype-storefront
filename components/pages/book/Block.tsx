@@ -24,7 +24,7 @@ const Block: React.FC<{
       <Text
         as={'span'}
         style={{
-          fontSize: `${11 * layout.conversion}px`,
+          fontSize: `${12 * layout.conversion}px`,
           top: `${7 * layout.conversion}px`,
           lineHeight: `1.25`,
         }}

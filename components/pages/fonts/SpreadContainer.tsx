@@ -9,6 +9,7 @@ import React, {
   useReducer,
   useRef,
 } from 'react'
+import type { ChildrenElement } from 'CustomApp'
 
 function isArray<T>(value: any): value is Array<T> {
   return Array.isArray(value)
@@ -86,24 +87,38 @@ interface Action {
   payload: Payload
 }
 
-interface SpreadContainerProviderProps {
-  initialItems: Item[]
-  children: ReactNode
+interface SpreadContainerProviderValue {
+  conversion: number
+  colWidth: number
+  spreadAspect: string
+  pageAspect: string
+  padding: string
+  state: State
+  updateItemsAction: (payload: UpdateItemsPayload) => void
+  updateItemAction: (payload: UpdateItemPayload) => void
 }
 
-const SpreadContainerContext = createContext<
-  | {
-      conversion: number
-      colWidth: number
-      spreadAspect: string
-      pageAspect: string
-      padding: string
-      state: State
-      updateItemsAction: (payload: UpdateItemsPayload) => void
-      updateItemAction: (payload: UpdateItemPayload) => void
-    }
-  | undefined
->(undefined)
+interface SpreadContainerProviderProps {
+  initialItems: Item[]
+  children:
+    | ((props: SpreadContainerProviderValue) => ChildrenElement)
+    | ChildrenElement
+}
+
+const SpreadContainerContext = createContext<SpreadContainerProviderValue>(
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  {} as SpreadContainerProviderValue
+)
+// @TODO: rename to something like `useCLayerSettings`
+export const useSpreadContainer = (): SpreadContainerProviderValue => {
+  const context = useContext(SpreadContainerContext)
+  if (context === undefined) {
+    throw new Error(
+      'useSpreadContainer must be used within a SpreadContainerProvider'
+    )
+  }
+  return context
+}
 
 const updateItem = (state: State, payload: UpdateItemPayload): State => {
   const { _key, isOverflowing, index } = payload
@@ -164,7 +179,7 @@ const spreadContainerReducer = (state: State, action: Action): State => {
   }
 }
 
-const SpreadContainerProvider = ({
+export const SpreadContainerProvider = ({
   initialItems,
   children,
 }: SpreadContainerProviderProps) => {
@@ -173,6 +188,7 @@ const SpreadContainerProvider = ({
   const pageWidth = 680
   const pageHeight = 930
   const pageMargin = 46
+  const colWidth = 558
   const ratio = pageWidth / pageHeight
 
   const conversion = useBreakpointValue(
@@ -184,7 +200,19 @@ const SpreadContainerProvider = ({
     { ssr: true } // `ssr: false` produces a window is not defined in nextjs
   )
 
-  const colWidth = 558
+  /*
+  // an attempt to provide a reasonable fallback until useDimensions measures the DOM
+  // results in `conversion = 0.5` which causes a visual jump 
+  // (I think we prefer hiding the inner children until measurements run)
+  const conversion = useBreakpointValue(
+    {
+      base: size.width ? size.width / pageWidth : pageWidth / pageWidth,
+      lg: size.width ? size.width / 2 / pageWidth : pageWidth / 2 / pageWidth,
+    },
+    // @NOTE: useBreakpointValue renders the fallback first
+    { ssr: true, fallback: pageWidth / 2 / pageWidth } // `ssr: false` produces a window is not defined in nextjs
+  )
+  */
 
   // Transform the initialItems array into a state object keyed by '_key', including the index
   const initialState: State = {
@@ -214,48 +242,42 @@ const SpreadContainerProvider = ({
   // @TODO: this is the config for desktop '50% / 2-up display'
   // for base breakpoint these aspect values need to be halved or something
 
-  const [isLg] = useMediaQuery(MIN_DEFAULT_MQ)
+  // const [isLg] = useMediaQuery([MIN_DEFAULT_MQ], {})
+  // @NOTE: syntax error issues with the new useMediaQuery hook from chakra-ui v3
+
+  // @TODO: provide isLoading as a function return (like the IdentityProvider)
+  // so we can render the modules only after `conversion` is calculated
+  const isLoading = isNaN(conversion)
+
+  const value = {
+    colWidth,
+    conversion, // : isLoading ? 0 : conversion
+    isLoading,
+    /*spreadAspect: isLg
+      ? mapResponsive(ratio, (r) => `${(r / 1) * 100}%`)
+      : 'auto',*/
+    spreadAspect: mapResponsive(ratio, (r) => `${(r / 1) * 100}%`),
+    pageAspect: mapResponsive(ratio, (r) => `${(1 / r) * 100}%`),
+    padding: `${pageMargin * conversion}px`,
+    state,
+    updateItemsAction,
+    updateItemAction,
+  }
 
   return (
-    <SpreadContainerContext.Provider
-      value={{
-        colWidth,
-        conversion,
-        /*spreadAspect: isLg
-          ? mapResponsive(ratio, (r) => `${(r / 1) * 100}%`)
-          : 'auto',*/
-        spreadAspect: mapResponsive(ratio, (r) => `${(r / 1) * 100}%`),
-        pageAspect: mapResponsive(ratio, (r) => `${(1 / r) * 100}%`),
-        padding: `${pageMargin * conversion}px`,
-        state,
-        updateItemsAction,
-        updateItemAction,
-      }}
-    >
+    <SpreadContainerContext.Provider value={value}>
       <Flex
         // Spread
-        w={'85vw'}
+        w={'80vw'}
         mx={'auto'}
         py={'10vh'}
         pos={'relative'}
-        overflow={'hidden'}
+        // overflow={'hidden'}
         wrap={'wrap'}
         ref={targetRef}
       >
-        {children}
+        {typeof children === 'function' ? children(value) : children}
       </Flex>
     </SpreadContainerContext.Provider>
   )
 }
-
-const useSpreadContainer = () => {
-  const context = useContext(SpreadContainerContext)
-  if (context === undefined) {
-    throw new Error(
-      'useSpreadContainer must be used within a SpreadContainerProvider'
-    )
-  }
-  return context
-}
-
-export { SpreadContainerProvider, useSpreadContainer }
