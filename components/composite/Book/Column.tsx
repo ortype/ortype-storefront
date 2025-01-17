@@ -172,23 +172,23 @@ const Column = observer(
         />
         <Box
           className={'colGuide'}
+          w={'1px'}
           css={{
             position: 'absolute',
             left: 0,
             top: 0,
             bottom: 0,
-            width: '1px',
             backgroundColor: 'transparent',
           }}
         />
         <Box
           className={'colGuide'}
+          w={'1px'}
           css={{
             position: 'absolute',
             right: 0,
             top: 0,
             bottom: 0,
-            width: '1px',
             backgroundColor: 'transparent',
           }}
         />

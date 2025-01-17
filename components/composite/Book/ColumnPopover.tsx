@@ -1,18 +1,17 @@
 import {
   Box,
   Button,
-  ButtonGroup,
-  Divider,
+  Group,
   Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
   Text,
   VStack,
 } from '@chakra-ui/react'
+import { CloseButton } from '@/components/ui/close-button'
 import NumericInput from 'components/composite/Book/NumericInput'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import { observer } from 'mobx-react-lite'
@@ -65,7 +64,7 @@ const ColumnPopover: React.FC<{
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        css={{
+        sx={{
           border: `.1rem solid #000`,
           boxShadow: `2px 2px 0px #000`,
           backgroundColor: `#fff`,
@@ -73,7 +72,7 @@ const ColumnPopover: React.FC<{
         }}
       >
         <PopoverArrow />
-        <PopoverCloseButton />
+        <CloseButton />
         <PopoverHeader>
           <Text fontSize={'md'} color={'red'}>
             Edit Column
@@ -85,7 +84,7 @@ const ColumnPopover: React.FC<{
               <Text as={'span'} fontSize={'xs'}>
                 Width
               </Text>
-              <ButtonGroup isAttached variant={'outline'} width={'100%'}>
+              <Group isAttached variant={'outline'} width={'100%'}>
                 <Button
                   w={'25%'}
                   size={'sm'}
@@ -122,13 +121,13 @@ const ColumnPopover: React.FC<{
                     {'Full'}
                   </Text>
                 </Button>
-              </ButtonGroup>
+              </Group>
             </Box>
             <Box w={'100%'}>
               <Text as={'span'} fontSize={'xs'}>
                 Insert Column
               </Text>
-              <ButtonGroup isAttached variant={'outline'} width={'100%'}>
+              <Group isAttached variant={'outline'} width={'100%'}>
                 <Button
                   size={'sm'}
                   w={'50%'}
@@ -155,10 +154,9 @@ const ColumnPopover: React.FC<{
                     After
                   </Text>
                 </Button>
-              </ButtonGroup>
+              </Group>
             </Box>
-            <Divider />
-            <ButtonGroup variant={'outline'} spacing="2" width={'100%'}>
+            <Group variant={'outline'} spacing="2" width={'100%'}>
               <Button
                 width={'50%'}
                 leftIcon={<CopyIcon />}
@@ -183,7 +181,7 @@ const ColumnPopover: React.FC<{
                   Remove
                 </Text>
               </Button>
-            </ButtonGroup>
+            </Group>
           </VStack>
         </PopoverBody>
       </PopoverContent>

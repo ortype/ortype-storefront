@@ -1,13 +1,12 @@
+import { CloseButton } from '@/components/ui/close-button'
 import {
   Box,
   Button,
-  ButtonGroup,
   Checkbox,
-  Divider,
+  Group,
   Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
@@ -74,7 +73,7 @@ const BlockPopover: React.FC<{
       </PopoverTrigger>
 
       <PopoverContent
-        css={{
+        sx={{
           border: `.1rem solid #000`,
           boxShadow: `2px 2px 0px #000`,
           backgroundColor: `#fff`,
@@ -82,7 +81,7 @@ const BlockPopover: React.FC<{
         }}
       >
         <PopoverArrow />
-        <PopoverCloseButton />
+        <CloseButton />
         <PopoverHeader>
           <Text fontSize={'md'} color={'red'}>
             Edit Block
@@ -219,8 +218,7 @@ const BlockPopover: React.FC<{
               />
             </Box>
           </SimpleGrid>
-          <Stack mt={2} direction={'column'} spacing="2">
-            <Divider />
+          <Stack mt={2} direction={'column'} spacing="2" divideX={'1px'}>
             <Box>
               <Text as={'span'} fontSize={'xs'}>
                 Typecase
@@ -259,13 +257,12 @@ const BlockPopover: React.FC<{
                 {'No spaces'}
               </Text>
             </Checkbox>
-            <Divider />
             <Box>
               <Text as={'span'} fontSize={'xs'}>
                 Insert block
               </Text>
 
-              <ButtonGroup
+              <Group
                 mt={2}
                 isAttached
                 variant="outline"
@@ -297,10 +294,9 @@ const BlockPopover: React.FC<{
                 >
                   <Text fontSize={'xs'}>Below</Text>
                 </Button>
-              </ButtonGroup>
+              </Group>
             </Box>
-            <Divider />
-            <ButtonGroup variant="outline" spacing="2" width={'100%'}>
+            <Group variant="outline" spacing="2" width={'100%'}>
               <Button
                 width={'50%'}
                 size={'sm'}
@@ -318,7 +314,7 @@ const BlockPopover: React.FC<{
               >
                 <Text fontSize={'xs'}>Remove</Text>
               </Button>
-            </ButtonGroup>
+            </Group>
           </Stack>
         </PopoverBody>
       </PopoverContent>

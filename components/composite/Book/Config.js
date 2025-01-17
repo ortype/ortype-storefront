@@ -70,7 +70,7 @@ const Config = () => {
         </PopoverTrigger>
         <Portal>
           <PopoverContent
-            css={{
+            sx={{
               border: `.1rem solid #000`,
               boxShadow: `2px 2px 0px #000`,
               backgroundColor: `#fff`,
@@ -98,7 +98,6 @@ const Config = () => {
                   {'Is template'}
                 </Checkbox>
                 <VStack spacing={2} alignItems={'start'} width={'100%'}>
-                  <Divider />
                   <Text fontSize={'sm'}>Pages</Text>
                   <ButtonGroup spacing={2} width={'100%'}>
                     <Menu>
@@ -145,7 +144,6 @@ const Config = () => {
                       {'Swap'}
                     </Button>
                   </ButtonGroup>
-                  <Divider />
                   <Box mt={2}>
                     <Text
                       fontSize={'sm'}
