@@ -43,11 +43,13 @@ const ScalableText: React.FC<OverflowDetectorProps> = ({
         }px`
 
         const containerHeight = container.clientHeight
-        const containerWidth = container.clientWidth
+        // const containerWidth = container.clientWidth
         const textHeight = innerContainer.clientHeight
-        const textWidth = innerContainer.clientWidth
+        // const textWidth = innerContainer.clientWidth
 
-        return textWidth > containerWidth || textHeight > containerHeight
+        // @NOTE: testing how it works by height only
+        return textHeight > containerHeight
+        // return textWidth > containerWidth || textHeight > containerHeight
       }
 
       // Binary search approach for faster convergence
@@ -82,7 +84,6 @@ const ScalableText: React.FC<OverflowDetectorProps> = ({
 
   return (
     <Box
-      overflow={'hidden'}
       position={'absolute'}
       top={0}
       left={0}

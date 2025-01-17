@@ -57,34 +57,46 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
           // isLazy
           h={'100%'}
           w={'100%'}
-          variant={'subtle'}
+          variant={'plain'}
           colorPalette={'brand'}
           defaultValue={'tab-0'}
-          orientation={'vertical'}
+          orientation={'horizontal'}
           size={'sm'}
           colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
         >
           <Tabs.List
-            zIndex={'docked'}
-            h={'100%'}
-            justifyContent={'center'}
-            pos={'absolute'}
-            // @TODO: left or right
-            left={`calc(100% + ${padding} + 0.5rem)`}
+            // @NOTE: styles for 'sidebar' layout
+            // zIndex={'docked'}
+            // pos={'absolute'}
+            // h={'100%'}
+            // left={`calc(100% + ${padding} + 0.5rem)`}
+            // justifyContent={'center'}
+            flexWrap={'wrap'}
+            gap={1}
+            mb={'1rem'}
           >
             {features.map((feature, index) => (
               <Tabs.Trigger
-                key={'tab-' + feature.tag + index}
-                style={{
-                  fontSize: 15 * conversion + 'px',
-                  lineHeight: 15 * conversion + 'px',
+                _selected={{
+                  bg: '#000',
+                  color: '#FFF',
                 }}
+                textAlign={'left'}
+                key={'tab-' + index}
                 value={'tab-' + index}
+                borderRadius={'2rem'}
+                color={'#000'}
+                h={28 * conversion + 'px'}
+                border={'1px solid #000'}
+                textTransform={'uppercase'}
+                style={{
+                  fontSize: 14 * conversion + 'px',
+                  lineHeight: 14 * conversion + 'px',
+                }}
               >
                 {feature.title}
               </Tabs.Trigger>
             ))}
-            <Tabs.Indicator rounded={'l2'} />
           </Tabs.List>
 
           <Tabs.ContentGroup flex={'1'}>

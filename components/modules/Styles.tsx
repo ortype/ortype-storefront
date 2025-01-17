@@ -80,8 +80,8 @@ export default function StylesModule({ value }: StylesModuleProps) {
         // isLazy
         h={'100%'}
         w={'100%'}
-        orientation={'vertical'}
-        variant={'subtle'}
+        orientation={'horizontal'}
+        variant={'plain'}
         colorPalette={'brand'}
         defaultValue={'tab-0'}
         size={'sm'}
@@ -90,28 +90,43 @@ export default function StylesModule({ value }: StylesModuleProps) {
         //activationMode={'manual'}
         colorScheme={'brand'} // @TODO: is a black/white color schema definition a good 'global' approach?
       >
-        <Tabs.List
-          zIndex={'docked'}
-          pos={'absolute'}
-          h={'100%'}
-          justifyContent={'center'}
-          left={`calc(100% + ${padding} + 0.5rem)`}
-        >
-          {tabList.map((item, index) => (
-            <Tabs.Trigger
-              textAlign={'left'}
-              key={'tab-' + index}
-              value={'tab-' + index}
-              style={{
-                fontSize: 15 * conversion + 'px',
-                lineHeight: 15 * conversion + 'px',
-              }}
-            >
-              {item}
-            </Tabs.Trigger>
-          ))}
-          <Tabs.Indicator rounded={'l2'} />
-        </Tabs.List>
+        {tabList.length > 1 && (
+          <Tabs.List
+            // @NOTE: styles for 'sidebar' layout
+            // zIndex={'docked'}
+            // pos={'absolute'}
+            // h={'100%'}
+            // left={`calc(100% + ${padding} + 0.5rem)`}
+            // justifyContent={'center'}
+            flexWrap={'wrap'}
+            mb={'1rem'}
+            gap={1}
+          >
+            {tabList.map((item, index) => (
+              <Tabs.Trigger
+                _selected={{
+                  bg: '#000',
+                  color: '#FFF',
+                }}
+                textAlign={'left'}
+                key={'tab-' + index}
+                value={'tab-' + index}
+                borderRadius={'2rem'}
+                color={'#000'}
+                h={28 * conversion + 'px'}
+                border={'1px solid #000'}
+                textTransform={'uppercase'}
+                style={{
+                  fontSize: 14 * conversion + 'px',
+                  lineHeight: 14 * conversion + 'px',
+                }}
+              >
+                {item}
+              </Tabs.Trigger>
+            ))}
+            {/*<Tabs.Indicator rounded={'l2'} />*/}
+          </Tabs.List>
+        )}
 
         <Tabs.ContentGroup h={'100%'} w={'100%'} position={'relative'}>
           {tabPanels.map((items, index) => (
