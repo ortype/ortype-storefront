@@ -36,16 +36,18 @@ const PageDivider: React.FC<PageDividerProps> = ({
     <Box
       className={'page-divider'}
       css={{
-        display: visible ? 'block' : 'none',
         position: 'absolute',
         width: '2px',
         background: '#C6C6C6',
         height: '100%',
         pointerEvents: 'none',
         top: 0,
+      }}
+      zIndex={'base'}
+      style={{
+        display: visible ? 'block' : 'none',
         right: !isSpread && 0,
         left: isSpread && '50%',
-        zIndex: 'docked',
       }}
     />
   )

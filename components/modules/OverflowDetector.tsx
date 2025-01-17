@@ -1,13 +1,23 @@
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import { Box, Flex } from '@chakra-ui/react'
+import type { ChildrenElement } from 'CustomApp'
 import React, { ReactNode, useEffect, useLayoutEffect, useRef } from 'react'
 import PageModal from './PageModal'
+
+interface OverflowDetectorValue {
+  isOverflowing: boolean
+  isSpread: boolean
+  overflowCol: boolean
+  state: any
+}
 
 interface OverflowDetectorProps {
   _key: string
   index: number
-  children: ReactNode
   overflowCol: boolean
+  children:
+    | ((props: OverflowDetectorValue) => ChildrenElement)
+    | ChildrenElement
 }
 
 /*
@@ -70,6 +80,13 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
   // console.log('isOverflowing: ', index, isOverflowing)
   // console.log('isSpread: ', index, isSpread)
 
+  const value = {
+    isOverflowing,
+    isSpread,
+    overflowCol,
+    state: itemState,
+  }
+
   return (
     <>
       <Box
@@ -104,7 +121,7 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
           }}
           p={padding}
         >
-          {children}
+          {typeof children === 'function' ? children(value) : children}
         </Box>
       </Box>
       <Box
@@ -121,16 +138,19 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
         justifyContent={'space-between'}
         ref={containerRef}
       >
-        {children}
+        {typeof children === 'function' ? children(value) : children}
+        {/*
+        // deprecated for now
         {!overflowCol && isOverflowing && (
           // @NOTE: `overflowCol === false` we render the PageModal
           <PageModal
             isEven={itemState.index % 2 == 0}
             containerRef={containerRef}
+            // const isSpread = isOverflowing && overflowCol
           >
-            {children}
+            {typeof children === 'function' ? children(value) : children}
           </PageModal>
-        )}
+        )}*/}
       </Box>
     </>
   )

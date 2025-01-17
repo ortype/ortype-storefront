@@ -4,6 +4,17 @@ import { motion } from 'framer-motion'
 import { ReactNode, useRef, useState } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
 
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+
 export interface PageModal {
   children: ReactNode
   isEven: boolean
@@ -80,7 +91,7 @@ export default function PageModal({
           {'+'}
         </Button>
       </Center>
-      <Dialog.Root
+      <DialogRoot
         // portalProps={{ containerRef }}
         onClose={closeModal}
         // initialFocusRef on something other than the close button
@@ -91,7 +102,8 @@ export default function PageModal({
         size={'xl'}
         motionPreset={'none'}
       >
-        <Dialog.Backdrop
+        {/*
+        <DialogBackdrop
           bg={'#000'}
           motionProps={{
             initial: 'initial',
@@ -108,8 +120,8 @@ export default function PageModal({
               exit: { opacity: 0 },
             },
           }}
-        />
-        <Dialog.Content
+        />*/}
+        <DialogContent
           as={motion.div}
           layout // @NOTE: not sure if this is needed
           display={'flex'}
@@ -151,7 +163,7 @@ export default function PageModal({
           >
             {children}
           </Box>
-          <Dialog.CloseTrigger
+          <DialogCloseTrigger
             top={'-1.5rem'}
             right={'-6rem'}
             w={'4rem'}
@@ -160,8 +172,8 @@ export default function PageModal({
             color={'#FFF'}
             zIndex={'popover'}
           />
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </DialogRoot>
     </>
   )
 }
