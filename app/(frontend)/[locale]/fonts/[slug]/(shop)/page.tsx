@@ -3,8 +3,8 @@ import { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { FontPage } from '@/components/pages/fonts/FontPage'
-import { sanityFetch } from '@/sanity/lib/fetch'
 import { fontAndMoreFontsQuery } from '@/lib/sanity.queries'
+import { sanityFetch } from '@/sanity/lib/fetch'
 import { defineQuery } from 'groq'
 
 type Props = {
@@ -39,18 +39,19 @@ const fontSlugs = defineQuery(
   `*[_type == "font" && defined(slug.current)]{"slug": slug.current}`
 )
 
+export const dynamicParams = true // Allow dynamic routes not included in generateStaticParams
+
+/*
 export async function generateStaticParams() {
   return await sanityFetch({
     query: fontSlugs,
     perspective: 'published',
     stega: false,
   })
-}
+}*/
 
 export default async function FontSlugRoute({ params }: Props) {
-  const [data] = await Promise.all([
-    sanityFetch({ query: fontAndMoreFontsQuery, params }),
-  ])
+  const data = await sanityFetch({ query: fontAndMoreFontsQuery, params })
 
   if (!data?.font) {
     return notFound()
