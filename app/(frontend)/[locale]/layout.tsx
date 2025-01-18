@@ -1,19 +1,20 @@
+import initTranslations from '@/app/i18n'
+import TranslationsProvider from '@/components/data/TranslationsProvider'
+import { Toaster } from '@/components/ui/toaster'
 import { Metadata, Viewport } from 'next'
+import { VisualEditing, toPlainText, type PortableTextBlock } from 'next-sanity'
 import dynamic from 'next/dynamic'
 import { draftMode } from 'next/headers'
 import { Suspense } from 'react'
-import initTranslations from '@/app/i18n'
-import TranslationsProvider from '@/components/data/TranslationsProvider'
-import { VisualEditing, toPlainText, type PortableTextBlock } from 'next-sanity'
 
 import { homePageQuery, settingsQuery } from 'lib/sanity.queries'
 // @TODO: typegen
 // import type { HomePageQueryResult, SettingsQueryResult } from "@/sanity.types"
+import { GlobalHeader } from '@/components/global/GlobalHeader'
 import { resolveOpenGraphImage } from '@/lib/sanity.utils'
+import { sanityFetch } from '@/sanity/lib/fetch'
 import AlertBanner from '../alertBanner'
 const i18nNamespaces = ['common']
-import { sanityFetch } from '@/sanity/lib/fetch'
-import { GlobalHeader } from '@/components/global/GlobalHeader'
 
 export async function generateMetadata(): Promise<Metadata> {
   const [{ settings }, { homePage }] = await Promise.all([
@@ -67,6 +68,7 @@ export default async function LocaleRoute({
         <GlobalHeader />
         <Suspense>{children}</Suspense>
         {draftMode().isEnabled && <VisualEditing />}
+        <Toaster />
       </TranslationsProvider>
     </>
   )

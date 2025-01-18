@@ -1,22 +1,12 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Checkbox,
-  Divider,
+  Group,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuGroup,
-  MenuItem,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverCloseButton,
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
@@ -24,6 +14,14 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from '@/components/ui/menu'
+
 import NameForm from 'components/composite/Book/NameForm'
 import { useBookLayoutStore } from 'components/data/BookProvider'
 import { regexOptions } from 'components/data/BookProvider/bookDefaults'
@@ -32,6 +30,7 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 
+import { CloseButton } from '@/components/ui/close-button'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -78,7 +77,7 @@ const Config = () => {
             }}
           >
             <PopoverArrow />
-            <PopoverCloseButton />
+            <CloseButton />
             <PopoverHeader>
               <Text fontSize={'md'} color={'red'}>
                 Layout options
@@ -99,9 +98,9 @@ const Config = () => {
                 </Checkbox>
                 <VStack spacing={2} alignItems={'start'} width={'100%'}>
                   <Text fontSize={'sm'}>Pages</Text>
-                  <ButtonGroup spacing={2} width={'100%'}>
-                    <Menu>
-                      <MenuButton
+                  <Group spacing={2} width={'100%'}>
+                    <MenuRoot>
+                      <MenuTrigger
                         // width={'50%'}
                         as={Button}
                         variant={'outline'}
@@ -110,8 +109,8 @@ const Config = () => {
                         }
                       >
                         <Text fontSize={'sm'}>{'Duplicate'}</Text>
-                      </MenuButton>
-                      <MenuList>
+                      </MenuTrigger>
+                      <MenuContent>
                         <MenuItem
                           icon={
                             <ArrowRightIcon
@@ -131,8 +130,8 @@ const Config = () => {
                         >
                           <Text fontSize={'sm'}>{`Copy recto to verso`}</Text>
                         </MenuItem>
-                      </MenuList>
-                    </Menu>
+                      </MenuContent>
+                    </MenuRoot>
                     <Button
                       // width={'50%'}
                       variant={'outline'}
@@ -143,7 +142,7 @@ const Config = () => {
                     >
                       {'Swap'}
                     </Button>
-                  </ButtonGroup>
+                  </Group>
                   <Box mt={2}>
                     <Text
                       fontSize={'sm'}

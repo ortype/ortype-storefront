@@ -1,17 +1,19 @@
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
+  Fieldset,
   Heading,
   Input,
-  Radio,
-  RadioGroup,
   Stack,
   Switch,
 } from '@chakra-ui/react'
+
+import { Radio, RadioGroup } from '@/components/ui/radio'
+
+import { Field } from '@/components/ui/field'
 // @TODO: Look at exporting this from package
 // import { getCountries } from '@commercelayer/react-components/utils/countryStateCity'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import { AccordionContext } from 'components/data/AccordionProvider'
@@ -22,7 +24,6 @@ import { useRapidForm } from 'rapid-form'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SelectLicenseSize } from './SelectLicenseSize'
-import { useOrderContext } from '@/commercelayer/providers/Order'
 
 interface Props {
   className?: string
@@ -159,34 +160,38 @@ export const StepLicense: React.FC<Props> = () => {
         <>
           {accordionCtx.isActive && (
             <>
-              <FormControl>
-                <FormLabel>
-                  {'The typeface is being used in a project for'}
-                </FormLabel>
-                <RadioGroup
-                  // ref={validation}
-                  onChange={handleSetIsClient}
-                  name={'is_client'}
-                  defaultValue={isClient}
-                >
-                  <Stack direction="row">
-                    <Radio
-                      size={'lg'}
-                      value={'false'}
-                      defaultChecked={!isClient}
-                    >
-                      Yourself
-                    </Radio>
-                    <Radio size={'lg'} value={'true'} defaultChecked={isClient}>
-                      Your client
-                    </Radio>
-                  </Stack>
-                </RadioGroup>
-              </FormControl>
-              <FormControl>
-                <FormLabel>{'Company size of the license owner'}</FormLabel>
-                <SelectLicenseSize ctx={checkoutCtx} />
-              </FormControl>
+              <Fieldset>
+                <Field label={'The typeface is being used in a project for'}>
+                  <RadioGroup
+                    // ref={validation}
+                    onChange={handleSetIsClient}
+                    name={'is_client'}
+                    defaultValue={isClient}
+                  >
+                    <Stack direction="row">
+                      <Radio
+                        size={'lg'}
+                        value={'false'}
+                        defaultChecked={!isClient}
+                      >
+                        Yourself
+                      </Radio>
+                      <Radio
+                        size={'lg'}
+                        value={'true'}
+                        defaultChecked={isClient}
+                      >
+                        Your client
+                      </Radio>
+                    </Stack>
+                  </RadioGroup>
+                </Field>
+              </Fieldset>
+              <Fieldset>
+                <Field label={'Company size of the license owner'}>
+                  <SelectLicenseSize ctx={checkoutCtx} />
+                </Field>
+              </Fieldset>
               <form
                 as={Box}
                 ref={submitValidation}
@@ -195,19 +200,22 @@ export const StepLicense: React.FC<Props> = () => {
               >
                 {isClient === 'true' && (
                   <>
-                    <FormControl>
-                      <FormLabel>{'License Owner/Company*'}</FormLabel>
-                      <Input
-                        name={'company'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={order?.metadata?.license?.owner?.company}
-                      />
-                    </FormControl>
+                    <Fieldset>
+                      <Field label={'License Owner/Company*'}>
+                        <Input
+                          name={'company'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={
+                            order?.metadata?.license?.owner?.company
+                          }
+                        />
+                      </Field>
+                    </Fieldset>
                     {/*
-                    <FormControl>
-                      <FormLabel>{'Name'}</FormLabel>
+                    <Fieldset>
+                      <Field>{'Name'}</Field>
                       <Input
                         name={'name'}
                         type={'text'}
@@ -215,84 +223,93 @@ export const StepLicense: React.FC<Props> = () => {
                         size={'lg'}
                         defaultValue={order?.metadata?.license?.owner?.name}
                       />
-                    </FormControl>*/}
-                    <FormControl>
-                      <FormLabel>{'First name'}</FormLabel>
-                      <Input
-                        name={'first_name'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={
-                          order?.metadata?.license?.owner?.first_name
-                        }
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <FormLabel>{'Last name'}</FormLabel>
-                      <Input
-                        name={'last_name'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={
-                          order?.metadata?.license?.owner?.last_name
-                        }
-                      />
-                    </FormControl>
+                    </Fieldset>*/}
+                    <Fieldset>
+                      <Field label={'First name'}>
+                        <Input
+                          name={'first_name'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={
+                            order?.metadata?.license?.owner?.first_name
+                          }
+                        />
+                      </Field>
+                    </Fieldset>
+                    <Fieldset>
+                      <Field label={'Last name'}>
+                        <Input
+                          name={'last_name'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={
+                            order?.metadata?.license?.owner?.last_name
+                          }
+                        />
+                      </Field>
+                    </Fieldset>
 
-                    <FormControl>
-                      <FormLabel>{'Address'}</FormLabel>
-                      <Input
-                        name={'line_1'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={order?.metadata?.license?.owner?.line_1}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <FormLabel>{'Apartment, suite, etc.'}</FormLabel>
-                      <Input
-                        name={'line_2'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={order?.metadata?.license?.owner?.line_2}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <FormLabel>{'City*'}</FormLabel>
-                      <Input
-                        name={'city'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={order?.metadata?.license?.owner?.city}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <FormLabel>{'Zip Code*'}</FormLabel>
-                      <Input
-                        name={'zip_code'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={order?.metadata?.license?.owner?.zip_code}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <FormLabel>{'Country'}</FormLabel>
-                      <Input
-                        name={'country_code'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={
-                          order?.metadata?.license?.owner?.country_code
-                        }
-                      />
-                    </FormControl>
+                    <Fieldset>
+                      <Field label={'Address'}>
+                        <Input
+                          name={'line_1'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={order?.metadata?.license?.owner?.line_1}
+                        />
+                      </Field>
+                    </Fieldset>
+                    <Fieldset>
+                      <Field label={'Apartment, suite, etc.'}>
+                        <Input
+                          name={'line_2'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={order?.metadata?.license?.owner?.line_2}
+                        />
+                      </Field>
+                    </Fieldset>
+                    <Fieldset>
+                      <Field label={'City*'}>
+                        <Input
+                          name={'city'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={order?.metadata?.license?.owner?.city}
+                        />
+                      </Field>
+                    </Fieldset>
+                    <Fieldset>
+                      <Field label={'Zip Code*'}>
+                        <Input
+                          name={'zip_code'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={
+                            order?.metadata?.license?.owner?.zip_code
+                          }
+                        />
+                      </Field>
+                    </Fieldset>
+                    <Fieldset>
+                      <Field label={'Country'}>
+                        <Input
+                          name={'country_code'}
+                          type={'text'}
+                          ref={validation}
+                          size={'lg'}
+                          defaultValue={
+                            order?.metadata?.license?.owner?.country_code
+                          }
+                        />
+                      </Field>
+                    </Fieldset>
                   </>
                 )}
                 <Button type={'submit'}>Save & proceed</Button>

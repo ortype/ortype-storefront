@@ -15,7 +15,7 @@ import {
   ShippingToggleProps,
 } from 'components/composite/StepCustomer'
 import { AddButton } from 'components/ui/AddButton'
-import { ButtonCss, ButtonWrapper } from 'components/ui/Button'
+import { ButtonCss, ButtonWrapper } from 'components/ui/Button/index'
 import { CustomerAddressCard } from 'components/ui/CustomerAddressCard'
 import { GridContainer } from 'components/ui/GridContainer'
 import { SpinnerIcon } from 'components/ui/SpinnerIcon'

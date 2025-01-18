@@ -1,11 +1,11 @@
+import { Flex } from '@chakra-ui/react'
+
 import {
-  Flex,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
   NumberInputField,
-  NumberInputStepper,
-} from '@chakra-ui/react'
+  NumberInputLabel,
+  NumberInputRoot,
+} from '@/components/ui/number-input'
+
 import debounce from 'lodash.debounce'
 import React, { useCallback, useState } from 'react'
 
@@ -16,6 +16,8 @@ interface NumericInputProps {
 
 const NumericInput: React.FC<NumericInputProps> = (props) => {
   const { value } = props
+  /*
+  // @TODO: check if we still need a controlled component for chakra-ui v3
   const [inputValue, setInputValue] = useState(value || 0)
 
   const onChange = useCallback(
@@ -52,16 +54,13 @@ const NumericInput: React.FC<NumericInputProps> = (props) => {
     onChange(inputValue - 1)
     setInputValue(inputValue - 1)
   }
+  */
 
   return (
     <Flex alignItems={`center`}>
-      <NumberInput value={inputValue} onChange={handleInputChange}>
+      <NumberInputRoot value={value}>
         <NumberInputField fontSize={'sm'} h={'2rem'} />
-        <NumberInputStepper>
-          <NumberIncrementStepper onClick={handleIncrementButton} />
-          <NumberDecrementStepper onClick={handleDecrementButton} />
-        </NumberInputStepper>
-      </NumberInput>
+      </NumberInputRoot>
     </Flex>
   )
 }

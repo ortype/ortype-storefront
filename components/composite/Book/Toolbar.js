@@ -1,28 +1,35 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { usePathname, useRouter } from 'next/navigation'
 
+import { toaster } from '@/components/ui/toaster'
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Box,
   Button,
-  ButtonGroup,
+  Group,
   HStack,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Spinner,
   Text,
-  useDisclosure,
-  useToast,
 } from '@chakra-ui/react'
+
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+} from '@/components/ui/dialog'
+
+// import { Alert } from "@/components/ui/alert"
+
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from '@/components/ui/menu'
+
 import Config from 'components/composite/Book/Config'
 import Logout from 'components/composite/Book/Logout'
 import { useBookLayoutStore } from 'components/data/BookProvider'
@@ -65,9 +72,8 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
   const bookLayoutStore = useBookLayoutStore()
   const router = useRouter()
   const pathname = usePathname()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [open, setOpen] = useState(false)
   const cancelRef = React.useRef()
-  const toast = useToast()
   const [fontLoading, setFontLoading] = useState(false)
   useEffect(() => {
     setFontLoading(false)
@@ -167,7 +173,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
   const [updateBookLayout, { data: updateData, loading: updateLoading }] =
     useMutation(UPDATE_BOOK_LAYOUT, {
       onCompleted: (data) => {
-        toast({
+        toaster.create({
           title: 'Changes published.',
           description: 'The changes to the layout have been published.',
           status: 'success',
@@ -184,7 +190,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       },
       onCompleted: (data) => {
         console.log('exportBookLayout data: ', data)
-        toast({
+        toaster.create({
           title: 'Snapshot exported.',
           description: 'A snapshot of this layout has been exported.',
           status: 'success',
@@ -205,7 +211,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
             value: data.addBookLayout._id,
           })
         }
-        toast({
+        toaster.create({
           title: `Layout "${data.addBookLayout.name}" created.`,
           description: 'The layout has been created.',
           status: 'success',
@@ -226,7 +232,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
           handleLayoutChange(firstItem) // layoutOptions object with value/label params
         }
         onClose() // close alert dialog box
-        toast({
+        toaster.create({
           title: 'Layout deleted.',
           description: 'The layout has been permanently deleted.',
           status: 'success',
@@ -279,6 +285,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
   }
 
   const handleRemove = () => {
+    setOpen(false)
     removeBookLayout({
       variables: {
         bookLayoutId: bookLayoutStore.layoutOption.value,
@@ -372,7 +379,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
               onChange={handleLayoutChange}
             />
             <Config />
-            <ButtonGroup isAttached variant={'outline'}>
+            <Group isAttached variant={'outline'}>
               <Button
                 // isLoading={updateLoading}
                 onClick={handleUpdate}
@@ -387,12 +394,12 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
               >
                 <Text fontSize={'sm'}>{`Publish`}</Text>
               </Button>
-              <Menu>
-                <MenuButton
+              <MenuRoot>
+                <MenuTrigger
                   as={IconButton}
                   icon={<ChevronDownIcon width={'1.5rem'} height={'1.5rem'} />}
                 />
-                <MenuList>
+                <MenuContent>
                   <MenuItem
                     icon={<ResetIcon width={'1.5rem'} height={'1.5rem'} />}
                     isDisabled={!bookLayoutStore.isDirty}
@@ -415,7 +422,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                     <Text fontSize={'sm'}>{`Duplicate`}</Text>
                   </MenuItem>
                   <MenuItem
-                    onClick={onOpen}
+                    onClick={() => setOpen(true)}
                     icon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
                   >
                     <Text fontSize={'sm'}>{`Delete`}</Text>
@@ -428,34 +435,33 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                   >
                     <Text fontSize={'sm'}>{`Export snapshot`}</Text>
                   </MenuItem>
-                </MenuList>
-              </Menu>
-            </ButtonGroup>
-            <AlertDialog
-              isOpen={isOpen}
-              leastDestructiveRef={cancelRef}
-              onClose={onClose}
+                </MenuContent>
+              </MenuRoot>
+            </Group>
+            <DialogRoot
+              role="alertdialog"
+              lazyMount
+              open={open}
+              onOpenChange={(e) => setOpen(e.open)}
             >
-              <AlertDialogOverlay>
-                <AlertDialogContent>
-                  <AlertDialogHeader fontSize="lg" fontWeight="normal">
-                    Delete layout
-                  </AlertDialogHeader>
-                  <AlertDialogBody>
-                    Are you sure? You can't undo this action afterwards.
-                  </AlertDialogBody>
+              <DialogContent>
+                <DialogHeader fontSize="lg" fontWeight="normal">
+                  Delete layout
+                </DialogHeader>
+                <DialogBody>
+                  Are you sure? You can't undo this action afterwards.
+                </DialogBody>
 
-                  <AlertDialogFooter>
-                    <Button ref={cancelRef} onClick={onClose}>
-                      Cancel
-                    </Button>
-                    <Button colorScheme="red" onClick={handleRemove} ml={3}>
-                      Delete
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialogOverlay>
-            </AlertDialog>
+                <DialogFooter>
+                  <DialogActionTrigger asChild ref={cancelRef}>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogActionTrigger>
+                  <Button colorScheme="red" onClick={handleRemove} ml={3}>
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </DialogRoot>
             <Logout />
           </HStack>
         </>

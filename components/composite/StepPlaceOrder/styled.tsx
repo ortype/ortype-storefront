@@ -6,7 +6,7 @@ import {
 import styled from 'styled-components'
 import tw from 'twin.macro'
 
-import { ButtonCss, ButtonWrapper } from 'components/ui/Button'
+import { ButtonCss, ButtonWrapper } from 'components/ui/Button/index'
 import { CheckCss } from 'components/ui/form/CheckBox'
 import { ErrorCss } from 'components/ui/form/Error'
 
