@@ -22,7 +22,6 @@ import {
 import type { Order } from '@commercelayer/sdk'
 import { CartItem } from 'components/composite/Cart/CartItem'
 import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
-import { CartContext } from 'components/data/CartProvider'
 import { useRapidForm } from 'rapid-form'
 import { useContext, useState } from 'react'
 
@@ -35,7 +34,6 @@ const CheckoutButton = ({ isDisabled, order }) => {
 }
 
 const Cart = () => {
-  const cartCtx = useContext(CartContext)
   const { orderId, order, itemsCount } = useOrderContext()
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
@@ -47,9 +45,10 @@ const Cart = () => {
     <>
       <DialogRoot
         size={'cover'}
-        placement="center"
+        // placement="center"
         motionPreset="slide-in-bottom"
-        modal
+        scrollBehavior="inside"
+        // modal
       >
         {/*<DialogBackdrop />*/}
         <DialogTrigger asChild>

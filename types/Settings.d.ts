@@ -1,6 +1,62 @@
+import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
 import { type LineItem, type Order } from '@commercelayer/sdk'
 
 declare module 'CustomApp' {
+  interface CheckoutSettings {
+    accessToken: string
+    config: CLayerClientConfig
+    orderId: string
+    orderNumber: number
+    validCheckout: true
+    endpoint: string
+    domain: string
+    slug: string
+    logoUrl?: string
+    companyName: string
+    language: string
+    primaryColor: HSLProps
+    favicon: string
+    gtmId?: string
+    supportEmail?: string
+    supportPhone?: string
+    termsUrl?: string
+    privacyUrl?: string
+  }
+
+  export type UseCheckoutSettingsOrInvalid = Pick<CheckoutSettings> & {
+    /**
+     * This flag allows TypeScript to discriminate between `Settings` and `InvalidSettings` union type.
+     */
+    isValid: false
+    /**
+     * When `true`, it indicates the encountered error might be temporary (eg. connectivity error)
+     * and the user can manually retry by refreshing browser tab.
+     */
+    retryable: boolean
+  }
+
+  interface InvalidCheckoutSettings {
+    validCheckout: false
+    retryOnError: boolean
+  }
+
+  type CheckoutPageContextProps = Pick<
+    CheckoutSettings,
+    | 'accessToken'
+    | 'orderId'
+    | 'logoUrl'
+    | 'companyName'
+    | 'endpoint'
+    | 'language'
+    | 'primaryColor'
+    | 'favicon'
+    | 'gtmId'
+    | 'supportEmail'
+    | 'supportPhone'
+    | 'termsUrl'
+    | 'privacyUrl'
+  >
+
   export type UseCartSettingsOrInvalid = Pick<CartSettings> & {
     /**
      * This flag allows TypeScript to discriminate between `Settings` and `InvalidSettings` union type.

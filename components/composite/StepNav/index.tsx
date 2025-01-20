@@ -1,5 +1,10 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
+
+import {
+  BreadcrumbCurrentLink,
+  BreadcrumbLink,
+  BreadcrumbRoot,
+} from '@/components/ui/breadcrumb'
 
 interface Props {
   steps: Array<SingleStepEnum>
@@ -17,7 +22,7 @@ export const StepNav: React.FC<Props> = ({
   const { t } = useTranslation()
 
   return (
-    <Breadcrumb
+    <BreadcrumbRoot
       separator={
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -38,27 +43,29 @@ export const StepNav: React.FC<Props> = ({
         const isLocked =
           lastActivable !== 'Complete' &&
           steps.indexOf(step) > steps.indexOf(lastActivable)
-        return (
-          <BreadcrumbItem
-            isCurrentPage={isActive}
+        return isActive ? (
+          <BreadcrumbCurrentLink
             key={index}
-            isLocked={isLocked}
+            color={'#000'}
+            textDecoration={'underline'}
           >
-            <BreadcrumbLink
-              href="#"
-              color={isActive ? '#000' : '#979393'}
-              textDecoration={isActive ? 'underline' : 'none'}
-              onClick={() => {
-                if (!isLocked) {
-                  onStepChange(step)
-                }
-              }}
-            >
-              {t(`step${step}.title`)}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+            {t(`step${step}.title`)}
+          </BreadcrumbCurrentLink>
+        ) : (
+          <BreadcrumbLink
+            key={index}
+            href="#"
+            color={'#979393'}
+            onClick={() => {
+              if (!isLocked) {
+                onStepChange(step)
+              }
+            }}
+          >
+            {t(`step${step}.title`)}
+          </BreadcrumbLink>
         )
       })}
-    </Breadcrumb>
+    </BreadcrumbRoot>
   )
 }

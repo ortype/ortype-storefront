@@ -1,10 +1,6 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { isValidCart } from '@/commercelayer/utils/isValidCart'
 import { Text } from '@chakra-ui/react'
-import { OrderContainer, OrderStorage } from '@commercelayer/react-components'
-import CommerceLayer from '@commercelayer/react-components/auth/CommerceLayer'
-import Cart from 'components/composite/Cart'
-import { CartProvider } from 'components/data/CartProvider'
 
 interface Props {
   // settings: CheckoutSettings

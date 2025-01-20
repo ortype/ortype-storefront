@@ -18,6 +18,8 @@ import {
   updateLineItemLicenseTypes,
   updateLineItemsLicenseSize,
 } from 'components/data/CheckoutProvider/utils'
+import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
+import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 
 type AddressType = 'addresses'
 export type LicenseOwner = {
@@ -129,28 +131,22 @@ const initialState: AppStateData = {
 export const CheckoutContext = createContext<CheckoutProviderData | null>(null)
 
 interface CheckoutProviderProps {
-  domain: string
-  slug: string
+  config: CLayerClientConfig
   orderId: string
-  accessToken: string
   children?: JSX.Element[] | JSX.Element | null
 }
 
 export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   children,
   orderId,
-  accessToken,
-  slug,
-  domain,
+  config,
 }) => {
   const orderRef = useRef<Order>()
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const cl = CommerceLayer({
-    organization: slug,
-    accessToken,
-    domain,
-  })
+  const { accessToken } = config
+
+  const cl = config != null ? getCommerceLayer(config) : undefined
 
   const getOrder = (order: Order) => {
     orderRef.current = order
@@ -432,9 +428,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       value={{
         ...state,
         orderId,
-        accessToken,
-        slug,
-        domain,
+        ...config,
         getOrderFromRef,
         setAddresses,
         selectShipment,
