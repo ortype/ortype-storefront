@@ -67,7 +67,8 @@ const fontFields = defineQuery(`
   defaultVariant->{_id, optionName},
   modules[]{
     ..., 
-    book->{variantId, snapshots},  
+    book->{variantId, snapshots},
+    tester->{defaultVariant->{_id, optionName}, defaultText},
     body[]{
       ...,
       markDefs[]{

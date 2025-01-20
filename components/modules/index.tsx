@@ -56,6 +56,8 @@ const PageDivider: React.FC<PageDividerProps> = ({
 const DoublePage = ({
   children,
   value,
+  font,
+  index,
   spreadMode = false,
   overflowCol,
   ...props
@@ -67,10 +69,17 @@ const DoublePage = ({
   const itemState = state.items[_key]
   const isSpread = spreadMode || (isOverflowing && overflowCol)
 
+  const attr = createDataAttribute({
+    id: font?._id,
+    type: 'font',
+    path: 'modules',
+  })
+
   return (
     <Box
       className={'spread-page'}
       flex={{ base: '0 0 100%', lg: isSpread ? '0 0 100%' : '0 0 50%' }} // responsive values
+      data-sanity={attr(`[${index}]`).toString()}
       mb={padding}
       position="relative"
       // the before creates the height
@@ -198,13 +207,15 @@ const Modules = ({ value }) => {
         </SinglePage>
       ),
       info: (props) => (
-        <DoublePage value={props.value}>
+        <SinglePage font={font} value={props.value} index={props.index}>
           <InfoModule {...props} />
-        </DoublePage>
+        </SinglePage>
       ),
       content: (props) => (
         <DoublePage
           value={props.value}
+          font={font}
+          index={props.index}
           textAlign={props.value.centered ? 'center' : 'left'}
           overflowCol={props.value.overflowCol}
         >
@@ -224,7 +235,12 @@ const Modules = ({ value }) => {
       ),
       // @TODO: type tester module
       tester: (props) => (
-        <DoublePage value={props.value} spreadMode={true}>
+        <DoublePage
+          value={props.value}
+          font={font}
+          index={props.index}
+          spreadMode={true}
+        >
           <TesterModule {...props} />
         </DoublePage>
       ),

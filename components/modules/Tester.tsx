@@ -8,13 +8,37 @@ export interface TesterModuleProps {
 }
 
 export default function TesterModule({ value }: TesterModuleProps) {
-  const { title } = value
+  const { title, defaultVariant, defaultText } = value
   const { padding, conversion, state } = useSpreadContainer()
   const itemState = state.items[value._key]
   const font = useFont()
 
   // Change the selected font style
   // Sliders for each axis
+
+  const textStyles = {
+    flex: '0 1 auto',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    minHeight: '1em',
+    maxWidth: '100%',
+    textAlign: 'center',
+    margin: '0',
+    padding: '0',
+    font: 'inherit',
+    fontSize: 'inherit',
+    lineHeight: 'inherit',
+    letterSpacing: 'inherit',
+    wordSpacing: 'inherit',
+    outline: 'none',
+    whiteSpace: 'pre-wrap' /* Preserves spaces and wraps */,
+    wordWrap: 'break-word' /* Breaks long words if needed */,
+    overflowWrap: 'break-word' /* Modern property for breaking long words */,
+    wordBreak: 'break-word' /* Prevents unnatural word breaks */,
+  }
 
   return (
     <>
@@ -43,17 +67,24 @@ export default function TesterModule({ value }: TesterModuleProps) {
       </Box>
 
       <Editable.Root
-        defaultValue={'Test me'}
+        defaultValue={defaultText ?? 'Test me'}
         textAlign={'center'}
-        fontSize={`${140 * conversion}px`}
-        lineHeight={`${160 * conversion}px`}
+        fontSize={`${220 * conversion}px`}
+        lineHeight={`${220 * conversion}px`}
         h={'100%'}
-        className={font?.defaultVariant?._id}
+        className={
+          (defaultVariant?._ref || defaultVariant?._id) ??
+          font?.defaultVariant?._id
+        }
       >
-        <Center h={'100%'}>
-          <Editable.Preview flex={1} p={0} border={'none'} />
-          <Editable.Input flex={1} p={0} border={'none'} w={'100%'} />
-        </Center>
+        <Editable.Preview css={textStyles} />
+        <Editable.Input
+          p={0}
+          border={'none'}
+          css={{
+            ...textStyles,
+          }}
+        />
       </Editable.Root>
     </>
   )
