@@ -20,19 +20,25 @@ export default function FontIndex({
         Fonts
       </h2>
       <div>
-        <Link
+        {/*        <Link
           href={`/posts/test-post-1`}
           className="hover:underline"
           data-sanity={encodeDataAttribute?.(['posts', 0, 'slug'])}
         >
           {'Test post...'}
-        </Link>
+        </Link>*/}
       </div>
       <div className="mb-32 grid grid-cols-1 gap-y-20 md:grid-cols-2 md:gap-x-16 md:gap-y-32 lg:gap-x-32">
         {fonts.map((font, key) => {
           const href = resolveHref(font._type, font.slug)
           const containsNull = font.variants.includes(null) // @TEMP: dealing broken data where variant refs come in as `null`
-          console.log('font contains broken variants?', font.name, containsNull)
+          if (containsNull) {
+            console.log(
+              'font contains broken variants!!',
+              font.name,
+              containsNull
+            )
+          }
           if (!href || containsNull) {
             return null
           }

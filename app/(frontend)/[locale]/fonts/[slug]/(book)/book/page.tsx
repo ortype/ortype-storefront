@@ -7,7 +7,6 @@ import {
   getVisibleFonts,
 } from 'lib/sanity.client'
 import { Font } from 'lib/sanity.queries'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { cache as ReactCache } from 'react'
 import BookPage from './BookPage'

@@ -38,9 +38,35 @@ const postSlugs = defineQuery(
   `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`
 )
 
-export const dynamicParams = true // Allow dynamic routes not included in generateStaticParams
-
+// export const dynamicParams = true // Allow dynamic routes not included in generateStaticParams
 /*
+
+import { client } from '@/lib/sanity.client'
+import type { QueryParams } from 'next-sanity'
+
+async function staticSanityFetch<QueryString extends string>({
+  query,
+  params = {},
+}: {
+  query: QueryString
+  params?: QueryParams
+}) {
+  return client.fetch(query, params, {
+    perspective: 'published',
+    useCdn: true,
+    next: { revalidate: 60 },
+  })
+}
+
+export async function generateStaticParams() {
+  return await staticSanityFetch({
+    query: postSlugs,
+  })
+}
+*/
+
+export const dynamicParams = true
+
 export async function generateStaticParams() {
   return await sanityFetch({
     query: postSlugs,
@@ -48,7 +74,6 @@ export async function generateStaticParams() {
     stega: false,
   })
 }
-*/
 
 export default async function PostSlugRoute({ params }: Props) {
   const data = await sanityFetch({ query: postAndMoreStoriesQuery, params })

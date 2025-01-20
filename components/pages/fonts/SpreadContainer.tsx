@@ -1,6 +1,7 @@
 import useDimensions from '@/components/hooks/useDimensions'
 import { MIN_DEFAULT_MQ } from '@/utils/presets'
 import { Flex, useBreakpointValue, useMediaQuery } from '@chakra-ui/react'
+import type { ChildrenElement } from 'CustomApp'
 import React, {
   createContext,
   Dispatch,
@@ -9,7 +10,6 @@ import React, {
   useReducer,
   useRef,
 } from 'react'
-import type { ChildrenElement } from 'CustomApp'
 
 function isArray<T>(value: any): value is Array<T> {
   return Array.isArray(value)

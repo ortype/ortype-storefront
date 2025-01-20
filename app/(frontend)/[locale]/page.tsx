@@ -1,11 +1,9 @@
-import dynamic from 'next/dynamic'
-import { draftMode } from 'next/headers'
 import Link from 'next/link'
 
 import { HomePage } from '@/components/pages/home/HomePage'
 import { homePageQuery } from '@/lib/sanity.queries'
-import { studioUrl } from 'lib/sanity.api' // from '@/sanity/lib/api'
 import { sanityFetch } from '@/sanity/lib/fetch'
+import { studioUrl } from 'lib/sanity.api' // from '@/sanity/lib/api'
 
 export default async function IndexRoute() {
   const [data] = await Promise.all([sanityFetch({ query: homePageQuery })])
