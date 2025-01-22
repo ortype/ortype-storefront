@@ -13,8 +13,8 @@ import {
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
-import { LicenseSizeSelect } from './LicenseSizeSelect'
-import { LicenseTypeSelect } from './LicenseTypeSelect'
+import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
+import { LicenseTypeSelect } from '@/commercelayer/components/forms/LicenseTypeSelect'
 import { SingleStyles } from './SingleStyles'
 
 export const Buy = () => {

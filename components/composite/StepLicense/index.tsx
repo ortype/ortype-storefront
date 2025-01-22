@@ -23,7 +23,6 @@ import { StepHeader } from 'components/ui/StepHeader'
 import { useRapidForm } from 'rapid-form'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SelectLicenseSize } from './SelectLicenseSize'
 
 interface Props {
   className?: string
@@ -185,11 +184,6 @@ export const StepLicense: React.FC<Props> = () => {
                       </Radio>
                     </Stack>
                   </RadioGroup>
-                </Field>
-              </Fieldset>
-              <Fieldset>
-                <Field label={'Company size of the license owner'}>
-                  <SelectLicenseSize ctx={checkoutCtx} />
                 </Field>
               </Fieldset>
               <form

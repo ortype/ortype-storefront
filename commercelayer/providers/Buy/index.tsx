@@ -107,6 +107,10 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     }
   }
 
+  // @TODO: consider useEffect with refetchOrder() as a path for ensuring that
+  // we have the current order object available (if we made changes to the order in the checkout)
+  // orders will be 'drafts' until they are submitted
+
   return (
     <BuyContext.Provider
       value={{

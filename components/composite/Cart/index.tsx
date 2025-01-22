@@ -21,9 +21,9 @@ import {
 } from '@commercelayer/react-components'
 import type { Order } from '@commercelayer/sdk'
 import { CartItem } from 'components/composite/Cart/CartItem'
-import { SelectLicenseSize } from 'components/composite/StepLicense/SelectLicenseSize'
 import { useRapidForm } from 'rapid-form'
 import { useContext, useState } from 'react'
+import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 
 const CheckoutButton = ({ isDisabled, order }) => {
   return (
@@ -34,7 +34,8 @@ const CheckoutButton = ({ isDisabled, order }) => {
 }
 
 const Cart = () => {
-  const { orderId, order, itemsCount } = useOrderContext()
+  const { orderId, order, itemsCount, licenseSize, setLicenseSize } =
+    useOrderContext()
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
   if (!orderId || !order) {
@@ -61,7 +62,12 @@ const Cart = () => {
             <LicenseOwnerInput />
             <Fieldset.Root>
               <Field label={'Company size of the license owner'}>
-                <SelectLicenseSize />
+                {licenseSize && (
+                  <LicenseSizeSelect
+                    setLicenseSize={setLicenseSize}
+                    licenseSize={licenseSize}
+                  />
+                )}
               </Field>
             </Fieldset.Root>
             {

@@ -8,6 +8,8 @@ import CommerceLayer, {
 // import { changeLanguage } from "i18next"
 import { createContext, useEffect, useReducer, useRef } from 'react'
 
+import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
+import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { ActionType, reducer } from 'components/data/CheckoutProvider/reducer'
 import {
   calculateSettings,
@@ -18,8 +20,6 @@ import {
   updateLineItemLicenseTypes,
   updateLineItemsLicenseSize,
 } from 'components/data/CheckoutProvider/utils'
-import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
-import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 
 type AddressType = 'addresses'
 export type LicenseOwner = {
@@ -75,7 +75,6 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     order?: Order
     licenseOwner?: LicenseOwner
   }) => void
-  setLicenseSize: (params: { order?: Order; licenseSize?: LicenseSize }) => void
   setLicenseTypes: (params: {
     order?: Order
     lineItem: LineItem
@@ -353,26 +352,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
   }
 
-  const setLicenseSize = async (params: {
-    licenseSize?: LicenseSize
-    order?: Order
-  }) => {
-    dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = params.order ?? (await getOrderFromRef())
-    await updateLineItemsLicenseSize({
-      cl,
-      order: currentOrder,
-      licenseSize: params.licenseSize,
-    })
-    dispatch({
-      type: ActionType.SET_LICENSE_SIZE,
-      payload: {
-        licenseSize: params.licenseSize,
-        order: await fetchOrder(cl, orderId),
-      },
-    })
-  }
-
   const setLicenseTypes = async (params: {
     lineItem: LineItem
     selectedSkuOptions: SkuOption[]
@@ -440,7 +419,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         setCustomerEmail,
         autoSelectShippingMethod,
         setLicenseOwner,
-        setLicenseSize,
         setLicenseTypes,
         deleteLineItem,
       }}
