@@ -5,7 +5,6 @@ import {
   type SkuOption,
 } from '@commercelayer/sdk'
 
-
 export interface AddLineItemLicenseTypes {
   cl: CommerceLayerClient
   lineItem: LineItem

@@ -29,10 +29,6 @@ export enum ActionType {
   CHANGE_COUPON_OR_GIFTCARD = 'CHANGE_COUPON_OR_GIFTCARD',
   PLACE_ORDER = 'PLACE_ORDER',
   SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
-  SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
-  SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
-  SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
-  DELETE_LINE_ITEM = 'DELETE_LINE_ITEM',
 }
 
 export type Action =
@@ -103,34 +99,6 @@ export type Action =
       payload: {
         order: Order
         licenseOwner: LicenseOwner
-      }
-    }
-  | {
-      type: ActionType.SET_LICENSE_SIZE
-      payload: {
-        order: Order
-        licenseSize: string
-      }
-    }
-  | {
-      type: ActionType.SET_LICENSE_TYPES
-      payload: {
-        order: Order
-        // lineItem: LineItem
-        // skuOptions: SkuOption[]
-        // licenseTypes: string[]
-      }
-    }
-  | {
-      type: ActionType.SET_SKU_OPTIONS
-      payload: {
-        skuOptions: SkuOption[]
-      }
-    }
-  | {
-      type: ActionType.DELETE_LINE_ITEM
-      payload: {
-        order: Order
       }
     }
 
@@ -233,40 +201,6 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         licenseOwner: action.payload.licenseOwner,
         hasLicenseOwner: true,
         isLicenseForClient: action.payload.licenseOwner.is_client,
-        isLoading: false,
-      }
-    }
-    case ActionType.SET_LICENSE_SIZE: {
-      console.log('SET_LICENSE_SIZE: action.payload: ', action.payload)
-      return {
-        ...state,
-        order: action.payload.order,
-        licenseSize: action.payload.licenseSize,
-        isLoading: false,
-      }
-    }
-    case ActionType.SET_LICENSE_TYPES: {
-      console.log('SET_LICENSE_TYPES: action.payload: ', action.payload)
-      return {
-        ...state,
-        order: action.payload.order,
-        // licenseTypes: action.payload.licenseTypes,
-        // skuOptions: action.payload.skuOptions,
-        // lineItem: action.payload.lineItem,
-        isLoading: false,
-      }
-    }
-    case ActionType.SET_SKU_OPTIONS: {
-      return {
-        ...state,
-        skuOptions: action.payload.skuOptions,
-        isLoading: false,
-      }
-    }
-    case ActionType.DELETE_LINE_ITEM: {
-      return {
-        ...state,
-        order: action.payload.order,
         isLoading: false,
       }
     }

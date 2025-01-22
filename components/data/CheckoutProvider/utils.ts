@@ -5,18 +5,14 @@ import {
   CheckoutComPayment,
   CommerceLayerClient,
   CustomerAddress,
-  LineItem,
-  LineItemOptionCreate,
   Order,
   OrderUpdate,
   PaymentMethod,
   PaypalPayment,
   Shipment,
   ShippingMethod,
-  SkuOption,
   StripePayment,
   WireTransfer,
-  type LineItemUpdate,
 } from '@commercelayer/sdk'
 
 import {
@@ -50,18 +46,6 @@ interface CheckAndSetDefaultAddressForOrderProps {
   cl: CommerceLayerClient
   order: Order
   customerAddresses?: Array<CustomerAddress>
-}
-
-interface UpdateLineItemsLicenseSize {
-  cl: CommerceLayerClient
-  order: Order
-  licenseSize: LicenseSize
-}
-
-interface UpdateLineItemLicenseTypes {
-  cl: CommerceLayerClient
-  lineItem: LineItem
-  selectedSkuOptions: SkuOption[]
 }
 
 interface PaymentSourceProps {
@@ -146,92 +130,6 @@ function isNewAddress({
     return false
   }
   return !hasAddressIntoAddresses
-}
-
-export async function updateLineItemsLicenseSize({
-  cl,
-  order,
-  licenseSize,
-}: UpdateLineItemsLicenseSize) {
-  for (const lineItem of order?.line_items) {
-    console.log('retrievedOrder lineItem: ', lineItem)
-    const updateLineItemsAttrs: LineItemUpdate = {
-      id: lineItem.id,
-      quantity: 1,
-      _external_price: true,
-      metadata: {
-        license: {
-          ...lineItem.metadata?.license,
-          types: lineItem.metadata.types || ['1-licenseType-desktop'], // @TEMP
-          size: licenseSize,
-        },
-      },
-    }
-    console.log('updateLineItemsAttrs: ', updateLineItemsAttrs)
-    await cl.line_items.update(updateLineItemsAttrs)
-  }
-}
-
-export async function updateLineItemLicenseTypes({
-  cl,
-  lineItem,
-  selectedSkuOptions,
-}: UpdateLineItemLicenseTypes) {
-  const updateLineItemAttrs: LineItemUpdate = {
-    id: lineItem.id,
-    quantity: 1,
-    _external_price: true,
-    metadata: {
-      license: {
-        ...lineItem.metadata?.license,
-        types: selectedSkuOptions.map((option) => option.reference),
-      },
-    },
-  }
-  console.log('updateLineItemAttrs: ', updateLineItemAttrs)
-  await cl.line_items.update(updateLineItemAttrs)
-
-  // Line Item Options and SKU Options
-  const existingSkuOptionIds = lineItem.line_item_options.map(
-    ({ sku_option }) => sku_option.id
-  )
-  const newSkuOptionIds = selectedSkuOptions.map(({ id }) => id)
-  const skuOptionsToAdd = selectedSkuOptions.filter(
-    (option) => !existingSkuOptionIds.includes(option.id)
-  )
-  const lineItemOptionsToDelete = lineItem.line_item_options.filter(
-    (option) => !newSkuOptionIds.includes(option.sku_option.id)
-  )
-
-  // lineItem.line_item_options
-  // we have the options on the lineItem, we can then check if an sku_option.id is present in this array
-  // which is not found in selectedSkuOptions, and delete that line_item
-
-  // @TODO: if multiple lineItemOptions can not be created with addToCart
-  // then this would need to be updated to read from the metadata of the line_item
-
-  if (skuOptionsToAdd && skuOptionsToAdd.length > 0) {
-    console.log('skuOptionsToAdd:', skuOptionsToAdd)
-    const lineItemRel = await cl.line_items.relationship(lineItem.id)
-    for (const skuOption of skuOptionsToAdd) {
-      const skuOptionRel = await cl.sku_options.relationship(skuOption.id)
-      const lineItemOptionsAttributes: LineItemOptionCreate = {
-        quantity: 1,
-        options: [],
-        sku_option: skuOptionRel,
-        line_item: lineItemRel,
-      }
-      console.log('lineItemOptionsAttributes: ', lineItemOptionsAttributes)
-      await cl.line_item_options.create(lineItemOptionsAttributes)
-    }
-  }
-
-  if (lineItemOptionsToDelete && lineItemOptionsToDelete.length > 0) {
-    console.log('lineItemOptionsToDelete: ', lineItemOptionsToDelete)
-    for (const lineItemOption of lineItemOptionsToDelete) {
-      await cl.line_item_options.delete(lineItemOption.id)
-    }
-  }
 }
 
 export async function checkAndSetDefaultAddressForOrder({

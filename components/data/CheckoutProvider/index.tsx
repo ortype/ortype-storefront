@@ -17,8 +17,6 @@ import {
   checkIfShipmentRequired,
   fetchOrder,
   FetchOrderByIdResponse,
-  updateLineItemLicenseTypes,
-  updateLineItemsLicenseSize,
 } from 'components/data/CheckoutProvider/utils'
 
 type AddressType = 'addresses'
@@ -75,18 +73,11 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     order?: Order
     licenseOwner?: LicenseOwner
   }) => void
-  setLicenseTypes: (params: {
-    order?: Order
-    lineItem: LineItem
-    selectedSkuOptions: SkuOption[]
-  }) => void
   deleteLineItem: (params: { order?: Order; lineItemId: string }) => void
-  skuOptions: SkuOption[]
 }
 
 export interface AppStateData extends FetchOrderByIdResponse {
   order?: Order
-  skuOptions: SkuOption[]
   isLoading: boolean
   isFirstLoading: boolean
 }
@@ -181,21 +172,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
 
     // await changeLanguage(order.language_code)
-  }
-
-  // @TODO: follow getOrder/setOrder pattern for sku_options
-  const fetchSkuOptions = async () => {
-    dispatch({ type: ActionType.START_LOADING })
-
-    const skuOptions = await cl.sku_options.list()
-    console.log('fetchSkuOptions: ', skuOptions)
-
-    dispatch({
-      type: ActionType.SET_SKU_OPTIONS,
-      payload: {
-        skuOptions,
-      },
-    })
   }
 
   const setCustomerEmail = (email: string) => {
@@ -352,51 +328,12 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
   }
 
-  const setLicenseTypes = async (params: {
-    lineItem: LineItem
-    selectedSkuOptions: SkuOption[]
-    order?: Order
-  }) => {
-    dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = params.order ?? (await getOrderFromRef())
-    await updateLineItemLicenseTypes({
-      cl,
-      order: currentOrder,
-      selectedSkuOptions: params.selectedSkuOptions,
-      lineItem: params.lineItem,
-    })
-    dispatch({
-      type: ActionType.SET_LICENSE_TYPES,
-      payload: { order: await fetchOrder(cl, orderId) },
-    })
-  }
-
-  // @TODO: Delete line_item
-
-  const deleteLineItem = async (params: {
-    lineItemId: string
-    order?: Order
-  }) => {
-    dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = params.order ?? (await getOrderFromRef())
-    try {
-      await cl.line_items.delete(params.lineItemId)
-      dispatch({
-        type: ActionType.DELETE_LINE_ITEM,
-        payload: { order: await fetchOrder(cl, orderId) },
-      })
-    } catch (error: any) {
-      console.log('deleteLineItem error: ', error)
-    }
-  }
-
   const getOrderFromRef = async () => {
     return orderRef.current || (await fetchOrder(cl, orderId))
   }
 
   useEffect(() => {
     const unsubscribe = () => {
-      fetchSkuOptions()
       fetchInitialOrder(orderId, accessToken)
     }
     return unsubscribe()
@@ -419,8 +356,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         setCustomerEmail,
         autoSelectShippingMethod,
         setLicenseOwner,
-        setLicenseTypes,
-        deleteLineItem,
       }}
     >
       {children}

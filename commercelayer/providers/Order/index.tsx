@@ -1,13 +1,13 @@
-import { createOrUpdateOrder } from '@/commercelayer/providers/Buy/utils'
 import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
 import { ActionType, reducer } from '@/commercelayer/providers/Order/reducer'
+import {
+  createOrUpdateOrder,
+  updateLineItemLicenseTypes,
+  updateLineItemsLicenseSize,
+} from '@/commercelayer/providers/Order/utils'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { getOrder } from '@/commercelayer/utils/getOrder'
 import { LicenseOwner } from '@/components/data/CheckoutProvider'
-import {
-  updateLineItemLicenseTypes,
-  updateLineItemsLicenseSize,
-} from '@/components/data/CheckoutProvider/utils'
 import { useOrderContainer } from '@commercelayer/react-components'
 import CommerceLayer, {
   LineItem,
