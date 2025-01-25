@@ -3,8 +3,8 @@ import { useContext } from 'react'
 import styled from 'styled-components'
 import tw from 'twin.macro'
 
-import { ShippingToggleProps } from 'components/composite/StepCustomer'
-import { AddressInputGroup } from 'components/composite/StepCustomer/AddressInputGroup'
+import { ShippingToggleProps } from 'components/composite/StepAddress'
+import { AddressInputGroup } from 'components/composite/StepAddress/AddressInputGroup'
 import { CheckoutContext } from 'components/data/CheckoutProvider'
 
 interface Props {

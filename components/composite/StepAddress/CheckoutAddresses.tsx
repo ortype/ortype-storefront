@@ -7,7 +7,7 @@ import { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { ShippingToggleProps } from 'components/composite/StepCustomer'
+import { ShippingToggleProps } from 'components/composite/StepAddress'
 import { ButtonCss, ButtonWrapper } from 'components/ui/Button/index'
 import { SpinnerIcon } from 'components/ui/SpinnerIcon'
 import { Toggle } from 'components/ui/Toggle'

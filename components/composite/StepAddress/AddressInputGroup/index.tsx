@@ -10,7 +10,7 @@ import tw from 'twin.macro'
 import {
   ShippingToggleProps,
   evaluateShippingToggle,
-} from 'components/composite/StepCustomer'
+} from 'components/composite/StepAddress'
 import { CheckoutContext } from 'components/data/CheckoutProvider'
 import { ErrorCss } from 'components/ui/form/Error'
 import { InputCss } from 'components/ui/form/Input'

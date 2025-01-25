@@ -60,7 +60,7 @@ export const StepHeaderCustomer: React.FC<Props> = ({ step }) => {
   )
 }
 
-export const StepCustomer: React.FC<Props> = () => {
+export const StepAddress: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
 
@@ -70,7 +70,6 @@ export const StepCustomer: React.FC<Props> = () => {
     return null
   }
   const {
-    isGuest,
     isShipmentRequired,
     billingAddress,
     shippingAddress,

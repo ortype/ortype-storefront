@@ -9,9 +9,9 @@ import { MainHeader } from 'components/composite/MainHeader'
 import { OrderSummary } from 'components/composite/OrderSummary'
 import { StepComplete } from 'components/composite/StepComplete'
 import {
-  StepCustomer,
+  StepAddress,
   StepHeaderCustomer,
-} from 'components/composite/StepCustomer'
+} from 'components/composite/StepAddress'
 import { StepEmail, StepHeaderEmail } from 'components/composite/StepEmail'
 import {
   StepHeaderLicense,
@@ -143,7 +143,7 @@ const Checkout: React.FC<Props> = ({
                       <StepHeaderCustomer step={getStepNumber('Address')} />
                     }
                   >
-                    <StepCustomer className="mb-6" step={1} />
+                    <StepAddress className="mb-6" step={1} />
                   </AccordionItem>
                 </AccordionProvider>
                 <>

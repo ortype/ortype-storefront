@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import {
   evaluateShippingToggle,
   ShippingToggleProps,
-} from 'components/composite/StepCustomer'
+} from 'components/composite/StepAddress'
 import { AddButton } from 'components/ui/AddButton'
 import { ButtonCss, ButtonWrapper } from 'components/ui/Button/index'
 import { CustomerAddressCard } from 'components/ui/CustomerAddressCard'
