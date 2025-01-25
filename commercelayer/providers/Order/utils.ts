@@ -4,11 +4,22 @@ import {
   type Order,
 } from '@commercelayer/sdk'
 import { sizes } from 'lib/settings'
-import { UpdateLineItemsLicenseSize, UpdateLineItemLicenseTypes } from './types'
+import { UpdateLineItemLicenseTypes, UpdateLineItemsLicenseSize } from './types'
 
 export function calculateSettings(order: Order) {
   return {
+    hasLicenseOwner: Boolean(order.metadata?.license?.owner),
+    isLicenseForClient: order.metadata?.license?.owner?.is_client || false,
+    licenseOwner: order.metadata?.license?.owner || {},
     licenseSize: order.metadata?.license?.size || sizes[0],
+    // @NOTE: well, we don't really want defaults for licenseSize if that needs to be set first to proceed
+    /*
+        {
+        "value": "small",
+        "label": "Small (1-5 employees)",
+        "modifier": 1
+    }
+    */
   }
 }
 
@@ -18,27 +29,30 @@ export async function createOrUpdateOrder({
   updateOrder,
   licenseSize,
 }) {
-  console.log('order: ', order)
   const localStorageOrderId = localStorage.getItem('order')
-  let result = {
-    order: {},
-    success: false,
-  }
+  console.log('order: ', order, localStorageOrderId)
   // create a new order
   if (!order?.id && !localStorageOrderId) {
     // const resultAttrs: OrderCreate = {
     //   metadata: { license: { size: licenseSize.value } },
     // }
     // newOrder = await cl.orders.create(newOrderAttrs)
-
-    result = await createOrder({
-      persistKey: 'order',
-      metadata: { license: { ...order.metadata.license, size: licenseSize } },
-    })
+    try {
+      const orderId = await createOrder({
+        persistKey: 'order',
+        setLocalOrder: true,
+        orderMetadata: {
+          license: { size: licenseSize },
+        },
+      })
+      console.log('Created new order: ', orderId)
+      return orderId
+    } catch (e) {
+      console.log('Error from `createOrUpdateOrder` with `createOrder`: ', e)
+    }
 
     // @TODO: check if we need to manually add orderId to local storage
     // localStorage.setItem('order', newOrder.id)
-    console.log('Created new order: ', order)
   } else {
     // const updateOrderAttrs: OrderUpdate = {
     //   id: order?.id || localStorageOrderId,
@@ -46,17 +60,22 @@ export async function createOrUpdateOrder({
     // }
     // newOrder = await cl.orders.update(updateOrderAttrs)
 
-    result = await updateOrder({
-      id: order?.id || localStorageOrderId,
-      attributes: {
-        metadata: { license: { ...order.metadata.license, size: licenseSize } },
-      },
-      // there is an `include` param
-    })
-
-    console.log('Updated order: ', result)
+    try {
+      const result = await updateOrder({
+        id: order?.id || localStorageOrderId,
+        attributes: {
+          metadata: {
+            license: { ...order.metadata.license, size: licenseSize },
+          },
+        },
+        // there is an `include` param
+      })
+      console.log('Updated order: ', result)
+      return result.order.id
+    } catch (e) {
+      console.log('Error from `createOrUpdateOrder` calling `updateOrder`: ', e)
+    }
   }
-  return result.order.id
 }
 
 export async function updateLineItemLicenseTypes({

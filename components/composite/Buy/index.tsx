@@ -1,4 +1,6 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
+import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
+import { LicenseTypeSelect } from '@/commercelayer/components/forms/LicenseTypeSelect'
 import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
@@ -13,13 +15,12 @@ import {
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
-import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
-import { LicenseTypeSelect } from '@/commercelayer/components/forms/LicenseTypeSelect'
 import { SingleStyles } from './SingleStyles'
 
 export const Buy = () => {
   const {
     order,
+    orderId,
     licenseSize,
     skuOptions,
     setLicenseSize,
@@ -63,11 +64,15 @@ export const Buy = () => {
                 </Field>
               </Fieldset.Root>
             </Box>
-            <Box>
+            <Box
+              opacity={orderId ? 1 : 0.3}
+              pointerEvents={orderId ? 'auto' : 'none'}
+            >
               {font.variants?.map((variant) => (
                 <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>
                   <SingleStyles
                     order={order}
+                    orderId={orderId}
                     name={variant.name}
                     skuCode={variant._id}
                     addLineItem={addLineItem}

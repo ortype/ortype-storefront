@@ -21,6 +21,7 @@ export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',
   SET_ORDER = 'SET_ORDER',
+
   SET_CUSTOMER_EMAIL = 'SET_CUSTOMER_EMAIL',
   SET_ADDRESSES = 'SET_ADDRESSES',
   SELECT_SHIPMENT = 'SELECT_SHIPMENT',
@@ -28,6 +29,7 @@ export enum ActionType {
   SET_PAYMENT = 'SET_PAYMENT',
   CHANGE_COUPON_OR_GIFTCARD = 'CHANGE_COUPON_OR_GIFTCARD',
   PLACE_ORDER = 'PLACE_ORDER',
+  UPDATE_ORDER = 'UPDATE_ORDER',
   SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
 }
 
@@ -39,6 +41,13 @@ export type Action =
       payload: {
         order: Order
         others: Partial<AppStateData>
+      }
+    }
+  | {
+      type: ActionType.UPDATE_ORDER
+      payload: {
+        order: Order
+        // others: Partial<OrderStateData>
       }
     }
   | {
@@ -125,6 +134,12 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
           state.customerAddresses,
         ...action.payload.others,
         isFirstLoading: false,
+        isLoading: false,
+      }
+    case ActionType.UPDATE_ORDER:
+      return {
+        ...state,
+        order: action.payload.order,
         isLoading: false,
       }
     case ActionType.SET_CUSTOMER_EMAIL:

@@ -3,13 +3,10 @@ import OrderContainer from '@commercelayer/react-components/orders/OrderContaine
 import PlaceOrderContainer from '@commercelayer/react-components/orders/PlaceOrderContainer'
 import { useParams } from 'next/navigation'
 import { useContext } from 'react'
-import styled from 'styled-components'
-import tw from 'twin.macro'
 
 import { CheckoutSkeleton } from 'components/composite/CheckoutSkeleton'
 import { MainHeader } from 'components/composite/MainHeader'
 import { OrderSummary } from 'components/composite/OrderSummary'
-import { StepCart, StepHeaderCart } from 'components/composite/StepCart'
 import { StepComplete } from 'components/composite/StepComplete'
 import {
   StepCustomer,
@@ -114,24 +111,6 @@ const Checkout: React.FC<Props> = ({
                 onStepChange={setActiveStep}
                 lastActivable={lastActivableStep}
               />
-              {/*              <Accordion>
-                <AccordionProvider
-                  activeStep={activeStep}
-                  lastActivableStep={lastActivableStep}
-                  setActiveStep={setActiveStep}
-                  step="Cart"
-                  steps={steps}
-                  // isStepDone={ctx.licenseOwner?.name}
-                  isStepDone={true}
-                >
-                  <AccordionItem
-                    index={1}
-                    header={<StepHeaderCart step={getStepNumber('Cart')} />}
-                  >
-                    <StepCart className="mb-6" step={1} />
-                  </AccordionItem>
-                </AccordionProvider>
-              </Accordion>*/}
               <Accordion>
                 <AccordionProvider
                   activeStep={activeStep}

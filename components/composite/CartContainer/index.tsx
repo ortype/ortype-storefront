@@ -14,9 +14,10 @@ const CartContainer = ({ children }: Props): JSX.Element => {
   // if (isLoading) return <>{'Cart: Loading...'}</>
 
   if (!validCart) {
+    // @TODO: if orderId does not exist, show an empty cart instead of an error
     return (
       <Text fontSize={'xs'} color={'red'}>
-        {'Invalid cart'}
+        {'0'}
       </Text>
     )
   }

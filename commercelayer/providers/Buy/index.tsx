@@ -80,7 +80,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       const { order } = await refetchOrder()
       console.log('addLineItem order: ', order)
 
-      if (order && order.line_items) {
+      if (order && order.line_items && order.line_items?.length > 0) {
+        // @NOTE: we have issues with fetching the order returning `metadata` on initial create
         // use the param `skuCode` to match the right `order.lineItems`
         const lineItem = order.line_items.find(
           ({ sku_code }) => sku_code === params.skuCode

@@ -13,7 +13,7 @@ interface UseActiveStep {
 const STEPS: SingleStepEnum[] = [
   // 'Cart',
   'Email',
-  'Address',
+  'Address', // @TODO: `Address` and `License` should be
   'License',
   'Shipping',
   'Payment',
@@ -50,9 +50,6 @@ export const useActiveStep = (): UseActiveStep => {
     }
 
   const { isFirstLoading, isLoading } = ctx
-
-  // @TODO: Add <StepCart /> and 'cart'
-  // and a condition
 
   useEffect(() => {
     if (ctx && (isFirstLoading || !ctx.isLoading)) {

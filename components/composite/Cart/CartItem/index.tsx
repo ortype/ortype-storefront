@@ -1,20 +1,6 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import {
-  Box,
-  Button,
-  Flex,
-  Link,
-  SimpleGrid,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
-import { useOrderContainer } from '@commercelayer/react-components'
-import CommerceLayer, {
-  LineItemUpdate,
-  type LineItem,
-  type SkuOption,
-} from '@commercelayer/sdk'
-import { CheckoutContext } from 'components/data/CheckoutProvider'
+import { Box, Flex, Link, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import { type LineItem, type SkuOption } from '@commercelayer/sdk'
 import { Size, sizes, Type, types } from 'lib/settings'
 import React, { useContext, useEffect, useState } from 'react'
 import Select from 'react-select'

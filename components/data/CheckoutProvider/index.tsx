@@ -1,12 +1,19 @@
 import CommerceLayer, {
   type LineItem,
   type Order,
+  type OrderUpdate,
   type PaymentMethod,
   type ShippingMethod as ShippingMethodCollection,
   type SkuOption,
 } from '@commercelayer/sdk'
 // import { changeLanguage } from "i18next"
-import { createContext, useEffect, useReducer, useRef } from 'react'
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react'
 
 import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
@@ -20,6 +27,36 @@ import {
 } from 'components/data/CheckoutProvider/utils'
 
 type AddressType = 'addresses'
+
+/*
+Address {
+business?:boolean;
+first_name?:string;
+last_name?:string;
+company?:string;
+full_name?:string;
+line_1?:string;
+line_2?:string;
+city?:string;
+zip_code?:string;
+state_code?:string;
+country_code?:string;
+phone?:string;
+full_address?:string;
+name?:string;
+email?:string;
+notes?:string;
+lat?:number;
+lng?:number;
+is_localized?:boolean;
+is_geocoded?:boolean;
+provider_name?:string;
+map_url?:string;
+static_map_url?:string;
+billing_info?:string;
+geocoder?:Geocoder;
+*/
+
 export type LicenseOwner = {
   readonly type: AddressType
   is_client: boolean | null
@@ -38,10 +75,24 @@ export type LicenseOwner = {
   email?: string | null
 }
 
-export type LicenseSize = {
-  label: string
-  value: string
-  modifier: number
+export type LicenseOwnerInput = Pick<
+  LicenseOwner,
+  | 'company'
+  | 'is_client'
+  | 'full_name'
+  | 'first_name'
+  | 'last_name'
+  | 'line_1'
+  | 'line_2'
+  | 'city'
+  | 'zip_code'
+  | 'country_code'
+>
+
+interface UpdateOrderArgs {
+  id: string
+  attributes: Omit<OrderUpdate, 'id'>
+  include?: string[]
 }
 
 export interface CheckoutProviderData extends FetchOrderByIdResponse {
@@ -51,10 +102,13 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   slug: string
   domain: string
   isFirstLoading: boolean
-  hasLicenseOwner: boolean
-  isLicenseForClient: boolean
   getOrder: (order: Order) => void
   getOrderFromRef: () => Promise<Order>
+  updateOrder: (params: UpdateOrderArgs) => Promise<{
+    success: boolean
+    error?: unknown
+    order?: Order
+  }>
   setCustomerEmail: (email: string) => void
   setAddresses: (order?: Order) => Promise<void>
   setCouponOrGiftCard: () => Promise<void>
@@ -73,6 +127,10 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     order?: Order
     licenseOwner?: LicenseOwner
   }) => void
+  licenseOwner: LicenseOwner
+  hasLicenseOwner: boolean
+  isLicenseForClient: boolean
+  hasCustomer: boolean
   deleteLineItem: (params: { order?: Order; lineItemId: string }) => void
 }
 
@@ -88,6 +146,7 @@ const initialState: AppStateData = {
   isFirstLoading: true,
   isGuest: false,
   hasCustomerAddresses: false,
+  hasCustomer: false,
   isUsingNewBillingAddress: true,
   isUsingNewShippingAddress: true,
   hasSameAddresses: false,
@@ -102,8 +161,7 @@ const initialState: AppStateData = {
   hasShippingAddress: false,
   hasLicenseOwner: false,
   isLicenseForClient: false,
-  licenseOwner: {},
-  licenseSize: {},
+  licenseOwner: { is_client: false, full_name: '' }, // @TODO: update type def
   shipments: [],
   customerAddresses: [],
   paymentMethod: undefined,
@@ -138,6 +196,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   const cl = config != null ? getCommerceLayer(config) : undefined
 
+  // @NOTE: this is exclusively used in the `OrderContainer`` fetchOrder callback
+  // the callback updates the the order stored on the ref whenever there are changes
+  // @QUESTION: is the order object from the container the same as from utils/fetchOrder
   const getOrder = (order: Order) => {
     orderRef.current = order
   }
@@ -157,8 +218,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
     const others = calculateSettings(order, isShipmentRequired)
 
-    console.log('fetchInitialOrder settings: ', others)
-
     dispatch({
       type: ActionType.SET_ORDER,
       payload: {
@@ -175,6 +234,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }
 
   const setCustomerEmail = (email: string) => {
+    // @NOTE: @commercelayer/react-components/customers/CustomerInput is responsible for calling `updateOrder`
     dispatch({
       type: ActionType.SET_CUSTOMER_EMAIL,
       payload: { customerEmail: email },
@@ -184,7 +244,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   const setAddresses = async (order?: Order) => {
     dispatch({ type: ActionType.START_LOADING })
     const currentOrder = order ?? (await getOrderFromRef())
-    console.log(currentOrder)
+    console.log('setAddresses: currentOrder: ', currentOrder)
     const isShipmentRequired = await checkIfShipmentRequired(cl, orderId)
 
     const others = calculateSettings(
@@ -316,8 +376,44 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
   }
 
+  const updateOrder = useCallback(
+    async ({
+      id,
+      attributes,
+      include,
+    }: UpdateOrderArgs): Promise<{
+      success: boolean
+      error?: unknown
+      order?: Order
+    }> => {
+      try {
+        if (cl == null) {
+          return { success: false }
+        }
+
+        const resource = { ...attributes, id }
+        await cl.orders.update(resource, { include })
+        const currentOrder = await getOrderFromRef()
+        // @WARNING: is this `order` object getting updated by the `getOrder` callback?
+
+        currentOrder &&
+          dispatch({
+            type: ActionType.UPDATE_ORDER,
+            payload: {
+              order: currentOrder,
+            },
+          })
+
+        return { success: true, order: currentOrder }
+      } catch (error: any) {
+        return { success: false, error }
+      }
+    },
+    [config, fetchOrder]
+  )
+
   const setLicenseOwner = async (params: {
-    licenseOwner?: LicenseOwner
+    licenseOwner?: LicenseOwnerInput
     order?: Order
   }) => {
     dispatch({ type: ActionType.START_LOADING })
@@ -348,6 +444,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         getOrderFromRef,
         setAddresses,
         selectShipment,
+        updateOrder,
         getOrder,
         saveShipments,
         setPayment,

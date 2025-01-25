@@ -355,13 +355,13 @@ export function calculateAddresses(
   return values
 }
 
+// @NOTE: this function converts fields from the `order` to the providers `state`
+
 export function calculateSettings(
   order: Order,
   isShipmentRequired: boolean,
   customerAddress?: CustomerAddress[]
 ) {
-  console.log('calculateSettings order: ', order)
-
   // FIX saving customerAddresses because we don't receive
   // them from fetchORder
   const calculatedAddresses = calculateAddresses(

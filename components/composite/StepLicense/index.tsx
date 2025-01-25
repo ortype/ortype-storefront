@@ -6,6 +6,7 @@ import {
   Input,
   Stack,
   Switch,
+  Text,
 } from '@chakra-ui/react'
 
 import { Radio, RadioGroup } from '@/components/ui/radio'
@@ -13,7 +14,6 @@ import { Radio, RadioGroup } from '@/components/ui/radio'
 import { Field } from '@/components/ui/field'
 // @TODO: Look at exporting this from package
 // import { getCountries } from '@commercelayer/react-components/utils/countryStateCity'
-import { useOrderContext } from '@/commercelayer/providers/Order'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import { AccordionContext } from 'components/data/AccordionProvider'
@@ -75,7 +75,6 @@ export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
 export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
-  const { updateOrder } = useOrderContext()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
 
@@ -85,7 +84,7 @@ export const StepLicense: React.FC<Props> = () => {
   const {
     orderId,
     order,
-    billingAddress,
+    updateOrder,
     setLicenseOwner,
     isLicenseForClient,
   } = checkoutCtx
@@ -98,8 +97,6 @@ export const StepLicense: React.FC<Props> = () => {
     setIsClient(isLicenseForClient.toString())
   }, [isLicenseForClient])
 
-  // @TODO: store is_client param in state
-
   const handleSetIsClient = (value) => {
     setIsClient(value)
   }
@@ -108,15 +105,10 @@ export const StepLicense: React.FC<Props> = () => {
     setIsLocalLoader(true)
     // @TODO: How to declare type "LicenseOwner" here
     const isTrueSet = isClient?.toLowerCase?.() === 'true'
-    const owner = isTrueSet
-      ? Object.assign(
-          { is_client: isClient },
+    const owner = Object.assign(
+          { is_client: isClient?.toLowerCase?.() === 'true' },
           ...Object.keys(values).map((key) => ({ [key]: values[key].value }))
         )
-      : {
-          is_client: isClient,
-          full_name: billingAddress.full_name,
-        }
 
     try {
       const { order: updatedOrder } = await updateOrder({
@@ -192,7 +184,11 @@ export const StepLicense: React.FC<Props> = () => {
                 autoComplete="off"
                 onSubmit={handleSubmit(s)}
               >
-                {isClient === 'true' && (
+
+                {isClient === 'true' ? (
+                  <Text size={'xs'} textTransform={'uppercase'}>{'Client license'}</Text>
+                ) : (<Text size={'xs'} textTransform={'uppercase'}>{'Personal license'}</Text>)}
+                
                   <>
                     <Fieldset>
                       <Field label={'License Owner/Company*'}>
@@ -218,33 +214,22 @@ export const StepLicense: React.FC<Props> = () => {
                         defaultValue={order?.metadata?.license?.owner?.name}
                       />
                     </Fieldset>*/}
-                    <Fieldset>
-                      <Field label={'First name'}>
-                        <Input
-                          name={'first_name'}
-                          type={'text'}
-                          ref={validation}
-                          size={'lg'}
-                          defaultValue={
-                            order?.metadata?.license?.owner?.first_name
-                          }
-                        />
-                      </Field>
-                    </Fieldset>
-                    <Fieldset>
-                      <Field label={'Last name'}>
-                        <Input
-                          name={'last_name'}
-                          type={'text'}
-                          ref={validation}
-                          size={'lg'}
-                          defaultValue={
-                            order?.metadata?.license?.owner?.last_name
-                          }
-                        />
-                      </Field>
-                    </Fieldset>
 
+                    <Fieldset>
+                      <Field label={'Name'}>
+                      <Input
+                        name={'full_name'}
+                        type={'text'}
+                        bg={'#eee'}
+                        ref={validation}
+                        borderRadius={0}
+                        colorPalette={'gray'}
+                        variant={'subtle'}
+                        size={'lg'}
+                        defaultValue={order?.metadata?.license?.owner?.full_name}
+                      />
+                      </Field>
+                    </Fieldset>
                     <Fieldset>
                       <Field label={'Address'}>
                         <Input
@@ -305,7 +290,7 @@ export const StepLicense: React.FC<Props> = () => {
                       </Field>
                     </Fieldset>
                   </>
-                )}
+                }
                 <Button type={'submit'}>Save & proceed</Button>
               </form>
             </>

@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import { ToggleLineItem } from '../ToggleLineItem'
 
 interface Props {
+  orderId: string
   order: Order
   name: string
   skuCode: string
@@ -17,6 +18,7 @@ interface Props {
 
 export const SingleStyles: React.FC<Props> = ({
   order,
+  orderId,
   name,
   skuCode,
   selectedSkuOptions,
@@ -24,9 +26,6 @@ export const SingleStyles: React.FC<Props> = ({
   addLineItem,
   deleteLineItem,
 }) => {
-  // @TODO: consume useOrderContainer to get the licenseSize from the metadata
-  // const { order } = useOrderContainer()
-
   return (
     <SimpleGrid columns={2} spacing={4}>
       <Stack direction={'row'} spacing={2}>
@@ -41,19 +40,26 @@ export const SingleStyles: React.FC<Props> = ({
       </Stack>
       <Stack direction={'row'} spacing={2}>
         <Flex>
-          {selectedSkuOptions.length > 0 && licenseSize && (
+          {orderId ? (
+            selectedSkuOptions.length > 0 &&
+            licenseSize && (
+              <Text>
+                <b>
+                  {' '}
+                  {(selectedSkuOptions.reduce(
+                    (total, { price_amount_cents }) =>
+                      total + Number(price_amount_cents),
+                    0
+                  ) *
+                    licenseSize.modifier) /
+                    100}{' '}
+                  EUR
+                </b>
+              </Text>
+            )
+          ) : (
             <Text>
-              <b>
-                {' '}
-                {(selectedSkuOptions.reduce(
-                  (total, { price_amount_cents }) =>
-                    total + Number(price_amount_cents),
-                  0
-                ) *
-                  licenseSize.modifier) /
-                  100}{' '}
-                EUR
-              </b>
+              <b>90 EUR</b>
             </Text>
           )}
         </Flex>

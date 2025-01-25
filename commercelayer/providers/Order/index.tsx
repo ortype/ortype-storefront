@@ -9,7 +9,7 @@ import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { getOrder } from '@/commercelayer/utils/getOrder'
 import { LicenseOwner } from '@/components/data/CheckoutProvider'
 import { useOrderContainer } from '@commercelayer/react-components'
-import CommerceLayer, {
+import {
   LineItem,
   OrderUpdate,
   SkuOption,
@@ -145,46 +145,53 @@ export function OrderProvider({
 
   // @TODO: reproduce createOrder here from the OrderReducer example
 
-  const fetchOrder = useCallback(async (): Promise<{
-    success: boolean
-    order?: Order // Assuming Order is your type for order object
-  }> => {
-    const orderId = localStorage.getItem('order') ?? ''
-    const cl = config != null ? getCommerceLayer(config) : undefined
-    try {
-      if (!orderId || cl == null) {
+  const fetchOrder = useCallback(
+    async (params?: {
+      orderId: string
+    }): Promise<{
+      success: boolean
+      order?: Order // Assuming Order is your type for order object
+    }> => {
+      const orderId = params?.orderId ?? localStorage.getItem('order')
+      const cl = config != null ? getCommerceLayer(config) : undefined
+      try {
+        if (!orderId || cl == null) {
+          return { success: false }
+        }
+
+        const orderResponse = await getOrder({ client: cl, orderId })
+        const order = orderResponse?.object
+
+        // @NOTE: on initial createOrder, and subsequently calling `fetchOrder` this order response has no metadata
+
+        // @NOTE: consider these utils for checking the orderId and order object
+        // import { isValidOrderIdFormat } from 'utils/isValidOrderIdFormat'
+        // if (!isValidOrderIdFormat(orderId)) {
+        // console.log('Invalid: Order Id format')
+        // import { isValidStatus } from 'utils/isValidStatus'
+        // if (!isValidStatus(order.status)) {
+        // console.log('Invalid: Order status')
+
+        order &&
+          dispatch({
+            type: ActionType.SET_ORDER,
+            payload: {
+              order,
+              others: {
+                itemsCount: (order?.line_items || []).length,
+                isInvalid: !order,
+                orderId,
+                ...calculateSettings(order),
+              },
+            },
+          })
+        return { success: true, order }
+      } catch (error) {
         return { success: false }
       }
-
-      const orderResponse = await getOrder({ client: cl, orderId })
-      const order = orderResponse?.object
-
-      // @NOTE: consider these utils for checking the orderId and order object
-      // import { isValidOrderIdFormat } from 'utils/isValidOrderIdFormat'
-      // if (!isValidOrderIdFormat(orderId)) {
-      // console.log('Invalid: Order Id format')
-      // import { isValidStatus } from 'utils/isValidStatus'
-      // if (!isValidStatus(order.status)) {
-      // console.log('Invalid: Order status')
-
-      order &&
-        dispatch({
-          type: ActionType.SET_ORDER,
-          payload: {
-            order,
-            others: {
-              itemsCount: (order?.line_items || []).length,
-              isInvalid: !order,
-              orderId,
-              ...calculateSettings(order),
-            },
-          },
-        })
-      return { success: true, order }
-    } catch (error) {
-      return { success: false }
-    }
-  }, [config])
+    },
+    [config]
+  )
 
   const updateOrder = useCallback(
     async ({
@@ -282,12 +289,14 @@ export function OrderProvider({
       try {
         if (config == null || !params.licenseSize) return
 
-        await createOrUpdateOrder({
+        console.log('OrderProvider.setLicenseSize: ', params.licenseSize)
+        const orderId = await createOrUpdateOrder({
           createOrder,
           updateOrder,
           order: state.order,
           licenseSize: params.licenseSize,
         })
+        // @NOTE: if we already have state.order we should update the line_items
         state.order &&
           (await updateLineItemsLicenseSize({
             cl,
@@ -295,7 +304,7 @@ export function OrderProvider({
             licenseSize: params.licenseSize,
           }))
 
-        const { order } = await fetchOrder()
+        const { order } = await fetchOrder({ orderId })
         order &&
           dispatch({
             type: ActionType.SET_LICENSE_SIZE,
@@ -435,18 +444,11 @@ export function OrderProvider({
     return unsubscribe()
   }, [config.accessToken, fetchOrder, fetchSkuOptions])
 
-  const hasLicenseOwner = state.order?.metadata?.license?.owner
-  const licenseOwner = {
-    // licenseOwner: state.order?.metadata?.license?.owner.full_name,
-    isLicenseForClient: state.order?.metadata?.license?.owner.is_client,
-    hasLicenseOwner,
-  }
-
   const value = {
     ...state,
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
-    ...licenseOwner,
+    // ...calculateSettings({order}), // @NOTE: since we may not have an order
     refetchOrder,
     updateOrder,
     setLicenseOwner,

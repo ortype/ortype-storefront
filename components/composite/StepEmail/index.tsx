@@ -10,7 +10,6 @@ import { StepContainer } from 'components/ui/StepContainer'
 import { StepHeader } from 'components/ui/StepHeader'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LoginForm, RegisterForm } from './Account'
 import { Email } from './Email'
 
 interface Props {

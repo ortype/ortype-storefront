@@ -12,8 +12,11 @@ const LicenseOwnerInput = () => {
 
   const s = async (values, err, e) => {
     setIsLocalLoader(true)
-    const owner = { is_client: false, full_name: values['full_name'].value }
-    setLicenseOwner({ licenseOwner: owner })
+    const licenseOwner = {
+      is_client: false,
+      full_name: values['full_name'].value,
+    }
+    setLicenseOwner({ licenseOwner })
     setIsLocalLoader(false)
   }
 
