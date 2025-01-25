@@ -378,6 +378,7 @@ export function calculateSettings(
     licenseOwner: order.metadata?.license?.owner || {},
     licenseSize: order.metadata?.license?.size,
     emailAddress: order.customer_email,
+    hasCustomer: Boolean(order.customer?.id),
     ...calculatedAddresses,
     ...(isShipmentRequired
       ? calculateSelectedShipments(prepareShipments(order.shipments))

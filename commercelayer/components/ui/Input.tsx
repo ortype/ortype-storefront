@@ -2,7 +2,6 @@ import { useValidationFeedback } from '@/commercelayer/components/forms/useValid
 import { InputLabel } from '@/commercelayer/components/ui/InputLabel'
 import { InputValidationError } from '@/commercelayer/components/ui/InputValidationError'
 import { Input as ChakraInput } from '@chakra-ui/react'
-import cn from 'classnames'
 import { type InputHTMLAttributes } from 'react'
 import { useFormContext } from 'react-hook-form'
 

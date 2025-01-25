@@ -1,3 +1,6 @@
+import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
+import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { Box } from '@chakra-ui/react'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
@@ -58,21 +61,23 @@ export const StepHeaderEmail: React.FC<Props> = ({ step }) => {
   )
 }
 
-const customers = ['newww@owenhoskins.com', 'owen.hoskins@gmail.com']
-
 export const StepEmail: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
+  const { customer, setCustomerEmail } = useIdentityContext()
+  const { isGuest, hasEmailAddress, hasCustomer, emailAddress } = checkoutCtx
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
 
   if (!checkoutCtx || !accordionCtx) {
     return null
   }
-  const { isGuest, emailAddress, hasEmailAddress, setCustomerEmail } =
-    checkoutCtx
 
-  const customerExists = true
+  // @NOTE: at this stage we are managing the identity/customer in two providers
+  // because there is the concept of attaching a `customer_email` to the `order`
+  // CLayer allows guest checkout `order.isGuest + order.customer_email`
+  // however, we do not allow guest checkout, so we should move away from this logic
+  const email = (customer.email && customer.email.length) || emailAddress
 
   return (
     <StepContainer
@@ -88,28 +93,18 @@ export const StepEmail: React.FC<Props> = () => {
             <>
               {hasEmailAddress ? (
                 <>
-                  {customerExists ? (
-                    <LoginForm emailAddress={emailAddress} />
+                  {hasCustomer ? (
+                    <LoginFormNew emailAddress={email} />
                   ) : (
-                    <RegisterForm emailAddress={emailAddress} />
+                    <SignUpForm emailAddress={email} />
                   )}
                 </>
               ) : (
                 <Email
-                  emailAddress={emailAddress}
+                  emailAddress={email}
                   setCustomerEmail={setCustomerEmail}
                 />
               )}
-              {/*
-                - look up Email via email address (how exactly?)
-                  - probably can call an API route with sales channel/app creds to list Emails
-                  and check for matches against the entered email address
-                  - https://docs.commercelayer.io/core/v/api-reference/Emails/list
-                - if it exists show a login-in form
-                - otherwise show a sign-up form
-                  - remove guest checkout route, require an authenticated user
-                - require `!isGuest` before allowing the next step
-              */}
             </>
           )}
         </>

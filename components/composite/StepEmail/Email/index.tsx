@@ -4,6 +4,7 @@ import Errors from '@commercelayer/react-components/errors/Errors'
 import { ErrorCss } from 'components/ui/form/Error'
 import { InputCss } from 'components/ui/form/Input'
 import { Label } from 'components/ui/form/Label'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import tw from 'twin.macro'
@@ -35,10 +36,19 @@ export const Email: React.FC<Props> = ({
       message: t('input.mustBeValidEmail'),
     },
   ]
-  const saveEmail = (email: string) => {
-    if (setCustomerEmail) {
+
+  const [email, setEmail] = useState('')
+
+  const handleBlur = (value) => {
+    // the event.target.value has been validated by CustomerInput handlers
+    // @WARNING: wrapping `CustomerInput` in a chakra input breaks the component
+    console.log('StepEmail/Email: handleBlur: ', value)
+    setEmail && setEmail(value)
+  }
+
+  const saveEmail = () => {
+    if (setCustomerEmail && email.length > 0) {
       setCustomerEmail(email)
-      // @TODO: do we look up the customer email at this point?
     }
   }
 
@@ -59,7 +69,7 @@ export const Email: React.FC<Props> = ({
               saveOnBlur={true}
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              // onBlur={saveEmail}
+              onBlur={handleBlur}
               value={emailAddress}
             />
             <Button onClick={saveEmail}>Save</Button>

@@ -159,6 +159,14 @@ export function IdentityProvider({
         userMode: false,
       })
     },
+    setCustomerEmail: (email) => {
+      setCustomer({
+        ...initialCustomerState,
+        email,
+        isLoading: false,
+        userMode: false,
+      })
+    },
   }
   return (
     <IdentityContext.Provider value={value}>
