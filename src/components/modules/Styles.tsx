@@ -31,12 +31,14 @@ export default function StylesModule({ value }: StylesModuleProps) {
           styleGroup.variants?.length > 0 ||
           styleGroup.italicVariants?.length > 0
         ) {
-          const uprightVariants = styleGroup.variants
-            ?.map((variant) => variant)
-            .filter((item) => item?._id)
-          const italicVariants = styleGroup.italicVariants
-            ?.map((variant) => variant)
-            .filter((item) => item?._id)
+          const uprightVariants =
+            styleGroup.variants
+              ?.map((variant) => variant)
+              .filter((item) => item?._id) ?? []
+          const italicVariants =
+            styleGroup.italicVariants
+              ?.map((variant) => variant)
+              .filter((item) => item?._id) ?? []
           const items = [...uprightVariants, ...italicVariants]
           tabPanels.push(items)
         }
