@@ -32,15 +32,9 @@
     "@portabletext/react": "^3.0.11",
     "@portabletext/types": "^2.0.8",
     "@sanity/client": "^6.10.0",
-    "@sanity/icons": "^3.3.1",
     "@sanity/image-url": "^1.0.2",
-    "@sanity/overlays": "^2.3.2",
-    "@sanity/preview-kit": "^5.0.6",
-    "@sanity/preview-url-secret": "^1.4.1",
     "@sanity/react-loader": "^1.7.0",
     "@sanity/ui": "^1.9.3",
-    "@sanity/vision": "^3.2.5",
-    "@sanity/visual-editing": "^2.10.10",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/typography": "^0.5.14",
@@ -79,7 +73,6 @@
     "next-auth": "5.0.0-beta.25",
     "next-i18n-router": "^5.0.2",
     "next-i18next": "^13.3.0",
-    "next-sanity": "^9.4.5",
     "next-sanity-image": "^6.1.1",
     "next-themes": "^0.4.4",
     "nodemailer": "^6.9.1",
@@ -93,10 +86,11 @@
     "react-icons": "^5.4.0",
     "react-select": "^5.7.2",
     "rxjs": "^7.8.1",
-    "sanity": "^3.54.0",
-    "sanity-plugin-asset-source-unsplash": "^1.0.6",
+    "@sanity/icons": "^3.4.0",
+    "@sanity/vision": "^3.64.3",
+    "next-sanity": "^9.8.16",
+    "sanity": "^3.64.3",
     "sanity-plugin-media": "^2.2.4",
-    "sanity-plugin-vercel-deploy": "^3.3.4",
     "satori": "^0.10.13",
     "server-only": "^0.0.1",
     "slugify": "^1.6.5",
@@ -128,6 +122,6 @@
     }
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   }
 }

@@ -1,0 +1,133 @@
+import { authenticate } from '@commercelayer/js-auth'
+import CommerceLayer from '@commercelayer/sdk'
+import { sizes } from '@/lib/settings'
+import { NextRequest, NextResponse } from 'next/server'
+
+// External prices URL is mananged at
+// `${process.env.CL_SLUG}.commercelayer.io/admin/settings/markets/${marketId}/edit`
+// e.g. https://owenhoskins.ngrok.app/api/price
+
+type PriceCalculationRequest = {
+  data: {
+    attributes: {
+      sku_code: string
+      unit_amount_cents: number
+      quantity: number
+      metadata: object
+    }
+  }
+  // included: []
+  // @TODO: consider including skus resource to pull sku_options from
+  // and consider including the order resource to pull license size metadata from
+  // although both of these data points we can access via the line_items metadata
+  // and via the sku_options.list (although this isn't specific to the line_item, it works)
+}
+
+type PriceCalculationResponse = {
+  sku_code: string
+  unit_amount_cents: number
+}
+
+/*
+  "data": {
+    "id": "xYZkjABcde",
+    "type": "line_items",
+    "links": { ... },
+    "attributes": {
+      "quantity": 2,
+      "sku_code": "TSHIRTMM000000FFFFFFXLXX",
+      "_external_price": true
+    },
+    "relationships": { ... },
+    "meta": { ... }
+  },
+*/
+
+// https://docs.commercelayer.io/core/external-resources/external-prices
+// The request payload is a JSON:API-compliant object you can query to perform your own computation
+
+export async function POST(
+  req: NextRequest,
+  res: NextResponse<PriceCalculationResponse>
+) {
+  const body = await req.json()
+  // console.log('Price req.json(): body... ', body)
+  const {
+    data: {
+      attributes: { quantity, sku_code, metadata },
+    },
+    // included,
+  } = body as PriceCalculationRequest
+
+  // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
+  // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
+
+  try {
+    const token = await authenticate('client_credentials', {
+      clientId: process.env.CL_SYNC_CLIENT_ID,
+      clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
+      endpoint: process.env.CL_ENDPOINT,
+    })
+
+    const cl = CommerceLayer({
+      organization: process.env.CL_SLUG,
+      accessToken: token.accessToken,
+    })
+
+    // const includedOrder = included?.find((item) => item.type === 'orders')
+    // const orderMetadata = includedOrder?.attributes?.metadata
+    // console.log('orderMetadata: ', orderMetadata)
+
+    // @TODO: use sku_code to look up sanity fontVariant by id
+
+    console.log(
+      'line item metadata: ',
+      metadata.license.size,
+      metadata.license.types
+    )
+    // iterate over the types in the metadata.license?.types
+    // use their base price and multiply with the size.modifier
+
+    const size = sizes.find(
+      ({ value }) => value === metadata.license.size.value
+    )
+
+    console.log('price: found size: ', size)
+
+    const skuOptions = await cl.sku_options.list()
+
+    const selectedTypes = skuOptions.filter(({ reference }) =>
+      metadata.license.types.find((val) => val === reference)
+    )
+    console.log('skuOptions: ', skuOptions) // reference: '1-licenseType-desktop',
+    console.log('selectedTypes: ', selectedTypes)
+    const total = selectedTypes.reduce((acc, { price_amount_cents }) => {
+      return acc + Number(price_amount_cents) * size.modifier
+    }, 0)
+
+    const data = {
+      sku_code,
+      unit_amount_cents: total,
+    }
+
+    console.log('Price API route data: ', data)
+
+    // return result.status(200).json({ success: true, data })
+    return NextResponse.json({
+      success: true,
+      status: 200,
+      // revalidated: true, // what does this option do?
+      now: Date.now(),
+      data,
+    })
+  } catch (error) {
+    console.error(error)
+    // return result.status(500).json({ success: false, message: 'Internal server error' })
+    return NextResponse.json({
+      status: 500,
+      success: false,
+      now: Date.now(),
+      message: 'Internal server error',
+    })
+  }
+}

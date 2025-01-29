@@ -2,17 +2,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      // @NOTE: or simply `"@/*": ["./*"]`
-      "@/*": ["./*"],
-      "@/components/*": ["components/*"],
-      "@/app/*": ["app/*"],
-      "@/sanity/*": ["sanity/*"],
-      "@/types/*": ["types/*"],
-      "@/commercelayer/*": ["commercelayer/*"]
+      "@/*": ["./src/*"]
     },
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "target": "ES2017",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -36,7 +30,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "types/**/*.d.ts"
+    "src/types/**/*.d.ts"
   ],
   "exclude": ["node_modules"]
 }

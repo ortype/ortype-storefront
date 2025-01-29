@@ -1,0 +1,122 @@
+import CommerceLayer from '@commercelayer/sdk'
+import type { Settings } from 'CustomApp'
+import { createContext, useEffect, useState } from 'react'
+import { getCustomerDetails } from '@/utils/getCustomerDetails'
+// import { getInfoFromJwt } from '@/utils/getInfoFromJwt'
+
+type CustomerProviderData = Pick<
+  Settings,
+  'customerId' | 'accessToken' | 'endpoint'
+> & {
+  domain: string
+  email: string
+  hasPassword: boolean
+  isLoading: boolean
+  isFirstLoading: boolean
+  showMobileMenu: boolean
+  refetchCustomer: () => Promise<void>
+  closeMobileMenu: () => void
+  toggleMobileMenu: () => void
+}
+
+interface AppStateData {
+  email: string
+  hasPassword: boolean
+  isLoading: boolean
+  isFirstLoading: boolean
+  showMobileMenu: boolean
+}
+
+const initialState: AppStateData = {
+  isLoading: true,
+  isFirstLoading: true,
+  email: '',
+  hasPassword: false,
+  showMobileMenu: false,
+}
+
+export const CustomerContext = createContext<CustomerProviderData | null>(null)
+
+type CustomerProviderProps = Pick<
+  Settings,
+  'customerId' | 'accessToken' | 'endpoint'
+> & {
+  slug: string
+  domain: string
+  children: React.ReactNode
+}
+
+export function CustomerProvider({
+  children,
+  customerId,
+  slug,
+  accessToken,
+  endpoint,
+  domain,
+}: CustomerProviderProps): JSX.Element {
+  const [state, setState] = useState(initialState)
+
+  const fetchCustomerHandle = async (
+    customerId?: string,
+    accessToken?: string
+  ) => {
+    if (!customerId || !accessToken) {
+      return
+    }
+    setState({ ...state, isLoading: true })
+
+    // @TODO: we have the slug in the SettingsProvider
+    // const { slug } = getInfoFromJwt(accessToken)
+    if (!slug) {
+      return
+    }
+
+    const client = CommerceLayer({
+      organization: slug,
+      accessToken,
+      domain,
+    })
+
+    return await getCustomerDetails({
+      client,
+      customerId,
+    }).then((customerResponse) => {
+      const customer = customerResponse?.object
+      setState({
+        email: customer?.email ?? '',
+        hasPassword: customer?.has_password ?? false,
+        isLoading: false,
+        isFirstLoading: false,
+        showMobileMenu: false,
+      })
+    })
+  }
+
+  useEffect(() => {
+    fetchCustomerHandle(customerId, accessToken)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customerId, accessToken])
+
+  return (
+    <CustomerContext.Provider
+      value={{
+        ...state,
+        customerId,
+        accessToken,
+        endpoint,
+        domain,
+        refetchCustomer: async () => {
+          return await fetchCustomerHandle(customerId, accessToken)
+        },
+        closeMobileMenu: () => {
+          setState({ ...state, showMobileMenu: false })
+        },
+        toggleMobileMenu: () => {
+          setState({ ...state, showMobileMenu: !state.showMobileMenu })
+        },
+      }}
+    >
+      {children}
+    </CustomerContext.Provider>
+  )
+}

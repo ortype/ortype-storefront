@@ -1,14 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 const colors = require('tailwindcss/colors')
 const defaultTheme = require('tailwindcss/defaultTheme')
-import type { Config } from 'tailwindcss'
 import typography from '@tailwindcss/typography'
+import type { Config } from 'tailwindcss'
 
 module.exports = {
   content: [
-    './components/**/*.{js,ts,jsx,tsx}',
-    './sanity/**/*.{js,ts,jsx,tsx}',
-    './app/**/*.{js, jsx, ts,tsx}',
+    './src/components/**/*.{js,ts,jsx,tsx}',
+    './src/sanity/**/*.{js,ts,jsx,tsx}',
+    './src/app/**/*.{js, jsx, ts,tsx}',
   ],
   theme: {
     container: {
