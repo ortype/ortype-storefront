@@ -18,9 +18,8 @@ import { CustomerAddressCard } from '@/components/ui/CustomerAddressCard'
 
 import { Button } from '@/components/ui/chakra-button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Grid, Heading } from '@chakra-ui/react'
+import { Box, Grid, Heading } from '@chakra-ui/react'
 import { AddressFormBottom } from './AddressFormBottom'
-import { AddressSectionEmail } from './AddressSectionEmail'
 import { BillingAddressFormNew } from './BillingAddressFormNew'
 import { ShippingAddressFormNew } from './ShippingAddressFormNew'
 
@@ -160,71 +159,68 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
   }
 
   return (
-    <Fragment>
-      {/*<AddressSectionEmail readonly emailAddress={emailAddress as string} />*/}
+    <>
       <AddressesContainer shipToDifferentAddress={shipToDifferentAddress}>
-        <Heading data-testid="billing-address">
+        <Heading size={'xs'} data-testid="billing-address">
           {t(`addressForm.billing_address_title`)}
         </Heading>
-        <div className="relative">
-          <>
-            {hasCustomerAddresses && (
-              <>
-                <Transition
-                  show={!showBillingAddressForm}
-                  {...addressesTransition}
-                >
-                  <Grid className="mb-4">
-                    <BillingAddressContainer>
-                      <CustomerAddressCard
-                        addressType="billing"
-                        deselect={showBillingAddressForm}
-                        onSelect={onSelect}
-                      />
-                    </BillingAddressContainer>
-                  </Grid>
-                </Transition>
-
-                {!showBillingAddressForm && hasCustomerAddresses && (
-                  <Button
-                    dataTestId="add_new_billing_address"
-                    action={handleShowBillingForm}
-                  />
-                )}
-              </>
-            )}
-          </>
-          <div className="top-0 mt-4">
-            <Transition
-              show={showBillingAddressForm}
-              beforeEnter={() => setMountBillingAddressForm(true)}
-              afterLeave={() => setMountBillingAddressForm(false)}
-              {...formTransition}
-            >
-              <BillingAddressForm
-                autoComplete="on"
-                reset={!showBillingAddressForm}
-                errorClassName="hasError"
+        <>
+          {hasCustomerAddresses && (
+            <>
+              <Transition
+                show={!showBillingAddressForm}
+                {...addressesTransition}
               >
-                {mountBillingAddressForm || !hasCustomerAddresses ? (
-                  <>
-                    <BillingAddressFormNew
-                      billingAddress={billingAddressFill}
-                      openShippingAddress={openShippingAddress}
-                    />
-                    <AddressFormBottom
+                <Grid className="mb-4">
+                  <BillingAddressContainer>
+                    <CustomerAddressCard
                       addressType="billing"
-                      onClick={handleShowBillingForm}
-                      hasCustomerAddresses={hasCustomerAddresses}
+                      deselect={showBillingAddressForm}
+                      onSelect={onSelect}
                     />
-                  </>
-                ) : (
-                  <Fragment />
-                )}
-              </BillingAddressForm>
-            </Transition>
-          </div>
-        </div>
+                  </BillingAddressContainer>
+                </Grid>
+              </Transition>
+
+              {!showBillingAddressForm && hasCustomerAddresses && (
+                <Button
+                  dataTestId="add_new_billing_address"
+                  action={handleShowBillingForm}
+                />
+              )}
+            </>
+          )}
+        </>
+        <Box>
+          <Transition
+            show={showBillingAddressForm}
+            beforeEnter={() => setMountBillingAddressForm(true)}
+            afterLeave={() => setMountBillingAddressForm(false)}
+            {...formTransition}
+          >
+            <BillingAddressForm
+              autoComplete="on"
+              reset={!showBillingAddressForm}
+              errorClassName="hasError"
+            >
+              {mountBillingAddressForm || !hasCustomerAddresses ? (
+                <>
+                  <BillingAddressFormNew
+                    billingAddress={billingAddressFill}
+                    openShippingAddress={openShippingAddress}
+                  />
+                  <AddressFormBottom
+                    addressType="billing"
+                    onClick={handleShowBillingForm}
+                    hasCustomerAddresses={hasCustomerAddresses}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+            </BillingAddressForm>
+          </Transition>
+        </Box>
         {isShipmentRequired && (
           <>
             <Checkbox
@@ -301,7 +297,7 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
                       />
                     </>
                   ) : (
-                    <Fragment />
+                    <></>
                   )}
                 </ShippingAddressForm>
               </Transition>
@@ -323,7 +319,7 @@ export const CheckoutCustomerAddresses: React.FC<Props> = ({
           />
         </Button>
       </AddressesContainer>
-    </Fragment>
+    </>
   )
 }
 

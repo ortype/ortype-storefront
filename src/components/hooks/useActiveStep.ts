@@ -1,3 +1,4 @@
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { CheckoutContext } from '@/components/data/CheckoutProvider'
 import { useContext, useEffect, useState } from 'react'
 
@@ -13,7 +14,7 @@ interface UseActiveStep {
 const STEPS: SingleStepEnum[] = [
   // 'Cart',
   'Email',
-  'Address', // @TODO: `Address` and `License` should be
+  'Address',
   'License',
   'Shipping',
   'Payment',
@@ -39,6 +40,7 @@ export const useActiveStep = (): UseActiveStep => {
   const [steps, setSteps] = useState<SingleStepEnum[]>(STEPS)
 
   const ctx = useContext(CheckoutContext)
+  const { customer } = useIdentityContext()
 
   if (!ctx)
     return {
@@ -51,6 +53,9 @@ export const useActiveStep = (): UseActiveStep => {
 
   const { isFirstLoading, isLoading } = ctx
 
+  // @TODO: Add <StepCart /> and 'cart'
+  // and a condition
+
   useEffect(() => {
     if (ctx && (isFirstLoading || !ctx.isLoading)) {
       // Use it to alter steps of checkout
@@ -62,45 +67,44 @@ export const useActiveStep = (): UseActiveStep => {
         setSteps(['Email', 'Address', 'License', 'Payment'])
       }
 
+      const canSetEmail = !customer.userMode || !ctx.hasEmailAddress
       const canSelectCustomerAddress =
-        !ctx.isGuest &&
+        customer.userMode &&
         ctx.hasShippingAddress &&
         ctx.hasBillingAddress &&
         ctx.hasEmailAddress
       const canSelectShippingMethod =
         canSelectCustomerAddress &&
         (ctx.hasShippingAddress || !ctx.isShipmentRequired)
-      const canSelectLicenseOwner =
-        canSelectCustomerAddress && canSelectShippingMethod // !ctx.isGuest && ctx.hasBillingAddress
+      const canSelectLicenseOwner = customer.userMode && ctx.hasBillingAddress
       const canSelectPayment =
-        canSelectCustomerAddress &&
-        canSelectShippingMethod &&
-        ctx.hasShippingMethod &&
-        ctx.hasLicenseOwner
+        customer.userMode && ctx.hasBillingAddress && ctx.hasLicenseOwner
       const canPlaceOrder =
         canSelectCustomerAddress &&
         canSelectShippingMethod &&
         canSelectPayment &&
         ctx.hasPaymentMethod
-      const canSetEmail = ctx.isGuest || !ctx.hasEmailAddress
 
-      console.log(
-        'Steps: Checkout Context: ',
-        ctx.hasLicenseOwner,
-        ctx.licenseOwner,
-        ctx
-      )
       console.log('canSelectCustomerAddress', canSelectCustomerAddress)
       console.log('canSelectShippingMethod', canSelectShippingMethod)
-      console.log('canSelectLicenseOwner: ', canSelectLicenseOwner)
-      console.log('canSelectPayment', canSelectPayment)
+      console.log('canSelectLicenseOwner: ', canSelectLicenseOwner, {
+        isGuest: ctx.isGuest,
+        hasBillingAddress: ctx.hasBillingAddress,
+      })
+      console.log('canSelectPayment', canSelectPayment, {
+        isCustomer: !ctx.isGuest,
+        billingAddress: ctx.hasBillingAddress,
+        hasLicenseOwner: ctx.hasLicenseOwner,
+      })
       console.log('canPlaceOrder', canPlaceOrder)
       console.log('canSetEmail', canSetEmail)
 
       if (canPlaceOrder) {
+        console.log('Step 5: Complete')
         setActiveStep('Complete')
         setLastActivableStep('Complete')
       } else if (canSelectPayment) {
+        console.log('Step 4: Payment')
         setActiveStep('Payment')
         setLastActivableStep('Payment')
         // } else if (canSelectShippingMethod) {
@@ -108,19 +112,18 @@ export const useActiveStep = (): UseActiveStep => {
         //   setLastActivableStep('Shipping')
         // } else if (!ctx.hasLicenseOwner) {
       } else if (canSelectLicenseOwner) {
+        console.log('Step 3: Address')
         setActiveStep('License')
         setLastActivableStep('License')
-      } else if (!ctx.isGuest) {
+      } else if (customer.userMode && ctx.hasEmailAddress) {
+        console.log('Step 2: Address')
         setActiveStep('Address')
         setLastActivableStep('Address')
-      } else if (ctx.isGuest || !ctx.hasEmailAddress) {
+      } else if (!customer.userMode || !ctx.hasEmailAddress) {
+        console.log('Step 1: Email')
         setActiveStep('Email')
         setLastActivableStep('Email')
-      } /* else {
-        console.log('Steps: Cart')
-        setActiveStep('Cart')
-        setLastActivableStep('Cart')
-      }*/
+      }
     }
   }, [isFirstLoading, isLoading])
 

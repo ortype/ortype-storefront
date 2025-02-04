@@ -17,7 +17,6 @@ import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
 import { CheckoutCustomerPayment } from './CheckoutCustomerPayment'
 import { CheckoutPayment } from './CheckoutPayment'
-import { PaymentSkeleton } from './PaymentSkeleton'
 
 export type THandleClick = (params: {
   payment?: PaymentMethodType | Record<string, any>
@@ -53,7 +52,7 @@ export const StepHeaderPayment: React.FC<HeaderProps> = ({ step }) => {
     return (
       <>
         <div className="flex">
-          <PaymentSource readonly loader={<PaymentSkeleton />}>
+          <PaymentSource readonly loader={<div />}>
             <PaymentSourceBrandIcon className="mr-2" />
             <PaymentSourceBrandName className="mr-1">
               {({ brand }) => {

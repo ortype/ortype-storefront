@@ -1,4 +1,4 @@
-import { Container } from '@chakra-ui/react'
+import { Container, Flex } from '@chakra-ui/react'
 
 interface Props {
   className: string
@@ -6,5 +6,7 @@ interface Props {
 }
 
 export const StepContainer: React.FC<Props> = ({ children, className }) => (
-  <Container className={className}>{children}</Container>
+  <Container className={className} py={10} centerContent>
+    {children}
+  </Container>
 )

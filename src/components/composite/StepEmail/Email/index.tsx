@@ -1,5 +1,6 @@
+import { Button } from '@/components/ui/chakra-button'
 import { Field } from '@/components/ui/field'
-import { Box, Button, Container } from '@chakra-ui/react'
+import { Box, Container, Fieldset, Input } from '@chakra-ui/react'
 import CustomerInput from '@commercelayer/react-components/customers/CustomerInput'
 import Errors from '@commercelayer/react-components/errors/Errors'
 import { useState } from 'react'
@@ -49,35 +50,26 @@ export const Email: React.FC<Props> = ({
   }
 
   return (
-    <Container>
-      <div className="relative">
-        <Field label={t('addressForm.customer_email')}>
-          {readonly ? (
-            <Box data-testid="current-customer-email">{emailAddress}</Box>
-          ) : (
-            <>
-              <CustomerInput
-                className="block w-full border-gray-300 form-input shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                data-testid="customer_email"
-                id="customer_email"
-                errorClassName="hasError"
-                saveOnBlur={true}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                onBlur={handleBlur}
-                value={emailAddress}
-              />
-              <Button onClick={saveEmail}>Save</Button>
-              <Box
-                data-testid="customer_email_error"
-                resource="orders"
-                field="customer_email"
-                messages={messages}
-              />
-            </>
-          )}
+    <Fieldset.Root size="lg" maxW="sm">
+      <Fieldset.Content>
+        <Field label={t('addressForm.customer_email')} errorText={messages}>
+          <Input asChild variant={'subtle'}>
+            <CustomerInput
+              data-testid="customer_email"
+              id="customer_email"
+              errorClassName="hasError"
+              saveOnBlur={true}
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              onBlur={handleBlur}
+              value={emailAddress}
+            />
+          </Input>
         </Field>
-      </div>
-    </Container>
+        <Button onClick={saveEmail} variant={'outline'} alignSelf="flex-end">
+          Save
+        </Button>
+      </Fieldset.Content>
+    </Fieldset.Root>
   )
 }

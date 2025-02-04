@@ -218,14 +218,15 @@ const Checkout: React.FC<Props> = ({
                         <div className="mb-6">
                           <StepPayment />
                         </div>
+                        <StepPlaceOrder
+                          isActive={
+                            activeStep === 'Payment' ||
+                            activeStep === 'Complete'
+                          }
+                          termsUrl={termsUrl}
+                          privacyUrl={privacyUrl}
+                        />
                       </AccordionItem>
-                      <StepPlaceOrder
-                        isActive={
-                          activeStep === 'Payment' || activeStep === 'Complete'
-                        }
-                        termsUrl={termsUrl}
-                        privacyUrl={privacyUrl}
-                      />
                     </PlaceOrderContainer>
                   </PaymentContainer>
                 </AccordionProvider>

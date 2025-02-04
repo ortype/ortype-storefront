@@ -6,7 +6,6 @@ import { MouseEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PaymentDetails } from './PaymentDetails'
-import { PaymentSkeleton } from './PaymentSkeleton'
 import { PaymentSummaryList } from './PaymentSummaryList'
 
 import { Checkbox } from '@/components/ui/checkbox'
@@ -92,7 +91,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
         activeClass="active group"
         className="payment"
         // @ts-expect-error Type 'FC<{}>' is not assignable to type 'LoaderType'.
-        loader={PaymentSkeleton}
+        loader={<div />}
         clickableContainer
         // @ts-expect-error Types of parameters 'params' and 'payment' are incompatible.
         onClick={selectPayment}
@@ -109,7 +108,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
                 <TemplateSaveToWalletCheckbox {...props} />
               )}
               // @ts-expect-error Type 'FC<{}>' is not assignable to type 'LoaderType'.
-              loader={PaymentSkeleton}
+              loader={<div />}
             >
               <Box>
                 <PaymentDetails hasEditButton />

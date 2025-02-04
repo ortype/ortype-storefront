@@ -33,7 +33,7 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
       setValid(validCheckout)
       console.log('validCheckout: then() ', validCheckout)
     })
-  }, [orderId, isLoading])
+  }, [orderId])
 
   if (!valid) {
     return (

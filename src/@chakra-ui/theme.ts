@@ -55,7 +55,12 @@ const breakpoints = {
   '2xl': { value: '100em' }, // ~1600px
 }
 
+// @NOTE: remember to define types with typegen
+// npx @chakra-ui/cli typegen ./src/@chakra-ui/theme.ts
+
 const config = defineConfig({
+  cssVarsPrefix: 'or',
+  // strictTokens: true, // only allow defined tokens (this is for production ready app)
   globalCss,
   theme: {
     tokens: {

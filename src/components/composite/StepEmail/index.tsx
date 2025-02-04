@@ -1,13 +1,13 @@
 import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
 import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
-import { Box } from '@chakra-ui/react'
-import type { Order } from '@commercelayer/sdk'
-import classNames from 'classnames'
 import { AccordionContext } from '@/components/data/AccordionProvider'
 import { CheckoutContext } from '@/components/data/CheckoutProvider'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
+import { Box, Flex } from '@chakra-ui/react'
+import type { Order } from '@commercelayer/sdk'
+import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Email } from './Email'
@@ -66,6 +66,7 @@ export const StepEmail: React.FC<Props> = () => {
   const { customer, setCustomerEmail } = useIdentityContext()
   const { isGuest, hasEmailAddress, hasCustomer, emailAddress } = checkoutCtx
 
+  // @NOTE: not doing anything yet with this state
   const [isLocalLoader, setIsLocalLoader] = useState(false)
 
   if (!checkoutCtx || !accordionCtx) {
@@ -76,7 +77,7 @@ export const StepEmail: React.FC<Props> = () => {
   // because there is the concept of attaching a `customer_email` to the `order`
   // CLayer allows guest checkout `order.isGuest + order.customer_email`
   // however, we do not allow guest checkout, so we should move away from this logic
-  const email = (customer.email && customer.email.length) || emailAddress
+  const email = customer.email
 
   return (
     <StepContainer
@@ -86,28 +87,23 @@ export const StepEmail: React.FC<Props> = () => {
         submitting: isLocalLoader,
       })}
     >
-      <Box>
-        <>
-          {accordionCtx.isActive && (
-            <>
-              {hasEmailAddress ? (
-                <>
-                  {hasCustomer ? (
-                    <LoginFormNew emailAddress={email} />
-                  ) : (
-                    <SignUpForm emailAddress={email} />
-                  )}
-                </>
-              ) : (
-                <Email
-                  emailAddress={email}
-                  setCustomerEmail={setCustomerEmail}
-                />
-              )}
-            </>
-          )}
-        </>
-      </Box>
+      <>
+        {accordionCtx.isActive && (
+          <>
+            {hasEmailAddress ? (
+              <>
+                {hasCustomer ? (
+                  <LoginFormNew emailAddress={email} />
+                ) : (
+                  <SignUpForm emailAddress={email} />
+                )}
+              </>
+            ) : (
+              <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
+            )}
+          </>
+        )}
+      </>
     </StepContainer>
   )
 }

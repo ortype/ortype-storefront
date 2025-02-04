@@ -3,9 +3,10 @@ import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CheckoutContext } from '@/components/data/CheckoutProvider'
-import { GTMContext } from '@/components/data/GTMProvider'
-
-import { Box, Button, Container, Flex } from '@chakra-ui/react'
+// import { GTMContext } from '@/components/data/GTMProvider'
+import { Button } from '@/components/ui/chakra-button'
+import { Box, Container, Flex } from '@chakra-ui/react'
+import { Errors, PlaceOrderButton } from '@commercelayer/react-components'
 import { messages } from './messages'
 
 interface Props {
@@ -24,7 +25,7 @@ const StepPlaceOrder: React.FC<Props> = ({
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
 
   const checkoutCtx = useContext(CheckoutContext)
-  const gtmCtx = useContext(GTMContext)
+  // const gtmCtx = useContext(GTMContext)
 
   if (!checkoutCtx) {
     return null
@@ -53,7 +54,7 @@ const StepPlaceOrder: React.FC<Props> = ({
   return (
     <>
       <Container data-testid="errors-container">
-        <Box
+        <Errors
           resource="orders"
           messages={
             messages &&
@@ -82,16 +83,17 @@ const StepPlaceOrder: React.FC<Props> = ({
               </>
             )
           }}
-        </Box>
+        </Errors>
       </Container>
 
       <>
         <Flex>
           <Button
+            as={PlaceOrderButton}
             data-testid="save-payment-button"
             isActive={isActive}
             onClick={handlePlaceOrder}
-            label={<>{t('stepPayment.submit')}</>}
+            label={t('stepPayment.submit')}
           />
         </Flex>
       </>

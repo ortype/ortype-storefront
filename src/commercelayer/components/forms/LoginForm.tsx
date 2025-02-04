@@ -6,11 +6,8 @@ import * as yup from 'yup'
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 
-import {
-  Button,
-  // Input,
-  Link as ChakraLink,
-} from '@chakra-ui/react'
+import { Button } from '@/components/ui/chakra-button'
+import { Link as ChakraLink, Fieldset, Stack } from '@chakra-ui/react'
 import Link from 'next/link'
 
 import { setStoredCustomerToken } from '@/commercelayer/utils/oauthStorage'
@@ -80,36 +77,46 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
   return settings.isGuest ? (
     <FormProvider {...form}>
       <form
-        className="mt-8 mb-0"
         onSubmit={(e) => {
           void onSubmit(e)
         }}
       >
-        <div className="space-y-4">
-          <Input name="customerEmail" label="Email" type="email" />
-          <Input name="customerPassword" label="Password" type="password" />
-          {resetPasswordUrl.length > 0 && (
-            <div className="text-right">
-              <ChakraLink
-                as={Link}
-                href={`${resetPasswordUrl}`}
-                target="_blank"
+        <Fieldset.Root size="lg" maxW="sm">
+          <Fieldset.Content>
+            <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
+              <Input name="customerEmail" label="Email" type="email" />
+              <Input name="customerPassword" label="Password" type="password" />
+              {resetPasswordUrl.length > 0 && (
+                <div className="text-right">
+                  <ChakraLink
+                    as={Link}
+                    href={`${resetPasswordUrl}`}
+                    target="_blank"
+                  >
+                    Forgot password?
+                  </ChakraLink>
+                </div>
+              )}
+
+              <Button
+                variant={'outline'}
+                type="submit"
+                alignSelf={'flex-end'}
+                loadingText={'Submitting'}
+                disabled={isSubmitting}
+                loading={isSubmitting}
               >
-                Forgot password?
-              </ChakraLink>
-            </div>
-          )}
-          <div className="flex pt-4">
-            <Button disabled={isSubmitting} type="submit">
-              {isSubmitting ? '...' : 'Login'}
-            </Button>
-          </div>
-          {form.formState.errors?.root != null && (
-            <div className="pt-4">
-              <div>Alert - danger - Invalid credentials</div>
-            </div>
-          )}
-        </div>
+                {'Login'}
+              </Button>
+
+              {form.formState.errors?.root != null && (
+                <Fieldset.ErrorText>
+                  Alert - danger - Invalid credentials
+                </Fieldset.ErrorText>
+              )}
+            </Stack>
+          </Fieldset.Content>
+        </Fieldset.Root>
       </form>
     </FormProvider>
   ) : (

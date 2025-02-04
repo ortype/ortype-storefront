@@ -24,7 +24,7 @@ export const BillingAddressFormNew: React.FC<Props> = ({
   const { requiresBillingInfo } = checkoutCtx
 
   return (
-    <Container>
+    <>
       <Grid>
         <AddressInputGroup
           fieldName="billing_address_first_name"
@@ -95,6 +95,6 @@ export const BillingAddressFormNew: React.FC<Props> = ({
           value={billingAddress?.billing_info || ''}
         />
       )}
-    </Container>
+    </>
   )
 }

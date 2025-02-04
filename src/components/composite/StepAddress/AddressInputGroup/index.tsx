@@ -2,6 +2,12 @@ import AddressCountrySelector from '@commercelayer/react-components/addresses/Ad
 import AddressInput from '@commercelayer/react-components/addresses/AddressInput'
 import AddressStateSelector from '@commercelayer/react-components/addresses/AddressStateSelector'
 import { Errors } from '@commercelayer/react-components/errors/Errors'
+/*
+import {
+  Country,
+  States,
+} from "@commercelayer/react-components/lib/esm/utils/countryStateCity"
+*/
 import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -11,7 +17,7 @@ import {
 } from '@/components/composite/StepAddress'
 import { CheckoutContext } from '@/components/data/CheckoutProvider'
 import { Field } from '@/components/ui/field'
-import { Box } from '@chakra-ui/react'
+import { Box, Input } from '@chakra-ui/react'
 
 type TFieldName =
   | Parameters<typeof AddressCountrySelector>[0]['name']
@@ -29,6 +35,42 @@ interface Props {
   required?: boolean
   value?: string
   openShippingAddress?: (props: ShippingToggleProps) => void
+}
+
+const ChakraStyledCLayerSelect = ({ children }) => {
+  return (
+    <Box
+      asChild
+      css={{
+        // @NOTE: using styles copied from chakra native-select.ts
+        width: '100%',
+        minWidth: '0',
+        outline: '0',
+        appearance: 'none',
+        borderRadius: 'l2',
+        _disabled: {
+          layerStyle: 'disabled',
+        },
+        _invalid: {
+          borderColor: 'border.error',
+        },
+        focusVisibleRing: 'inside',
+        lineHeight: 'normal',
+        '& > option, & > optgroup': {
+          bg: 'inherit',
+        },
+        borderWidth: '1px',
+        borderColor: 'transparent',
+        bg: 'bg.muted',
+        textStyle: 'sm',
+        ps: '3',
+        pe: '8',
+        height: '10',
+      }}
+    >
+      {children}
+    </Box>
+  )
 }
 
 export const AddressInputGroup: React.FC<Props> = ({
@@ -108,27 +150,29 @@ export const AddressInputGroup: React.FC<Props> = ({
       return (
         <>
           <Field label={label}>
-            <AddressCountrySelector
-              id={fieldName}
-              className="form-select"
-              data-testid={`input_${fieldName}`}
-              name={fieldName}
-              placeholder={{
-                label: t(`addressForm.${fieldName}_placeholder`),
-                value: '',
-              }}
-              onChange={handleChange}
-              value={
-                shippingCountryCodeLock &&
-                fieldName === 'shipping_address_country_code'
-                  ? shippingCountryCodeLock
-                  : value
-              }
-              disabled={Boolean(
-                shippingCountryCodeLock &&
+            <ChakraStyledCLayerSelect>
+              <AddressCountrySelector
+                id={fieldName}
+                className="form-select"
+                data-testid={`input_${fieldName}`}
+                name={fieldName}
+                placeholder={{
+                  label: t(`addressForm.${fieldName}_placeholder`),
+                  value: '',
+                }}
+                onChange={handleChange}
+                value={
+                  shippingCountryCodeLock &&
                   fieldName === 'shipping_address_country_code'
-              )}
-            />
+                    ? shippingCountryCodeLock
+                    : value
+                }
+                disabled={Boolean(
+                  shippingCountryCodeLock &&
+                    fieldName === 'shipping_address_country_code'
+                )}
+              />
+            </ChakraStyledCLayerSelect>
           </Field>
         </>
       )
@@ -136,14 +180,16 @@ export const AddressInputGroup: React.FC<Props> = ({
       return (
         <>
           <Field label={label}>
-            <AddressStateSelector
-              id={fieldName}
-              selectClassName="form-select"
-              inputClassName="form-input"
-              data-testid={`input_${fieldName}`}
-              name={fieldName}
-              value={value}
-            />
+            <ChakraStyledCLayerSelect>
+              <AddressStateSelector
+                id={fieldName}
+                selectClassName="form-select"
+                inputClassName="form-input"
+                data-testid={`input_${fieldName}`}
+                name={fieldName}
+                value={value}
+              />
+            </ChakraStyledCLayerSelect>
           </Field>
         </>
       )
@@ -151,15 +197,17 @@ export const AddressInputGroup: React.FC<Props> = ({
       return (
         <>
           <Field label={label}>
-            <AddressInput
-              id={fieldName}
-              required={required}
-              data-testid={`input_${fieldName}`}
-              name={fieldName}
-              type={type}
-              value={valueStatus}
-              className="form-input"
-            />
+            <Input asChild variant={'subtle'}>
+              <AddressInput
+                id={fieldName}
+                required={required}
+                data-testid={`input_${fieldName}`}
+                name={fieldName}
+                type={type}
+                value={valueStatus}
+                className="form-input"
+              />
+            </Input>
           </Field>
         </>
       )

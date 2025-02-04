@@ -1,5 +1,6 @@
 import { AccordionContext } from '@/components/data/AccordionProvider'
 import { CheckoutContext } from '@/components/data/CheckoutProvider'
+import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
 import { Box } from '@chakra-ui/react'
 import type { Order } from '@commercelayer/sdk'
@@ -128,7 +129,7 @@ export const StepAddress: React.FC<Props> = () => {
   }
 
   return (
-    <div
+    <StepContainer
       className={classNames({
         current: accordionCtx.isActive,
         done: !accordionCtx.isActive,
@@ -160,7 +161,7 @@ export const StepAddress: React.FC<Props> = () => {
           )}
         </>
       </Box>
-    </div>
+    </StepContainer>
   )
 }
 

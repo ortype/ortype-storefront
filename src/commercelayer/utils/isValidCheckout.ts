@@ -1,5 +1,5 @@
-import CommerceLayer, { Order } from '@commercelayer/sdk'
 import { LINE_ITEMS_SHOPPABLE } from '@/components/utils/constants'
+import CommerceLayer, { Order } from '@commercelayer/sdk'
 import {
   InvalidCheckoutSettings,
   UseCheckoutSettingsOrInvalid,
@@ -27,8 +27,12 @@ export const isValidCheckout = async (
     } as InvalidCheckoutSettings
   }
 
-  if (!order || !orderId || isLoading) {
-    console.log('Invalid checkout: missing params')
+  if (!order || !orderId) {
+    console.log('Invalid checkout: missing params', {
+      order,
+      orderId,
+      isLoading,
+    })
     return invalidateCheckout()
   }
 

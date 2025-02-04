@@ -2,24 +2,35 @@ import {
   Box,
   Button,
   Fieldset,
+  Group,
   Heading,
+  HStack,
   Input,
   Stack,
   Switch,
   Text,
+  VStack,
 } from '@chakra-ui/react'
 
 import { Radio, RadioGroup } from '@/components/ui/radio'
+/*import {
+  RadioCardItem,
+  RadioCardLabel,
+  RadioCardRoot,
+} from '@/components/ui/radio-card'*/
 
 import { Field } from '@/components/ui/field'
 // @TODO: Look at exporting this from package
 // import { getCountries } from '@commercelayer/react-components/utils/countryStateCity'
-import type { Order } from '@commercelayer/sdk'
-import classNames from 'classnames'
 import { AccordionContext } from '@/components/data/AccordionProvider'
-import { CheckoutContext, LicenseOwner } from '@/components/data/CheckoutProvider'
+import {
+  CheckoutContext,
+  LicenseOwner,
+} from '@/components/data/CheckoutProvider'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
+import type { Order } from '@commercelayer/sdk'
+import classNames from 'classnames'
 import { useRapidForm } from 'rapid-form'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -86,29 +97,52 @@ export const StepLicense: React.FC<Props> = () => {
     order,
     updateOrder,
     setLicenseOwner,
+    billingAddress,
     isLicenseForClient,
   } = checkoutCtx
 
-  console.log('StepLicense: ', checkoutCtx)
+  const projectTypes = [
+    {
+      value: 'yourself',
+      title: 'Yourself',
+      description: 'You will own the license',
+    },
+    {
+      value: 'client',
+      title: 'Your client',
+      description: 'Your client will own the license',
+    },
+  ]
 
-  const [isClient, setIsClient] = useState(isLicenseForClient.toString())
+  const defaultProjectType = isLicenseForClient ? 'client' : 'yourself'
+  const [projectType, setProjectType] = useState(defaultProjectType)
 
   useEffect(() => {
-    setIsClient(isLicenseForClient.toString())
+    setProjectType(isLicenseForClient ? 'client' : 'yourself')
   }, [isLicenseForClient])
-
-  const handleSetIsClient = (value) => {
-    setIsClient(value)
-  }
 
   const s = async (values, err, e) => {
     setIsLocalLoader(true)
     // @TODO: How to declare type "LicenseOwner" here
-    const isTrueSet = isClient?.toLowerCase?.() === 'true'
-    const owner = Object.assign(
-          { is_client: isClient?.toLowerCase?.() === 'true' },
-          ...Object.keys(values).map((key) => ({ [key]: values[key].value }))
-        )
+    const owner =
+      projectType === 'client'
+        ? Object.assign(
+            { is_client: projectType === 'client' },
+            ...Object.keys(values).map((key) => ({ [key]: values[key].value }))
+          ) // if `projectType === 'yourself'` grab the billing address details
+        : {
+            is_client: false,
+            company: billingAddress.company,
+            full_name: billingAddress.full_name,
+            line_1: billingAddress.line_1,
+            line_2: billingAddress.line_2,
+            city: billingAddress.city,
+            zip_code: billingAddress.zip_code,
+            state_code: billingAddress.state_code,
+            country_code: billingAddress.country_code,
+          }
+
+    console.log('Submit license: ', { owner })
 
     try {
       const { order: updatedOrder } = await updateOrder({
@@ -123,7 +157,7 @@ export const StepLicense: React.FC<Props> = () => {
         },
         // there is an `include` param
       })
-      console.log('updatedOrder: ', updatedOrder)
+      console.log('Submit license: ', { updatedOrder })
 
       setLicenseOwner({
         order: updatedOrder,
@@ -147,156 +181,156 @@ export const StepLicense: React.FC<Props> = () => {
         submitting: isLocalLoader,
       })}
     >
-      <Box>
-        <>
-          {accordionCtx.isActive && (
-            <>
-              <Fieldset>
-                <Field label={'The typeface is being used in a project for'}>
-                  <RadioGroup
-                    // ref={validation}
-                    onChange={handleSetIsClient}
-                    name={'is_client'}
-                    defaultValue={isClient}
-                  >
-                    <Stack direction="row">
-                      <Radio
-                        size={'lg'}
-                        value={'false'}
-                        defaultChecked={!isClient}
-                      >
-                        Yourself
-                      </Radio>
-                      <Radio
-                        size={'lg'}
-                        value={'true'}
-                        defaultChecked={isClient}
-                      >
-                        Your client
-                      </Radio>
-                    </Stack>
-                  </RadioGroup>
-                </Field>
-              </Fieldset>
-              <form
-                as={Box}
-                ref={submitValidation}
-                autoComplete="off"
-                onSubmit={handleSubmit(s)}
-              >
-
-                {isClient === 'true' ? (
-                  <Text size={'xs'} textTransform={'uppercase'}>{'Client license'}</Text>
-                ) : (<Text size={'xs'} textTransform={'uppercase'}>{'Personal license'}</Text>)}
-                
-                  <>
-                    <Fieldset>
+      <>
+        {accordionCtx.isActive && (
+          <VStack gap={'4'}>
+            <RadioGroup
+              value={projectType}
+              onValueChange={(e) => setProjectType(e.value)}
+            >
+              <HStack gap="6">
+                {projectTypes.map((type) => (
+                  <Radio key={type.value} value={type.value}>
+                    {type.title}
+                  </Radio>
+                ))}
+              </HStack>
+            </RadioGroup>
+            {/*
+            // @NOTE: cool, but no clear path for usuage as a controlled component in the docs
+            <RadioCardRoot defaultValue={defaultProjectType} gap="4" maxW="sm">
+              <RadioCardLabel>
+                The typeface is being used in a project for
+              </RadioCardLabel>
+              <Group attached orientation="horizontal">
+                {projectTypes.map((type) => (
+                  <RadioCardItem
+                    onChange={(e) =>
+                      e.target.value && setProjectType(e.target.value)
+                    }
+                    width="full"
+                    indicatorPlacement="start"
+                    label={type.title}
+                    description={type.description}
+                    key={type.value}
+                    value={type.value}
+                  />
+                ))}
+              </Group>
+            </RadioCardRoot>*/}
+            <form
+              ref={submitValidation}
+              autoComplete="off"
+              onSubmit={handleSubmit(s)}
+            >
+              <Fieldset.Root size="lg" minW="sm">
+                <Fieldset.Content>
+                  {projectType === 'client' ? (
+                    <>
                       <Field label={'License Owner/Company*'}>
                         <Input
                           name={'company'}
                           type={'text'}
                           ref={validation}
+                          borderRadius={0}
+                          colorPalette={'gray'}
+                          variant={'subtle'}
                           size={'lg'}
                           defaultValue={
                             order?.metadata?.license?.owner?.company
                           }
                         />
                       </Field>
-                    </Fieldset>
-                    {/*
-                    <Fieldset>
-                      <Field>{'Name'}</Field>
-                      <Input
-                        name={'name'}
-                        type={'text'}
-                        ref={validation}
-                        size={'lg'}
-                        defaultValue={order?.metadata?.license?.owner?.name}
-                      />
-                    </Fieldset>*/}
 
-                    <Fieldset>
                       <Field label={'Name'}>
-                      <Input
-                        name={'full_name'}
-                        type={'text'}
-                        bg={'#eee'}
-                        ref={validation}
-                        borderRadius={0}
-                        colorPalette={'gray'}
-                        variant={'subtle'}
-                        size={'lg'}
-                        defaultValue={order?.metadata?.license?.owner?.full_name}
-                      />
+                        <Input
+                          name={'full_name'}
+                          type={'text'}
+                          ref={validation}
+                          borderRadius={0}
+                          colorPalette={'gray'}
+                          variant={'subtle'}
+                          size={'lg'}
+                          defaultValue={
+                            order?.metadata?.license?.owner?.full_name
+                          }
+                        />
                       </Field>
-                    </Fieldset>
-                    <Fieldset>
                       <Field label={'Address'}>
                         <Input
                           name={'line_1'}
                           type={'text'}
                           ref={validation}
+                          borderRadius={0}
+                          colorPalette={'gray'}
+                          variant={'subtle'}
                           size={'lg'}
                           defaultValue={order?.metadata?.license?.owner?.line_1}
                         />
                       </Field>
-                    </Fieldset>
-                    <Fieldset>
                       <Field label={'Apartment, suite, etc.'}>
                         <Input
                           name={'line_2'}
                           type={'text'}
                           ref={validation}
+                          borderRadius={0}
+                          colorPalette={'gray'}
+                          variant={'subtle'}
                           size={'lg'}
                           defaultValue={order?.metadata?.license?.owner?.line_2}
                         />
                       </Field>
-                    </Fieldset>
-                    <Fieldset>
                       <Field label={'City*'}>
                         <Input
                           name={'city'}
                           type={'text'}
                           ref={validation}
+                          borderRadius={0}
+                          colorPalette={'gray'}
+                          variant={'subtle'}
                           size={'lg'}
                           defaultValue={order?.metadata?.license?.owner?.city}
                         />
                       </Field>
-                    </Fieldset>
-                    <Fieldset>
                       <Field label={'Zip Code*'}>
                         <Input
                           name={'zip_code'}
                           type={'text'}
                           ref={validation}
+                          borderRadius={0}
+                          colorPalette={'gray'}
+                          variant={'subtle'}
                           size={'lg'}
                           defaultValue={
                             order?.metadata?.license?.owner?.zip_code
                           }
                         />
                       </Field>
-                    </Fieldset>
-                    <Fieldset>
                       <Field label={'Country'}>
                         <Input
                           name={'country_code'}
                           type={'text'}
                           ref={validation}
+                          borderRadius={0}
+                          colorPalette={'gray'}
+                          variant={'subtle'}
                           size={'lg'}
                           defaultValue={
                             order?.metadata?.license?.owner?.country_code
                           }
                         />
                       </Field>
-                    </Fieldset>
-                  </>
-                }
-                <Button type={'submit'}>Save & proceed</Button>
-              </form>
-            </>
-          )}
-        </>
-      </Box>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  <Button type={'submit'}>Save & proceed</Button>
+                </Fieldset.Content>
+              </Fieldset.Root>
+            </form>
+          </VStack>
+        )}
+      </>
     </StepContainer>
   )
 }

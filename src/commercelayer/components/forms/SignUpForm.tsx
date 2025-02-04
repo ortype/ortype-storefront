@@ -7,18 +7,14 @@ import * as yup from 'yup'
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 
+import { Button, Link as ChakraLink, Fieldset, Stack } from '@chakra-ui/react'
 import Link from 'next/link'
-import {
-  Button,
-  // Input,
-  Link as ChakraLink,
-} from '@chakra-ui/react'
 
+import { setStoredCustomerToken } from '@/commercelayer/utils/oauthStorage'
 import type { SignUpFormValues } from 'Forms'
 import { useState } from 'react'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
 import { ValidationApiError } from './ValidationApiError'
-import { setStoredCustomerToken } from '@/commercelayer/utils/oauthStorage'
 
 const validationSchema = yup.object().shape({
   customerEmail: yup
@@ -99,32 +95,39 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
   return (
     <FormProvider {...form}>
       <form
-        className="mt-8 mb-0"
         onSubmit={(e) => {
           void onSubmit(e)
         }}
       >
-        <div className="space-y-4">
-          <Input name="customerEmail" label="Email" type="email" />
-          <Input name="customerPassword" label="Password" type="password" />
-          <Input
-            name="customerConfirmPassword"
-            label="Confirm password"
-            type="password"
-          />
-          <div className="flex pt-4">
-            <Button disabled={isSubmitting} type="submit">
-              {isSubmitting ? '...' : 'Sign up'}
-            </Button>
-          </div>
-          <ValidationApiError
-            apiError={apiError}
-            fieldMap={{
-              email: 'customerEmail',
-              password: 'customerPassword',
-            }}
-          />
-        </div>
+        <Fieldset.Root size="lg" maxW="sm">
+          <Fieldset.Content>
+            <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
+              <Input name="customerEmail" label="Email" type="email" />
+              <Input name="customerPassword" label="Password" type="password" />
+              <Input
+                name="customerConfirmPassword"
+                label="Confirm password"
+                type="password"
+              />
+              <Button
+                variant={'outline'}
+                type="submit"
+                alignSelf={'flex-end'}
+                loadingText={'Submitting'}
+                disabled={isSubmitting}
+                loading={isSubmitting}
+              >
+                {'Login'}
+              </Button>
+
+              {form.formState.errors?.root != null && (
+                <Fieldset.ErrorText>
+                  Alert - danger - Invalid credentials
+                </Fieldset.ErrorText>
+              )}
+            </Stack>
+          </Fieldset.Content>
+        </Fieldset.Root>
       </form>
     </FormProvider>
   )
