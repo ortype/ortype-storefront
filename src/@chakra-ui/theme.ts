@@ -73,7 +73,7 @@ const config = defineConfig({
           solid: { value: '{colors.brand.500}' },
           contrast: { value: '{colors.brand.100}' },
           fg: { value: '{colors.brand.700}' },
-          muted: { value: '{colors.brand.100}' },
+          muted: { value: '{colors.brand.500}' },
           subtle: { value: '{colors.brand.200}' },
           emphasized: { value: '{colors.brand.300}' },
           focusRing: { value: '{colors.brand.500}' },

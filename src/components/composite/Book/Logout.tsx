@@ -1,5 +1,6 @@
+import { Tooltip } from '@/components/ui/tooltip'
 import { signOut } from '@/lib/auth/helpers'
-import { Box, IconButton, Tooltip, useDisclosure } from '@chakra-ui/react'
+import { Box, IconButton, useDisclosure } from '@chakra-ui/react'
 import { LeaveIcon } from '@sanity/icons'
 
 const Logout: React.FC<{}> = ({}) => {
@@ -9,14 +10,20 @@ const Logout: React.FC<{}> = ({}) => {
 
   return (
     <Box>
-      <Tooltip hasArrow label="Logout" bg="black" color="white">
+      <Tooltip
+        showArrow
+        content="Logout"
+        contentProps={{ css: { '--tooltip-bg': 'black' } }}
+        color="white"
+      >
         <IconButton
           onClick={handleLogout}
           variant={'outline'}
-          // colorScheme={'grey'}
-          icon={<LeaveIcon width={'1.5rem'} height={'1.5rem'} />}
+          colorScheme={'brand'}
           aria-label={''}
-        />
+        >
+          <LeaveIcon width={'1.5rem'} height={'1.5rem'} />
+        </IconButton>
       </Tooltip>
     </Box>
   )

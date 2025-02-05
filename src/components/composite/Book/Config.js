@@ -1,19 +1,22 @@
 import {
   Box,
   Button,
-  Checkbox,
   Group,
   IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Portal,
   Text,
   VStack,
 } from '@chakra-ui/react'
+
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverHeader,
+  PopoverRoot,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 import {
   MenuContent,
@@ -60,12 +63,11 @@ const Config = () => {
 
   return (
     <>
-      <Popover>
+      <PopoverRoot>
         <PopoverTrigger>
-          <IconButton
-            variant={'outline'}
-            icon={<CogIcon width={'1.5rem'} height={'1.5rem'} />}
-          />
+          <IconButton variant={'outline'}>
+            <CogIcon width={'1.5rem'} height={'1.5rem'} />
+          </IconButton>
         </PopoverTrigger>
         <Portal>
           <PopoverContent
@@ -77,7 +79,6 @@ const Config = () => {
             }}
           >
             <PopoverArrow />
-            <CloseButton />
             <PopoverHeader>
               <Text fontSize={'md'} color={'red'}>
                 Layout options
@@ -91,8 +92,8 @@ const Config = () => {
                 />
                 <Checkbox
                   // @TODO: `useCheckbox` for customized look/feel
-                  isChecked={bookLayoutStore.isTemplate}
-                  onChange={(e) => handleIsTemplateChange(e.target.checked)}
+                  checked={bookLayoutStore.isTemplate}
+                  onCheckedChange={(e) => handleIsTemplateChange(e.checked)}
                 >
                   {'Is template'}
                 </Checkbox>
@@ -135,11 +136,9 @@ const Config = () => {
                     <Button
                       // width={'50%'}
                       variant={'outline'}
-                      leftIcon={
-                        <TransferIcon width={'1.5rem'} height={'1.5rem'} />
-                      }
                       onClick={handleSwap}
                     >
+                      <TransferIcon width={'1.5rem'} height={'1.5rem'} />{' '}
                       {'Swap'}
                     </Button>
                   </Group>
@@ -178,7 +177,7 @@ const Config = () => {
             </PopoverBody>
           </PopoverContent>
         </Portal>
-      </Popover>
+      </PopoverRoot>
     </>
   )
 }

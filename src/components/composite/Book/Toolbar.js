@@ -5,7 +5,7 @@ import { toaster } from '@/components/ui/toaster'
 import {
   Box,
   Button,
-  Group,
+  ButtonGroup,
   HStack,
   IconButton,
   Spinner,
@@ -79,6 +79,8 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
     setFontLoading(false)
   }, [font])
 
+  /*
+  // @TODO: stop keydown handler from preventing entering text in an Input elsewhere on the page
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'e') {
@@ -94,7 +96,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, []) // Empty dependency array to ensure this is only run once on mount
-
+*/
   // queries
   // get layout data from api
   const { loading: assignedLayoutsLoading, data: assignedLayouts } = useQuery(
@@ -378,66 +380,55 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
               name="layouts"
               onChange={handleLayoutChange}
             />
+
             <Config />
-            <Group isAttached variant={'outline'}>
+
+            <ButtonGroup attached variant={'outline'}>
               <Button
+                variant={'outline'}
                 // isLoading={updateLoading}
                 onClick={handleUpdate}
-                isDisabled={!bookLayoutStore.isDirty}
-                leftIcon={
-                  updateLoading ? (
-                    <Spinner />
-                  ) : (
-                    <PublishIcon width={'1.5rem'} height={'1.5rem'} />
-                  )
-                }
+                disabled={!bookLayoutStore.isDirty}
               >
+                {updateLoading ? (
+                  <Spinner />
+                ) : (
+                  <PublishIcon width={'1.5rem'} height={'1.5rem'} />
+                )}{' '}
                 <Text fontSize={'sm'}>{`Publish`}</Text>
               </Button>
               <MenuRoot>
-                <MenuTrigger
-                  as={IconButton}
-                  icon={<ChevronDownIcon width={'1.5rem'} height={'1.5rem'} />}
-                />
+                <MenuTrigger as={IconButton} variant={'outline'}>
+                  <ChevronDownIcon width={'1.5rem'} height={'1.5rem'} />
+                </MenuTrigger>
                 <MenuContent>
                   <MenuItem
-                    icon={<ResetIcon width={'1.5rem'} height={'1.5rem'} />}
-                    isDisabled={!bookLayoutStore.isDirty}
+                    disabled={!bookLayoutStore.isDirty}
                     onClick={handleDiscard}
+                    value={'discard'}
                   >
+                    <ResetIcon width={'1.5rem'} height={'1.5rem'} />
                     <Text fontSize={'sm'}>{`Discard changes`}</Text>
                   </MenuItem>
-                  <MenuItem
-                    onClick={handleAdd}
-                    icon={
-                      <AddDocumentIcon width={'1.5rem'} height={'1.5rem'} />
-                    }
-                  >
+                  <MenuItem onClick={handleAdd} value={'add'}>
+                    <AddDocumentIcon width={'1.5rem'} height={'1.5rem'} />
                     <Text fontSize={'sm'}>{`Create`}</Text>
                   </MenuItem>
-                  <MenuItem
-                    onClick={handleDuplicate}
-                    icon={<CopyIcon width={'1.5rem'} height={'1.5rem'} />}
-                  >
+                  <MenuItem onClick={handleDuplicate} value={'duplicate'}>
+                    <CopyIcon width={'1.5rem'} height={'1.5rem'} />
                     <Text fontSize={'sm'}>{`Duplicate`}</Text>
                   </MenuItem>
-                  <MenuItem
-                    onClick={() => setOpen(true)}
-                    icon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
-                  >
+                  <MenuItem onClick={() => setOpen(true)} value={'delete'}>
+                    <TrashIcon width={'1.5rem'} height={'1.5rem'} />
                     <Text fontSize={'sm'}>{`Delete`}</Text>
                   </MenuItem>
-                  <MenuItem
-                    onClick={handleExport}
-                    icon={
-                      <ClipboardImageIcon width={'1.5rem'} height={'1.5rem'} />
-                    }
-                  >
+                  <MenuItem onClick={handleExport} value={'export'}>
+                    <ClipboardImageIcon width={'1.5rem'} height={'1.5rem'} />{' '}
                     <Text fontSize={'sm'}>{`Export snapshot`}</Text>
                   </MenuItem>
                 </MenuContent>
               </MenuRoot>
-            </Group>
+            </ButtonGroup>
             <DialogRoot
               role="alertdialog"
               lazyMount
@@ -454,7 +445,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
 
                 <DialogFooter>
                   <DialogActionTrigger asChild ref={cancelRef}>
-                    <Button variant="outline">Cancel</Button>
+                    <Button variant={'outline'}>Cancel</Button>
                   </DialogActionTrigger>
                   <Button colorScheme="red" onClick={handleRemove} ml={3}>
                     Delete
@@ -476,17 +467,17 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
           },
         }}
         variant={'outline'}
+        bg={'#000'}
         _hover={{ backgroundColor: '#555' }}
         // @TODO: consider Tooltip as a label
         onClick={() => bookLayoutStore.setEditMode(!bookLayoutStore.editMode)}
-        icon={
-          bookLayoutStore.editMode ? (
-            <EyeOpenIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
-          ) : (
-            <EditIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
-          )
-        }
-      />
+      >
+        {bookLayoutStore.editMode ? (
+          <EyeOpenIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
+        ) : (
+          <EditIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
+        )}
+      </IconButton>
     </Box>
   )
 })

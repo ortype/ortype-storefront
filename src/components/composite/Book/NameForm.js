@@ -100,7 +100,7 @@ const NameForm = ({ bookLayoutId, name }) => {
           size={'lg'}
           value={nameValue}
           placeholder={'Layout name'}
-          isReadOnly={updateNameLoading}
+          readOnly={updateNameLoading}
           onChange={handleChange}
         />
         {isDirty && (

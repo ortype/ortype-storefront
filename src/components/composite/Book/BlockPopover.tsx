@@ -1,19 +1,23 @@
+import { Checkbox } from '@/components/ui/checkbox'
 import { CloseButton } from '@/components/ui/close-button'
 import {
   Box,
   Button,
-  Checkbox,
-  Group,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
+  ButtonGroup,
   SimpleGrid,
   Stack,
   Text,
 } from '@chakra-ui/react'
+
+import {
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverHeader,
+  PopoverRoot,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+
 import NumericInput from '@/components/composite/Book/NumericInput'
 import { useBookLayoutStore } from '@/components/data/BookProvider'
 import { regexOptions } from '@/components/data/BookProvider/bookDefaults'
@@ -52,28 +56,31 @@ const BlockPopover: React.FC<{
   }
 
   return (
-    <Popover placement={'left-start'} isLazy={true}>
-      <PopoverTrigger>
+    <PopoverRoot
+      positioning={{ placement: 'left-start' }}
+      lazyMount
+      unmountOnExit
+    >
+      <PopoverTrigger asChild>
         <Button
           className={'configBlockButton'}
-          variant={'ghost'}
+          variant={'plain'}
+          cursor={'pointer'}
           _hover={{ backgroundColor: 'transparent' }}
+          _focus={{ backgroundColor: 'transparent' }}
           position={'absolute'}
-          fontSize={'2xl'}
           top={0}
           left={0}
           right={0}
           height={'100%'}
           bottom={0}
           zIndex={1}
-          visibility={'hidden'}
-        >
-          {/*<EditIcon />*/}
-        </Button>
+          // visibility={'hidden'}
+        />
       </PopoverTrigger>
 
       <PopoverContent
-        sx={{
+        css={{
           border: `.1rem solid #000`,
           boxShadow: `2px 2px 0px #000`,
           backgroundColor: `#fff`,
@@ -81,7 +88,6 @@ const BlockPopover: React.FC<{
         }}
       >
         <PopoverArrow />
-        <CloseButton />
         <PopoverHeader>
           <Text fontSize={'md'} color={'red'}>
             Edit Block
@@ -218,7 +224,12 @@ const BlockPopover: React.FC<{
               />
             </Box>
           </SimpleGrid>
-          <Stack mt={2} direction={'column'} spacing="2" divideX={'1px'}>
+          <Stack
+            mt={2}
+            direction={'column'}
+            gap="2"
+            // divideY={'1px'}
+          >
             <Box>
               <Text as={'span'} fontSize={'xs'}>
                 Typecase
@@ -242,16 +253,16 @@ const BlockPopover: React.FC<{
               Additional options
             </Text>
             <Checkbox
-              isChecked={line.isParagraph}
-              onChange={(e) => handleChange('isParagraph', e.target.checked)}
+              checked={line.isParagraph}
+              onCheckedChange={(e) => handleChange('isParagraph', e.checked)}
             >
               <Text as={'span'} fontSize={'xs'}>
                 {'Paragraph mode'}
               </Text>
             </Checkbox>
             <Checkbox
-              isChecked={line.noSpace}
-              onChange={(e) => handleChange('noSpace', e.target.checked)}
+              checked={line.noSpace}
+              onCheckedChange={(e) => handleChange('noSpace', e.checked)}
             >
               <Text as={'span'} fontSize={'xs'}>
                 {'No spaces'}
@@ -262,11 +273,11 @@ const BlockPopover: React.FC<{
                 Insert block
               </Text>
 
-              <Group
+              <ButtonGroup
                 mt={2}
-                isAttached
-                variant="outline"
-                spacing="2"
+                attached
+                variant={'outline'}
+                gap="2"
                 width={'100%'}
               >
                 <Button
@@ -275,10 +286,8 @@ const BlockPopover: React.FC<{
                   onClick={() =>
                     bookLayoutStore.addBlock(page, col, 'before', block)
                   }
-                  leftIcon={
-                    <InsertAboveIcon width={'1.5rem'} height={'1.5rem'} />
-                  }
                 >
+                  <InsertAboveIcon width={'1.5rem'} height={'1.5rem'} />{' '}
                   <Text fontSize={'xs'}>Above</Text>
                 </Button>
                 <Button
@@ -288,21 +297,15 @@ const BlockPopover: React.FC<{
                     () => bookLayoutStore.addBlock(page, col, 'after', block)
                     // bookLayoutStore.addColumn(page, 30, 'before', col)
                   }
-                  rightIcon={
-                    <InsertBelowIcon width={'1.5rem'} height={'1.5rem'} />
-                  }
                 >
-                  <Text fontSize={'xs'}>Below</Text>
+                  <Text fontSize={'xs'}>Below</Text>{' '}
+                  <InsertBelowIcon width={'1.5rem'} height={'1.5rem'} />
                 </Button>
-              </Group>
+              </ButtonGroup>
             </Box>
-            <Group variant="outline" spacing="2" width={'100%'}>
-              <Button
-                width={'50%'}
-                size={'sm'}
-                onClick={() => refetch()}
-                leftIcon={<RefreshIcon width={'1.5rem'} height={'1.5rem'} />}
-              >
+            <ButtonGroup variant={'outline'} gap="2" width={'100%'}>
+              <Button width={'50%'} size={'sm'} onClick={() => refetch()}>
+                <RefreshIcon width={'1.5rem'} height={'1.5rem'} />{' '}
                 <Text fontSize={'xs'}>Refresh</Text>
               </Button>
 
@@ -310,15 +313,15 @@ const BlockPopover: React.FC<{
                 width={'50%'}
                 size={'sm'}
                 onClick={() => bookLayoutStore.removeBlock(page, col, block)}
-                leftIcon={<TrashIcon width={'1.5rem'} height={'1.5rem'} />}
               >
+                <TrashIcon width={'1.5rem'} height={'1.5rem'} />{' '}
                 <Text fontSize={'xs'}>Remove</Text>
               </Button>
-            </Group>
+            </ButtonGroup>
           </Stack>
         </PopoverBody>
       </PopoverContent>
-    </Popover>
+    </PopoverRoot>
   )
 }
 

@@ -1,21 +1,18 @@
+import { useBookLayoutStore } from '@/components/data/BookProvider'
+import { CloseButton } from '@/components/ui/close-button'
 import {
-  Box,
-  Button,
-  Group,
-  Popover,
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverHeader,
+  PopoverRoot,
+  PopoverTitle,
   PopoverTrigger,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-import { CloseButton } from '@/components/ui/close-button'
-import NumericInput from '@/components/composite/Book/NumericInput'
-import { useBookLayoutStore } from '@/components/data/BookProvider'
+} from '@/components/ui/popover'
+import { Box, Button, ButtonGroup, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useState } from 'react'
+import React from 'react'
+
 import {
   type BlockParams,
   type BlockStyle,
@@ -45,8 +42,12 @@ const ColumnPopover: React.FC<{
   }
 
   return (
-    <Popover placement={'left-start'}>
-      <PopoverTrigger>
+    <PopoverRoot
+      positioning={{ placement: 'left-start' }}
+      lazyMount
+      unmountOnExit
+    >
+      <PopoverTrigger asChild>
         <Button
           variant={'ghost'}
           position={'absolute'}
@@ -64,7 +65,7 @@ const ColumnPopover: React.FC<{
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        sx={{
+        css={{
           border: `.1rem solid #000`,
           boxShadow: `2px 2px 0px #000`,
           backgroundColor: `#fff`,
@@ -72,19 +73,18 @@ const ColumnPopover: React.FC<{
         }}
       >
         <PopoverArrow />
-        <CloseButton />
         <PopoverHeader>
           <Text fontSize={'md'} color={'red'}>
             Edit Column
           </Text>
         </PopoverHeader>
         <PopoverBody>
-          <VStack spacing={2} alignItems={'start'}>
+          <VStack gap={2} alignItems={'start'}>
             <Box w={'100%'}>
               <Text as={'span'} fontSize={'xs'}>
                 Width
               </Text>
-              <Group isAttached variant={'outline'} width={'100%'}>
+              <ButtonGroup attached variant={'outline'} width={'100%'}>
                 <Button
                   w={'25%'}
                   size={'sm'}
@@ -121,13 +121,13 @@ const ColumnPopover: React.FC<{
                     {'Full'}
                   </Text>
                 </Button>
-              </Group>
+              </ButtonGroup>
             </Box>
             <Box w={'100%'}>
               <Text as={'span'} fontSize={'xs'}>
                 Insert Column
               </Text>
-              <Group isAttached variant={'outline'} width={'100%'}>
+              <ButtonGroup attached variant={'outline'} width={'100%'}>
                 <Button
                   size={'sm'}
                   w={'50%'}
@@ -135,8 +135,8 @@ const ColumnPopover: React.FC<{
                     bookLayoutStore.addColumn(page, 30, 'before', col)
                   }
                   fontSize={'2xl'}
-                  leftIcon={<InsertAboveIcon />}
                 >
+                  <InsertAboveIcon />{' '}
                   <Text as={'span'} fontSize={'xs'}>
                     Before
                   </Text>
@@ -154,38 +154,38 @@ const ColumnPopover: React.FC<{
                     After
                   </Text>
                 </Button>
-              </Group>
+              </ButtonGroup>
             </Box>
-            <Group variant={'outline'} spacing="2" width={'100%'}>
+            <ButtonGroup variant={'outline'} gap="2" width={'100%'}>
               <Button
                 width={'50%'}
-                leftIcon={<CopyIcon />}
                 fontSize={'2xl'}
                 size={'sm'}
                 onClick={() =>
                   bookLayoutStore.duplicateColumn(page, width, blocks, col)
                 }
               >
+                <CopyIcon />{' '}
                 <Text as={'span'} fontSize={'xs'}>
                   Duplicate
                 </Text>
               </Button>
               <Button
                 width={'50%'}
-                leftIcon={<TrashIcon />}
                 fontSize={'2xl'}
                 size={'sm'}
                 onClick={() => bookLayoutStore.removeColumn(page, col)}
               >
+                <TrashIcon />
                 <Text as={'span'} fontSize={'xs'}>
                   Remove
                 </Text>
               </Button>
-            </Group>
+            </ButtonGroup>
           </VStack>
         </PopoverBody>
       </PopoverContent>
-    </Popover>
+    </PopoverRoot>
   )
 })
 

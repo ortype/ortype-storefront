@@ -7,7 +7,8 @@ const RectoVerso: React.FC<{
   pageMargin: number
   conversion: number
   page: any
-}> = ({ label, pageMargin, conversion, page, editMode, header, padding }) => {
+  header: string
+}> = ({ label, pageMargin, conversion, page, editMode, header }) => {
   return (
     <Flex
       w={'100%'}
