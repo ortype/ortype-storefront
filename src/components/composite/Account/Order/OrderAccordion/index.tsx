@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import AddressesSummary from '@/components/composite/Account/Order/AddressesSummary'
 import LineItemList from '@/components/composite/Account/Order/LineItemList'
 import OrderPayments from '@/components/composite/Account/Order/OrderPayments'
-import OrderShipments from '@/components/composite/Account/Order/OrderShipments'
+// import OrderShipments from '@/components/composite/Account/Order/OrderShipments'
 import OrderSummary from '@/components/composite/Account/Order/OrderSummary'
 import { Box, Tabs } from '@chakra-ui/react'
 
@@ -37,9 +37,7 @@ function OrderSections(): JSX.Element {
         <Tabs.Content value={'2'}>
           <AddressesSummary />
         </Tabs.Content>
-        <Tabs.Content value={'3'}>
-          <OrderShipments />
-        </Tabs.Content>
+        <Tabs.Content value={'3'}>{/*<OrderShipments />*/}</Tabs.Content>
         <Tabs.Content value={'3'}>
           <OrderPayments />
         </Tabs.Content>
