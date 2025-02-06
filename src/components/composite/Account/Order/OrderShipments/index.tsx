@@ -18,10 +18,10 @@ import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react'
 
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import {
-    AccordionItem,
-    AccordionItemContent,
-    AccordionItemTrigger,
-    AccordionRoot,
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
 } from '@/components/ui/chakra-accordion'
 
 function ParcelTrackingNumber(): JSX.Element {
@@ -58,7 +58,9 @@ function ParcelLink(): JSX.Element {
             onClick={() =>
               router.push(`/orders/${orderId}/parcels/${props?.attributeValue}`)
             }
-          >{t('order.shipments.trackParcel'}</Button>
+          >
+            {t('order.shipments.trackParcel')}
+          </Button>
         )
       }}
     </ParcelField>
