@@ -1,30 +1,14 @@
 import { ParcelField } from '@commercelayer/react-components/parcels/ParcelField'
 import { Trans } from 'react-i18next'
 
-import {
-  ShipmentDate,
-  ShipmentDateChip,
-  ShipmentDates,
-  ShipmentTime,
-  ShipmentTimeBorder,
-  ShipmentTimeContentWrapper,
-  ShipmentTimeIconBg,
-  ShipmentTimeIconWrapper,
-  ShipmentTimeLabel,
-  ShipmentTimeLocationWrapper,
-  ShipmentTimeMessageWrapper,
-  ShipmentTimeStatusWrapper,
-} from './styled'
-
-import { rawDataParcelDetailsSchema } from '@/types/parcelDetailsJson'
 import type {
   ParcelTrackingDetailsParsedDateType,
   ParcelTrackingDetailsParsedTimeType,
 } from '@/components/hooks/useParcelTrackingDetailsParser'
 import useParcelTrackingDetailsParser from '@/components/hooks/useParcelTrackingDetailsParser'
-import ShipmentHistoryStep from '@/components/ui/Account/icons/ShipmentHistoryStep'
-import ShipmentHistoryStepLast from '@/components/ui/Account/icons/ShipmentHistoryStepLast'
+import { rawDataParcelDetailsSchema } from '@/types/parcelDetailsJson'
 import { amPmTime, formatDate, longDate } from '@/utils/dateTimeFormats'
+import { Box } from '@chakra-ui/react'
 
 interface OrderParcelHistoryDateProps {
   dateKey: string
@@ -56,28 +40,17 @@ function OrderParcelHistoryTime({
     time.status as string
   }` as ParcelStatus
   return (
-    <ShipmentTime timeIsFirstOfDate={timeIsFirstOfDate} key={timeIndex}>
-      <ShipmentTimeLabel>{timeFormatted}</ShipmentTimeLabel>
-      <ShipmentTimeBorder dateTimeIsLast={dateTimeIsLast}>
-        <ShipmentTimeIconWrapper>
-          {dateTimeIsLast ? (
-            <ShipmentHistoryStepLast />
-          ) : (
-            <ShipmentHistoryStep />
-          )}
-          <ShipmentTimeIconBg />
-        </ShipmentTimeIconWrapper>
-      </ShipmentTimeBorder>
-      <ShipmentTimeContentWrapper>
-        <ShipmentTimeStatusWrapper>
+    <Box timeIsFirstOfDate={timeIsFirstOfDate} key={timeIndex}>
+      <Box>{timeFormatted}</Box>
+      <Box dateTimeIsLast={dateTimeIsLast}></Box>
+      <Box>
+        <Box>
           <Trans i18nKey={parcelStatusTrans} />
-        </ShipmentTimeStatusWrapper>
-        <ShipmentTimeMessageWrapper>{time.message}</ShipmentTimeMessageWrapper>
-        <ShipmentTimeLocationWrapper>
-          {time.trackingLocation}
-        </ShipmentTimeLocationWrapper>
-      </ShipmentTimeContentWrapper>
-    </ShipmentTime>
+        </Box>
+        <Box>{time.message}</Box>
+        <Box>{time.trackingLocation}</Box>
+      </Box>
+    </Box>
   )
 }
 
@@ -91,8 +64,14 @@ function OrderParcelHistoryDate({
     date[0].datetime && formatDate(date[0].datetime, longDate)
 
   return (
-    <ShipmentDate key={dateIndex}>
-      <ShipmentDateChip>{dateFormatted}</ShipmentDateChip>
+    <Box key={dateIndex} mt={8}>
+      <Box
+        className={
+          'inline text-sm text-center text-gray-600 bg-gray-300 capitalize text-sm w-auto uppercase font-bold py-[2px] px-[12px] leading-snug rounded-xl align-middle'
+        }
+      >
+        {dateFormatted}
+      </Box>
       {date.map(
         (time: ParcelTrackingDetailsParsedTimeType, timeIndex: number) => {
           return (
@@ -105,7 +84,7 @@ function OrderParcelHistoryDate({
           )
         }
       )}
-    </ShipmentDate>
+    </Box>
   )
 }
 
@@ -128,7 +107,7 @@ function OrderParcelHistory(): JSX.Element {
           useParcelTrackingDetailsParser(parsedDetails)
 
         return (
-          <ShipmentDates>
+          <Box className="mt-12 -mx-5 px-5 pb-10">
             {Object.keys(OrderParcelHistoryParsed).map(
               (dateKey: string, dateIndex: number) => (
                 <OrderParcelHistoryDate
@@ -139,7 +118,7 @@ function OrderParcelHistory(): JSX.Element {
                 />
               )
             )}
-          </ShipmentDates>
+          </Box>
         )
       }}
     </ParcelField>

@@ -1,10 +1,9 @@
 import { CustomerContext } from '@/components/data/CustomerProvider'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import type { Settings } from 'CustomApp'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useContext } from 'react'
-
-import { ComingSoon, Icon, Title, TitleWrapper, Wrapper } from './styled'
 
 type Props = Pick<Settings, 'accessToken'> & {
   id: string
@@ -16,7 +15,15 @@ type Props = Pick<Settings, 'accessToken'> & {
 }
 
 function ComingSoonBadge(): JSX.Element {
-  return <ComingSoon>Soon</ComingSoon>
+  return (
+    <Box
+      className={
+        'ml-1 uppercase px-[4px] py-[2px] text-[9px] leading-[9px] font-bold rounded text-white bg-red-400'
+      }
+    >
+      Soon
+    </Box>
+  )
 }
 
 function NavLinkButton(props: Props): JSX.Element {
@@ -28,17 +35,17 @@ function NavLinkButton(props: Props): JSX.Element {
   const isCurrentPage = pathname.indexOf(hrefWithoutBase) >= 0
 
   return (
-    <Wrapper
+    <Flex
+      alignItems={'center'}
       isCurrentPage={isCurrentPage}
       comingSoon={comingSoon}
       onClick={onClick}
     >
-      <Icon comingSoon={comingSoon}>{icon}</Icon>
-      <TitleWrapper>
-        <Title>{title}</Title>
+      <Flex>
+        <Text>{title}</Text>
         {comingSoon && <ComingSoonBadge />}
-      </TitleWrapper>
-    </Wrapper>
+      </Flex>
+    </Flex>
   )
 }
 

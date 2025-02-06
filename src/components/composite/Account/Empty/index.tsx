@@ -1,11 +1,9 @@
-import { useTranslation } from 'react-i18next'
-
-import { Wrapper, Title, Description, NoItemsButton } from './styled'
-
 import NoAddressesIcon from '@/components/ui/Account/icons/NoAddressesIcon'
 import NoOrdersIcon from '@/components/ui/Account/icons/NoOrdersIcon'
 import NoPaymentMethodsIcon from '@/components/ui/Account/icons/NoPaymentMethodsIcon'
 import NoReturnsIcon from '@/components/ui/Account/icons/NoReturnsIcon'
+import { Button, Flex, Heading, Text } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 
 type EmptyType = 'Addresses' | 'Orders' | 'PaymentMethods' | 'Returns'
 
@@ -38,17 +36,16 @@ function Empty({ type, buttonClick }: Props): JSX.Element {
   const icon = emptyTypes.find((emptyType) => emptyType.type === type)?.icon
 
   return (
-    <Wrapper>
+    <Flex alignItems={'center'} justifyContent={'center'}>
       {icon}
-      <Title>{t(`no${type}.title`)}</Title>
-      <Description>{t(`no${type}.description`)}</Description>
+      <Heading>{t(`no${type}.title`)}</Heading>
+      <Text>{t(`no${type}.description`)}</Text>
       {buttonClick && (
-        <NoItemsButton
-          label={t(`no${type}.buttonLabel`) as string}
-          onClick={buttonClick}
-        />
+        <Button onClick={buttonClick}>
+          {t(`no${type}.buttonLabel`) as string}
+        </Button>
       )}
-    </Wrapper>
+    </Flex>
   )
 }
 

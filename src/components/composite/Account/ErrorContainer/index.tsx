@@ -1,9 +1,4 @@
-import { Wrapper, LogoWrapper, FullLogo, Main, Error } from './styled'
-
-import { Base } from '@/components/ui/Account/Base'
-import { FooterWrapper } from '@/components/ui/Account/Common/styled'
-import { Container } from '@/components/ui/Account/Container'
-import Footer from '@/components/ui/Account/Footer'
+import { Box, Container, Flex, Text } from '@chakra-ui/react'
 
 export function ErrorContainer({
   children,
@@ -11,20 +6,14 @@ export function ErrorContainer({
   children: React.ReactNode
 }): JSX.Element {
   return (
-    <Base>
+    <Box>
       <Container>
-        <Wrapper>
-          <LogoWrapper>
-            <FullLogo className="self-center text-black md:pl-4 md:self-auto" />
-          </LogoWrapper>
-          <Main>
-            <Error>{children}</Error>
-          </Main>
-          <FooterWrapper>
-            <Footer />
-          </FooterWrapper>
-        </Wrapper>
+        <Flex>
+          <Flex justify={'center'} alignItems={'center'} justifySelf={'center'}>
+            <Text>{children}</Text>
+          </Flex>
+        </Flex>
       </Container>
-    </Base>
+    </Box>
   )
 }

@@ -1,18 +1,12 @@
 import { AddressInputGroup } from '@/components/composite/Account/Address/AddressInputGroup'
 import { CustomerAddressContext } from '@/components/data/CustomerAddressProvider'
-import Title from '@/components/ui/Account/Title'
+import { Button, Flex, Grid, Heading, Text } from '@chakra-ui/react'
+import { BillingAddressForm } from '@commercelayer/react-components/addresses/BillingAddressForm'
+import { SaveAddressesButton } from '@commercelayer/react-components/addresses/SaveAddressesButton'
 import { useRouter } from 'next/navigation'
 import { XCircle } from 'phosphor-react'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  DiscardChanges,
-  Form,
-  FormButtons,
-  Grid,
-  SaveButton,
-  Text,
-} from './styled'
 
 function CustomerAddressForm({
   addressId,
@@ -25,13 +19,13 @@ function CustomerAddressForm({
   const router = useRouter()
 
   return address === undefined && addressId !== undefined ? null : (
-    <Form>
-      <Title>
+    <BillingAddressForm>
+      <Heading>
         {addressId === undefined
           ? t('addresses.addressForm.new_address_title')
           : t('addresses.addressForm.edit_address_title')}
-      </Title>
-      <Grid>
+      </Heading>
+      <Grid columns={2} gap={4}>
         <AddressInputGroup
           fieldName="billing_address_first_name"
           resource="billing_address"
@@ -99,16 +93,16 @@ function CustomerAddressForm({
         type="text"
         value={address?.billing_info || ''}
       />
-      <FormButtons>
-        <DiscardChanges
+      <Flex alignItems={'center'} justifyContent={'space-between'} pb={5}>
+        <Button
           onClick={() => {
             router.push('/account/addresses')
           }}
         >
           <XCircle className="w-4 h-4" />
           <Text>{t('addresses.addressForm.discard_changes')}</Text>
-        </DiscardChanges>
-        <SaveButton
+        </Button>
+        <SaveAddressesButton
           data-test-id="save-address"
           label={t('addresses.addressForm.save')}
           onClick={() => {
@@ -116,8 +110,8 @@ function CustomerAddressForm({
           }}
           addressId={address?.id}
         />
-      </FormButtons>
-    </Form>
+      </Flex>
+    </BillingAddressForm>
   )
 }
 

@@ -1,15 +1,9 @@
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Wrapper,
-  AddressesTitle,
-  BillingAddress,
-  ShippingAddress,
-} from './styled'
-
-import { AddressCard } from '@/components/ui/Account/AddressCard'
 import { OrderContext } from '@/components/data/OrderProvider'
+import { AddressCard } from '@/components/ui/Account/AddressCard'
+import { Box, Flex, Heading } from '@chakra-ui/react'
 
 function AddressesSummary(): JSX.Element {
   const { t } = useTranslation()
@@ -21,24 +15,24 @@ function AddressesSummary(): JSX.Element {
     return <></>
 
   return (
-    <Wrapper>
-      <BillingAddress>
-        <AddressesTitle>{t('order.addresses.billedTo')}</AddressesTitle>
+    <Flex direction={'row'} justifyContent={'space-between'} gap={8}>
+      <Box>
+        <Heading>{t('order.addresses.billedTo')}</Heading>
         <AddressCard
           address={order?.billing_address}
           addressType="billing"
           readonly={true}
         />
-      </BillingAddress>
-      <ShippingAddress>
-        <AddressesTitle>{t('order.addresses.shippedTo')}</AddressesTitle>
+      </Box>
+      <Box>
+        <Heading>{t('order.addresses.shippedTo')}</Heading>
         <AddressCard
           address={order?.shipping_address}
           addressType="shipping"
           readonly={true}
         />
-      </ShippingAddress>
-    </Wrapper>
+      </Box>
+    </Flex>
   )
 }
 

@@ -1,21 +1,18 @@
 import type {
-  TResourceError,
   TErrorComponent,
+  TResourceError,
 } from '@commercelayer/react-components'
+import { AddressCountrySelector } from '@commercelayer/react-components/addresses/AddressCountrySelector'
+import { AddressInput } from '@commercelayer/react-components/addresses/AddressInput'
+import { AddressStateSelector } from '@commercelayer/react-components/addresses/AddressStateSelector'
+import { Errors } from '@commercelayer/react-components/errors/Errors'
 import type { Address } from '@commercelayer/sdk'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Wrapper,
-  StyledAddressInput,
-  StyledAddressCountrySelector,
-  StyledAddressStateSelector,
-  StyledErrors,
-} from './styled'
-
-import { Label } from '@/components/ui/Account/form/Label'
+import { Field } from '@/components/ui/field'
 import type { AddressFormFields } from '@/types/Account'
+import { Container } from '@chakra-ui/react'
 
 interface Props {
   type: string
@@ -67,57 +64,60 @@ export function AddressInputGroup({
     if (isCountry) {
       return (
         <>
-          <StyledAddressCountrySelector
-            className="form-select"
-            data-cy={`input_billing_address_country_code`}
-            name={fieldName}
-            placeholder={{
-              label: t(
-                'addresses.addressForm.billing_address_country_code_placeholder'
-              ),
-              value: '',
-            }}
-            value={
-              shippingCountryCodeLock &&
-              fieldName === 'billing_address_country_code'
-                ? shippingCountryCodeLock
-                : value
-            }
-            disabled={Boolean(
-              shippingCountryCodeLock &&
+          <Field label={label}>
+            <AddressCountrySelector
+              className="form-select block w-full border-gray-300 border rounded-md p-3 transition duration-500 ease-in-out focus:border-black focus:ring focus:ring-offset-0 focus:ring-gray-400 focus:ring-opacity-50 sm:text-sm"
+              data-cy={`input_billing_address_country_code`}
+              name={fieldName}
+              placeholder={{
+                label: t(
+                  'addresses.addressForm.billing_address_country_code_placeholder'
+                ),
+                value: '',
+              }}
+              value={
+                shippingCountryCodeLock &&
                 fieldName === 'billing_address_country_code'
-            )}
-          />
-          <Label htmlFor={fieldName}>{label}</Label>
+                  ? shippingCountryCodeLock
+                  : value
+              }
+              disabled={Boolean(
+                shippingCountryCodeLock &&
+                  fieldName === 'billing_address_country_code'
+              )}
+            />
+          </Field>
         </>
       )
     } else if (isState) {
       return (
         <>
-          <StyledAddressStateSelector
-            id={fieldName}
-            selectClassName="form-select"
-            inputClassName="form-input"
-            data-test-id={`input_${fieldName}`}
-            name={fieldName}
-            value={value?.toUpperCase()}
-          />
-          <Label htmlFor={fieldName}>{label}</Label>
+          <Field label={label}>
+            <AddressStateSelector
+              id={fieldName}
+              selectClassName="form-select"
+              className="form-input block w-full border-gray-300 border rounded-md p-3 transition duration-500 ease-in-out focus:border-black focus:ring focus:ring-offset-0 focus:ring-gray-400 focus:ring-opacity-50 sm:text-sm"
+              data-test-id={`input_${fieldName}`}
+              name={fieldName}
+              value={value?.toUpperCase()}
+            />
+          </Field>
         </>
       )
     } else {
       return (
         <>
-          <StyledAddressInput
-            id={fieldName}
-            data-cy={`input_${fieldName}`}
-            name={fieldName}
-            type={type}
-            value={valueStatus}
-            required={required}
-            className="form-input"
-          />
-          <Label htmlFor={fieldName}>{label}</Label>
+          <Field label={label}>
+            <AddressInput
+              id={fieldName}
+              data-cy={`input_${fieldName}`}
+              name={fieldName}
+              type={type}
+              value={valueStatus}
+              required={required}
+              className="form-input block w-full border-gray-300 border rounded-md p-3 transition duration-500 ease-in-out focus:border-black focus:ring focus:ring-offset-0 focus:ring-gray-400 focus:ring-opacity-50 sm:text-sm"
+            />
+          </Field>
         </>
       )
     }
@@ -125,10 +125,13 @@ export function AddressInputGroup({
 
   return (
     <div className="mb-8">
-      <Wrapper>
+      <Container>
         <div className="relative h-10">{renderInput()}</div>
-      </Wrapper>
-      <StyledErrors
+      </Container>
+      <Errors
+        className={
+          'inline-block text-xs pt-3 pl-3 border-red-400 text-red-400 placeholder-red-400 focus:ring-red-500 focus:border-red-500'
+        }
         data-cy={`error_${fieldName}`}
         resource={resource}
         field={fieldName}

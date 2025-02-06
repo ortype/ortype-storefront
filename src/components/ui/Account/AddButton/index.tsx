@@ -1,7 +1,6 @@
-import { PlusCircle } from "phosphor-react"
-import { useTranslation } from "react-i18next"
-
-import { Wrapper, Label } from "./styled"
+import { Button, Text } from '@chakra-ui/react'
+import { PlusCircle } from 'phosphor-react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   action: () => void
@@ -14,9 +13,9 @@ export function AddButton(props: Props): JSX.Element {
   const { action, testId } = props
 
   return (
-    <Wrapper onClick={action} className="group" data-test-id={testId}>
+    <Button onClick={action} className="group" data-test-id={testId}>
       <PlusCircle className="w-5 md:w-6" />
-      <Label>{t("addresses.addNewAddress")}</Label>
-    </Wrapper>
+      <Text as={'span'}>{t('addresses.addNewAddress')}</Text>
+    </Button>
   )
 }

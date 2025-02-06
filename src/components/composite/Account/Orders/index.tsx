@@ -1,46 +1,18 @@
 'use client'
-import { Link as ChakraLink } from '@chakra-ui/react'
+import Empty from '@/components/composite/Account/Empty'
+import OrderStatusChip from '@/components/composite/Account/Order/OrderStatusChip'
+import { SettingsContext } from '@/components/data/SettingsProvider'
+import { formatDate, shortDate } from '@/utils/dateTimeFormats'
+import { Link as ChakraLink, Container, Heading, Text } from '@chakra-ui/react'
 import { OrderList } from '@commercelayer/react-components/orders/OrderList'
 import { OrderListEmpty } from '@commercelayer/react-components/orders/OrderListEmpty'
 import { OrderListPaginationButtons } from '@commercelayer/react-components/orders/OrderListPaginationButtons'
 import { OrderListPaginationInfo } from '@commercelayer/react-components/orders/OrderListPaginationInfo'
 import { OrderListRow } from '@commercelayer/react-components/orders/OrderListRow'
 import { flexRender, type Row } from '@tanstack/react-table'
-import Empty from '@/components/composite/Account/Empty'
-import OrderStatusChip from '@/components/composite/Account/Order/OrderStatusChip'
-import { SkeletonMainOrdersTable } from '@/components/composite/Account/Skeleton/Main/OrdersTable'
-import { SettingsContext } from '@/components/data/SettingsProvider'
-import Title from '@/components/ui/Account/Title'
 import Link from 'next/link'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
-import tw from 'twin.macro'
-import { formatDate, shortDate } from '@/utils/dateTimeFormats'
-
-export const StyledOrderList = styled.td`
-  ${tw`relative w-full mb-8`}
-`
-
-export const OrderListWrapper = styled.div`
-  ${tw`-mx-5 md:mx-auto`}
-`
-
-export const OrderData = styled.td`
-  ${tw``}
-`
-
-export const OrderNumber = styled.p`
-  ${tw`text-sm font-semibold hover:(cursor-pointer)`}
-`
-
-export const OrderItemsCount = styled.p`
-  ${tw`text-sm font-light text-gray-400`}
-`
-
-export const OrderDate = styled.p`
-  ${tw`inline-block text-sm font-extralight text-gray-400 bg-gray-200 px-3 rounded-full h-5 md:(bg-gray-50 px-0 w-min)`}
-`
 
 function OrdersPage(): JSX.Element {
   const { t } = useTranslation()
@@ -79,17 +51,13 @@ function OrdersPage(): JSX.Element {
 
   return (
     <>
-      <Title>{t('orders.title')}</Title>
-      <OrderListWrapper>
+      <Container>
+        <Heading>{t('orders.title')}</Heading>
         <OrderList
           className="w-full mb-8 table-fixed md:-mx-0"
           columns={columns}
           showActions={true}
-          loadingElement={
-            <div className="px-5 lg:p-0">
-              <SkeletonMainOrdersTable />
-            </div>
-          }
+          loadingElement={<div className="px-5 lg:p-0"></div>}
           actionsContainerClassName="absolute right-1 order-5 align-top hidden md:relative md:align-middle py-5 text-center"
           theadClassName="hidden md:table-row-group"
           rowTrClassName="flex justify-between items-center relative md:content-center bg-white shadow-none mb-4 pb-12 md:pb-0 px-5 md:p-0 md:border-b md:border-gray-300 md:table-row md:shadow-none h-[107px] md:h-[96px]"
@@ -109,7 +77,7 @@ function OrdersPage(): JSX.Element {
                 <>
                   {cell?.map((cell) => {
                     return (
-                      <OrderData
+                      <div
                         key={order.number}
                         {...p}
                         // {...cell.getCellProps()}
@@ -119,20 +87,20 @@ function OrdersPage(): JSX.Element {
                           href={`/account/orders/${order.id}`}
                         >
                           {/*<OrderNumber># {cell.render('Cell')}</OrderNumber>*/}
-                          <OrderNumber>
+                          <Text>
                             #{' '}
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
                             )}
-                          </OrderNumber>
+                          </Text>
                         </ChakraLink>
-                        <OrderItemsCount>
+                        <Text>
                           {t('orders.orderContains', {
                             count: order.skus_count as number,
                           })}
-                        </OrderItemsCount>
-                      </OrderData>
+                        </Text>
+                      </div>
                     )
                   })}
                 </>
@@ -148,15 +116,15 @@ function OrdersPage(): JSX.Element {
               if (!order) return <></>
               const cols = cell?.map((cell) => {
                 return (
-                  <OrderData
+                  <Box
                     key={order.number}
                     {...p}
                     // {...cell.getCellProps()}
                   >
-                    <OrderDate>
+                    <Text>
                       {cell.value && formatDate(cell.value, shortDate)}
-                    </OrderDate>
-                  </OrderData>
+                    </Text>
+                  </Box>
                 )
               })
               return <>{cols}</>
@@ -210,7 +178,7 @@ function OrdersPage(): JSX.Element {
             className="p-2"
           />
         </OrderList>
-      </OrderListWrapper>
+      </Container>
     </>
   )
 }

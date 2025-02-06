@@ -1,10 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { ErrorContainer } from '@/components/composite/Account/ErrorContainer'
-import {
-  ErrorCode,
-  Text,
-} from '@/components/composite/Account/ErrorContainer/styled'
+import { Heading, Text } from '@chakra-ui/react'
 
 interface Props {
   statusCode?: string
@@ -18,7 +15,7 @@ function Invalid(props: Props): JSX.Element {
 
   return (
     <ErrorContainer>
-      <ErrorCode>{statusCode}</ErrorCode>
+      <Heading>{statusCode}</Heading>
       <Text>{message}</Text>
     </ErrorContainer>
   )

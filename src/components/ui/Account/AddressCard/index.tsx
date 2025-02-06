@@ -1,29 +1,22 @@
+import { SettingsContext } from '@/components/data/SettingsProvider'
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Box, Button, Card, Flex, Text, Wrap } from '@chakra-ui/react'
+import AddressField from '@commercelayer/react-components/addresses/AddressField'
 import type { Address as CLayerAddress } from '@commercelayer/sdk'
 import { useRouter } from 'next/navigation'
 import { Trash, X } from 'phosphor-react'
 import { useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import {
-  Actions,
-  ActionsWrapper,
-  Address,
-  ConfirmActions,
-  // ConfirmCancel,
-  ConfirmDelete,
-  Customer,
-  DeleteButton,
-  DeleteButtonWrapper,
-  EditButton,
-  Overlay,
-  Text,
-  Wrapper,
-} from './styled'
-
-import { GridCard } from '@/components/ui/Account/GridCard'
-// import { appRoutes } from "#data/routes"
-import { SettingsContext } from '@/components/data/SettingsProvider'
-
 interface Props {
   address?: CLayerAddress
   addressType: string
@@ -59,64 +52,71 @@ export function AddressCard({
   } = address
 
   return (
-    <Wrapper>
-      {showDeleteConfirmation && (
-        <Overlay>
-          <X
-            weight="regular"
-            className="absolute w-5 h-5 text-gray-300 cursor-pointer right-2 top-2"
-            onClick={() => setShowDeleteConfirmation(false)}
-          />
-          <Text>{t('addresses.deleteConfirmation')}</Text>
-          <ConfirmActions>
-            <ConfirmDelete
-              type="delete"
-              label={t('addresses.yes') as string}
-              className="address-confirm-delete-button"
-              onClick={() => {
-                setShowDeleteConfirmation(false)
-              }}
-            />
-          </ConfirmActions>
-        </Overlay>
-      )}
-      <GridCard>
-        <Customer data-cy={`fullname_${addressType}`}>
-          {first_name} {last_name}
-        </Customer>
-        <Address data-cy={`full_address_${addressType}`}>
-          {line_2 != null ? [line_1, line_2].join(', ') : line_1}
-          <br />
-          {zip_code} {city} ({state_code}) - {country_code}
-          <br />
-          {phone}
-          <br />
-        </Address>
+    <Box>
+      <Card.Root>
+        <Card.Body>
+          <Text data-cy={`fullname_${addressType}`}>
+            {first_name} {last_name}
+          </Text>
+          <Text data-cy={`full_address_${addressType}`}>
+            {line_2 != null ? [line_1, line_2].join(', ') : line_1}
+            <br />
+            {zip_code} {city} ({state_code}) - {country_code}
+            <br />
+            {phone}
+            <br />
+          </Text>
+        </Card.Body>
         {readonly === undefined && (
-          <ActionsWrapper>
-            <Actions>
-              <EditButton
-                type="edit"
-                label={editButton || t('addresses.edit')}
-                className="address-edit-button"
-                onClick={(address) => {
-                  router.push(`/account/addresses/${address?.id}/edit`)
-                }}
-              />
-              <DeleteButtonWrapper
-                onClick={() => setShowDeleteConfirmation(true)}
-                className="address-delete-button"
-              >
-                <Trash className="w-3.5 h-3.5" />
-                <DeleteButton
-                  label={deleteButton || t('addresses.delete')}
-                  variant="warning"
+          <Card.Footer>
+            <Flex direction={'column'} justify={'end'} pt={2}>
+              <Wrap>
+                <AddressField
+                  type="edit"
+                  label={editButton || t('addresses.edit')}
+                  className="address-edit-button"
+                  onClick={(address) => {
+                    router.push(`/account/addresses/${address?.id}/edit`)
+                  }}
                 />
-              </DeleteButtonWrapper>
-            </Actions>
-          </ActionsWrapper>
+                <DialogRoot
+                  lazyMount
+                  open={showDeleteConfirmation}
+                  onOpenChange={(e) => setShowDeleteConfirmation(e.open)}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant={'plain'} className="address-delete-button">
+                      <Trash className="w-3.5 h-3.5" />
+                      <Text as={'span'}>
+                        {deleteButton || t('addresses.delete')}
+                      </Text>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {t('addresses.deleteConfirmation')}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
+                      <DialogActionTrigger asChild>
+                        <Button
+                          className="address-confirm-delete-button"
+                          onClick={() => {
+                            setShowDeleteConfirmation(false)
+                          }}
+                        >
+                          {t('addresses.yes') as string}
+                        </Button>
+                      </DialogActionTrigger>
+                    </DialogBody>
+                  </DialogContent>
+                </DialogRoot>
+              </Wrap>
+            </Flex>
+          </Card.Footer>
         )}
-      </GridCard>
-    </Wrapper>
+      </Card.Root>
+    </Box>
   )
 }

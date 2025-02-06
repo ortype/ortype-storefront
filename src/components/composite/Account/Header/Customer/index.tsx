@@ -1,17 +1,9 @@
-import type { Settings } from 'HostedApp'
+import type { Settings } from 'CustomApp'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Wrapper,
-  Title,
-  HeaderContainer,
-  User,
-  Email,
-} from '@/components/composite/Account/Header/styled'
-import Avatar from '@/components/ui/Account/Avatar'
-import MenuButton from '@/components/ui/Account/MenuButton'
 import { SettingsContext } from '@/components/data/SettingsProvider'
+import { Container, Flex, Heading, Text } from '@chakra-ui/react'
 
 type Props = Pick<Settings, 'logoUrl' | 'companyName'>
 
@@ -21,16 +13,14 @@ function CustomerHeader({ logoUrl, companyName }: Props): JSX.Element {
   const email = ctx?.email as string
 
   return (
-    <HeaderContainer>
-      <Wrapper>
-        <MenuButton />
-        <Title>{t('header.title')}</Title>
-        <User>
-          <Email>{email}</Email>
-          <Avatar email={email} />
-        </User>
-      </Wrapper>
-    </HeaderContainer>
+    <Container pos={'fixed'}>
+      <Flex justifyContent={'space-between'} p={5}>
+        <Heading>{t('header.title')}</Heading>
+        <Flex alignItems={'center'}>
+          <Text size={'sm'}>{email}</Text>
+        </Flex>
+      </Flex>
+    </Container>
   )
 }
 

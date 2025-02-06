@@ -1,35 +1,8 @@
 import type { Settings } from 'CustomApp'
-import { useEffect, useContext, useState } from 'react'
-import styled from 'styled-components'
-import tw from 'twin.macro'
+import { useContext, useEffect, useState } from 'react'
 
-export const GuestWrapper = styled.div`
-  ${tw`flex flex-wrap justify-end items-stretch flex-col max-w-screen-md mx-auto min-h-screen md:flex-row`}
-`
-
-export const CustomerWrapper = styled.div`
-  ${tw`flex flex-wrap justify-end items-stretch flex-col min-h-screen md:flex-row`}
-`
-
-export const Main = styled.div`
-  ${tw`flex-none justify-center order-first h-screen md:(flex-1 order-last h-auto)`}
-`
-
-export const DesktopOnly = styled.div`
-  ${tw`hidden lg:(inline bg-gray-50)`}
-`
-
-export const Aside = styled.div`
-  ${tw`flex-none lg:(flex-1 h-full)`}
-`
-
-export const MobileMenu = styled.div`
-  ${tw`z-20 fixed top-16 left-0 bottom-0 flex flex-col min-w-full max-w-sm bg-white border-r overflow-y-auto lg:hidden`}
-`
-import { Base } from '@/components/ui/Account/Base'
-import { Card } from '@/components/ui/Account/Card'
-import { Container } from '@/components/ui/Account/Container'
 import { SettingsContext } from '@/components/data/SettingsProvider'
+import { Box, Card, Container, Flex } from '@chakra-ui/react'
 
 type LayoutAccountProps = Pick<Settings, 'isGuest'> & {
   aside: React.ReactNode | null
@@ -44,37 +17,37 @@ export function LayoutAccount({
   const ctx = useContext(SettingsContext)
   const [noScrollClassname, setNoScrollClassName] = useState('')
 
-  useEffect(() => {
-    ctx?.showMobileMenu
-      ? setNoScrollClassName('overflow-hidden')
-      : setNoScrollClassName('')
-  }, [ctx?.showMobileMenu])
-
   return (
-    <Base className={noScrollClassname}>
+    <Box className={noScrollClassname}>
       <Container>
         {isGuest ? (
-          <GuestWrapper>
-            <Main id="main">
-              <Card fullHeight centered>
-                {main}
-              </Card>
-            </Main>
-          </GuestWrapper>
+          <Flex className="flex flex-wrap justify-end items-stretch flex-col max-w-screen-md mx-auto min-h-screen md:flex-row">
+            <Box
+              id="main"
+              className="flex-none justify-center order-first h-screen md:(flex-1 order-last h-auto)"
+            >
+              <Card.Root size="sm">
+                <Card.Body color="fg.muted">{main}</Card.Body>
+              </Card.Root>
+            </Box>
+          </Flex>
         ) : (
-          <CustomerWrapper>
-            <DesktopOnly>
-              <Aside>{aside}</Aside>
-            </DesktopOnly>
-            {ctx?.showMobileMenu && <MobileMenu>{aside}</MobileMenu>}
-            <Main id="main">
-              <Card fullHeight centered>
-                {main}
-              </Card>
-            </Main>
-          </CustomerWrapper>
+          <Flex
+            direction="column"
+            className="flex flex-wrap justify-end items-stretch flex-col min-h-screen md:flex-row"
+          >
+            <Box>{aside}</Box>
+            <Box
+              id="main"
+              className="flex-none justify-center order-first h-screen md:(flex-1 order-last h-auto)"
+            >
+              <Card.Root size="sm">
+                <Card.Body color="fg.muted">{main}</Card.Body>
+              </Card.Root>
+            </Box>
+          </Flex>
         )}
       </Container>
-    </Base>
+    </Box>
   )
 }

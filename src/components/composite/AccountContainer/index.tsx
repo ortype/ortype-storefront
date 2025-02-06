@@ -3,13 +3,11 @@ import CustomerHeader from '@/components/composite/Account/Header/Customer'
 import GuestHeader from '@/components/composite/Account/Header/Guest'
 import Navbar from '@/components/composite/Account/Navbar'
 import { CustomerContainerProvider } from '@/components/composite/CustomerContainerProvider'
+import { SettingsContext } from '@/components/data/SettingsProvider'
 import { LayoutAccount } from '@/components/layouts/LayoutAccount'
-import { FooterWrapper } from '@/components/ui/Account/Common/styled'
-import Footer from '@/components/ui/Account/Footer'
-import PageMain from '@/components/ui/Account/PageMain'
+import { Container } from '@chakra-ui/react'
 import type { Settings } from 'CustomApp'
 import { IconContext } from 'phosphor-react'
-import { SettingsContext } from '@/components/data/SettingsProvider'
 import { useContext } from 'react'
 
 interface Props {
@@ -49,10 +47,7 @@ function MyAccountContainer({
                     companyName={settings.companyName}
                   />
                 )}
-                <PageMain>{children}</PageMain>
-                <FooterWrapper>
-                  <Footer />
-                </FooterWrapper>
+                <Container>{children}</Container>
               </>
             }
             aside={settings.isGuest ? null : <Navbar settings={settings} />}

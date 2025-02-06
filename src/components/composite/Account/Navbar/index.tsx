@@ -1,8 +1,7 @@
-import { CustomerField } from '@commercelayer/react-components/customers/CustomerField'
 import NavLink from '@/components/composite/Account/NavLink'
+import { CustomerField } from '@commercelayer/react-components/customers/CustomerField'
 // import ShoppingCartIcon from "@/components/ui/Account/icons/ShoppingCartIcon"
-import Footer from '@/components/ui/Account/Footer'
-import type { Settings } from 'HostedApp'
+import type { Settings } from 'CustomApp'
 import {
   CreditCard,
   Lifebuoy,
@@ -12,16 +11,7 @@ import {
 } from 'phosphor-react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Email,
-  EmailWrapper,
-  FooterWrapper,
-  LogoWrapper,
-  MenuWrapper,
-  Nav,
-  Sidebar,
-  Wrapper,
-} from './styled'
+import { Box, Flex } from '@chakra-ui/react'
 
 interface Props {
   settings: Settings
@@ -76,30 +66,30 @@ function Navbar({ settings, onClick }: Props): JSX.Element {
   }
 
   return (
-    <Sidebar data-cy="navbar">
-      <Wrapper>
-        <MenuWrapper>
-          <Nav>
+    <Flex
+      data-cy="navbar"
+      className={'flex flex-col min-h-full p-5 lg:(p-1 sticky top-8) xl:pl-48'}
+    >
+      <Box position={'sticky'} top={8}>
+        <Box className={'mt-5 w-28'} flex={1}>
+          <Box my={16}>
             <ul className="flex flex-col gap-[18px]">
               <NavLink id="orders" {...menu.orders} />
               <NavLink id="addresses" {...menu.addresses} />
               {/*<NavLink id="wallet" {...menu.wallet} />
               <NavLink id="returns" {...menu.returns} />*/}
             </ul>
-          </Nav>
+          </Box>
           {/* <NavLink id="customerService" {...menu.customerService} /> */}
-          <EmailWrapper>
+          <Box>
             {t('menu.loggedInAs')}
-            <Email>
+            <Box>
               <CustomerField name="email" attribute="email" tagElement="p" />
-            </Email>
-          </EmailWrapper>
-          <FooterWrapper>
-            <Footer />
-          </FooterWrapper>
-        </MenuWrapper>
-      </Wrapper>
-    </Sidebar>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
   )
 }
 

@@ -1,27 +1,19 @@
-import { Base } from '@/components/ui/Base'
-import { Container } from '@/components/ui/Container'
-import { Footer } from '@/components/ui/Footer'
+import { Box, Container, Flex, Text } from '@chakra-ui/react'
 
-import { Wrapper, LogoWrapper, FullLogo, Main, Error } from './styled'
-
-export const ErrorContainer = ({
+export function ErrorContainer({
   children,
 }: {
-  children: JSX.Element[] | JSX.Element | null
-}) => {
+  children: React.ReactNode
+}): JSX.Element {
   return (
-    <Base>
+    <Box>
       <Container>
-        <Wrapper>
-          <LogoWrapper>
-            <FullLogo className="self-center text-black md:pl-4 md:self-auto" />
-          </LogoWrapper>
-          <Main>
-            <Error>{children}</Error>
-          </Main>
-          <Footer />
-        </Wrapper>
+        <Flex>
+          <Flex justify={'center'} alignItems={'center'} justifySelf={'center'}>
+            <Text>{children}</Text>
+          </Flex>
+        </Flex>
       </Container>
-    </Base>
+    </Box>
   )
 }

@@ -8,7 +8,6 @@ import { SessionProvider } from 'next-auth/react'
 import { VisualEditing } from 'next-sanity'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
-import 'tailwindcss/tailwind.css'
 
 // https://github.com/vercel/next.js/discussions/54075
 

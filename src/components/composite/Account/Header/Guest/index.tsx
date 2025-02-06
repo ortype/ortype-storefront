@@ -1,20 +1,13 @@
-import type { Settings } from 'HostedApp'
-
-import {
-  Wrapper,
-  HeaderContainer,
-} from '@/components/composite/Account/Header/styled'
-import MenuButton from '@/components/ui/Account/MenuButton'
+import { Container, Flex } from '@chakra-ui/react'
+import type { Settings } from 'CustomApp'
 
 type Props = Pick<Settings, 'logoUrl' | 'companyName'>
 
 function GuestHeader({ logoUrl, companyName }: Props): JSX.Element {
   return (
-    <HeaderContainer>
-      <Wrapper>
-        <MenuButton />
-      </Wrapper>
-    </HeaderContainer>
+    <Container pos={'fixed'}>
+      <Flex justifyContent={'space-between'} p={5}></Flex>
+    </Container>
   )
 }
 

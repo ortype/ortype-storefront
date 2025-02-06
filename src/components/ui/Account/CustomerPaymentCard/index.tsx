@@ -1,15 +1,14 @@
 import { CustomerPaymentSource } from '@commercelayer/react-components/customers/CustomerPaymentSource'
 
-import { SkeletonMainWalletCard } from '@/components/composite/Account/Skeleton/Main/Common'
-import { GridCard } from '@/components/ui/Account/GridCard'
 import { PaymentSourceCard } from '@/components/ui/Account/PaymentSource/Card'
+import { Grid } from '@chakra-ui/react'
 
 function CustomerPaymentCard(): JSX.Element {
   return (
-    <CustomerPaymentSource loader={<SkeletonMainWalletCard noGap />}>
-      <GridCard hover="none">
+    <CustomerPaymentSource loader={<div />}>
+      <Grid>
         <PaymentSourceCard />
-      </GridCard>
+      </Grid>
     </CustomerPaymentSource>
   )
 }

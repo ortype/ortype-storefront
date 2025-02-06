@@ -3,15 +3,8 @@ import { PaymentSourceDetail } from '@commercelayer/react-components/payment_sou
 import { AsteriskSimple } from 'phosphor-react'
 import { Trans, useTranslation } from 'react-i18next'
 
-import {
-  PaymentSourceTextPrimary,
-  PaymentSourceTextSecondary,
-  PaymentSourceNumberWrapper,
-  PaymentSourceNumberPrimary,
-  PaymentSourceNumberSecondary,
-} from './styled'
-
 import { getTranslations } from '@/utils/payments'
+import { Flex, Text } from '@chakra-ui/react'
 
 export function PaymentSourceName(): JSX.Element {
   const { t } = useTranslation()
@@ -20,9 +13,7 @@ export function PaymentSourceName(): JSX.Element {
     <PaymentSourceBrandName>
       {(props) => {
         return props?.brand ? (
-          <PaymentSourceTextPrimary>
-            {getTranslations(props?.brand, t)}
-          </PaymentSourceTextPrimary>
+          <Text>{getTranslations(props?.brand, t)}</Text>
         ) : null
       }}
     </PaymentSourceBrandName>
@@ -31,11 +22,11 @@ export function PaymentSourceName(): JSX.Element {
 
 export function PaymentSourceCreditCardEndingIn(): JSX.Element {
   return (
-    <PaymentSourceTextPrimary>
+    <Text>
       <Trans i18nKey="paymentSource.endingIn">
         <PaymentSourceDetail type="last4" />
       </Trans>
-    </PaymentSourceTextPrimary>
+    </Text>
   )
 }
 
@@ -71,9 +62,9 @@ function PaymentSourceCreditCardExpiresAsterisks(): JSX.Element {
 
 export function PaymentSourceCreditCardNumber(): JSX.Element {
   return (
-    <PaymentSourceNumberWrapper>
+    <Flex>
       <PaymentSourceCreditCardAsterisksGroup />
-      <PaymentSourceNumberPrimary>
+      <Text>
         <PaymentSourceDetail type="last4">
           {({ text }) => {
             return text === '****' ? (
@@ -83,8 +74,8 @@ export function PaymentSourceCreditCardNumber(): JSX.Element {
             )
           }}
         </PaymentSourceDetail>
-      </PaymentSourceNumberPrimary>
-    </PaymentSourceNumberWrapper>
+      </Text>
+    </Flex>
   )
 }
 interface PaymentSourceCreditCardExpiresProps {
@@ -127,9 +118,5 @@ export function PaymentSourceCreditCardExpires({
     </div>
   )
 
-  return variant === 'card' ? (
-    <PaymentSourceNumberSecondary>{label}</PaymentSourceNumberSecondary>
-  ) : (
-    <PaymentSourceTextSecondary>{label}</PaymentSourceTextSecondary>
-  )
+  return variant === 'card' ? <Text>{label}</Text> : <Text>{label}</Text>
 }

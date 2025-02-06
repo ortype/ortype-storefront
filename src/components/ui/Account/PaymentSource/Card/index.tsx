@@ -1,45 +1,39 @@
 import { PaymentSourceBrandIcon } from '@commercelayer/react-components/payment_source/PaymentSourceBrandIcon'
 import { PaymentSourceDetail } from '@commercelayer/react-components/payment_source/PaymentSourceDetail'
 
-import { PaymentSourceWrapper } from './styled'
-
 import {
-  PaymentSourceName,
-  PaymentSourceCreditCardNumber,
   PaymentSourceCreditCardExpires,
+  PaymentSourceCreditCardNumber,
+  PaymentSourceName,
 } from '@/components/ui/Account/PaymentSource'
-import {
-  PaymentSourceBrandIconWrapper,
-  PaymentSourceBrandNameWrapper,
-  PaymentSourceTextWrapper,
-} from '@/components/ui/Account/PaymentSource/styled'
+import { Box, Flex, Text } from '@chakra-ui/react'
 
 export function PaymentSourceCard(): JSX.Element {
   return (
-    <PaymentSourceWrapper>
-      <PaymentSourceBrandIconWrapper>
+    <Flex>
+      <Flex>
         <PaymentSourceBrandIcon width={50} />
-      </PaymentSourceBrandIconWrapper>
-      <PaymentSourceBrandNameWrapper>
+      </Flex>
+      <Box>
         <PaymentSourceDetail type="last4">
           {(props) => {
             if (props.text === null || props.text.length === 0)
               return (
-                <PaymentSourceTextWrapper>
+                <Text>
                   <PaymentSourceName />
-                </PaymentSourceTextWrapper>
+                </Text>
               )
             return (
               <>
-                <PaymentSourceTextWrapper>
+                <Text>
                   <PaymentSourceCreditCardNumber />
-                </PaymentSourceTextWrapper>
+                </Text>
                 <PaymentSourceCreditCardExpires variant="card" />
               </>
             )
           }}
         </PaymentSourceDetail>
-      </PaymentSourceBrandNameWrapper>
-    </PaymentSourceWrapper>
+      </Box>
+    </Flex>
   )
 }

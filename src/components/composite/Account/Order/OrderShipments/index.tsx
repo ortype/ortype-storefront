@@ -7,51 +7,35 @@ import { Shipment } from '@commercelayer/react-components/shipments/Shipment'
 import { ShipmentField } from '@commercelayer/react-components/shipments/ShipmentField'
 import { ShipmentsContainer } from '@commercelayer/react-components/shipments/ShipmentsContainer'
 import { ShipmentsCount } from '@commercelayer/react-components/shipments/ShipmentsCount'
+import { useRouter } from 'next/router'
 import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import { useRouter } from 'next/router'
+
+console.log('ParcelField: ', ParcelField)
+
+import type { ShipmentStatus } from '@/components/composite/Account/Order/ShipmentStatusChip'
+import ShipmentStatusChip from '@/components/composite/Account/Order/ShipmentStatusChip'
+import { OrderContext } from '@/components/data/OrderProvider'
+import { SettingsContext } from '@/components/data/SettingsProvider'
+import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react'
 
 import {
-  ShipmentWrapper,
-  ShipmentHeader,
-  ShipmentCounter,
-  ShipmentHeaderRight,
-  ShipmentHeaderRightRow,
-  ShipmentTitle,
-  ShipmentShippingMethod,
-  ParcelsWrapper,
-  ParcelWrapper,
-  ParcelHeader,
-  ParcelTitle,
-  ParcelHeaderRight,
-  ParcelTrackingNumberWrapper,
-  ParcelTrackingNumberLabel,
-  ParcelTrackingNumberCode,
-  ParcelContent,
-  ParcelLineItemWrapper,
-  ParcelLineItemImageWrapper,
-  ParcelLineItemContentWrapper,
-  ParcelLineItemName,
-  ParcelLineItemQuantity,
-} from './styled'
-
-import ShipmentStatusChip from '@/components/composite/Account/Order/ShipmentStatusChip'
-import type { ShipmentStatus } from '@/components/composite/Account/Order/ShipmentStatusChip'
-import Button from '@/components/ui/Account/Button'
-import ShowHideMenu from '@/components/ui/Account/ShowHideMenu'
-import { SettingsContext } from '@/components/data/SettingsProvider'
-import { OrderContext } from '@/components/data/OrderProvider'
+    AccordionItem,
+    AccordionItemContent,
+    AccordionItemTrigger,
+    AccordionRoot,
+} from '@/components/ui/chakra-accordion'
 
 function ParcelTrackingNumber(): JSX.Element {
   return (
-    <ParcelTrackingNumberWrapper>
-      <ParcelTrackingNumberLabel>
+    <Box className="relative pl-10 mr-10 hidden md:block">
+      <Box className="absolute right-0 font-bold text-right text-gray-300 uppercase -top-5 text-[12px]">
         <Trans i18nKey="order.shipments.trackingCode" />
-      </ParcelTrackingNumberLabel>
-      <ParcelTrackingNumberCode>
+      </Box>
+      <Text>
         <ParcelField attribute="tracking_number" tagElement="span" />
-      </ParcelTrackingNumberCode>
-    </ParcelTrackingNumberWrapper>
+      </Text>
+    </Box>
   )
 }
 
@@ -72,12 +56,11 @@ function ParcelLink(): JSX.Element {
         return (
           <Button
             className="uppercase"
-            label={t('order.shipments.trackParcel') as string}
-            buttonSize="small"
+            size={'sm'}
             onClick={() =>
               router.push(`/orders/${orderId}/parcels/${props?.attributeValue}`)
             }
-          />
+          >{t('order.shipments.trackParcel'}</Button>
         )
       }}
     </ParcelField>
@@ -86,71 +69,85 @@ function ParcelLink(): JSX.Element {
 
 function Parcel(): JSX.Element {
   return (
-    <ParcelWrapper>
-      <ParcelHeader>
-        <ParcelTitle>
+    <Box py="2" pl="7">
+      <Flex justifyContent={'space-between'}>
+        <Heading className='relative pr-4 text-sm font-bold before:(bg-[#e6e7e7] content-[""] h-[1px] w-[20px] absolute top-[50%] left-[-28px]) max-w-max md:max-w-full break-all'>
           <Trans i18nKey="order.shipments.parcel">
             <ParcelField attribute="number" tagElement="span" />
           </Trans>
-        </ParcelTitle>
-        <ParcelHeaderRight>
+        </Heading>
+        <Flex>
           <ParcelTrackingNumber />
           <ParcelLink />
-        </ParcelHeaderRight>
-      </ParcelHeader>
-      <ParcelContent>
+        </Flex>
+      </Flex>
+      <Box py={3}>
         <ParcelLineItemsCount>
           {(props) => {
+            const itemsCounterToString = props.itemsCounter.toString()
+            const showHideMenuButtonTextLabel =
+              props.itemsCounter > 1
+                ? 'showHideMenu.mainLabel_plural'
+                : 'showHideMenu.mainLabel'
             return (
-              <ShowHideMenu itemsCounter={props?.quantity}>
-                <ParcelLineItem>
-                  <ParcelLineItemWrapper>
-                    <ParcelLineItemImageWrapper>
-                      <ParcelLineItemField
-                        tagElement="img"
-                        attribute="image_url"
-                      />
-                    </ParcelLineItemImageWrapper>
-                    <ParcelLineItemContentWrapper>
-                      <ParcelLineItemName>
-                        <ParcelLineItemField
-                          tagElement="span"
-                          attribute="name"
-                        />
-                      </ParcelLineItemName>
-                      <ParcelLineItemQuantity>
-                        <Trans i18nKey="order.shipments.parcelLineItemQuantity">
+              <AccordionRoot value={['1']}>
+                <AccordionItem value={'1'}>
+                  <AccordionItemTrigger>
+                    <Trans i18nKey={showHideMenuButtonTextLabel}>
+                      {itemsCounterToString}
+                    </Trans>
+                  </AccordionItemTrigger>
+                  <AccordionItemContent>
+                    <ParcelLineItem>
+                      <Flex direction={'row'} py={4}>
+                        <Box>
                           <ParcelLineItemField
-                            tagElement="span"
-                            attribute="quantity"
+                            tagElement="img"
+                            attribute="image_url"
                           />
-                        </Trans>
-                      </ParcelLineItemQuantity>
-                    </ParcelLineItemContentWrapper>
-                  </ParcelLineItemWrapper>
-                </ParcelLineItem>
-              </ShowHideMenu>
+                        </Box>
+                        <Flex direction="column">
+                          <Text>
+                            <ParcelLineItemField
+                              tagElement="span"
+                              attribute="name"
+                            />
+                          </Text>
+                          <Text>
+                            <Trans i18nKey="order.shipments.parcelLineItemQuantity">
+                              <ParcelLineItemField
+                                tagElement="span"
+                                attribute="quantity"
+                              />
+                            </Trans>
+                          </Text>
+                        </Flex>
+                      </Flex>
+                    </ParcelLineItem>
+                  </AccordionItemContent>
+                </AccordionItem>
+              </AccordionRoot>
             )
           }}
         </ParcelLineItemsCount>
-      </ParcelContent>
-    </ParcelWrapper>
+      </Box>
+    </Box>
   )
 }
 
 function ShipmentTop(): JSX.Element {
   return (
-    <ShipmentHeader>
-      <ShipmentCounter>
+    <Flex>
+      <Heading>
         <ShipmentField name="key_number" />/<ShipmentsCount />
-      </ShipmentCounter>
-      <ShipmentHeaderRight>
-        <ShipmentHeaderRightRow>
-          <ShipmentTitle>
+      </Heading>
+      <Box pos={'relative'} ml={3}>
+        <Flex alignItems={'center'}>
+          <Text>
             <Trans i18nKey="order.shipments.shipment">
               <ShipmentField name="number" />
             </Trans>
-          </ShipmentTitle>
+          </Text>
           <ShipmentField name="number">
             {(props) => {
               return (
@@ -160,18 +157,18 @@ function ShipmentTop(): JSX.Element {
               )
             }}
           </ShipmentField>
-        </ShipmentHeaderRightRow>
+        </Flex>
         <ShipmentField name="number">
           {(props) => {
             return (
-              <ShipmentShippingMethod>
+              <Box className="absolute left-0 text-sm text-gray-500 -bottom-5">
                 {props?.shipment?.shipping_method?.name}
-              </ShipmentShippingMethod>
+              </Box>
             )
           }}
         </ShipmentField>
-      </ShipmentHeaderRight>
-    </ShipmentHeader>
+      </Box>
+    </Flex>
   )
 }
 
@@ -179,14 +176,14 @@ function OrderShipments(): JSX.Element {
   return (
     <ShipmentsContainer>
       <Shipment>
-        <ShipmentWrapper>
+        <Box>
           <ShipmentTop />
           <Parcels>
-            <ParcelsWrapper>
+            <Box>
               <Parcel />
-            </ParcelsWrapper>
+            </Box>
           </Parcels>
-        </ShipmentWrapper>
+        </Box>
       </Shipment>
     </ShipmentsContainer>
   )

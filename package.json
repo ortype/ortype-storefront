@@ -20,7 +20,7 @@
     "@adyen/adyen-web": "5.43.0",
     "@apollo/client": "^3.8.1",
     "@babel/plugin-syntax-typescript": "^7.23.3",
-    "@chakra-ui/react": "^3.5.1",
+    "@chakra-ui/react": "^3.7.0",
     "@chakra-ui/theme": "^3.4.6",
     "@commercelayer/js-auth": "^6.7.0",
     "@commercelayer/react-components": "^4.17.0",
@@ -37,9 +37,6 @@
     "@sanity/react-loader": "^1.7.0",
     "@sanity/ui": "^1.9.3",
     "@sanity/vision": "^3.64.3",
-    "@tailwindcss/forms": "^0.5.3",
-    "@tailwindcss/line-clamp": "^0.4.4",
-    "@tailwindcss/typography": "^0.5.14",
     "@types/node": "^22.4.0",
     "@types/react-dom": "^18.3.0",
     "@vercel/og": "^0.0.27",
@@ -47,7 +44,6 @@
     "@wakamai-fondue/engine": "github:Wakamai-Fondue/wakamai-fondue-engine#50b68ac117a9aa5d907174db1920b4823ed4263e",
     "async-retry": "^1.3.3",
     "babel-loader": "^9.1.3",
-    "babel-plugin-macros": "^2.8.0",
     "babel-plugin-styled-components": "^2.1.4",
     "classnames": "^2.3.2",
     "cookie": "^0.5.0",
@@ -97,7 +93,6 @@
     "styled-components": "^6.1.12",
     "suspend-react": "^0.0.9",
     "swr": "^2.0.1",
-    "twin.macro": "^2.8.2",
     "usehooks-ts": "^3.1.0",
     "yup": "^1.6.1",
     "zod": "^3.21.4"
@@ -111,15 +106,8 @@
     "eslint-plugin-simple-import-sort": "^9.0.0",
     "prettier": "^2.8.3",
     "prettier-plugin-packagejson": "^2.4.0",
-    "prettier-plugin-tailwindcss": "^0.2.2",
-    "tailwindcss": "^3.3.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.4.0"
-  },
-  "babelMacros": {
-    "twin": {
-      "preset": "styled-components"
-    }
   },
   "engines": {
     "node": ">=20"

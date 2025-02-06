@@ -1,5 +1,3 @@
-import withTwin from './withTwin.mjs'
-
 /** @type {import('next').NextConfig} */
 /*const config = {
   webpack: (config) => {
@@ -52,4 +50,4 @@ const config = {
     ignoreDuringBuilds: true,
   },
 }
-export default withTwin(config)
+export default config
