@@ -13,7 +13,7 @@ function CustomerHeader({ logoUrl, companyName }: Props): JSX.Element {
   const email = customer?.email as string
 
   return (
-    <Container pos={'fixed'}>
+    <Container>
       <Flex justifyContent={'space-between'} p={5}>
         <Heading>{t('header.title')}</Heading>
         <Flex alignItems={'center'}>

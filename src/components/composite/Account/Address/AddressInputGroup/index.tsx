@@ -124,10 +124,8 @@ export function AddressInputGroup({
   }
 
   return (
-    <div className="mb-8">
-      <Container>
-        <div className="relative h-10">{renderInput()}</div>
-      </Container>
+    <>
+      {renderInput()}
       <Errors
         className={
           'inline-block text-xs pt-3 pl-3 border-red-400 text-red-400 placeholder-red-400 focus:ring-red-500 focus:border-red-500'
@@ -137,6 +135,6 @@ export function AddressInputGroup({
         field={fieldName}
         messages={messages}
       />
-    </div>
+    </>
   )
 }
