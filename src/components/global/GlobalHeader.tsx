@@ -7,7 +7,6 @@
 // import Cart from '@/components/composite/Cart'
 // import CartContainer from '@/components/composite/CartContainer'
 import { Account } from '@/commercelayer/components/composite/Account'
-import { useSettings } from '@/components/data/SettingsProvider'
 import { Box, Flex, Group, Link } from '@chakra-ui/react'
 // import { Account } from '@/components/composite/Account'
 import dynamic from 'next/dynamic'

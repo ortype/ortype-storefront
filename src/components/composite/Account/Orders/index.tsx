@@ -1,7 +1,7 @@
 'use client'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import Empty from '@/components/composite/Account/Empty'
 import OrderStatusChip from '@/components/composite/Account/Order/OrderStatusChip'
-import { SettingsContext } from '@/components/data/SettingsProvider'
 import { formatDate, shortDate } from '@/utils/dateTimeFormats'
 import { Link as ChakraLink, Container, Heading, Text } from '@chakra-ui/react'
 import { OrderList } from '@commercelayer/react-components/orders/OrderList'
@@ -11,12 +11,11 @@ import { OrderListPaginationInfo } from '@commercelayer/react-components/orders/
 import { OrderListRow } from '@commercelayer/react-components/orders/OrderListRow'
 import { flexRender, type Row } from '@tanstack/react-table'
 import Link from 'next/link'
-import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
 function OrdersPage(): JSX.Element {
   const { t } = useTranslation()
-  const { isLoading, settings } = useContext(SettingsContext)
+  const { isLoading, settings } = useIdentityContext()
   if (isLoading || !settings) return <div />
 
   const colClassName =

@@ -1,15 +1,13 @@
 'use client'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import CustomerHeader from '@/components/composite/Account/Header/Customer'
 import GuestHeader from '@/components/composite/Account/Header/Guest'
 import Navbar from '@/components/composite/Account/Navbar'
 import { CustomerContainerProvider } from '@/components/composite/CustomerContainerProvider'
-import { SettingsContext } from '@/components/data/SettingsProvider'
 import { LayoutAccount } from '@/components/layouts/LayoutAccount'
 import { Container } from '@chakra-ui/react'
 import type { Settings } from 'CustomApp'
 import { IconContext } from 'phosphor-react'
-import { useContext } from 'react'
-
 interface Props {
   settings: Settings
   children: React.ReactElement
@@ -19,7 +17,7 @@ function MyAccountContainer({
   // settings,
   children,
 }: Props): JSX.Element {
-  const { isLoading, settings } = useContext(SettingsContext)
+  const { isLoading, settings } = useIdentityContext()
   if (isLoading || !settings) return <div />
 
   return (

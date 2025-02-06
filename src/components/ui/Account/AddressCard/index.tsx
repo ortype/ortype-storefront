@@ -1,4 +1,3 @@
-import { SettingsContext } from '@/components/data/SettingsProvider'
 import {
   DialogActionTrigger,
   DialogBody,
@@ -15,7 +14,7 @@ import AddressField from '@commercelayer/react-components/addresses/AddressField
 import type { Address as CLayerAddress } from '@commercelayer/sdk'
 import { useRouter } from 'next/navigation'
 import { Trash, X } from 'phosphor-react'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 interface Props {
   address?: CLayerAddress
@@ -36,7 +35,6 @@ export function AddressCard({
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const router = useRouter()
-  const appCtx = useContext(SettingsContext)
 
   if (!address) return <></>
   const {

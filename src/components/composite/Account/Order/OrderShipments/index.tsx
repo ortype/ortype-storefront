@@ -11,14 +11,12 @@ import { useRouter } from 'next/router'
 import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
-console.log('ParcelField: ', ParcelField)
-
 import type { ShipmentStatus } from '@/components/composite/Account/Order/ShipmentStatusChip'
 import ShipmentStatusChip from '@/components/composite/Account/Order/ShipmentStatusChip'
 import { OrderContext } from '@/components/data/OrderProvider'
-import { SettingsContext } from '@/components/data/SettingsProvider'
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react'
 
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import {
     AccordionItem,
     AccordionItemContent,
@@ -46,8 +44,8 @@ function ParcelLink(): JSX.Element {
   const {} = useRouter()
 
   const { t } = useTranslation()
-  const ctx = useContext(SettingsContext)
-  const accessToken = ctx?.accessToken
+  const ctx = useIdentityContext()
+  const accessToken = ctx?.settings?.accessToken
   const orderCtx = useContext(OrderContext)
   const orderId = orderCtx?.order?.id
   return (

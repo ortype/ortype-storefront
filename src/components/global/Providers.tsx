@@ -2,8 +2,6 @@
 import { IdentityProvider } from '@/commercelayer/providers/Identity'
 import { OrderProvider } from '@/commercelayer/providers/Order'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
-import { CustomerProvider } from '@/components/data/CustomerProvider'
-import { SettingsProvider } from '@/components/data/SettingsProvider'
 import Webfonts from '@/components/global/Webfonts'
 import { Provider as ChakraProvider } from '@/components/ui/provider'
 import {
@@ -48,24 +46,7 @@ function Providers({
                   <OrderStorage persistKey={`order`}>
                     <OrderContainer>
                       <OrderProvider config={ctx.clientConfig}>
-                        <SettingsProvider config={{ ...config, marketId }}>
-                          {({ settings, isLoading }) => {
-                            return isLoading ? (
-                              <div>{'Loading...'}</div>
-                            ) : !settings.isValid ? (
-                              <div>{'Invalid settings config'}</div>
-                            ) : (
-                              <CustomerProvider
-                                customerId={settings.customerId}
-                                accessToken={settings.accessToken}
-                                domain={config.endpoint}
-                                {...config}
-                              >
-                                {children}
-                              </CustomerProvider>
-                            )
-                          }}
-                        </SettingsProvider>
+                        <div>{children}</div>
                       </OrderProvider>
                     </OrderContainer>
                   </OrderStorage>

@@ -1,12 +1,11 @@
 'use client'
-import { AddressesContainer } from '@commercelayer/react-components/addresses/AddressesContainer'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import CustomerAddressForm from '@/components/composite/Account/Address/CustomerAddressForm'
 import { CustomerAddressProvider } from '@/components/data/CustomerAddressProvider'
-import { SettingsContext } from '@/components/data/SettingsProvider'
-import { useContext } from 'react'
+import { AddressesContainer } from '@commercelayer/react-components/addresses/AddressesContainer'
 
 export default function AddressFormPage({ addressId }: { addressId: string }) {
-  const { isLoading, settings } = useContext(SettingsContext)
+  const { isLoading, settings, config } = useIdentityContext()
   if (isLoading || !settings) return <div />
 
   console.log('addressId: ', settings, addressId)
@@ -14,12 +13,12 @@ export default function AddressFormPage({ addressId }: { addressId: string }) {
   return (
     <CustomerAddressProvider
       accessToken={settings?.accessToken as string}
-      domain={settings?.domain as string}
-      slug={settings?.slug as string}
+      domain={config?.domain as string}
+      slug={config?.slug as string}
       addressId={addressId}
     >
       <AddressesContainer>
-        <CustomerAddressForm />
+        <CustomerAddressForm addressId={addressId} />
       </AddressesContainer>
     </CustomerAddressProvider>
   )

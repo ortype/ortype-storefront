@@ -1,6 +1,7 @@
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 
-import { SettingsContext } from '@/components/data/SettingsProvider'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { OrderSectionEnum } from '@/types/Account'
 
 type UseAccordionActiveSection = {
   activeSection: OrderSectionEnum
@@ -21,7 +22,7 @@ export const useAccordionActiveSection = (): UseAccordionActiveSection => {
     useState<OrderSectionEnum>('Summary')
   const [sections] = useState<OrderSectionEnum[]>(SECTIONS)
 
-  const ctx = useContext(SettingsContext)
+  const ctx = useIdentityContext()
 
   if (!ctx)
     return {

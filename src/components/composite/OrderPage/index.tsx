@@ -1,16 +1,15 @@
 'use client'
-import { OrderContainer } from '@commercelayer/react-components/orders/OrderContainer'
-import { OrderNumber } from '@commercelayer/react-components/orders/OrderNumber'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import OrderAccordion from '@/components/composite/Account/Order/OrderAccordion'
 import OrderDate from '@/components/composite/Account/Order/OrderDate'
 import OrderDownload from '@/components/composite/Account/Order/OrderDownload'
 import type { OrderStatus } from '@/components/composite/Account/Order/OrderStatusChip'
 import OrderStatusChip from '@/components/composite/Account/Order/OrderStatusChip'
 import { OrderProvider } from '@/components/data/OrderProvider'
-import { SettingsContext } from '@/components/data/SettingsProvider'
-import { useContext } from 'react'
-import { Trans } from 'react-i18next'
 import { Box, Container } from '@chakra-ui/react'
+import { OrderContainer } from '@commercelayer/react-components/orders/OrderContainer'
+import { OrderNumber } from '@commercelayer/react-components/orders/OrderNumber'
+import { Trans } from 'react-i18next'
 
 interface OrderWrapperProps {
   hidden?: boolean
@@ -22,9 +21,9 @@ interface OrderPageProps {
 }
 
 function OrderPage({ orderId }: OrderPageProps): JSX.Element {
-  const { isLoading, settings } = useContext(SettingsContext)
+  const { isLoading, settings, config } = useIdentityContext()
   const accessToken = settings?.accessToken
-  const slug = settings?.slug
+  const slug = config?.slug
   if (isLoading || !orderId || !settings) return <div />
 
   return (

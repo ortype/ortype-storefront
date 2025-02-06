@@ -1,17 +1,16 @@
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { Link } from '@chakra-ui/react'
-import { CustomerContext } from '@/components/data/CustomerProvider'
-import { useContext } from 'react'
 
 interface Props {
   id: string
 }
 
 function OrderDownload({ id }: Props): JSX.Element {
-  const customerContext = useContext(CustomerContext)
+  const { settings } = useIdentityContext()
   return (
     <>
       <Link
-        href={`${process.env.NEXT_PUBLIC_API_URL}/order/${id}/download/${customerContext?.accessToken}`}
+        href={`${process.env.NEXT_PUBLIC_API_URL}/order/${id}/download/${settings?.accessToken}`}
       >
         {'Download order'}
       </Link>

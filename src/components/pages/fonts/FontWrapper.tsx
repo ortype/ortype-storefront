@@ -1,11 +1,8 @@
 'use client'
 import Modules from '@/components/modules'
 import { Box } from '@chakra-ui/react'
-import CommerceLayer from '@commercelayer/sdk'
-import { Buy } from '@/components/composite/Buy'
-import { CustomerContext } from '@/components/data/CustomerProvider'
 import dynamic from 'next/dynamic'
-import React, { useContext } from 'react'
+import React from 'react'
 import FontContainer from './FontContainer'
 import { SpreadContainerProvider } from './SpreadContainer'
 

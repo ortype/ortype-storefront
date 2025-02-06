@@ -1,9 +1,7 @@
-import { CustomerContext } from '@/components/data/CustomerProvider'
 import { Box, Flex, Text } from '@chakra-ui/react'
 import type { Settings } from 'CustomApp'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useContext } from 'react'
 
 type Props = Pick<Settings, 'accessToken'> & {
   id: string
@@ -52,12 +50,10 @@ function NavLinkButton(props: Props): JSX.Element {
 function NavLink(props: Props): JSX.Element {
   const { href, accessToken, comingSoon } = props
 
-  const ctx = useContext(CustomerContext)
-
   if (comingSoon) return <NavLinkButton {...props} />
 
   return (
-    <Link href={`${href}`} onClick={() => ctx?.closeMobileMenu()}>
+    <Link href={`${href}`}>
       <NavLinkButton {...props} />
     </Link>
   )

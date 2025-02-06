@@ -1,8 +1,8 @@
 import type { Settings } from 'CustomApp'
-import { useContext, useEffect, useState } from 'react'
 
-import { SettingsContext } from '@/components/data/SettingsProvider'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { Box, Card, Container, Flex } from '@chakra-ui/react'
+import { useState } from 'react'
 
 type LayoutAccountProps = Pick<Settings, 'isGuest'> & {
   aside: React.ReactNode | null
@@ -14,13 +14,13 @@ export function LayoutAccount({
   aside,
   isGuest,
 }: LayoutAccountProps): JSX.Element {
-  const ctx = useContext(SettingsContext)
+  const { customer } = useIdentityContext()
   const [noScrollClassname, setNoScrollClassName] = useState('')
 
   return (
     <Box className={noScrollClassname}>
       <Container>
-        {isGuest ? (
+        {!customer.userMode ? (
           <Flex className="flex flex-wrap justify-end items-stretch flex-col max-w-screen-md mx-auto min-h-screen md:flex-row">
             <Box
               id="main"
