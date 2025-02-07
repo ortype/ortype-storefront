@@ -1,4 +1,4 @@
-import { Input } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 
 const Editable = ({
   index,
@@ -41,10 +41,24 @@ const Editable = ({
     })
 
   return (
-    <span {...props}>
+    <Box {...props} textAlign={'center'} mt={1}>
       {!isDisabled ? (
-        <Input
-          fontSize={'2xl'}
+        <Box
+          as={'input'}
+          css={{
+            textAlign: `center`,
+            fontSize: `8rem`,
+            lineHeight: `12.5rem`,
+            boxSizing: `border-box`,
+            padding: 0,
+            background: `transparent`,
+            border: `none`,
+            width: `100%`,
+            display: `block`,
+            [`&:focus`]: {
+              outline: `none`,
+            },
+          }}
           className={variantId}
           tabIndex={index}
           spellCheck={false}
@@ -60,7 +74,7 @@ const Editable = ({
       ) : (
         <span>{'...'}</span>
       )}
-    </span>
+    </Box>
   )
 }
 

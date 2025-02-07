@@ -1,8 +1,9 @@
 'use client'
 import { Tester } from '@/components/composite/Tester'
-import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import type { Font } from '@/sanity/lib/queries'
 import { resolveHref } from '@/sanity/lib/utils'
+import { Box } from '@chakra-ui/react'
+import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 
 export interface FontIndexProps {
@@ -15,51 +16,42 @@ export default function FontIndex({
   encodeDataAttribute,
 }: FontIndexProps) {
   return (
-    <section>
-      <h2 className="mb-8 text-6xl font-bold leading-tight tracking-tighter md:text-7xl">
-        Fonts
-      </h2>
-      <div>
-        {/*        <Link
-          href={`/posts/test-post-1`}
-          className="hover:underline"
-          data-sanity={encodeDataAttribute?.(['posts', 0, 'slug'])}
-        >
-          {'Test post...'}
-        </Link>*/}
-      </div>
-      <div className="mb-32 grid grid-cols-1 gap-y-20 md:grid-cols-2 md:gap-x-16 md:gap-y-32 lg:gap-x-32">
-        {fonts.map((font, key) => {
-          const href = resolveHref(font._type, font.slug)
-          const containsNull = font.variants.includes(null) // @TEMP: dealing broken data where variant refs come in as `null`
-          if (containsNull) {
-            console.log(
-              'font contains broken variants!!',
-              font.name,
-              containsNull
-            )
-          }
-          if (!href || containsNull) {
-            return null
-          }
-          return (
-            <Tester
-              key={key}
-              fontId={font._id}
-              variants={font.variants}
-              defaultVariantId={
-                font.defaultVariant?._id ||
-                (font.variants[0] && font.variants[0]._id)
-              }
-              index={key}
-              title={font.name}
-              slug={font.slug}
-              href={href}
-              encodeDataAttribute={encodeDataAttribute}
-            />
+    <Box pb={10}>
+      {fonts.map((font, key) => {
+        const href = resolveHref(font._type, font.slug)
+        const containsNull = font.variants.includes(null) // @TEMP: dealing broken data where variant refs come in as `null`
+        if (containsNull) {
+          console.log(
+            'font contains broken variants!!',
+            font.name,
+            containsNull
           )
-        })}
-      </div>
-    </section>
+        }
+        if (!href || containsNull) {
+          return null
+        }
+        return (
+          <Tester
+            key={key}
+            fontId={font._id}
+            variants={font.variants}
+            styleGroups={
+              font.styleGroups
+                ? font.styleGroups
+                : [{ groupName: 'standard', variants: font.variants }]
+            }
+            defaultVariantId={
+              font.defaultVariant?._id ||
+              (font.variants[0] && font.variants[0]._id)
+            }
+            index={key}
+            title={font.shortName}
+            slug={font.slug}
+            href={href}
+            encodeDataAttribute={encodeDataAttribute}
+          />
+        )
+      })}
+    </Box>
   )
 }
