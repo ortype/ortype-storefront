@@ -29,6 +29,8 @@ export async function generateMetadata(
   } satisfies Metadata
 }
 
+export const dynamic = 'force-dynamic'
+
 const postSlugs = defineQuery(
   `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`
 )

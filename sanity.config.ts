@@ -56,7 +56,6 @@ export default defineConfig({
       previewUrl: { previewMode: { enable: '/api/draft-mode/enable' } },
     }),
     structureTool({ structure }),
-    // vercelDeployTool(),
     media(),
     // Vision lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin

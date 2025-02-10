@@ -15,61 +15,46 @@ const homeLocation = {
 } satisfies DocumentLocation
 
 export const resolve: PresentationPluginOptions['resolve'] = {
+  mainDocuments: defineDocuments([
+    {
+      route: '/posts/:slug',
+      filter: `_type == "post" && slug.current == $slug`,
+    },
+    {
+      route: '/fonts/:slug',
+      filter: `_type == "font" && slug.current == $slug`,
+    },
+  ]),
   locations: {
-    // Add more locations for other post types
+    // @TODO: review this functionality
     post: defineLocations({
       select: {
         title: 'title',
         slug: 'slug.current',
       },
       resolve: (doc) => ({
-        mainDocuments: defineDocuments([
+        locations: [
+          homeLocation,
           {
-            route: '/posts/:slug',
-            filter: `_type == "post" && slug.current == $slug`,
+            title: doc?.title || 'Untitled',
+            href: resolveHref('post', doc?.slug)!,
           },
+        ],
+      }),
+    }),
+    font: defineLocations({
+      select: {
+        title: 'title',
+        slug: 'slug.current',
+      },
+      resolve: (doc) => ({
+        locations: [
+          homeLocation,
           {
-            route: '/fonts/:slug',
-            filter: `_type == "font" && slug.current == $slug`,
+            title: doc?.title || 'Untitled',
+            href: resolveHref('font', doc?.slug)!,
           },
-        ]),
-        locations: {
-          settings: defineLocations({
-            locations: [homeLocation],
-            message: 'This document is used on all pages',
-            tone: 'caution',
-          }),
-          font: defineLocations({
-            select: {
-              title: 'title',
-              slug: 'slug.current',
-            },
-            resolve: (doc) => ({
-              locations: [
-                {
-                  title: doc?.title || 'Untitled',
-                  href: resolveHref('font', doc?.slug)!,
-                },
-                homeLocation,
-              ],
-            }),
-          }),
-          post: defineLocations({
-            select: {
-              title: 'title',
-              slug: 'slug.current',
-            },
-            resolve: (doc) => ({
-              locations: [
-                {
-                  title: doc?.title || 'Untitled',
-                  href: resolveHref('post', doc?.slug)!,
-                },
-                homeLocation,
-              ],
-            }),
-          }),
-        },
+        ],
       }),
     }),
   },
