@@ -46,7 +46,7 @@ export const Tester: React.FC<Props> = (props) => {
 
   // is controlled by the focus and blur events of the input
   const [isEditing, setEditing] = useState(false)
-  const [entry, setEntry] = useState(undefined)
+  const [entry, setEntry] = useState('')
   const [placeholder, setPlaceholder] = useState(undefined)
   const [currentVariantId, setVariantId] = useState(defaultVariantId)
 
@@ -61,6 +61,11 @@ export const Tester: React.FC<Props> = (props) => {
     console.log('handleVariantChange: ', value)
     if (!value || value.length === 0) return
     setVariantId(value[0])
+    handleUpdateFontTester({
+      addEntry: false,
+      sessionId: '',
+      variantId: value[0],
+    })
   }
 
   const { subscribeToMore, loading, data } = useQuery(GET_TESTER_BY_FONTID, {
@@ -69,14 +74,14 @@ export const Tester: React.FC<Props> = (props) => {
 
   const [updateFontTesterById] = useMutation(UPDATE_TESTER_BY_ID)
 
-  const handleUpdateFontTester = ({ addEntry, sessionId }) => {
+  const handleUpdateFontTester = ({ addEntry, sessionId, variantId }) => {
     setEditing(sessionId)
     updateFontTesterById({
       variables: {
         input: {
           entry,
           fontId,
-          variantId: currentVariantId,
+          variantId: variantId || currentVariantId,
           isEditing: sessionId,
           sessionId,
         },
@@ -86,7 +91,6 @@ export const Tester: React.FC<Props> = (props) => {
   }
 
   useEffect(() => {
-    console.log('useEffect isEditing dependency: ', isEditing)
     if (isEditing === sessionStorage.getItem('sessionId')) {
       window.onbeforeunload = (event) => {
         // run mutation
@@ -119,21 +123,43 @@ export const Tester: React.FC<Props> = (props) => {
     }
   }, [loading, data]) // run on first render and re-render if data has changed
 
-  // Subscription to `onFontTesterUpdated`
   useEffect(() => {
-    subscribeToMore({
+    const unsubscribe = subscribeToMore({
       document: ON_TESTER_UPDATED,
+      // Pass a specific ID to attempt to listen to one item only
+      // variables: { id: fontId },
       updateQuery: (prev, { subscriptionData }) => {
-        let prevEntry
-        if (prev && prev.entry) {
-          prevEntry = prev.entry
+        if (!subscriptionData.data) {
+          console.warn('No subscription data received')
+          return prev
         }
-        if (!subscriptionData.data) return prevEntry
-        const newPoemEntry = subscriptionData.data.entryAdded
-        return Object.assign({}, prev, { newPoemEntry, ...prev })
+
+        // console.log('Previous state:', prev)
+        // console.log('Subscription data:', subscriptionData.data)
+
+        const updatedTester = subscriptionData.data.fontTesterUpdated
+
+        // Only update if IDs match (currently required as this fires for all fonts)
+        if (prev.fontTesterById.fontId !== updatedTester.fontId) {
+          return prev // Don't update if IDs don't match
+        }
+
+        return {
+          ...prev,
+          fontTesterById: {
+            ...prev.fontTesterById,
+            ...updatedTester,
+          },
+        }
+      },
+      onError: (error) => {
+        console.error('Subscription error:', error)
       },
     })
-  }, []) // runs once to init subscribeToMore
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe()
+  }, [subscribeToMore])
 
   const handleChange = (event) => {
     // here we can check character limit

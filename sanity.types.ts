@@ -564,9 +564,9 @@ export type SettingsQueryResult = {
     title?: string
   }
 } | null
-// Variable: indexQuery
+// Variable: postsQuery
 // Query: *[_type == "post"] | order(date desc, _updatedAt desc) {    _id,  title,  date,  excerpt,  coverImage,  "slug": slug.current,  "author": author->{name, picture},}
-export type IndexQueryResult = Array<{
+export type PostsQueryResult = Array<{
   _id: string
   title: string | null
   date: string | null
@@ -1699,7 +1699,7 @@ export type FontAndMoreFontsQueryResult = {
   }>
 }
 
-// Source: ./src/app/(frontend)/[locale]/posts/[slug]/page.tsx
+// Source: ./src/app/(frontend)/[locale]/archive/[slug]/page.tsx
 // Variable: postSlugs
 // Query: *[_type == "post" && defined(slug.current)]{"slug": slug.current}
 export type PostSlugsResult = Array<{
@@ -1718,7 +1718,7 @@ import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
     '*[_type == "settings"][0]': SettingsQueryResult
-    '\n*[_type == "post"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  date,\n  excerpt,\n  coverImage,\n  "slug": slug.current,\n  "author": author->{name, picture},\n\n}': IndexQueryResult
+    '\n*[_type == "post"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  date,\n  excerpt,\n  coverImage,\n  "slug": slug.current,\n  "author": author->{name, picture},\n\n}': PostsQueryResult
     '{\n  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  date,\n  excerpt,\n  coverImage,\n  "slug": slug.current,\n  "author": author->{name, picture},\n\n  },\n  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  date,\n  excerpt,\n  coverImage,\n  "slug": slug.current,\n  "author": author->{name, picture},\n\n  }\n}': PostAndMoreStoriesQueryResult
     '\n*[_type == "font" && defined(slug.current)][].slug.current\n': FontSlugsQueryResult
     '\n{\n  "fonts": *[_type == "font" && isVisible == true] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  }\n}\n': HomePageQueryResult
