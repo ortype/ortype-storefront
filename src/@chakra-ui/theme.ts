@@ -55,6 +55,14 @@ const breakpoints = {
   '2xl': { value: '100em' }, // ~1600px
 }
 
+const keyframes = {
+  pulse: {
+    '0%': { opacity: `50%` },
+    '30%': { opacity: `100%` },
+    '100%': { opacity: `50%` },
+  },
+}
+
 // @NOTE: remember to define types with typegen
 // npx @chakra-ui/cli typegen ./src/@chakra-ui/theme.ts
 
@@ -63,6 +71,7 @@ const config = defineConfig({
   // strictTokens: true, // only allow defined tokens (this is for production ready app)
   globalCss,
   theme: {
+    keyframes,
     tokens: {
       colors,
       breakpoints,

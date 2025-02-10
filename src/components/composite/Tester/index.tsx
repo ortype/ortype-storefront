@@ -7,12 +7,13 @@ import { ON_TESTER_UPDATED } from '@/graphql/subscriptions'
 import { decodeOpaqueId } from '@/lib/utils/decoding'
 import type { Font, FontVariant } from '@/sanity/lib/queries'
 import { useMutation, useQuery } from '@apollo/client'
-import { Link as ChakraLink, Flex, HStack, Text } from '@chakra-ui/react'
+import { Box, Link as ChakraLink, Flex, HStack, Text } from '@chakra-ui/react'
 import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Editable from './Editable'
 import { TieredSelect } from './TieredSelect'
+import TypingIndicator from './TypingIndicator'
 
 interface Props {
   title: string
@@ -140,7 +141,7 @@ export const Tester: React.FC<Props> = (props) => {
     setEntry(event.target.value)
   }
 
-  if (loading) return <p>Loading ...</p>
+  if (loading) return <TypingIndicator />
   // console.log('GET_FONT_TESTER_BY_ID: ', fontId, title, data?.fontTesterById)
   return (
     <>

@@ -1,4 +1,5 @@
 import { Box } from '@chakra-ui/react'
+import TypingIndicator from '../TypingIndicator'
 
 const Editable = ({
   index,
@@ -72,7 +73,7 @@ const Editable = ({
           onKeyDown={handleKeyDown}
         />
       ) : (
-        <span>{'...'}</span>
+        <TypingIndicator />
       )}
     </Box>
   )
