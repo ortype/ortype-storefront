@@ -14,16 +14,16 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
+import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
+import { CartItem } from '@/components/composite/Cart/CartItem'
 import {
   LineItem,
   LineItemsContainer,
   useOrderContainer,
 } from '@commercelayer/react-components'
 import type { Order } from '@commercelayer/sdk'
-import { CartItem } from '@/components/composite/Cart/CartItem'
 import { useRapidForm } from 'rapid-form'
 import { useContext, useState } from 'react'
-import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 
 const CheckoutButton = ({ isDisabled, order }) => {
   return (
@@ -53,7 +53,11 @@ const Cart = () => {
       >
         {/*<DialogBackdrop />*/}
         <DialogTrigger asChild>
-          <Button size={'xs'}>{`Cart (${itemsCount})`}</Button>
+          <Button
+            size={'xs'}
+            variant={'outline'}
+            bg={'white'}
+          >{`Cart (${itemsCount})`}</Button>
         </DialogTrigger>
         <DialogContent bg={'white'}>
           <DialogHeader>Cart or Bag Or Basket</DialogHeader>

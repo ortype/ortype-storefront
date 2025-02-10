@@ -2,7 +2,8 @@
 import { Account } from '@/commercelayer/components/composite/Account'
 import { Flex, Group, Link } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
-import NextLink from 'next/link'
+import { Font } from 'sanity.types'
+import { Nav } from './Nav'
 import { SessionId } from './SessionId'
 
 const DynamicCartContainer: any = dynamic(
@@ -19,16 +20,16 @@ const DynamicCart: any = dynamic(() => import('@/components/composite/Cart'), {
   },
 })
 
-interface Props {}
+interface Props {
+  fonts: Font[]
+}
 
-export const GlobalHeader: React.FC<Props> = ({}) => {
+export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
   return (
     <>
       <SessionId />
-      <Flex justify={'space-between'} p={4}>
-        <Link asChild fontSize={'xs'}>
-          <NextLink href={'/'}>{'Or Type'}</NextLink>
-        </Link>
+      <Flex justify={'space-between'} p={4} pos={'fixed'} left={0} w={'100%'}>
+        <Nav fonts={fonts} />
 
         <Group gap={'2'}>
           <Account />

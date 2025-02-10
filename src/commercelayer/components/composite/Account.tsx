@@ -50,7 +50,12 @@ export const Account = () => {
 
   return (
     <>
-      <Button onClick={() => setLoginOpen(true)} size={'xs'}>
+      <Button
+        onClick={() => setLoginOpen(true)}
+        size={'xs'}
+        variant={'outline'}
+        bg={'white'}
+      >
         {settings.customerId ? `Account` : `Login`}
       </Button>
       <DialogRoot open={registerOpen} size={'md'}>

@@ -3,7 +3,11 @@ import TranslationsProvider from '@/components/data/TranslationsProvider'
 import { GlobalHeader } from '@/components/global/GlobalHeader'
 import { Toaster } from '@/components/ui/toaster'
 import { sanityFetch } from '@/sanity/lib/live'
-import { homePageQuery, settingsQuery } from '@/sanity/lib/queries'
+import {
+  homePageQuery,
+  settingsQuery,
+  visibleFontsQuery,
+} from '@/sanity/lib/queries'
 import { resolveOpenGraphImage } from '@/sanity/lib/utils'
 import { Metadata, Viewport } from 'next'
 import { toPlainText, type PortableTextBlock } from 'next-sanity'
@@ -51,7 +55,7 @@ export default async function LocaleRoute({
   }
 }) {
   const { locale } = await params
-
+  const fontData = await sanityFetch({ query: visibleFontsQuery })
   const { t, resources } = await initTranslations(locale, i18nNamespaces)
   return (
     <>
@@ -60,7 +64,7 @@ export default async function LocaleRoute({
         locale={locale}
         resources={resources}
       >
-        <GlobalHeader />
+        <GlobalHeader fonts={fontData.data} />
         <Suspense>{children}</Suspense>
         <Toaster />
       </TranslationsProvider>

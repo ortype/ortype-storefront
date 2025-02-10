@@ -12,7 +12,7 @@ const postFields = defineQuery(`
 
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
 
-export const indexQuery = defineQuery(`
+export const postsQuery = defineQuery(`
 *[_type == "post"] | order(date desc, _updatedAt desc) {
   ${postFields}
 }`)
