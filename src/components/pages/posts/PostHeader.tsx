@@ -2,29 +2,21 @@ import Avatar from '@/components/shared/AuthorAvatar'
 import CoverImage from '@/components/shared/CoverImage'
 import Date from '@/components/shared/PostDate'
 import type { Post } from '@/sanity/lib/queries'
-import PostTitle from './PostTitle'
+import { Box, Heading, VStack } from '@chakra-ui/react'
 
 export default function PostHeader(
-  props: Pick<Post, 'title' | 'coverImage' | 'date' | 'author' | 'slug'>
+  props: Pick<Post, 'title' | 'coverImage' | 'date' | 'excerpt' | 'slug'>
 ) {
-  const { title, coverImage, date, author, slug } = props
+  const { title, coverImage, date, excerpt, slug } = props
   return (
-    <>
-      <PostTitle>{title}</PostTitle>
-      <div className="hidden md:mb-12 md:block">
-        {author && <Avatar name={author.name} picture={author.picture} />}
-      </div>
-      <div className="mb-8 sm:mx-0 md:mb-16">
-        <CoverImage title={title} image={coverImage} priority slug={slug} />
-      </div>
-      <div className="mx-auto max-w-2xl">
-        <div className="mb-6 block md:hidden">
-          {author && <Avatar name={author.name} picture={author.picture} />}
-        </div>
-        <div className="mb-6 text-lg">
-          <Date dateString={date} />
-        </div>
-      </div>
-    </>
+    <VStack textAlign={'center'} gap={'2'}>
+      <Heading size={'2xl'} fontWeight={'normal'}>
+        {title}
+      </Heading>
+      <Heading size={'2xl'} fontWeight={'normal'}>
+        {excerpt}
+      </Heading>
+      <CoverImage title={title} image={coverImage} priority slug={slug} />
+    </VStack>
   )
 }

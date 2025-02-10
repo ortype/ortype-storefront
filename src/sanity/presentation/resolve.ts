@@ -17,7 +17,7 @@ const homeLocation = {
 export const resolve: PresentationPluginOptions['resolve'] = {
   mainDocuments: defineDocuments([
     {
-      route: '/posts/:slug',
+      route: '/archive/:slug',
       filter: `_type == "post" && slug.current == $slug`,
     },
     {

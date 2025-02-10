@@ -36,7 +36,7 @@ export function resolveHref(
     case 'font':
       return slug ? `/fonts/${slug}` : undefined
     case 'post':
-      return slug ? `/posts/${slug}` : undefined
+      return slug ? `/archive/${slug}` : undefined
     default:
       console.warn('Invalid document type:', documentType)
       return undefined
