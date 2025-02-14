@@ -251,6 +251,75 @@ export type Book = {
   }>
 }
 
+export type Post = {
+  _id: string
+  _type: 'post'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  postType?: 'archive' | 'case-study' | 'faq'
+  category?: {
+    _ref: string
+    _type: 'reference'
+    _weak?: boolean
+    [internalGroqTypeReferenceTo]?: 'category'
+  }
+  fonts?: Array<{
+    font?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'font'
+    }
+    _key: string
+  }>
+  date?: string
+  coverImage?: {
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+  }
+  gallery?: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }>
+  excerpt?: string
+  content?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+}
+
 export type Font = {
   _id: string
   _type: 'font'
@@ -365,51 +434,15 @@ export type FontVariant = {
   }>
 }
 
-export type Post = {
+export type Category = {
   _id: string
-  _type: 'post'
+  _type: 'category'
   _createdAt: string
   _updatedAt: string
   _rev: string
   title?: string
   slug?: Slug
-  content?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-    listItem?: 'bullet' | 'number'
-    markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-  excerpt?: string
-  coverImage?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-  }
-  date?: string
-  author?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'author'
-  }
+  description?: string
 }
 
 export type Author = {
@@ -519,9 +552,10 @@ export type AllSanitySchemaTypes =
   | ModuleBook
   | Settings
   | Book
+  | Post
   | Font
   | FontVariant
-  | Post
+  | Category
   | Author
   | SanityImageCrop
   | SanityImageHotspot
@@ -565,12 +599,26 @@ export type SettingsQueryResult = {
   }
 } | null
 // Variable: postsQuery
-// Query: *[_type == "post"] | order(date desc, _updatedAt desc) {    _id,  title,  date,  excerpt,  coverImage,  "slug": slug.current,  "author": author->{name, picture},}
+// Query: *[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {    _id,  title,  "slug": slug.current,  postType,  "category": category->{    _id,    title,    "slug": slug.current  },  fonts[]{    "font": font->{      _id,      name,      shortName,      "slug": slug.current    }  },  date,  coverImage,  gallery,  excerpt,  content}
 export type PostsQueryResult = Array<{
   _id: string
   title: string | null
+  slug: string | null
+  postType: 'archive' | 'case-study' | 'faq' | null
+  category: {
+    _id: string
+    title: string | null
+    slug: string | null
+  } | null
+  fonts: Array<{
+    font: {
+      _id: string
+      name: string | null
+      shortName: string | null
+      slug: string | null
+    } | null
+  }> | null
   date: string | null
-  excerpt: string | null
   coverImage: {
     asset?: {
       _ref: string
@@ -582,24 +630,40 @@ export type PostsQueryResult = Array<{
     crop?: SanityImageCrop
     _type: 'image'
   } | null
-  slug: string | null
-  author: {
-    name: string | null
-    picture: {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      _type: 'image'
-    } | null
-  } | null
+  gallery: Array<{
+    asset?: {
+      _ref: string
+      _type: 'reference'
+      _weak?: boolean
+      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+    }
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    _type: 'image'
+    _key: string
+  }> | null
+  excerpt: string | null
+  content: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+    listItem?: 'bullet' | 'number'
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }> | null
 }>
 // Variable: postAndMoreStoriesQuery
-// Query: {  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {    content,      _id,  title,  date,  excerpt,  coverImage,  "slug": slug.current,  "author": author->{name, picture},  },  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {    content,      _id,  title,  date,  excerpt,  coverImage,  "slug": slug.current,  "author": author->{name, picture},  }}
+// Query: {  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {    content,      _id,  title,  "slug": slug.current,  postType,  "category": category->{    _id,    title,    "slug": slug.current  },  fonts[]{    "font": font->{      _id,      name,      shortName,      "slug": slug.current    }  },  date,  coverImage,  gallery,  excerpt,  content  },  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {    content,      _id,  title,  "slug": slug.current,  postType,  "category": category->{    _id,    title,    "slug": slug.current  },  fonts[]{    "font": font->{      _id,      name,      shortName,      "slug": slug.current    }  },  date,  coverImage,  gallery,  excerpt,  content  }}
 export type PostAndMoreStoriesQueryResult = {
   post: {
     content: Array<{
@@ -622,8 +686,22 @@ export type PostAndMoreStoriesQueryResult = {
     }> | null
     _id: string
     title: string | null
+    slug: string | null
+    postType: 'archive' | 'case-study' | 'faq' | null
+    category: {
+      _id: string
+      title: string | null
+      slug: string | null
+    } | null
+    fonts: Array<{
+      font: {
+        _id: string
+        name: string | null
+        shortName: string | null
+        slug: string | null
+      } | null
+    }> | null
     date: string | null
-    excerpt: string | null
     coverImage: {
       asset?: {
         _ref: string
@@ -635,21 +713,19 @@ export type PostAndMoreStoriesQueryResult = {
       crop?: SanityImageCrop
       _type: 'image'
     } | null
-    slug: string | null
-    author: {
-      name: string | null
-      picture: {
-        asset?: {
-          _ref: string
-          _type: 'reference'
-          _weak?: boolean
-          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-        }
-        hotspot?: SanityImageHotspot
-        crop?: SanityImageCrop
-        _type: 'image'
-      } | null
-    } | null
+    gallery: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+    }> | null
+    excerpt: string | null
   } | null
   morePosts: Array<{
     content: Array<{
@@ -672,8 +748,22 @@ export type PostAndMoreStoriesQueryResult = {
     }> | null
     _id: string
     title: string | null
+    slug: string | null
+    postType: 'archive' | 'case-study' | 'faq' | null
+    category: {
+      _id: string
+      title: string | null
+      slug: string | null
+    } | null
+    fonts: Array<{
+      font: {
+        _id: string
+        name: string | null
+        shortName: string | null
+        slug: string | null
+      } | null
+    }> | null
     date: string | null
-    excerpt: string | null
     coverImage: {
       asset?: {
         _ref: string
@@ -685,26 +775,31 @@ export type PostAndMoreStoriesQueryResult = {
       crop?: SanityImageCrop
       _type: 'image'
     } | null
-    slug: string | null
-    author: {
-      name: string | null
-      picture: {
-        asset?: {
-          _ref: string
-          _type: 'reference'
-          _weak?: boolean
-          [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-        }
-        hotspot?: SanityImageHotspot
-        crop?: SanityImageCrop
-        _type: 'image'
-      } | null
-    } | null
+    gallery: Array<{
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      _type: 'image'
+      _key: string
+    }> | null
+    excerpt: string | null
   }>
 }
 // Variable: fontSlugsQuery
 // Query: *[_type == "font" && defined(slug.current)][].slug.current
 export type FontSlugsQueryResult = Array<string | null>
+// Variable: categoryFiters
+// Query: *[_type == 'category'] {    _id,    title,  "slug": slug.current  }
+export type CategoryFitersResult = Array<{
+  _id: string
+  title: string | null
+  slug: string | null
+}>
 // Variable: homePageQuery
 // Query: {  "fonts": *[_type == "font" && isVisible == true] {      _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },  }}
 export type HomePageQueryResult = {
@@ -1718,9 +1813,10 @@ import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
     '*[_type == "settings"][0]': SettingsQueryResult
-    '\n*[_type == "post"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  date,\n  excerpt,\n  coverImage,\n  "slug": slug.current,\n  "author": author->{name, picture},\n\n}': PostsQueryResult
-    '{\n  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  date,\n  excerpt,\n  coverImage,\n  "slug": slug.current,\n  "author": author->{name, picture},\n\n  },\n  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  date,\n  excerpt,\n  coverImage,\n  "slug": slug.current,\n  "author": author->{name, picture},\n\n  }\n}': PostAndMoreStoriesQueryResult
+    '\n*[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage,\n  gallery,\n  excerpt,\n  content\n\n}': PostsQueryResult
+    '{\n  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage,\n  gallery,\n  excerpt,\n  content\n\n  },\n  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage,\n  gallery,\n  excerpt,\n  content\n\n  }\n}': PostAndMoreStoriesQueryResult
     '\n*[_type == "font" && defined(slug.current)][].slug.current\n': FontSlugsQueryResult
+    '\n\n  *[_type == \'category\'] {\n    _id,\n    title,\n  "slug": slug.current\n  }\n\n': CategoryFitersResult
     '\n{\n  "fonts": *[_type == "font" && isVisible == true] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  }\n}\n': HomePageQueryResult
     '\n*[_type == "font" && isVisible == true] {\n  \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n}': VisibleFontsQueryResult
     '\n*[_type == "font"] {\n  \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n}': FontsQueryResult

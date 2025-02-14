@@ -3,17 +3,32 @@ import { defineQuery, PortableTextBlock } from 'next-sanity'
 const postFields = defineQuery(`
   _id,
   title,
-  date,
-  excerpt,
-  coverImage,
   "slug": slug.current,
-  "author": author->{name, picture},
+  postType,
+  "category": category->{
+    _id,
+    title,
+    "slug": slug.current
+  },
+  fonts[]{
+    "font": font->{
+      _id,
+      name,
+      shortName,
+      "slug": slug.current
+    }
+  },
+  date,
+  coverImage,
+  gallery,
+  excerpt,
+  content
 `)
 
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
 
 export const postsQuery = defineQuery(`
-*[_type == "post"] | order(date desc, _updatedAt desc) {
+*[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {
   ${postFields}
 }`)
 
@@ -42,6 +57,19 @@ export interface Post {
   author?: Author
   slug?: string
   content?: any
+  category: {
+    _id: string
+    title: string
+    slug: string
+  }
+  fonts: {
+    font: {
+      _id: string
+      name: string
+      shortName: string
+      slug: string
+    }
+  }[]
 }
 
 export interface Settings {
@@ -203,6 +231,16 @@ export interface FontVariant {
   parentUid?: string
   version?: string
 }
+
+export const categoryFiters = defineQuery(`
+
+  *[_type == 'category'] {
+    _id,
+    title,
+  "slug": slug.current
+  }
+
+`)
 
 // @TODO: unify `homePageQuery` with `visibleFontsQuery`
 export const homePageQuery = defineQuery(`

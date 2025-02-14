@@ -3,6 +3,8 @@ import { format, parseISO } from 'date-fns'
 import { defineField, defineType } from 'sanity'
 
 import authorType from './author'
+import categoryType from './categoryType'
+import font from './font/font'
 
 /**
  * This file is the schema definition for a post.
@@ -21,6 +23,9 @@ export default defineType({
   title: 'Post',
   icon: BookIcon,
   type: 'document',
+  initialValue: {
+    postType: 'archive',
+  },
   fields: [
     defineField({
       name: 'title',
@@ -39,16 +44,56 @@ export default defineType({
       },
       validation: (rule) => rule.required(),
     }),
+    // @NOTE: query like *[_type == "post" && type == "archive"]
     defineField({
-      name: 'content',
-      title: 'Content',
-      type: 'array',
-      of: [{ type: 'block' }],
+      name: 'postType',
+      type: 'string',
+      options: {
+        list: [
+          { value: 'archive', title: 'Archive' },
+          { value: 'case-study', title: 'Case Study' },
+          { value: 'faq', title: 'FAQ' },
+        ],
+      },
     }),
     defineField({
-      name: 'excerpt',
-      title: 'Excerpt',
-      type: 'text',
+      name: 'category',
+      title: 'Category',
+      type: 'reference',
+      to: [{ type: categoryType.name }],
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'fonts',
+      title: 'Font References',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'font',
+              type: 'reference',
+              options: {
+                disabledNew: true,
+              },
+              to: [{ type: font.name }],
+            },
+          ],
+          preview: {
+            select: {
+              title: 'font.name', // Assuming your font document has a 'title' field
+            },
+          },
+        },
+      ],
+      validation: (Rule) => Rule.unique(), // Optional: ensures no duplicate references
+    }),
+    defineField({
+      name: 'date',
+      title: 'Date',
+      type: 'datetime',
+      initialValue: () => new Date().toISOString(),
     }),
     defineField({
       name: 'coverImage',
@@ -59,17 +104,33 @@ export default defineType({
       },
     }),
     defineField({
-      name: 'date',
-      title: 'Date',
-      type: 'datetime',
-      initialValue: () => new Date().toISOString(),
+      name: 'gallery',
+      title: 'Gallery',
+      type: 'array',
+      options: {
+        layout: 'grid',
+      },
+      of: [{ type: 'image' }],
     }),
+    defineField({
+      name: 'excerpt',
+      title: 'Excerpt',
+      type: 'text',
+    }),
+    defineField({
+      name: 'content',
+      title: 'Content',
+      type: 'array',
+      of: [{ type: 'block' }],
+    }),
+    /*
     defineField({
       name: 'author',
       title: 'Author',
       type: 'reference',
       to: [{ type: authorType.name }],
     }),
+    */
   ],
   preview: {
     select: {

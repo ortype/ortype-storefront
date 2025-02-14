@@ -17,7 +17,7 @@ export type AddressFormFields =
   | 'phone'
   | 'billing_info'
 
-export declare global {
+declare global {
   interface Window {
     /**
      * Commerce Layer app configuration available from global window object

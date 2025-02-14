@@ -19,6 +19,7 @@ import moduleInfo from './src/sanity/schemas/objects/modules/info'
 import moduleStyles from './src/sanity/schemas/objects/modules/styles'
 import moduleTester from './src/sanity/schemas/objects/modules/tester'
 import postType from './src/sanity/schemas/post'
+import categoryType from './src/sanity/schemas/categoryType'
 import settingsType from './src/sanity/schemas/settings'
 import { structure } from './src/sanity/structure'
 
@@ -35,6 +36,7 @@ export default defineConfig({
     types: [
       authorType,
       postType,
+      categoryType,
       fontType,
       fontVariantType,
       bookType,
