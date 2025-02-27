@@ -1,5 +1,14 @@
 import { defineQuery, PortableTextBlock } from 'next-sanity'
 
+const imageFields = `
+  _type,
+  hotspot,
+  crop,
+  asset,
+  "aspectRatio": asset->metadata.dimensions.aspectRatio,
+  "blurDataUrl": asset->metadata.lqip    
+`
+
 const postFields = defineQuery(`
   _id,
   title,
@@ -19,8 +28,14 @@ const postFields = defineQuery(`
     }
   },
   date,
-  coverImage,
-  gallery,
+  coverImage { 
+    ...,
+    ${imageFields} 
+  },
+  "gallery": gallery[] {
+    ...,
+    ${imageFields}
+  },
   excerpt,
   content
 `)

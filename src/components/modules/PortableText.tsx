@@ -114,7 +114,7 @@ export default function CustomPortableText({
         return blank ? (
           <Link
             color={'#0000FF'}
-            textDecor={'underline'}
+            textDecoration={'underline'}
             href={href}
             target="_blank"
             rel="noopener"
@@ -122,7 +122,7 @@ export default function CustomPortableText({
             {children}
           </Link>
         ) : (
-          <Link href={href} color={'#0000FF'} textDecor={'underline'}>
+          <Link href={href} color={'#0000FF'} textDecoration={'underline'}>
             {children}
           </Link>
         )

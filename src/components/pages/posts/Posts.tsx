@@ -1,7 +1,7 @@
 'use client'
 
 import Image from '@/components/global/Image'
-import Date from '@/components/shared/PostDate'
+import { default as Date } from '@/components/shared/PostDate'
 import { Category, Post } from '@/sanity/lib/queries'
 import {
   Box,
@@ -17,10 +17,10 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry from 'react-masonry-css'
+import CategoryFilter from './category-filter'
 import PostCard from './PostCard'
 
 const ScrollToTop = () => {
@@ -140,25 +140,11 @@ export function Posts({ posts, categories }: PostsProps) {
 
   return (
     <Container maxW="container.xl">
-      <Box mb={6} display="flex" gap={2} flexWrap="wrap">
-        <Button
-          size="sm"
-          variant={selectedCategory === 'all' ? 'solid' : 'outline'}
-          onClick={() => handleCategoryChange('all')}
-        >
-          All
-        </Button>
-        {categories.map((category) => (
-          <Button
-            key={category.slug}
-            size="sm"
-            variant={selectedCategory === category.slug ? 'solid' : 'outline'}
-            onClick={() => handleCategoryChange(category.slug)}
-          >
-            {category.title}
-          </Button>
-        ))}
-      </Box>
+      <CategoryFilter
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryChange={handleCategoryChange}
+      />
       <InfiniteScroll
         dataLength={displayedPosts.length}
         next={loadMore}
