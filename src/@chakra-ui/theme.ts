@@ -44,6 +44,24 @@ const globalCss = {
   a: {
     color: '#0000FF',
   },
+  // masonry
+  '.masonry-grid': {
+    display: 'flex',
+    marginLeft: '-16px',
+    width: 'auto',
+  },
+  '.masonry-grid_column': {
+    paddingLeft: '16px',
+    backgroundClip: 'padding-box',
+  },
+  '.masonry-item': {
+    marginBottom: '16px',
+    transition: 'opacity 0.3s ease-in-out',
+  },
+  '.infinite-scroll-loader': {
+    textAlign: 'center',
+    padding: '20px',
+  },
 }
 
 const breakpoints = {

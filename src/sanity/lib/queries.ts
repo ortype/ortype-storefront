@@ -233,13 +233,12 @@ export interface FontVariant {
 }
 
 export const categoryFiters = defineQuery(`
-
-  *[_type == 'category'] {
+*[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {
     _id,
     title,
-  "slug": slug.current
+    "slug": slug.current,
+    "postCount": count(*[_type == 'post' && references(^._id)])
   }
-
 `)
 
 // @TODO: unify `homePageQuery` with `visibleFontsQuery`

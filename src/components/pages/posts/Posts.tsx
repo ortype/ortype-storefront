@@ -16,30 +16,12 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react'
+import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry from 'react-masonry-css'
-
-const masonryStyles = {
-  '.masonry-grid': {
-    display: 'flex',
-    marginLeft: '-16px',
-    width: 'auto',
-  },
-  '.masonry-grid_column': {
-    paddingLeft: '16px',
-    backgroundClip: 'padding-box',
-  },
-  '.masonry-item': {
-    marginBottom: '16px',
-    transition: 'opacity 0.3s ease-in-out',
-  },
-  '.infinite-scroll-loader': {
-    textAlign: 'center',
-    padding: '20px',
-  },
-}
+import PostCard from './PostCard'
 
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -99,8 +81,8 @@ export function Posts({ posts, categories }: PostsProps) {
       base: 1,
       sm: 2,
       md: 3,
-      lg: 4,
-    }) || 4
+      lg: 3,
+    }) || 3
 
   const breakpointColumnsObj = {
     default: breakpointColumns,
@@ -121,60 +103,10 @@ export function Posts({ posts, categories }: PostsProps) {
     }
 
     // Check if we've loaded all posts
-    if (currentLength + nextPosts.length >= posts.length) {
+    if (currentLength + nextPosts.length >= filteredPosts.length) {
       setHasMore(false)
     }
   }
-
-  const PostCard = ({ post }: { post: Post }) => (
-    <div className="masonry-item">
-      <Card.Root maxW="sm" overflow="hidden">
-        <Image
-          image={post.coverImage}
-          style={{ width: '100%', height: 'auto' }}
-          sizes={'(max-width: 800px) 100vw, 800px'}
-          // loading="lazy" // Enable lazy loading for images
-        />
-        <Card.Body gap="2">
-          {/*<Card.Title>
-            <Heading fontWeight={'normal'} fontSize={'xl'}>
-              {post.title}
-            </Heading>
-          </Card.Title>*/}
-          <Card.Description fontSize={'sm'} lineHeight={'1.2'}>
-            {post.excerpt}
-          </Card.Description>
-          {/*<Text mt="2" fontSize={'sm'}>
-            <Date dateString={post.date} />
-          </Text>*/}
-        </Card.Body>
-        <Card.Footer gap="2">
-          {post.content && (
-            <Button variant="outline" asChild>
-              <a href={`/archive/${post?.slug}`}>Learn more</a>
-            </Button>
-          )}
-
-          <Group>
-            <Tag.Root>
-              <Tag.Label>{post.category.title}</Tag.Label>
-            </Tag.Root>
-            {post.category.title === 'Custom' ? (
-              <Text as={'span'} fontSize={'sm'}>
-                {post.title}
-              </Text>
-            ) : (
-              post.fonts?.map(({ font }) => (
-                <ChakraLink as={Link} href={`fonts/${font.slug}`}>
-                  {font.shortName}
-                </ChakraLink>
-              ))
-            )}
-          </Group>
-        </Card.Footer>
-      </Card.Root>
-    </div>
-  )
 
   const LoadingSpinner = () => (
     <Box className="infinite-scroll-loader">
@@ -227,41 +159,42 @@ export function Posts({ posts, categories }: PostsProps) {
           </Button>
         ))}
       </Box>
-      <Box sx={masonryStyles}>
-        <InfiniteScroll
-          dataLength={displayedPosts.length}
-          next={loadMore}
-          hasMore={hasMore}
-          // loader={<LoadingSpinner />}
-          loader={<div></div>}
-          endMessage={
-            <Text textAlign="center" p={4} color="gray.500">
-              No more posts to load.
-            </Text>
-          }
-          // Optional: add a scrollThreshold to load earlier
-          scrollThreshold={0.8}
-          // Style to ensure proper layout
-          style={{ overflow: 'hidden' }}
-          /*
+      <InfiniteScroll
+        dataLength={displayedPosts.length}
+        next={loadMore}
+        hasMore={hasMore}
+        // loader={<LoadingSpinner />}
+        loader={<div></div>}
+        endMessage={
+          <Text textAlign="center" p={4} color="gray.500">
+            No more posts to load.
+          </Text>
+        }
+        // Optional: add a scrollThreshold to load earlier
+        scrollThreshold={0.8}
+        // Style to ensure proper layout
+        style={{ overflow: 'hidden' }}
+        /*
           onError={() => (
             <Text textAlign="center" color="red.500" p={4}>
               Error loading posts. Please try again later.
             </Text>
           )}
           */
-        >
+      >
+        <AnimatePresence mode="popLayout" initial={false}>
           <Masonry
+            key={selectedCategory}
             breakpointCols={breakpointColumnsObj}
             className="masonry-grid"
             columnClassName="masonry-grid_column"
           >
-            {displayedPosts.map((post) => (
-              <PostCard key={post.slug} post={post} />
+            {displayedPosts.map((post, index) => (
+              <PostCard key={post.slug} post={post} index={index} />
             ))}
           </Masonry>
-        </InfiniteScroll>
-      </Box>
+        </AnimatePresence>
+      </InfiniteScroll>
     </Container>
   )
 }

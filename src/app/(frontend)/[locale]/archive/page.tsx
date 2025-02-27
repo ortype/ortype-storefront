@@ -12,10 +12,10 @@ interface Category {
 
 export default async function Page() {
   const [{ data: posts }, { data: categories }] = await Promise.all([
-    sanityFetch<{ data: Post[] }>({
+    sanityFetch({
       query: postsQuery,
     }),
-    sanityFetch<{ data: Category[] }>({
+    sanityFetch({
       query: categoryFiters,
     }),
   ])
