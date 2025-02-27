@@ -1,5 +1,5 @@
 import BlockImage from '@/components/blocks/image'
-import { Box, Flex, Text, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Flex, GridItem, Text, useBreakpointValue } from '@chakra-ui/react'
 import useEmblaCarousel from 'embla-carousel-react'
 import React, { useCallback, useEffect, useState } from 'react'
 
@@ -81,11 +81,11 @@ const Carousel = ({ value = {} }) => {
     }
   )*/
 
-  const height = 400
+  const height = 530
 
   const [emblaRef, embla] = useEmblaCarousel({
     loop: true,
-    align: 'center',
+    align: 'start',
     // https://www.embla-carousel.com/api/options/#breakpoints
     breakpoints: {
       '(min-width: 1680px)': {
@@ -124,8 +124,8 @@ const Carousel = ({ value = {} }) => {
   }, [embla, setScrollSnaps, onSelect])
 
   return (
-    <Box
-      gridColumn={'1/9'}
+    <GridItem
+      colSpan={3}
       mx={0}
       position={'relative'}
       _hover={{
@@ -171,7 +171,7 @@ const Carousel = ({ value = {} }) => {
           })}
         </Flex>
       </Box>
-    </Box>
+    </GridItem>
   )
 }
 

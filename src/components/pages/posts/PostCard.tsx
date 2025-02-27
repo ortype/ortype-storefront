@@ -22,6 +22,7 @@ import {
   Grid,
   GridItem,
   Group,
+  SimpleGrid,
   Tag,
   Text,
 } from '@chakra-ui/react'
@@ -45,15 +46,8 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
         layout: { duration: 0.35, type: 'tween', ease: 'easeInOut' },
       }}
     >
-      <Card.Root
-        maxW="md"
-        overflow="hidden"
-        onClick={() => setOpen(true)}
-        cursor={'pointer'}
-        borderRadius={0}
-        border={'none'}
-      >
-        <Card.Body p={0}>
+      <Card.Root maxW="md" overflow="hidden" borderRadius={0} border={'none'}>
+        <Card.Body p={0} onClick={() => setOpen(true)} cursor={'pointer'}>
           <Image
             image={post.coverImage}
             style={{ width: '100%', height: 'auto' }}
@@ -104,29 +98,25 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
         lazyMount
         open={open}
         onOpenChange={(e) => setOpen(e.open)}
-        scrollBehavior="outside"
-        motionPreset="slide-in-bottom"
+        scrollBehavior={'outside'}
+        motionPreset={'scale'}
         closeOnEscape={true}
         placement={'center'}
-        size={'md'}
+        size={'xl'}
       >
         <DialogContent backdrop={true} borderRadius={0}>
           {/*<DialogHeader>
             <DialogTitle>{post.title}</DialogTitle>
           </DialogHeader>*/}
           <DialogBody p={0}>
-            <Grid
-              gap={'2rem'}
-              gridRowGap={0}
-              templateColumns={['repeat(8, 1fr)', null]}
-            >
+            <SimpleGrid gap={'0.5rem'} columns={5}>
               {post.gallery && <Carousel value={{ images: post.gallery }} />}
               {post.content && (
-                <GridItem gridColumn={'1/9'} p={'1rem'}>
+                <GridItem colSpan={2} py={'1rem'} pr={'0.5rem'}>
                   <Body value={post.content} />
                 </GridItem>
               )}
-            </Grid>
+            </SimpleGrid>
           </DialogBody>
           {/*post.content && (
             <DialogFooter>
