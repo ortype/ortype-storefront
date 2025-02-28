@@ -20,7 +20,7 @@ const Arrow = ({ onClick, direction, enabled, children }) => {
         display: ['none', null, 'flex'],
         flexDirection: 'column',
         justifyContent: 'center',
-        zIndex: 111,
+        zIndex: 'modal',
         position: 'absolute',
         width: ['8.3333333333%'],
         top: 0,
@@ -45,11 +45,13 @@ const Arrow = ({ onClick, direction, enabled, children }) => {
         pointerEvents: enabled ? 'initial' : 'none',
         [`&:hover`]: {
           textDecoration: 'none',
+          opacity: 1,
         },
         span: {
           width: '4rem',
           height: '4rem',
           lineHeight: '46px',
+          fontSize: '46px',
           display: 'inline-block',
           textAlign: 'center',
           bg: 'white',
@@ -67,21 +69,19 @@ const Carousel = ({ value = {} }) => {
   // const align = (window.innerWidth / 50) / 100
   // console.log('align: ', align)
 
-  /*const height = useBreakpointValue(
+  const height = useBreakpointValue(
     {
       base: 400,
       sm: 400,
       md: 600,
       lg: 700,
-      xl: 800,
-      '2xl': 900,
+      xl: 750,
+      '2xl': 800,
     },
     {
       fallback: 'md',
     }
-  )*/
-
-  const height = 530
+  )
 
   const [emblaRef, embla] = useEmblaCarousel({
     loop: true,
@@ -124,12 +124,12 @@ const Carousel = ({ value = {} }) => {
   }, [embla, setScrollSnaps, onSelect])
 
   return (
-    <GridItem
-      colSpan={3}
+    <Box
+      // colSpan={3}
       mx={0}
       position={'relative'}
       _hover={{
-        '.arrow': {
+        ['.arrow']: {
           opacity: 1,
           transform: 'translateX(0)',
         },
@@ -137,7 +137,7 @@ const Carousel = ({ value = {} }) => {
     >
       <Flex
         position={'absolute'}
-        top={'-80px'}
+        top={'0px'}
         right={'2rem'}
         justify={'space-between'}
       >
@@ -146,11 +146,11 @@ const Carousel = ({ value = {} }) => {
         }`}</Text>
       </Flex>
       <Arrow enabled={prevBtnEnabled} onClick={scrollPrev} direction={'prev'}>
-        <Text textStyle={'rixl'}>{`←`}</Text>
+        <Text as={'span'} fontSize={'2xl'}>{`←`}</Text>
         <ScreenReaderText>{'Prev'}</ScreenReaderText>
       </Arrow>
       <Arrow enabled={nextBtnEnabled} onClick={scrollNext} direction={'next'}>
-        <Text textStyle={'rixl'}>{`→`}</Text>
+        <Text as={'span'} fontSize={'2xl'}>{`→`}</Text>
         <ScreenReaderText>{'Next'}</ScreenReaderText>
       </Arrow>
       <Box width={'100%'} overflow={'hidden'} ref={emblaRef}>
@@ -171,7 +171,7 @@ const Carousel = ({ value = {} }) => {
           })}
         </Flex>
       </Box>
-    </GridItem>
+    </Box>
   )
 }
 

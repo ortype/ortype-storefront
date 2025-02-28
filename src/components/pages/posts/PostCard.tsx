@@ -19,10 +19,13 @@ import {
   Button,
   Card,
   Link as ChakraLink,
+  Flex,
   Grid,
   GridItem,
   Group,
+  Heading,
   SimpleGrid,
+  Stack,
   Tag,
   Text,
 } from '@chakra-ui/react'
@@ -104,19 +107,62 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
         placement={'center'}
         size={'xl'}
       >
-        <DialogContent backdrop={true} borderRadius={0}>
+        <DialogContent backdrop={true} borderRadius={5}>
           {/*<DialogHeader>
             <DialogTitle>{post.title}</DialogTitle>
           </DialogHeader>*/}
-          <DialogBody p={0}>
-            <SimpleGrid gap={'0.5rem'} columns={5}>
-              {post.gallery && <Carousel value={{ images: post.gallery }} />}
-              {post.content && (
-                <GridItem colSpan={2} py={'1rem'} pr={'0.5rem'}>
+          <DialogBody p={0} overflow={'hidden'} borderRadius={5}>
+            {post.gallery && <Carousel value={{ images: post.gallery }} />}
+            {post.content && (
+              <SimpleGrid columns={3} gap={'2rem'} mx={'2rem'} mb={'2rem'}>
+                <GridItem py={'1rem'}>
+                  {/*<Button variant="outline" asChild>
+                    <a href={`/archive/${post?.slug}`}>Learn more</a>
+                  </Button>*/}
+                  <Flex
+                    direction={'column'}
+                    h={'100%'}
+                    justify={'space-between'}
+                  >
+                    <Heading mb={'0.5rem'} size={'2xl'} fontWeight={'normal'}>
+                      {post.title}
+                    </Heading>
+                    <Group>
+                      <Tag.Root variant={'outline'} size={'xl'}>
+                        <Tag.Label>{post.category.title}</Tag.Label>
+                      </Tag.Root>
+                      {post.category.title === 'Custom' ? (
+                        <Text as={'span'} fontSize={'sm'}>
+                          {post.title}
+                        </Text>
+                      ) : (
+                        post.fonts?.map(({ font }, index, array) => (
+                          <Box
+                            as={'span'}
+                            key={font.slug}
+                            whiteSpace={'nowrap'}
+                          >
+                            <ChakraLink as={Link} href={`fonts/${font.slug}`}>
+                              {font.shortName}
+                            </ChakraLink>
+                            {index < array.length - 1 && ', '}
+                          </Box>
+                        ))
+                      )}
+                    </Group>
+                  </Flex>
+                </GridItem>
+                <GridItem
+                  colSpan={2}
+                  py={'1rem'}
+                  columnCount={'2'}
+                  columnGap={'2rem'}
+                  display={'block'}
+                >
                   <Body value={post.content} />
                 </GridItem>
-              )}
-            </SimpleGrid>
+              </SimpleGrid>
+            )}
           </DialogBody>
           {/*post.content && (
             <DialogFooter>
@@ -127,7 +173,7 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
               </DialogActionTrigger>
             </DialogFooter>
             )*/}
-          <DialogCloseTrigger top="0" insetEnd="-12" bg="bg" />
+          <DialogCloseTrigger insetEnd={'-12'} top={0} bg="bg" />
         </DialogContent>
       </DialogRoot>
     </motion.div>

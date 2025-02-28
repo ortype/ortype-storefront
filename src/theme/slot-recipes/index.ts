@@ -9,7 +9,7 @@
 // import { checkboxCardSlotRecipe } from "./checkbox-card"
 // import { collapsibleSlotRecipe } from "./collapsible"
 // import { dataListSlotRecipe } from "./data-list"
-// import { dialogSlotRecipe } from "./dialog"
+import { dialogSlotRecipe } from './dialog'
 // import { drawerSlotRecipe } from "./drawer"
 // import { editableSlotRecipe } from "./editable"
 // import { emptyStateSlotRecipe } from "./empty-state"
@@ -56,7 +56,7 @@ export const slotRecipes = {
   // checkboxCard: checkboxCardSlotRecipe,
   // collapsible: collapsibleSlotRecipe,
   // dataList: dataListSlotRecipe,
-  // dialog: dialogSlotRecipe,
+  dialog: dialogSlotRecipe,
   // drawer: drawerSlotRecipe,
   // editable: editableSlotRecipe,
   // emptyState: emptyStateSlotRecipe,
