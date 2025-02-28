@@ -1,6 +1,6 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { isValidCart } from '@/commercelayer/utils/isValidCart'
-import { Text } from '@chakra-ui/react'
+import { Button, Text } from '@chakra-ui/react'
 
 interface Props {
   // settings: CheckoutSettings
@@ -15,11 +15,7 @@ const CartContainer = ({ children }: Props): JSX.Element => {
 
   if (!validCart) {
     // @TODO: if orderId does not exist, show an empty cart instead of an error
-    return (
-      <Text fontSize={'xs'} color={'red'}>
-        {'0'}
-      </Text>
-    )
+    return <Button size={'md'} variant={'circle'} bg={'white'}>{`0`}</Button>
   }
 
   return children
