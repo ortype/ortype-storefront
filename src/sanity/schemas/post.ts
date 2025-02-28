@@ -2,7 +2,7 @@ import { BookIcon } from '@sanity/icons'
 import { format, parseISO } from 'date-fns'
 import { defineField, defineType } from 'sanity'
 
-import authorType from './author'
+// import authorType from './author'
 import categoryType from './categoryType'
 import font from './font/font'
 

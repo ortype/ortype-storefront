@@ -1,4 +1,4 @@
-import body from '@/sanity/schemas/objects/body'
+import body from '@/sanity/schemas/font/blocks/body'
 import { defineField } from 'sanity'
 
 const defaults = { nonTextBehavior: 'remove' }

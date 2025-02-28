@@ -68,6 +68,40 @@ export type Geopoint = {
   alt?: number
 }
 
+export type BlockContent = Array<
+  | {
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
+      listItem?: 'bullet' | 'number'
+      markDefs?: Array<{
+        href?: string
+        _type: 'link'
+        _key: string
+      }>
+      level?: number
+      _type: 'block'
+      _key: string
+    }
+  | {
+      asset?: {
+        _ref: string
+        _type: 'reference'
+        _weak?: boolean
+        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+      }
+      hotspot?: SanityImageHotspot
+      crop?: SanityImageCrop
+      alt?: string
+      _type: 'image'
+      _key: string
+    }
+>
+
 export type Body = Array<
   | {
       children?: Array<{
@@ -249,6 +283,18 @@ export type Book = {
     _type: 'snapshot'
     _key: string
   }>
+}
+
+export type Page = {
+  _id: string
+  _type: 'page'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  blockContent?: BlockContent
+  modules?: null
 }
 
 export type Post = {
@@ -543,6 +589,7 @@ export type AllSanitySchemaTypes =
   | SanityImageDimensions
   | SanityFileAsset
   | Geopoint
+  | BlockContent
   | Body
   | ModuleContent
   | ModuleTester
@@ -552,6 +599,7 @@ export type AllSanitySchemaTypes =
   | ModuleBook
   | Settings
   | Book
+  | Page
   | Post
   | Font
   | FontVariant
@@ -566,6 +614,20 @@ export type AllSanitySchemaTypes =
   | Slug
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./src/sanity/lib/queries.ts
+// Variable: PAGES_SLUGS_QUERY
+// Query: *[_type == "page" && defined(slug.current)] {    "slug": slug.current}
+export type PAGES_SLUGS_QUERYResult = Array<{
+  slug: string | null
+}>
+// Variable: PAGES_QUERY
+// Query: *[_type == 'page' && slug.current == $page][0]{    _id,    title,    "slug": slug.current,    blockContent,    "modules": modules[]{        ...,    }}
+export type PAGES_QUERYResult = {
+  _id: string
+  title: string | null
+  slug: string | null
+  blockContent: BlockContent | null
+  modules: null
+} | null
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]
 export type SettingsQueryResult = {
@@ -1825,6 +1887,8 @@ export type FontSlugsResult = Array<{
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
+    '\n*[_type == "page" && defined(slug.current)] {\n    "slug": slug.current\n}\n': PAGES_SLUGS_QUERYResult
+    '\n*[_type == \'page\' && slug.current == $page][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    blockContent,\n    "modules": modules[]{\n        ...,\n    }\n}\n': PAGES_QUERYResult
     '*[_type == "settings"][0]': SettingsQueryResult
     '\n*[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n}': PostsQueryResult
     '{\n  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  },\n  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  }\n}': PostAndMoreStoriesQueryResult

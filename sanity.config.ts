@@ -10,16 +10,18 @@ import { structureTool } from 'sanity/structure'
 import { apiVersion, dataset, projectId, studioUrl } from './src/sanity/env'
 import { resolve } from './src/sanity/presentation/resolve'
 import authorType from './src/sanity/schemas/author'
-import { bookType, fontType, fontVariantType } from './src/sanity/schemas/font'
-import body from './src/sanity/schemas/objects/body'
-import moduleBook from './src/sanity/schemas/objects/modules/book'
-import moduleContent from './src/sanity/schemas/objects/modules/content'
-import moduleFeatures from './src/sanity/schemas/objects/modules/features'
-import moduleInfo from './src/sanity/schemas/objects/modules/info'
-import moduleStyles from './src/sanity/schemas/objects/modules/styles'
-import moduleTester from './src/sanity/schemas/objects/modules/tester'
-import postType from './src/sanity/schemas/post'
+import blockContent from './src/sanity/schemas/blockContent'
 import categoryType from './src/sanity/schemas/categoryType'
+import { bookType, fontType, fontVariantType } from './src/sanity/schemas/font'
+import fontPageBody from './src/sanity/schemas/font/blocks/body'
+import fontModuleBook from './src/sanity/schemas/font/modules/book'
+import fontModuleContent from './src/sanity/schemas/font/modules/content'
+import fontModuleFeatures from './src/sanity/schemas/font/modules/features'
+import fontModuleInfo from './src/sanity/schemas/font/modules/info'
+import fontModuleStyles from './src/sanity/schemas/font/modules/styles'
+import fontModuleTester from './src/sanity/schemas/font/modules/tester'
+import pageType from './src/sanity/schemas/page'
+import postType from './src/sanity/schemas/post'
 import settingsType from './src/sanity/schemas/settings'
 import { structure } from './src/sanity/structure'
 
@@ -36,6 +38,7 @@ export default defineConfig({
     types: [
       authorType,
       postType,
+      pageType,
       categoryType,
       fontType,
       fontVariantType,
@@ -43,13 +46,15 @@ export default defineConfig({
       // productImageType,
       settingsType,
       // modules
-      moduleBook,
-      moduleFeatures,
-      moduleInfo,
-      moduleStyles,
-      moduleTester,
-      moduleContent,
-      body,
+      fontModuleBook,
+      fontModuleFeatures,
+      fontModuleInfo,
+      fontModuleStyles,
+      fontModuleTester,
+      fontModuleContent,
+      fontPageBody,
+      // info
+      blockContent,
     ],
   },
   plugins: [

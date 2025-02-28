@@ -40,6 +40,24 @@ const postFields = defineQuery(`
   content
 `)
 
+export const PAGES_SLUGS_QUERY = defineQuery(`
+*[_type == "page" && defined(slug.current)] {
+    "slug": slug.current
+}
+`)
+
+export const PAGES_QUERY = defineQuery(`
+*[_type == 'page' && slug.current == $page][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    blockContent,
+    "modules": modules[]{
+        ...,
+    }
+}
+`)
+
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
 
 export const postsQuery = defineQuery(`

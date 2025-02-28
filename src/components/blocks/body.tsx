@@ -14,9 +14,8 @@ const components = {
     h2: ({ children, value }) => (
       <Heading
         id={value._key}
-        gridColumn={GRID_COLUMN}
+        // gridColumn={GRID_COLUMN}
         textAlign="center"
-        visual="caps"
         size={{ base: 'md', lg: 'xl' }}
         lineHeight={'short'}
       >
@@ -24,17 +23,19 @@ const components = {
       </Heading>
     ),
     normal: ({ children }) => (
-      <Text gridColumn={GRID_COLUMN} textStyle={{ base: 'rism', lg: 'rimd' }}>
+      <Text
+      // gridColumn={GRID_COLUMN}
+      >
         {children}
       </Text>
     ),
   },
   types: {
-    'module.carousel': (props) => <BlockCarousel {...props} />,
+    // 'module.carousel': (props) => <BlockCarousel {...props} />,
     'module.image': (props) => (
       <Box
-        gridColumn={props.value.fullWidth ? { base: '1/9', xl: '3/7' } : '1/6'}
-        mx={{ base: '-50px', xl: 0 }}
+      // gridColumn={props.value.fullWidth ? { base: '1/9', xl: '3/7' } : '1/6'}
+      // mx={{ base: '-50px', xl: 0 }}
       >
         <BlockImage
           {...props}
