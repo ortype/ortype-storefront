@@ -28,24 +28,16 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
   return (
     <>
       <SessionId />
-      <Flex
-        justify={'space-between'}
-        p={4}
-        pos={'fixed'}
-        left={0}
-        top={0}
-        w={'100%'}
-        zIndex={'docked'}
-      >
+      <Box p={4} pos={'fixed'} left={0} top={0} zIndex={'docked'}>
         <Nav fonts={fonts} />
-
+      </Box>
+      <Box p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
         <Group gap={'2'}>
           <DynamicCartContainer>
             <DynamicCart />
           </DynamicCartContainer>
         </Group>
-      </Flex>
-      {/*<Box h={'4rem'} w={'100%'} />*/}
+      </Box>
     </>
   )
 }

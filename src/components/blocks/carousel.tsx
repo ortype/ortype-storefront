@@ -126,7 +126,7 @@ const Carousel = ({ value = {} }) => {
   return (
     <Box
       // colSpan={3}
-      mx={0}
+      mx={'-1rem'}
       position={'relative'}
       _hover={{
         ['.arrow']: {
@@ -158,7 +158,7 @@ const Carousel = ({ value = {} }) => {
           {(value.images || []).map((image) => {
             const width = height * image.aspectRatio
             return (
-              <Box key={image._key} position="relative">
+              <Box key={image._key} position="relative" pl={'1rem'}>
                 <BlockImage
                   value={image}
                   position="relative"
