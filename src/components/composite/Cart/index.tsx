@@ -54,10 +54,10 @@ const Cart = () => {
         {/*<DialogBackdrop />*/}
         <DialogTrigger asChild>
           <Button
-            size={'xs'}
-            variant={'outline'}
+            size={'md'}
+            variant={'circle'}
             bg={'white'}
-          >{`Cart (${itemsCount})`}</Button>
+          >{`${itemsCount}`}</Button>
         </DialogTrigger>
         <DialogContent bg={'white'}>
           <DialogHeader>Cart or Bag Or Basket</DialogHeader>

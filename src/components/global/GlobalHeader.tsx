@@ -40,13 +40,12 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
         <Nav fonts={fonts} />
 
         <Group gap={'2'}>
-          <Account />
           <DynamicCartContainer>
             <DynamicCart />
           </DynamicCartContainer>
         </Group>
       </Flex>
-      <Box h={'4rem'} w={'100%'} />
+      {/*<Box h={'4rem'} w={'100%'} />*/}
     </>
   )
 }

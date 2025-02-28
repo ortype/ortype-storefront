@@ -1,3 +1,4 @@
+import { Account } from '@/commercelayer/components/composite/Account'
 import {
   MenuContent,
   MenuItem,
@@ -18,8 +19,8 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
   return (
     <MenuRoot>
       <MenuTrigger asChild>
-        <Button variant="outline" size="xs" bg={'white'}>
-          Menu
+        <Button variant="square" size="md" bg={'white'}>
+          Or
         </Button>
       </MenuTrigger>
       <MenuContent>
@@ -45,6 +46,9 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
         </MenuItem>
         <MenuItem asChild value="/info">
           <NextLink href={'/info'}>{'Info'}</NextLink>
+        </MenuItem>
+        <MenuItem asChild value="/info">
+          <Account />
         </MenuItem>
       </MenuContent>
     </MenuRoot>
