@@ -4,13 +4,13 @@ import {
   type BlockStyle,
   type BlockStyleOptions,
   type BlockStyleParams,
-  type ColumnProps,
+  // type ColumnProps,
   type Metrics,
 } from '@/components/composite/Book/bookTypes'
 import { useFont } from '@/components/pages/fonts/FontContainer'
-import { Box, Button, Flex, Text } from '@chakra-ui/react'
-import { useBookLayoutStore } from '@/components/data/BookProvider'
-import React, { useContext, useRef } from 'react'
+import { Flex } from '@chakra-ui/react'
+import { useInView } from 'framer-motion'
+import React, { useMemo, useRef } from 'react'
 import Block from './Block'
 
 const getBlockStyle = (
@@ -80,8 +80,21 @@ const Column = ({
   // we store the difference of each block
   let difference = 0
 
+  // Generate random delay values once per render
+  const randomDelays = useMemo(() => {
+    return blocks.map(() => Math.random() * 0.8) // Random delays between 0 and 0.8 seconds
+  }, [blocks.length])
+
+  // Create a ref for the column and use the useInView hook
+  const columnRef = useRef(null)
+  const inView = useInView(columnRef, {
+    once: true, // Only trigger the animation once
+    amount: 0.1, // Amount of element that needs to be visible to trigger
+  })
+
   return (
     <Flex
+      ref={columnRef}
       className={'column'}
       flexDir={'column'}
       flexWrap={'wrap'}
@@ -105,6 +118,7 @@ const Column = ({
           return (
             <Block
               key={blockId}
+              delay={randomDelays[idx]}
               line={{
                 blockId: blockId,
                 colWidth: queryWidth,
@@ -113,6 +127,7 @@ const Column = ({
               }}
               layout={layout} // BlockStyle
               entry={block.entry}
+              inView={inView}
             />
           )
         }

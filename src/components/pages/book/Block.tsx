@@ -4,19 +4,29 @@ import {
 } from '@/components/composite/Book/bookTypes'
 import { useFont } from '@/components/pages/fonts/FontContainer'
 import { Box, Container, Flex, Text } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
 import React from 'react'
 
 const Block: React.FC<{
   entry: string
+  delay: number
   line: LineParams
   layout: BlockStyle
-}> = ({ entry, line, layout }) => {
+  inView?: boolean
+}> = ({ delay, entry, line, layout, inView = false }) => {
   const font = useFont()
   return (
-    <Box
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : { opacity: 0 }}
+      transition={{
+        duration: 0.1,
+        delay: delay,
+        ease: 'easeOut',
+      }}
       className={'block'}
-      position={'relative'}
       style={{
+        position: 'relative',
         marginTop: layout.outerWrapperMarginTop,
         marginBottom: layout.outerWrapperMarginBottom,
       }}
@@ -68,7 +78,7 @@ const Block: React.FC<{
           />
         </Box>
       </Box>
-    </Box>
+    </motion.div>
   )
 }
 
