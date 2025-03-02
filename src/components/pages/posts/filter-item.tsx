@@ -2,14 +2,14 @@ import { Tag as ChakraTag } from '@chakra-ui/react'
 import * as React from 'react'
 
 export interface TagProps extends ChakraTag.RootProps {
-  endElement?: React.ReactNode
   onClick?: VoidFunction
+  closeable: boolean
   active: boolean
 }
 
 export const FilterItem = React.forwardRef<HTMLSpanElement, TagProps>(
   function FilterItem(props, ref) {
-    const { endElement, onClick, active, children, ...rest } = props
+    const { closeable, onClick, active, children, ...rest } = props
 
     return (
       <ChakraTag.Root
@@ -21,10 +21,7 @@ export const FilterItem = React.forwardRef<HTMLSpanElement, TagProps>(
       >
         <button onClick={onClick}>
           <ChakraTag.Label>{children}</ChakraTag.Label>
-          {endElement && (
-            <ChakraTag.EndElement>{endElement}</ChakraTag.EndElement>
-          )}
-          {active && (
+          {closeable && active && (
             <ChakraTag.EndElement>
               <ChakraTag.CloseTrigger as={'span'} />
             </ChakraTag.EndElement>

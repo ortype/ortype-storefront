@@ -22,8 +22,11 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     <Stack py={4} direction="row" gap={1} wrap="wrap" justifyContent={'center'}>
       <FilterItem
         active={selectedCategory === 'all'}
-        onClick={() => onCategoryChange('all')}
+        onClick={
+          selectedCategory === 'all' ? undefined : () => onCategoryChange('all')
+        }
         size={'xl'}
+        closeable={false}
       >
         {'All'}
       </FilterItem>
@@ -32,7 +35,12 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
           key={category.slug}
           active={selectedCategory === category.slug}
           size={'xl'}
-          onClick={() => onCategoryChange(category.slug)}
+          onClick={() =>
+            selectedCategory === category.slug
+              ? onCategoryChange('all')
+              : onCategoryChange(category.slug)
+          }
+          closeable={true}
         >
           {category.title}
         </FilterItem>
