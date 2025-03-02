@@ -40,6 +40,7 @@ export const Tester: React.FC<Props> = (props) => {
     title,
     slug,
     variants,
+    styleGroups,
     defaultVariantId,
     href,
   } = props
@@ -49,13 +50,6 @@ export const Tester: React.FC<Props> = (props) => {
   const [entry, setEntry] = useState('')
   const [placeholder, setPlaceholder] = useState(undefined)
   const [currentVariantId, setVariantId] = useState(defaultVariantId)
-
-  // Variant options @TODO: Move to dedicated component
-  // select menu options
-  const variantOptions = variants.map((variant) => ({
-    label: variant.optionName,
-    value: variant._id,
-  }))
 
   const handleVariantChange = (value) => {
     console.log('handleVariantChange: ', value)
@@ -205,7 +199,8 @@ export const Tester: React.FC<Props> = (props) => {
           </ChakraLink>
           <TieredSelect
             currentVariantId={currentVariantId}
-            variantOptions={variantOptions}
+            variants={variants}
+            styleGroups={styleGroups}
             handleVariantChange={handleVariantChange}
           />
           <ChakraLink
