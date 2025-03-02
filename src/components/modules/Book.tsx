@@ -1,5 +1,4 @@
 import RectoVerso from '@/components/pages/book/RectoVerso'
-import Spread from '@/components/pages/book/Spread'
 import { Box } from '@chakra-ui/react'
 
 export interface BookModuleProps {
@@ -10,9 +9,10 @@ export interface BookModuleProps {
 export default function BookModule({ value, index }: BookModuleProps) {
   const { config, book } = value
   let page = null
-  if (book?.snapshots[0]?.spread) {
-    // @TODO: thinking left to do on selecting snapshots...
-    const spread = JSON.parse(book?.snapshots[0]?.spread)
+  if (book?.snapshots?.length > 0) {
+    const spread = JSON.parse(
+      book.snapshots[Math.floor(Math.random() * book.snapshots.length)]?.spread
+    )
     page = spread[config.display]
   }
 
