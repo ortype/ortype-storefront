@@ -16,11 +16,9 @@ import {
 import { Category, Post } from '@/sanity/lib/queries'
 import {
   Box,
-  Button,
   Card,
   Link as ChakraLink,
   Flex,
-  Grid,
   GridItem,
   Group,
   Heading,
@@ -32,6 +30,7 @@ import {
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import React, { useState } from 'react'
+import PostCardTitle from './post-card-title'
 
 const PostCard = ({ post, index }: { post: Post; index: number }) => {
   const [open, setOpen] = useState(false)
@@ -76,7 +75,7 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
             </Button>
           )*/}
 
-          <Group>
+          <Group flex={1}>
             <Tag.Root variant={'outline'} size={'xl'}>
               <Tag.Label>{post.category.title}</Tag.Label>
             </Tag.Root>
@@ -85,14 +84,11 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
                 {post.title}
               </Text>
             ) : (
-              post.fonts?.map(({ font }, index, array) => (
-                <Box as={'span'} key={font.slug} whiteSpace={'nowrap'}>
-                  <ChakraLink as={Link} href={`fonts/${font.slug}`}>
-                    {font.shortName}
-                  </ChakraLink>
-                  {index < array.length - 1 && ', '}
-                </Box>
-              ))
+              <PostCardTitle
+                category={post.category}
+                title={post.title ?? ''}
+                fonts={post.fonts}
+              />
             )}
           </Group>
         </Card.Footer>
