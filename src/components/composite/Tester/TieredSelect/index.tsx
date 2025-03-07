@@ -136,7 +136,7 @@ export const TieredSelect: React.FC<Props> = (props) => {
   const variantOptions = useMemo(
     () =>
       groupVariants.map((variant) => ({
-        label: variant.optionName,
+        label: variant.shortName || variant.optionName,
         value: variant._id,
       })),
     [groupVariants]

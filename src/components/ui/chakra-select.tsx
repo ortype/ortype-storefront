@@ -15,8 +15,10 @@ export const SelectTrigger = React.forwardRef<
 >(function SelectTrigger(props, ref) {
   const { children, clearable, ...rest } = props
   return (
-    <ChakraSelect.Control {...rest} pr={'1.5rem'}>
-      <ChakraSelect.Trigger ref={ref}>{children}</ChakraSelect.Trigger>
+    <ChakraSelect.Control {...rest}>
+      <ChakraSelect.Trigger ref={ref} pr={'2rem'}>
+        {children}
+      </ChakraSelect.Trigger>
       <ChakraSelect.IndicatorGroup>
         {clearable && <SelectClearTrigger />}
         <ChakraSelect.Indicator />
@@ -110,7 +112,7 @@ export const SelectRoot = React.forwardRef<
       ref={ref}
       // The sameWidth: true setting ensures the dropdown width matches the trigger width,
       // which will depend on the inner text when combined with width: 'auto' in the theme
-      positioning={{ sameWidth: true, ...props.positioning }}
+      positioning={{ sameWidth: false, ...props.positioning }}
     >
       {props.asChild ? (
         props.children

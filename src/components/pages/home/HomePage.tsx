@@ -15,14 +15,14 @@ export function HomePage({ data, encodeDataAttribute }: HomePageProps) {
   const { fonts = [] } = data ?? {}
 
   return (
-    <div className="space-y-20">
+    <>
       {/* Header */}
       {/* title && <Header centered title={title} description={overview} />*/}
       {/* Font index */}
       {fonts && fonts.length > 0 && (
         <FontList encodeDataAttribute={encodeDataAttribute} fonts={fonts} />
       )}
-    </div>
+    </>
   )
 }
 

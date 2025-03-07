@@ -196,12 +196,14 @@ export const Tester: React.FC<Props> = (props) => {
               </Text>
             </Link>
           </Button>
-          <TieredSelect
-            currentVariantId={currentVariantId}
-            variants={variants}
-            styleGroups={styleGroups}
-            handleVariantChange={handleVariantChange}
-          />
+          {variants.length > 1 && (
+            <TieredSelect
+              currentVariantId={currentVariantId}
+              variants={variants}
+              styleGroups={styleGroups}
+              handleVariantChange={handleVariantChange}
+            />
+          )}
           <ChakraLink
             as={Link}
             href={`/fonts/${slug}/book/`}

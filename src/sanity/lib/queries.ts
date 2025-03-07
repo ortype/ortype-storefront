@@ -260,6 +260,7 @@ export interface FontVariant {
   _type: string
   name: string
   optionName: string
+  shortName?: string
   uid?: string
   parentUid?: string
   version?: string
