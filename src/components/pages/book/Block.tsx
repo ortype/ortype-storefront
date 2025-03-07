@@ -20,9 +20,9 @@ const Block: React.FC<{
       initial={{ opacity: 0 }}
       animate={inView ? { opacity: 1 } : { opacity: 0 }}
       transition={{
-        duration: 0.1,
+        duration: 0,
         delay: delay,
-        ease: 'easeOut',
+        ease: 'linear',
       }}
       className={'block'}
       style={{
