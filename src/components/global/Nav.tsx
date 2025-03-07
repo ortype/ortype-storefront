@@ -6,7 +6,7 @@ import {
   MenuTrigger,
   MenuTriggerItem,
 } from '@/components/ui/menu'
-import { Box, Button, Flex, For, Group, Link } from '@chakra-ui/react'
+import { Box, Button, Flex, For, Group, Link, Text } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { useEffect } from 'react'
 import { Font } from 'sanity.types'
@@ -20,7 +20,9 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
     <MenuRoot>
       <MenuTrigger asChild>
         <Button variant="square" size="md" bg={'white'}>
-          Or
+          <Text as={'span'} fontSize={'1.5rem'}>
+            Or
+          </Text>
         </Button>
       </MenuTrigger>
       <MenuContent>

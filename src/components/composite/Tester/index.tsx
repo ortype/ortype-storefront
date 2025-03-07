@@ -7,7 +7,14 @@ import { ON_TESTER_UPDATED } from '@/graphql/subscriptions'
 import { decodeOpaqueId } from '@/lib/utils/decoding'
 import type { Font, FontVariant } from '@/sanity/lib/queries'
 import { useMutation, useQuery } from '@apollo/client'
-import { Box, Link as ChakraLink, Flex, HStack, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Link as ChakraLink,
+  Flex,
+  HStack,
+  Text,
+} from '@chakra-ui/react'
 import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -178,25 +185,17 @@ export const Tester: React.FC<Props> = (props) => {
         }
       />
       <Flex align={'center'} justify={'center'}>
-        <HStack spacing={2}>
-          <ChakraLink
-            as={Link}
-            href={`/fonts/${slug}`}
-            data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
-            css={{
-              border: '2px solid #000',
-              p: 2,
-            }}
-            _hover={{
-              textDecoration: 'none',
-              bg: '#000',
-              color: '#fff',
-            }}
-          >
-            <Text as={'span'} fontSize="md">
-              {`${title}`}
-            </Text>
-          </ChakraLink>
+        <HStack gap={6}>
+          <Button variant={'block'} size={'sm'} asChild>
+            <Link
+              href={`/fonts/${slug}`}
+              data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
+            >
+              <Text as={'span'} fontSize="md">
+                {`${title}`}
+              </Text>
+            </Link>
+          </Button>
           <TieredSelect
             currentVariantId={currentVariantId}
             variants={variants}

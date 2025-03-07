@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import type { CollectionItem } from "@chakra-ui/react"
-import { Select as ChakraSelect, Portal } from "@chakra-ui/react"
-import { CloseButton } from "./close-button"
-import * as React from "react"
+import type { CollectionItem } from '@chakra-ui/react'
+import { Select as ChakraSelect, Portal } from '@chakra-ui/react'
+import * as React from 'react'
+import { CloseButton } from './close-button'
 
 interface SelectTriggerProps extends ChakraSelect.ControlProps {
   clearable?: boolean
@@ -15,7 +15,7 @@ export const SelectTrigger = React.forwardRef<
 >(function SelectTrigger(props, ref) {
   const { children, clearable, ...rest } = props
   return (
-    <ChakraSelect.Control {...rest}>
+    <ChakraSelect.Control {...rest} pr={'1.5rem'}>
       <ChakraSelect.Trigger ref={ref}>{children}</ChakraSelect.Trigger>
       <ChakraSelect.IndicatorGroup>
         {clearable && <SelectClearTrigger />}
@@ -75,7 +75,7 @@ export const SelectItem = React.forwardRef<
 })
 
 interface SelectValueTextProps
-  extends Omit<ChakraSelect.ValueTextProps, "children"> {
+  extends Omit<ChakraSelect.ValueTextProps, 'children'> {
   children?(items: CollectionItem[]): React.ReactNode
 }
 
@@ -108,6 +108,8 @@ export const SelectRoot = React.forwardRef<
     <ChakraSelect.Root
       {...props}
       ref={ref}
+      // The sameWidth: true setting ensures the dropdown width matches the trigger width,
+      // which will depend on the inner text when combined with width: 'auto' in the theme
       positioning={{ sameWidth: true, ...props.positioning }}
     >
       {props.asChild ? (

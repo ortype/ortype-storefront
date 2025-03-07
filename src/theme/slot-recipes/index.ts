@@ -29,7 +29,7 @@ import { dialogSlotRecipe } from './dialog'
 // import { radioGroupSlotRecipe } from "./radio-group"
 // import { ratingGroupSlotRecipe } from "./rating-group"
 // import { segmentGroupSlotRecipe } from "./segment-group"
-// import { selectSlotRecipe } from "./select"
+import { selectSlotRecipe } from './select'
 // import { sliderSlotRecipe } from "./slider"
 // import { statSlotRecipe } from "./stat"
 // import { stepsSlotRecipe } from "./steps"
@@ -76,7 +76,7 @@ export const slotRecipes = {
   // radioGroup: radioGroupSlotRecipe,
   // ratingGroup: ratingGroupSlotRecipe,
   // segmentGroup: segmentGroupSlotRecipe,
-  // select: selectSlotRecipe,
+  select: selectSlotRecipe,
   // slider: sliderSlotRecipe,
   // stat: statSlotRecipe,
   // steps: stepsSlotRecipe,

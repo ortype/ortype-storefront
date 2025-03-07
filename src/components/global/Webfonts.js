@@ -1,6 +1,6 @@
+import { GET_WEBFONTS } from '@/graphql/queries'
 import { useQuery } from '@apollo/client'
 import { Global } from '@emotion/react'
-import { GET_WEBFONTS } from '@/graphql/queries'
 import React from 'react'
 
 export const breakpoints = [35, 70, 120]
@@ -12,7 +12,7 @@ export const FontScale = {
   M_MULTIPLIER: 0.85,
   L_MULTIPLIER: 1.1,
   BASELINE: 1.5,
-  MIN_FONT: 0.65,
+  MIN_FONT: 0.9,
   MAX_FONT: 1.35,
   BREAKPOINTS: breakpoints,
 }

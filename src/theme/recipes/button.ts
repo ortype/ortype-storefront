@@ -19,7 +19,7 @@ export const buttonRecipe = defineRecipe({
     outline: '0',
     lineHeight: '1.2',
     isolation: 'isolate',
-    fontWeight: 'medium',
+    fontWeight: 'normal',
     transitionProperty: 'common',
     transitionDuration: 'moderate',
     focusVisibleRing: 'outside',
@@ -55,9 +55,9 @@ export const buttonRecipe = defineRecipe({
         },
       },
       sm: {
-        h: '9',
-        minW: '9',
-        px: '3.5',
+        h: '8',
+        minW: '8',
+        px: '2',
         textStyle: 'sm',
         gap: '2',
         _icon: {
@@ -154,6 +154,45 @@ export const buttonRecipe = defineRecipe({
           bg: 'colorPalette.subtle',
         },
       },
+      ghost: {
+        color: 'colorPalette.fg',
+        _hover: {
+          bg: 'colorPalette.subtle',
+        },
+        _expanded: {
+          bg: 'colorPalette.subtle',
+        },
+      },
+      plain: {
+        color: 'colorPalette.fg',
+      },
+      // custom
+      rounded: {
+        borderRadius: 5,
+        borderWidth: '2px',
+        color: 'colorPalette.fg',
+        _hover: {
+          bg: 'colorPalette.subtle',
+        },
+        _expanded: {
+          bg: 'colorPalette.subtle',
+        },
+      },
+      block: {
+        borderRadius: 0,
+        borderWidth: '2px',
+        borderColor: 'colorPalette.border',
+        color: 'colorPalette.fg',
+        _hover: {
+          color: 'colorPalette.bg',
+          bg: 'colorPalette.fg',
+        },
+        _expanded: {
+          color: 'colorPalette.bg',
+          bg: 'colorPalette.fg',
+        },
+      },
+      // @TODO: perfect circle/square for these two new variants
       square: {
         borderRadius: 0,
         borderWidth: '3px',
@@ -168,7 +207,6 @@ export const buttonRecipe = defineRecipe({
         },
       },
       circle: {
-        // @TODO: perfect circle/square for these two new variants
         borderWidth: '3px',
         w: '10',
         borderColor: 'colorPalette.border',
@@ -181,22 +219,10 @@ export const buttonRecipe = defineRecipe({
           bg: 'colorPalette.subtle',
         },
       },
-      ghost: {
-        color: 'colorPalette.fg',
-        _hover: {
-          bg: 'colorPalette.subtle',
-        },
-        _expanded: {
-          bg: 'colorPalette.subtle',
-        },
-      },
-      plain: {
-        color: 'colorPalette.fg',
-      },
     },
   },
   defaultVariants: {
     size: 'md',
-    variant: 'solid',
+    variant: 'rounded',
   },
 })

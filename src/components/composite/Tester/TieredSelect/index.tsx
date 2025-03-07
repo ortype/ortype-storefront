@@ -154,23 +154,23 @@ export const TieredSelect: React.FC<Props> = (props) => {
   )
 
   return (
-    <div style={{ display: 'flex', gap: '8px' }}>
+    <>
       {/* Group Select - only show when there are multiple style groups */}
       {styleGroups.length > 1 && (
         <SelectRoot
-          variant={'outline'}
+          variant={'flushed'}
           size={'sm'}
+          fontSize={'md'}
           collection={groupCollection}
-          width="7rem"
           value={[selectedGroup]}
           onValueChange={useCallback((e) => setSelectedGroup(e.value[0]), [])}
         >
           <SelectTrigger>
-            <SelectValueText placeholder="Select group" />
+            <SelectValueText fontSize={'md'} placeholder="Select group" />
           </SelectTrigger>
           <SelectContent>
             {groupCollection.items.map((item) => (
-              <SelectItem item={item} key={item.value}>
+              <SelectItem item={item} key={item.value} fontSize={'md'}>
                 {item.label}
               </SelectItem>
             ))}
@@ -180,10 +180,9 @@ export const TieredSelect: React.FC<Props> = (props) => {
 
       {/* Variant Select */}
       <SelectRoot
-        variant={'outline'}
+        variant={'flushed'}
         size={'sm'}
         collection={variantCollection}
-        width="7rem"
         value={[currentVariantId]}
         onValueChange={useCallback(
           (e) => {
@@ -193,16 +192,16 @@ export const TieredSelect: React.FC<Props> = (props) => {
         )}
       >
         <SelectTrigger>
-          <SelectValueText placeholder="Select style" />
+          <SelectValueText placeholder="Select style" fontSize={'md'} />
         </SelectTrigger>
         <SelectContent>
           {variantCollection.items.map((item) => (
-            <SelectItem item={item} key={item.value}>
+            <SelectItem item={item} key={item.value} fontSize={'md'}>
               {item.label}
             </SelectItem>
           ))}
         </SelectContent>
       </SelectRoot>
-    </div>
+    </>
   )
 }

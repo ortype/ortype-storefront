@@ -27,26 +27,22 @@ const Arrow = ({ onClick, direction, enabled, children }) => {
         bottom: 0,
         ...(direction === 'prev' && {
           left: 0,
-          pl: 5,
+          pl: 8,
           alignItems: 'start',
-          transform: 'translateX(-10px)',
+          // transform: 'translateX(-10px)',
         }),
         ...(direction === 'next' && {
           right: 0,
-          pr: 5,
+          pr: 8,
           alignItems: 'end',
-          transform: 'translateX(10px)',
+          // transform: 'translateX(10px)',
         }),
         outline: 'none',
         cursor: 'pointer',
         transition: `300ms transform ease-in-out, 300ms opacity ease-in-out`,
-        opacity: 0,
+        opacity: 1,
         visibility: enabled ? 'initial' : 'hidden',
         pointerEvents: enabled ? 'initial' : 'none',
-        [`&:hover`]: {
-          textDecoration: 'none',
-          opacity: 1,
-        },
         span: {
           width: '4rem',
           height: '4rem',
@@ -128,12 +124,6 @@ const Carousel = ({ value = {} }) => {
       // colSpan={3}
       mx={'-1rem'}
       position={'relative'}
-      _hover={{
-        ['.arrow']: {
-          opacity: 1,
-          transform: 'translateX(0)',
-        },
-      }}
     >
       <Flex
         position={'absolute'}
