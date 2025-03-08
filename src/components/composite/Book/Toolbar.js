@@ -79,10 +79,19 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
     setFontLoading(false)
   }, [font])
 
-  /*
   // @TODO: stop keydown handler from preventing entering text in an Input elsewhere on the page
   useEffect(() => {
     const handleKeyDown = (event) => {
+      // Only handle keyboard events if they're not targeting an input, textarea, or other form element
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement ||
+        event.target instanceof HTMLSelectElement ||
+        event.target instanceof HTMLButtonElement
+      ) {
+        return
+      }
+
       if (event.key === 'e') {
         console.log('The "e" key was pressed.')
         bookLayoutStore.setEditMode(!bookLayoutStore.editMode)
@@ -96,7 +105,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, []) // Empty dependency array to ensure this is only run once on mount
-*/
+
   // queries
   // get layout data from api
   const { loading: assignedLayoutsLoading, data: assignedLayouts } = useQuery(
