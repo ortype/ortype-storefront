@@ -79,16 +79,16 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
             <Tag.Root variant={'outline'} size={'xl'}>
               <Tag.Label>{post.category.title}</Tag.Label>
             </Tag.Root>
-            {post.category.title === 'Custom' ? (
-              <Text as={'span'} fontSize={'sm'}>
-                {post.title}
-              </Text>
-            ) : (
+            {post.category.title === 'In Use' ? (
               <PostCardTitle
                 category={post.category}
                 title={post.title ?? ''}
                 fonts={post.fonts}
               />
+            ) : (
+              <Text as={'span'} fontSize={'sm'}>
+                {post.title}
+              </Text>
             )}
           </Group>
         </Card.Footer>
