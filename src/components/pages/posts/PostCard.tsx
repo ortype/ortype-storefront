@@ -90,7 +90,7 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
                 fonts={post.fonts}
               />
             ) : (
-              <Text as={'span'} fontSize={'sm'}>
+              <Text as={'span'} lineHeight={1.1}>
                 {post.title}
               </Text>
             )}
