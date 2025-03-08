@@ -1,22 +1,16 @@
 'use client'
 
-import Image from '@/components/global/Image'
-import { default as Date } from '@/components/shared/PostDate'
+// import { default as Date } from '@/components/shared/PostDate'
 import { Category, Post } from '@/sanity/lib/queries'
 import {
   Box,
   Button,
-  Card,
   Link as ChakraLink,
   Container,
-  Group,
-  Heading,
   Spinner,
-  Tag,
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry from 'react-masonry-css'
@@ -168,18 +162,21 @@ export function Posts({ posts, categories }: PostsProps) {
           )}
           */
       >
-        <AnimatePresence mode="popLayout" initial={false}>
+        <div key={selectedCategory}>
           <Masonry
-            key={selectedCategory}
             breakpointCols={breakpointColumnsObj}
             className="masonry-grid"
             columnClassName="masonry-grid_column"
           >
             {displayedPosts.map((post, index) => (
-              <PostCard key={post.slug} post={post} index={index} />
+              <PostCard
+                key={`${post.slug}-${selectedCategory}`}
+                post={post}
+                index={index}
+              />
             ))}
           </Masonry>
-        </AnimatePresence>
+        </div>
       </InfiniteScroll>
     </Container>
   )

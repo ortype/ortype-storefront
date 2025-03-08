@@ -37,15 +37,19 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
   return (
     <motion.div
       className="masonry-item"
+      layoutId={`${post.slug}`}
       layout="position"
-      layoutId={`${post.slug}-${index}`}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{
-        duration: 0.4,
-        ease: 'easeOut',
-        layout: { duration: 0.35, type: 'tween', ease: 'easeInOut' },
+        layout: {
+          type: 'spring',
+          damping: 25,
+          stiffness: 120,
+          duration: 0.3,
+        },
+        opacity: { duration: 0.2 },
       }}
     >
       <Card.Root maxW="md" overflow="hidden" borderRadius={0} border={'none'}>
