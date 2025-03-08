@@ -20,16 +20,6 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
 }) => {
   return (
     <Stack py={4} direction="row" gap={1} wrap="wrap" justifyContent={'center'}>
-      <FilterItem
-        active={selectedCategory === 'all'}
-        onClick={
-          selectedCategory === 'all' ? undefined : () => onCategoryChange('all')
-        }
-        size={'xl'}
-        closeable={false}
-      >
-        {'All'}
-      </FilterItem>
       {categories.map((category) => (
         <FilterItem
           key={category.slug}
