@@ -133,7 +133,7 @@ export function Posts({ posts, categories }: PostsProps) {
   }*/
 
   return (
-    <Container maxW="container.xl">
+    <Container maxW="8xl">
       <CategoryFilter
         categories={categories}
         selectedCategory={selectedCategory}

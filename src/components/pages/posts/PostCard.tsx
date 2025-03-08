@@ -105,7 +105,7 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
         motionPreset={'scale'}
         closeOnEscape={true}
         placement={'center'}
-        size={'xl'}
+        size={'container'}
       >
         <DialogContent backdrop={true} borderRadius={5}>
           {/*<DialogHeader>

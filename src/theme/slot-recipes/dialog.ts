@@ -167,7 +167,16 @@ export const dialogSlotRecipe = defineSlotRecipe({
       },
       xl: {
         content: {
-          maxW: 'calc(100vw - 12rem)',
+          maxW: '4xl',
+        },
+      },
+      container: {
+        positioner: {
+          px: '16',
+          py: '8',
+        },
+        content: {
+          maxW: '8xl',
         },
       },
       cover: {
