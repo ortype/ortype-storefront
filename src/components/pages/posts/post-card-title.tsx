@@ -21,14 +21,9 @@ interface FontWithReference {
 interface FontsListProps {
   fonts: FontWithReference[]
   title: string
-  categoryTitle: string
 }
 
-const PostCardTitle = ({
-  title,
-  categoryTitle,
-  fonts,
-}: FontsListProps): ReactNode => {
+const PostCardTitle = ({ title, fonts }: FontsListProps): ReactNode => {
   // State to toggle between showing title and fonts
   const [showTitle, setShowTitle] = useState(true)
   // State to track hover state

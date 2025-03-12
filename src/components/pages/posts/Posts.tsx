@@ -173,6 +173,8 @@ export function Posts({ posts, categories }: PostsProps) {
                 key={`${post.slug}-${selectedCategory}`}
                 post={post}
                 index={index}
+                selectedCategory={selectedCategory}
+                onCategoryChange={handleCategoryChange}
               />
             ))}
           </Masonry>

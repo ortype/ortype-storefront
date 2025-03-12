@@ -32,7 +32,17 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import PostCardTitle from './post-card-title'
 
-const PostCard = ({ post, index }: { post: Post; index: number }) => {
+const PostCard = ({
+  post,
+  index,
+  selectedCategory,
+  onCategoryChange,
+}: {
+  post: Post
+  index: number
+  onCategoryChange: (category: string) => void
+  selectedCategory: string
+}) => {
   const [open, setOpen] = useState(false)
   return (
     <motion.div
@@ -80,15 +90,24 @@ const PostCard = ({ post, index }: { post: Post; index: number }) => {
           )*/}
 
           <Group flex={1}>
-            <Tag.Root variant={'outline'} size={'xl'}>
-              <Tag.Label>{post.category.title}</Tag.Label>
+            <Tag.Root
+              variant={'outline'}
+              size={'xl'}
+              cursor={'pointer'}
+              asChild
+            >
+              <button
+                onClick={() =>
+                  selectedCategory === post.category.slug
+                    ? onCategoryChange('all')
+                    : onCategoryChange(post.category.slug)
+                }
+              >
+                <Tag.Label>{post.category.title}</Tag.Label>
+              </button>
             </Tag.Root>
             {post.category.title === 'In Use' ? (
-              <PostCardTitle
-                category={post.category}
-                title={post.title ?? ''}
-                fonts={post.fonts}
-              />
+              <PostCardTitle title={post.title ?? ''} fonts={post.fonts} />
             ) : (
               <Text as={'span'} lineHeight={1.1}>
                 {post.title}
