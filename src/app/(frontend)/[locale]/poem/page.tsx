@@ -1,31 +1,55 @@
 'use client'
+import PoemPage from '@/components/pages/poem'
+import { GET_LATEST_POEM_ENTRIES, GET_POEM_ENTRIES } from '@/graphql/queries'
+import { ON_POEM_UPDATED } from '@/graphql/subscriptions'
 import { useQuery } from '@apollo/client'
-import { GET_POEM_ENTRIES } from '@/graphql/queries'
+import { useEffect } from 'react'
 
-interface PageProps {}
-
-export default function Poem(props: PageProps) {
-  // const { } = props
-  const { data, loading, error } = useQuery(GET_POEM_ENTRIES, {
-    variables: {
-      first: 50,
-      // offset: 50000, // @TODO: this connection arg isn't being handled by the api
-      isLatinBasic: true,
-      isDup: false,
-      // fontIds: ['font-BBAEuUdIabmmmyulVRZIp'],
-    },
-  })
-  if (loading) return <p>Loading ...</p>
-  // console.log('GET_POEM_ENTRIES data: ', data?.poems.edges)
-  // @TODO: Why does Apollo Client return dup entries with the same _id, whereas the Explorer works just fine
-  return (
-    <>
-      {data?.poems?.edges.map((edge) => (
-        <span key={edge.node._id}>
-          {`${edge.node.entry} / ${edge.node.title} / ${edge.node._id}`}
-          <br />
-        </span>
-      ))}
-    </>
+export default function Poem() {
+  const { subscribeToMore, data, loading, error } = useQuery(
+    GET_LATEST_POEM_ENTRIES,
+    {
+      variables: {},
+    }
   )
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: ON_POEM_UPDATED,
+      // Pass a specific ID to attempt to listen to one item only
+      // variables: { id: fontId },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) {
+          console.warn('No subscription data received')
+          return prev
+        }
+
+        console.log('Previous state:', prev)
+        console.log('Subscription data:', subscriptionData.data)
+        // .unshift(subscriptionData.data.poemUpdated)
+        // @NOTE: this fires the second we focus on a Tester Input
+
+        const latestPoemEntries = [
+          subscriptionData.data.poemUpdated,
+          ...prev.latestPoemEntries,
+        ]
+        console.log({ latestPoemEntries })
+
+        return {
+          latestPoemEntries,
+        }
+      },
+      onError: (error) => {
+        console.error('Subscription error:', error)
+      },
+    })
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe()
+  }, [subscribeToMore])
+
+  if (loading) return <p>Loading ...</p>
+
+  console.log('GET_LATEST_POEM_ENTRIES data: ', data)
+  return <PoemPage latestPoemEntries={data?.latestPoemEntries} />
 }

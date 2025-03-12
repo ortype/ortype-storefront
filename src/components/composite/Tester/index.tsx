@@ -1,8 +1,5 @@
 import { UPDATE_TESTER_BY_ID } from '@/graphql/mutations'
-import {
-  GET_LATEST_POEM_ENTRIES,
-  GET_TESTER_BY_FONTID,
-} from '@/graphql/queries'
+import { GET_TESTER_BY_FONTID } from '@/graphql/queries'
 import { ON_TESTER_UPDATED } from '@/graphql/subscriptions'
 import { decodeOpaqueId } from '@/lib/utils/decoding'
 import type { Font, FontVariant } from '@/sanity/lib/queries'

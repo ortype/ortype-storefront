@@ -46,14 +46,16 @@ export const GET_POEM_ENTRIES = gql`
 `
 
 export const GET_LATEST_POEM_ENTRIES = gql`
-  # Get the latest poem entry by fontId
-  query getLatestPoemEntry($fontId: ID!) {
-    latestPoemEntry: latestPoemEntry(fontId: $fontId) {
+  # Get the latest poem entries from the cache
+  query getLatestPoemEntries {
+    latestPoemEntries {
       entry
       internalId
       _id
       fontId
       variantId
+      slug
+      title
     }
   }
 `

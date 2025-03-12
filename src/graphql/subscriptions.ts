@@ -17,6 +17,20 @@ export const ON_TESTER_UPDATED = gql`
   }
 `
 
+export const ON_POEM_UPDATED = gql`
+  subscription onPoemUpdated {
+    poemUpdated {
+      entry
+      internalId
+      _id
+      fontId
+      variantId
+      slug
+      title
+    }
+  }
+`
+
 /*
 
 subscription OnFontTesterUpdated($id: ID!) {
