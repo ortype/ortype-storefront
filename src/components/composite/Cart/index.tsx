@@ -16,6 +16,7 @@ import {
 
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { CartItem } from '@/components/composite/Cart/CartItem'
+import { IconButton } from '@/components/ui/chakra-iconbutton'
 import {
   LineItem,
   LineItemsContainer,
@@ -53,11 +54,10 @@ const Cart = () => {
       >
         {/*<DialogBackdrop />*/}
         <DialogTrigger asChild>
-          <Button
+          <IconButton
             size={'md'}
             variant={'circle'}
-            bg={'white'}
-          >{`${itemsCount}`}</Button>
+          >{`${itemsCount}`}</IconButton>
         </DialogTrigger>
         <DialogContent bg={'white'}>
           <DialogHeader>Cart or Bag Or Basket</DialogHeader>

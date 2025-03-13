@@ -1,9 +1,8 @@
-import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
-import Link from 'next/link'
-
 import FontList from '@/components/pages/home/FontList'
+import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 // import { Header } from '@/components/shared/Header'
 import type { HomePagePayload } from '@/types'
+import { OnAir } from './on-air'
 
 export interface HomePageProps {
   data: HomePagePayload | null
@@ -22,6 +21,7 @@ export function HomePage({ data, encodeDataAttribute }: HomePageProps) {
       {fonts && fonts.length > 0 && (
         <FontList encodeDataAttribute={encodeDataAttribute} fonts={fonts} />
       )}
+      <OnAir />
     </>
   )
 }

@@ -11,7 +11,6 @@ export const ON_TESTER_UPDATED = gql`
       internalId
       fontId
       variantId
-      isEditing
       updatedAt
     }
   }
@@ -22,6 +21,7 @@ export const ON_POEM_UPDATED = gql`
     poemUpdated {
       entry
       internalId
+      sessionId
       _id
       fontId
       variantId

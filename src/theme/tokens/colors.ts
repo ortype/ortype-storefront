@@ -3,7 +3,7 @@ import { defineTokens } from '@chakra-ui/react'
 export const colors = defineTokens.colors({
   brand: {
     50: { value: '#ffffff' }, // Lighter white
-    100: { value: '#ffffff' },
+    100: { value: '#ededed' },
     200: { value: '#cccccc' },
     300: { value: '#b3b3b3' },
     400: { value: '#999999' },
@@ -24,6 +24,9 @@ export const colors = defineTokens.colors({
   },
   white: {
     value: '#FFF',
+  },
+  red: {
+    value: '#FF0000',
   },
   whiteAlpha: {
     '50': {

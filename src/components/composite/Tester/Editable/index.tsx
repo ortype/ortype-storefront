@@ -17,7 +17,10 @@ const Editable = ({
     // no event.target here, as this isn't an input, but we have the value from above
     if (placeholder !== entry) {
       // we've got something new, let's add!
-      handleUpdateFontTester({ addEntry: true, sessionId: '' })
+      handleUpdateFontTester({
+        addEntry: true,
+        sessionId: sessionStorage.getItem('sessionId'),
+      })
     } else {
       // eslint-disable-next-line no-console
       console.log(entry, " hasn't truly changed...")

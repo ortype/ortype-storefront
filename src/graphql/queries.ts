@@ -16,6 +16,7 @@ export const GET_WEBFONTS = gql`
   }
 `
 
+// @NOTE: admin tool
 export const GET_POEM_ENTRIES = gql`
   query Poems(
     $first: ConnectionLimitInt
@@ -45,6 +46,7 @@ export const GET_POEM_ENTRIES = gql`
   }
 `
 
+// @NOTE: /poem page
 export const GET_LATEST_POEM_ENTRIES = gql`
   # Get the latest poem entries from the cache
   query getLatestPoemEntries {
@@ -54,6 +56,7 @@ export const GET_LATEST_POEM_ENTRIES = gql`
       _id
       fontId
       variantId
+      sessionId
       slug
       title
     }
@@ -69,7 +72,6 @@ export const GET_TESTER_BY_FONTID = gql`
       _id
       fontId
       variantId
-      isEditing
       updatedAt
     }
   }

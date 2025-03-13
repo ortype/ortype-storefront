@@ -16,7 +16,6 @@ export const UPDATE_TESTER_BY_ID = gql`
         fontUid
         variantId
         variantUid
-        isEditing
         updatedAt
       }
     }

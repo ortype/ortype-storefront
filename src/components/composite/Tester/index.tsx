@@ -50,7 +50,7 @@ export const Tester: React.FC<Props> = (props) => {
   } = props
 
   // is controlled by the focus and blur events of the input
-  const [isEditing, setEditing] = useState(false)
+  const [isEditing, setEditing] = useState('')
   const [entry, setEntry] = useState('')
   const [placeholder, setPlaceholder] = useState(undefined)
   const [currentVariantId, setVariantId] = useState(defaultVariantId)
@@ -74,13 +74,13 @@ export const Tester: React.FC<Props> = (props) => {
 
   const handleUpdateFontTester = ({ addEntry, sessionId, variantId }) => {
     setEditing(sessionId)
+    console.log({ sessionId })
     updateFontTesterById({
       variables: {
         input: {
           entry,
           fontId,
           variantId: variantId || currentVariantId,
-          isEditing: sessionId,
           sessionId,
         },
         addEntry,
@@ -108,12 +108,12 @@ export const Tester: React.FC<Props> = (props) => {
   // Set state when query loads or changes
   useEffect(() => {
     if (loading === false && data && data.fontTesterById) {
-      const { entry: latestEntry, variantId, isEditing } = data.fontTesterById
+      const { entry: latestEntry, variantId, sessionId } = data.fontTesterById
       if (!variantId) return
       // @NOTE: decodedVariantId is null
       const decodedVariantId = decodeOpaqueId(variantId)
       if (latestEntry) {
-        setEditing(isEditing)
+        setEditing(sessionId)
         setEntry(latestEntry)
         setPlaceholder(latestEntry)
         setVariantId(variantId)
