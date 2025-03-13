@@ -66,7 +66,6 @@ const Webfonts = ({ children }) => {
               [`.${font.classId}`]: {
                 fontFamily: `"${font.fontFamilyVariable}"`,
                 fontVariationSettings: font.fontVariationSettings,
-                transition: `all 0.25s linear`,
               },
             },
           })
