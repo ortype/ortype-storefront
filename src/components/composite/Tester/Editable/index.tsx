@@ -75,6 +75,9 @@ const Editable = ({
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
+          onPaste={(e) => e.preventDefault()}
+          maxLength={10}
+          {...props}
         />
       ) : (
         <TypingIndicator />

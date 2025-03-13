@@ -160,9 +160,10 @@ export const Tester: React.FC<Props> = (props) => {
   }, [subscribeToMore])
 
   const handleChange = (event) => {
-    // here we can check character limit
-    // event.target.value.length
-    setEntry(event.target.value)
+    // Only update if the length is within our limit
+    if (event.target.value.length <= 10) {
+      setEntry(event.target.value)
+    }
   }
 
   if (loading) return <TypingIndicator />
