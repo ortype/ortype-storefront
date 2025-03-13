@@ -44,7 +44,7 @@ export default async function RootLayout({
   const marketId = (await getMarketId()) || ''
   const session = await auth()
   return (
-    <div className="bg-white min-h-screen">
+    <>
       <SessionProvider basePath={BASE_PATH} session={session}>
         <Providers marketId={marketId}>{children}</Providers>
       </SessionProvider>
@@ -55,6 +55,6 @@ export default async function RootLayout({
           <VisualEditing />
         </>
       )}
-    </div>
+    </>
   )
 }

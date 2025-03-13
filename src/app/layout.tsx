@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { BodyClassname } from '@/components/global/body-classname'
 
 export const metadata: Metadata = {
   title: 'Or Type',
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-white">{children}</body>
+      <body>
+        <BodyClassname />
+        {children}
+      </body>
     </html>
   )
 }
