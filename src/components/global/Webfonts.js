@@ -124,6 +124,13 @@ const Webfonts = ({ children }) => {
             fontWeight: 'normal',
             fontStyle: 'normal',
           },
+          // @TODO: bold alltaf
+          [`@font-face`]: {
+            fontFamily: 'Alltaf-Bold',
+            src: `url("https://assets.ortype.is/v3/Alltaf-Bold.woff") format("woff")`,
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+          },
           body: {
             // fontFamily: "Alltaf-Regular",
             margin: 0,

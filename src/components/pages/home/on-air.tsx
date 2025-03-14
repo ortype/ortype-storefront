@@ -44,7 +44,6 @@ export const VerticalText: FC<VerticalTextProps> = ({
           textAlign="center"
           textTransform={'uppercase'}
           fontFamily={'Alltaf-Bold'}
-          // @TODO: bold font
         >
           {char}
         </Span>
