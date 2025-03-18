@@ -7,6 +7,7 @@ export const ON_TESTER_UPDATED = gql`
       _id
       entry
       sessionId
+      isEditing
       createdAt
       internalId
       fontId

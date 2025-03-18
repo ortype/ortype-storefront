@@ -17,24 +17,29 @@ const Editable = ({
     // no event.target here, as this isn't an input, but we have the value from above
     if (placeholder !== entry) {
       // we've got something new, let's add!
+      console.log(entry, " we've got something new, let's add!")
       handleUpdateFontTester({
         addEntry: true,
         sessionId: sessionStorage.getItem('sessionId'),
+        isEditing: '',
       })
     } else {
       // eslint-disable-next-line no-console
       console.log(entry, " hasn't truly changed...")
       // let's just free up that input
-      handleUpdateFontTester({ addEntry: false, sessionId: '' })
+      handleUpdateFontTester({ addEntry: false, sessionId: '', isEditing: '' })
     }
   }
 
   const handleKeyDown = (event) => {
     const { key } = event
-    const keys = ['Escape', 'Tab', 'Enter']
-    // @TODO: Escape and Enter key don't force a blur event
-    if (keys.indexOf(key) > -1 || event.key === 'Tab') {
-      handleBlur()
+    const keys = ['Escape', 'Enter', 'Tab']
+
+    if (keys.includes(key)) {
+      if (key === 'Escape' || key === 'Enter') {
+        event.preventDefault()
+      }
+      event.target.blur()
     }
   }
 
@@ -42,6 +47,7 @@ const Editable = ({
     handleUpdateFontTester({
       addEntry: false,
       sessionId: sessionStorage.getItem('sessionId'),
+      isEditing: sessionStorage.getItem('sessionId'),
     })
 
   return (

@@ -62,6 +62,7 @@ export const Tester: React.FC<Props> = (props) => {
     handleUpdateFontTester({
       addEntry: false,
       sessionId: '',
+      isEditing: '',
       variantId: value[0],
     })
   }
@@ -72,9 +73,12 @@ export const Tester: React.FC<Props> = (props) => {
 
   const [updateFontTesterById] = useMutation(UPDATE_TESTER_BY_ID)
 
-  const handleUpdateFontTester = ({ addEntry, sessionId, variantId }) => {
-    setEditing(sessionId)
-    console.log({ sessionId })
+  const handleUpdateFontTester = ({
+    addEntry,
+    sessionId,
+    isEditing,
+    variantId,
+  }) => {
     updateFontTesterById({
       variables: {
         input: {
@@ -82,6 +86,7 @@ export const Tester: React.FC<Props> = (props) => {
           fontId,
           variantId: variantId || currentVariantId,
           sessionId,
+          isEditing,
         },
         addEntry,
       },
@@ -93,7 +98,12 @@ export const Tester: React.FC<Props> = (props) => {
       window.onbeforeunload = (event) => {
         // run mutation
         console.log('onbeforeunload: ', fontId)
-        handleUpdateFontTester({ addEntry: false, sessionId: '' })
+        // clear item in fontTester cache of `isEditing` and `sessionId`
+        handleUpdateFontTester({
+          addEntry: false,
+          sessionId: '',
+          isEditing: '',
+        })
         // event.returnValue = "";
         event.preventDefault()
         delete event.returnValue
@@ -108,12 +118,17 @@ export const Tester: React.FC<Props> = (props) => {
   // Set state when query loads or changes
   useEffect(() => {
     if (loading === false && data && data.fontTesterById) {
-      const { entry: latestEntry, variantId, sessionId } = data.fontTesterById
+      const {
+        entry: latestEntry,
+        variantId,
+        sessionId,
+        isEditing,
+      } = data.fontTesterById
       if (!variantId) return
       // @NOTE: decodedVariantId is null
       const decodedVariantId = decodeOpaqueId(variantId)
       if (latestEntry) {
-        setEditing(sessionId)
+        setEditing(isEditing)
         setEntry(latestEntry)
         setPlaceholder(latestEntry)
         setVariantId(variantId)
@@ -166,6 +181,8 @@ export const Tester: React.FC<Props> = (props) => {
     }
   }
 
+  const disabled =
+    isEditing?.length > 0 && isEditing !== sessionStorage.getItem('sessionId')
   if (loading) return <TypingIndicator />
   // console.log('GET_FONT_TESTER_BY_ID: ', fontId, title, data?.fontTesterById)
   return (
@@ -178,9 +195,7 @@ export const Tester: React.FC<Props> = (props) => {
         fontId={fontId}
         variantId={currentVariantId}
         index={index}
-        isDisabled={
-          isEditing && isEditing !== sessionStorage.getItem('sessionId')
-        }
+        isDisabled={disabled}
       />
       <Flex align={'center'} justify={'center'}>
         <HStack gap={6}>

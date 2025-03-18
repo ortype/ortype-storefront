@@ -71,6 +71,8 @@ export const GET_TESTER_BY_FONTID = gql`
       internalId
       _id
       fontId
+      sessionId
+      isEditing
       variantId
       updatedAt
     }

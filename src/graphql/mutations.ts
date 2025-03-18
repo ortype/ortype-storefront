@@ -10,6 +10,7 @@ export const UPDATE_TESTER_BY_ID = gql`
       entry {
         _id
         entry
+        isEditing
         sessionId
         createdAt
         fontId
