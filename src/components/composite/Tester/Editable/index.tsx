@@ -1,6 +1,7 @@
 import { ActionBar, Box, Kbd, Portal, Text } from '@chakra-ui/react'
 import { useState } from 'react'
-import TypingIndicator from '../TypingIndicator'
+import BlinkingCursor from './blinking-cursor'
+import TypewriterAnimation from './typewriter-animation'
 
 const Editable = ({
   index,
@@ -12,25 +13,32 @@ const Editable = ({
   isDisabled,
   handleUpdateFontTester,
   limiter,
+  loading,
   ...props
 }) => {
-  // const typing = useTypewriter(entry);
+  const [hasInitialized, setHasInitialized] = useState(false)
+  // Only trigger animation on initial mount
+  const shouldAnimate = !hasInitialized
+
+  // Handle animation completion
+  const handleAnimationComplete = () => {
+    setHasInitialized(true)
+  }
+
   const [focused, setFocused] = useState(false)
+
   const handleBlur = () => {
     setFocused(false)
     // no event.target here, as this isn't an input, but we have the value from above
     const trimmedEntry = entry.trim()
     if (placeholder !== trimmedEntry) {
       // we've got something new, let's add!
-      console.log(trimmedEntry, " we've got something new, let's add!")
       handleUpdateFontTester({
         addEntry: true,
         sessionId: sessionStorage.getItem('sessionId'),
         isEditing: '',
       })
     } else {
-      // eslint-disable-next-line no-console
-      console.log(trimmedEntry, " hasn't truly changed...")
       // let's just free up that input
       handleUpdateFontTester({ addEntry: false, sessionId: '', isEditing: '' })
     }
@@ -58,44 +66,69 @@ const Editable = ({
   }
 
   return (
-    <Box {...props} textAlign={'center'} mt={1}>
-      {!isDisabled ? (
-        <Box
-          animation={limiter ? `nudge` : undefined}
-          animationDuration={'0.2s'}
-          animationTimingFunction={'ease-in-out'}
-          as={'input'}
-          css={{
-            textAlign: `center`,
-            fontSize: `8rem`,
-            lineHeight: `12.5rem`,
-            boxSizing: `border-box`,
-            padding: 0,
-            background: `transparent`,
-            border: `none`,
-            width: `100%`,
-            display: `block`,
-            transition: 'all 0.2s linear',
-            [`&:focus`]: {
-              outline: `none`,
-            },
-          }}
-          className={variantId}
-          tabIndex={index} // Sequential tabIndex for navigating between inputs
-          spellCheck={false}
-          type="text"
-          name="entry"
-          placeholder={placeholder}
-          value={entry}
-          onFocus={handleFocus}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          onPaste={(e) => e.preventDefault()}
-          {...props}
-        />
+    <Box {...props} textAlign={'center'} mt={1} position="relative">
+      {!loading ? (
+        <>
+          {!hasInitialized && shouldAnimate ? (
+            // Show TypewriterAnimation during animation phase
+            <TypewriterAnimation
+              placeholder={placeholder}
+              shouldAnimate={shouldAnimate}
+              variantId={variantId}
+              onAnimationComplete={handleAnimationComplete}
+            />
+          ) : (
+            // Show input component after animation completes
+            <Box
+              animation={limiter ? `nudge` : undefined}
+              animationDuration={'0.2s'}
+              animationTimingFunction={'ease-in-out'}
+              as={'input'}
+              css={{
+                textAlign: `center`,
+                fontSize: `8rem`,
+                lineHeight: `12.5rem`,
+                boxSizing: `border-box`,
+                padding: 0,
+                background: `transparent`,
+                border: `none`,
+                width: `100%`,
+                display: `block`,
+                transition: 'all 0.2s linear',
+                [`&:focus`]: {
+                  outline: `none`,
+                },
+              }}
+              className={variantId}
+              tabIndex={index} // Sequential tabIndex for navigating between inputs
+              spellCheck={false}
+              type="text"
+              name="entry"
+              placeholder={placeholder}
+              value={entry}
+              onFocus={handleFocus}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              onPaste={(e) => e.preventDefault()}
+              {...props}
+            />
+          )}
+        </>
       ) : (
-        <TypingIndicator />
+        // Loading state with centered cursor
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="12.5rem"
+        >
+          <BlinkingCursor
+            isVisible={true}
+            isLoading={true}
+            variantId={variantId}
+          />
+        </Box>
       )}
       <ActionBar.Root open={focused} closeOnInteractOutside={false} size={'sm'}>
         <Portal>

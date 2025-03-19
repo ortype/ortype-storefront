@@ -211,7 +211,7 @@ export const Tester: React.FC<Props> = (props) => {
 
   const disabled =
     isEditing?.length > 0 && isEditing !== sessionStorage.getItem('sessionId')
-  if (loading) return <TypingIndicator />
+  if (disabled) return <TypingIndicator />
   // console.log('GET_FONT_TESTER_BY_ID: ', fontId, title, data?.fontTesterById)
   return (
     <>
@@ -224,6 +224,7 @@ export const Tester: React.FC<Props> = (props) => {
         variantId={currentVariantId}
         index={index}
         isDisabled={disabled}
+        loading={loading}
         limiter={limiter}
       />
       <Flex align={'center'} justify={'center'}>

@@ -1,4 +1,8 @@
 export const keyframes = {
+  blink: {
+    '0%, 100%': { opacity: 1 },
+    '50%': { opacity: 0 },
+  },
   nudge: {
     '0%': { transform: 'translateX(0)' },
     '25%': { transform: 'translateX(8px)' },
