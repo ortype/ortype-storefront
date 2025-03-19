@@ -10,6 +10,7 @@ const Editable = ({
   handleChange,
   isDisabled,
   handleUpdateFontTester,
+  limiter,
   ...props
 }) => {
   // const typing = useTypewriter(entry);
@@ -55,6 +56,9 @@ const Editable = ({
     <Box {...props} textAlign={'center'} mt={1}>
       {!isDisabled ? (
         <Box
+          animation={limiter ? `nudge` : undefined}
+          animationDuration={'0.2s'}
+          animationTimingFunction={'ease-in-out'}
           as={'input'}
           css={{
             textAlign: `center`,
@@ -83,7 +87,6 @@ const Editable = ({
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           onPaste={(e) => e.preventDefault()}
-          maxLength={10}
           {...props}
         />
       ) : (

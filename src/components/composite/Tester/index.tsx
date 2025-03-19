@@ -1,3 +1,4 @@
+import { toaster } from '@/components/ui/toaster'
 import { UPDATE_TESTER_BY_ID } from '@/graphql/mutations'
 import { GET_TESTER_BY_FONTID } from '@/graphql/queries'
 import { ON_TESTER_UPDATED } from '@/graphql/subscriptions'
@@ -54,6 +55,7 @@ export const Tester: React.FC<Props> = (props) => {
   const [entry, setEntry] = useState('')
   const [placeholder, setPlaceholder] = useState(undefined)
   const [currentVariantId, setVariantId] = useState(defaultVariantId)
+  const [limiter, setLimiter] = useState(false)
 
   const handleVariantChange = (value) => {
     console.log('handleVariantChange: ', value)
@@ -177,11 +179,35 @@ export const Tester: React.FC<Props> = (props) => {
   const handleChange = (event) => {
     const value = event.target.value
 
+    // Check if the input would exceed 10 characters
+    if (value.length > 10) {
+      // Trigger the limiter only when trying to exceed 10 characters
+      setLimiter(true)
+
+      // Reset the notification state after a delay (for animation purposes)
+      setTimeout(() => {
+        setLimiter(false)
+      }, 500)
+    }
+
     // Only update if the length is within our limit
     if (value.length <= 10) {
       setEntry(value)
     }
   }
+
+  /*
+  // @NOTE: optional trigger a toast or other notifcation if limit has been reached
+  useEffect(() => {
+    if (limiter) {
+      toaster.create({
+        title: 'Character limit reached',
+        description: '10 of 10',
+        type: 'info',
+      })
+    }
+  }, [limiter])
+  */
 
   const disabled =
     isEditing?.length > 0 && isEditing !== sessionStorage.getItem('sessionId')
@@ -198,6 +224,7 @@ export const Tester: React.FC<Props> = (props) => {
         variantId={currentVariantId}
         index={index}
         isDisabled={disabled}
+        limiter={limiter}
       />
       <Flex align={'center'} justify={'center'}>
         <HStack gap={6}>

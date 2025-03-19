@@ -1,4 +1,10 @@
 export const keyframes = {
+  nudge: {
+    '0%': { transform: 'translateX(0)' },
+    '25%': { transform: 'translateX(8px)' },
+    '75%': { transform: 'translateX(-4px)' },
+    '100%': { transform: 'translateX(0)' },
+  },
   pulse: {
     '0%': { opacity: `50%` },
     '30%': { opacity: `100%` },
