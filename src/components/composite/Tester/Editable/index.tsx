@@ -15,9 +15,10 @@ const Editable = ({
   // const typing = useTypewriter(entry);
   const handleBlur = () => {
     // no event.target here, as this isn't an input, but we have the value from above
-    if (placeholder !== entry) {
+    const trimmedEntry = entry.trim()
+    if (placeholder !== trimmedEntry) {
       // we've got something new, let's add!
-      console.log(entry, " we've got something new, let's add!")
+      console.log(trimmedEntry, " we've got something new, let's add!")
       handleUpdateFontTester({
         addEntry: true,
         sessionId: sessionStorage.getItem('sessionId'),
@@ -25,7 +26,7 @@ const Editable = ({
       })
     } else {
       // eslint-disable-next-line no-console
-      console.log(entry, " hasn't truly changed...")
+      console.log(trimmedEntry, " hasn't truly changed...")
       // let's just free up that input
       handleUpdateFontTester({ addEntry: false, sessionId: '', isEditing: '' })
     }

@@ -82,7 +82,7 @@ export const Tester: React.FC<Props> = (props) => {
     updateFontTesterById({
       variables: {
         input: {
-          entry,
+          entry: entry.trim(), // make sure there are no leading or trailing white-spaces
           fontId,
           variantId: variantId || currentVariantId,
           sessionId,
@@ -175,9 +175,11 @@ export const Tester: React.FC<Props> = (props) => {
   }, [subscribeToMore])
 
   const handleChange = (event) => {
+    const value = event.target.value
+
     // Only update if the length is within our limit
-    if (event.target.value.length <= 10) {
-      setEntry(event.target.value)
+    if (value.length <= 10) {
+      setEntry(value)
     }
   }
 
