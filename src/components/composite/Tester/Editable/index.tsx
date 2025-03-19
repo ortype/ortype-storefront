@@ -1,4 +1,5 @@
-import { Box } from '@chakra-ui/react'
+import { ActionBar, Box, Kbd, Portal, Text } from '@chakra-ui/react'
+import { useState } from 'react'
 import TypingIndicator from '../TypingIndicator'
 
 const Editable = ({
@@ -14,7 +15,9 @@ const Editable = ({
   ...props
 }) => {
   // const typing = useTypewriter(entry);
+  const [focused, setFocused] = useState(false)
   const handleBlur = () => {
+    setFocused(false)
     // no event.target here, as this isn't an input, but we have the value from above
     const trimmedEntry = entry.trim()
     if (placeholder !== trimmedEntry) {
@@ -45,12 +48,14 @@ const Editable = ({
     }
   }
 
-  const handleFocus = () =>
+  const handleFocus = () => {
+    setFocused(true)
     handleUpdateFontTester({
       addEntry: false,
       sessionId: sessionStorage.getItem('sessionId'),
       isEditing: sessionStorage.getItem('sessionId'),
     })
+  }
 
   return (
     <Box {...props} textAlign={'center'} mt={1}>
@@ -92,6 +97,23 @@ const Editable = ({
       ) : (
         <TypingIndicator />
       )}
+      <ActionBar.Root open={focused} closeOnInteractOutside={false} size={'sm'}>
+        <Portal>
+          <ActionBar.Positioner>
+            <ActionBar.Content>
+              <ActionBar.SelectionTrigger>
+                {`${entry.length}/10 characters`}
+              </ActionBar.SelectionTrigger>
+              <ActionBar.Separator />
+              <Text fontSize={'sm'}>
+                Press <Kbd size={'sm'}>return</Kbd> or{' '}
+                <Kbd size={'sm'}>esc</Kbd> to exit and{' '}
+                <Kbd size={'sm'}>tab</Kbd> for next
+              </Text>
+            </ActionBar.Content>
+          </ActionBar.Positioner>
+        </Portal>
+      </ActionBar.Root>
     </Box>
   )
 }
