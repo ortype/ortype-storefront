@@ -76,7 +76,7 @@ const Editable = ({
             },
           }}
           className={variantId}
-          tabIndex={index}
+          tabIndex={index} // Sequential tabIndex for navigating between inputs
           spellCheck={false}
           type="text"
           name="entry"

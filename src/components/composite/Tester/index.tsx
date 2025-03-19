@@ -228,7 +228,7 @@ export const Tester: React.FC<Props> = (props) => {
       />
       <Flex align={'center'} justify={'center'}>
         <HStack gap={6}>
-          <Button variant={'block'} size={'sm'} asChild>
+          <Button variant={'block'} size={'sm'} asChild tabIndex={-1}>
             <Link
               href={`/fonts/${slug}`}
               data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
@@ -244,12 +244,14 @@ export const Tester: React.FC<Props> = (props) => {
               variants={variants}
               styleGroups={styleGroups}
               handleVariantChange={handleVariantChange}
+              tabIndex={-1} /* Prevent tab focus */
             />
           )}
           <ChakraLink
             as={Link}
             href={`/fonts/${slug}/book/`}
             className="hover:underline"
+            tabIndex={-1}
           >
             <Text as={'span'} fontSize="xs">
               ({'Book'})

@@ -44,7 +44,7 @@ export default function FontIndex({
               font.defaultVariant?._id ||
               (font.variants[0] && font.variants[0]._id)
             }
-            index={key}
+            index={key + 1} // Start tabIndex from 1 for sequential tab navigation
             title={font.shortName}
             slug={font.slug}
             href={href}
