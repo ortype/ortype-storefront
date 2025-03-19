@@ -95,28 +95,6 @@ export const Tester: React.FC<Props> = (props) => {
     })
   }
 
-  useEffect(() => {
-    if (isEditing === sessionStorage.getItem('sessionId')) {
-      window.onbeforeunload = (event) => {
-        // run mutation
-        console.log('onbeforeunload: ', fontId)
-        // clear item in fontTester cache of `isEditing` and `sessionId`
-        handleUpdateFontTester({
-          addEntry: false,
-          sessionId: '',
-          isEditing: '',
-        })
-        // event.returnValue = "";
-        event.preventDefault()
-        delete event.returnValue
-      }
-    }
-
-    return () => {
-      window.onbeforeunload = null
-    }
-  }, [isEditing])
-
   // Set state when query loads or changes
   useEffect(() => {
     if (loading === false && data && data.fontTesterById) {
@@ -138,6 +116,7 @@ export const Tester: React.FC<Props> = (props) => {
     }
   }, [loading, data]) // run on first render and re-render if data has changed
 
+  // subscribeToMore
   useEffect(() => {
     const unsubscribe = subscribeToMore({
       document: ON_TESTER_UPDATED,
@@ -148,9 +127,6 @@ export const Tester: React.FC<Props> = (props) => {
           console.warn('No subscription data received')
           return prev
         }
-
-        // console.log('Previous state:', prev)
-        // console.log('Subscription data:', subscriptionData.data)
 
         const updatedTester = subscriptionData.data.fontTesterUpdated
 
@@ -196,18 +172,36 @@ export const Tester: React.FC<Props> = (props) => {
     }
   }
 
-  /*
-  // @NOTE: optional trigger a toast or other notifcation if limit has been reached
   useEffect(() => {
-    if (limiter) {
-      toaster.create({
-        title: 'Character limit reached',
-        description: '10 of 10',
-        type: 'info',
-      })
+    // Don't attach handler if not editing
+    if (isEditing !== sessionStorage.getItem('sessionId')) {
+      window.onbeforeunload = null
+      return
     }
-  }, [limiter])
-  */
+
+    // Solution 1: Use synchronous beforeunload handler
+    const handleBeforeUnload = (event) => {
+      // Try to run the mutation
+      try {
+        // Call the mutation synchronously - note this may not complete before page unload
+        handleUpdateFontTester({
+          addEntry: false,
+          sessionId: '',
+          isEditing: '',
+        })
+      } catch (error) {
+        console.error('Error in beforeunload handler:', error)
+      }
+    }
+
+    // Attach the handler
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    // Clean up
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [isEditing, fontId, entry, currentVariantId, updateFontTesterById])
 
   const disabled =
     isEditing?.length > 0 && isEditing !== sessionStorage.getItem('sessionId')
