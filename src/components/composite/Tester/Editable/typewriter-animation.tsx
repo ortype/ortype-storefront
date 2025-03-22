@@ -9,6 +9,7 @@ const TypewriterAnimation = ({
   variantId,
   onAnimationComplete,
   speed = 120,
+  table,
 }) => {
   const [displayText, setDisplayText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
@@ -52,20 +53,29 @@ const TypewriterAnimation = ({
       display="flex"
       justifyContent="center"
       alignItems="center"
-      height="12.5rem"
+      height={
+        table
+          ? {
+              base: '3rem',
+              sm: '4rem',
+              '2xl': '4.25rem',
+              '3xl': '5rem',
+            }
+          : '10rem'
+      }
       width="100%"
     >
       <Box
         display="inline-flex"
         alignItems="center"
         justifyContent="center"
-        fontSize="8rem"
-        lineHeight="12.5rem"
+        fontSize={'inherit'}
+        lineHeight={'inherit'}
         className={variantId}
         textAlign="center"
       >
         {displayText}
-        {!isComplete && <BlinkingCursor variantId={variantId} />}
+        {!isComplete && <BlinkingCursor table={table} variantId={variantId} />}
       </Box>
     </Box>
   )

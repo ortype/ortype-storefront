@@ -14,6 +14,7 @@ const Editable = ({
   handleUpdateFontTester,
   limiter,
   loading,
+  table,
   ...props
 }) => {
   const [hasInitialized, setHasInitialized] = useState(false)
@@ -76,6 +77,7 @@ const Editable = ({
               shouldAnimate={shouldAnimate}
               variantId={variantId}
               onAnimationComplete={handleAnimationComplete}
+              table={table}
             />
           ) : (
             // Show input component after animation completes
@@ -86,8 +88,8 @@ const Editable = ({
               as={'input'}
               css={{
                 textAlign: `center`,
-                fontSize: `8rem`,
-                lineHeight: `12.5rem`,
+                fontSize: 'inherit',
+                lineHeight: 'inherit',
                 boxSizing: `border-box`,
                 padding: 0,
                 background: `transparent`,
@@ -121,9 +123,19 @@ const Editable = ({
           display="flex"
           justifyContent="center"
           alignItems="center"
-          height="12.5rem"
+          height={
+            table
+              ? {
+                  base: '3rem',
+                  sm: '4rem',
+                  '2xl': '4.25rem',
+                  '3xl': '5rem',
+                }
+              : '10rem'
+          }
         >
           <BlinkingCursor
+            table={table}
             isVisible={true}
             isLoading={true}
             variantId={variantId}

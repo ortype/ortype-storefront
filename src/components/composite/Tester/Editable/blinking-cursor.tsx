@@ -5,6 +5,7 @@ const BlinkingCursor = ({
   isVisible = true,
   variantId = '',
   isLoading = false,
+  table = false,
 }) => {
   return (
     <Box
@@ -15,7 +16,16 @@ const BlinkingCursor = ({
       userSelect="none"
       bg="black"
       w="2px"
-      h="8rem"
+      h={
+        table
+          ? {
+              base: '3rem',
+              sm: '4rem',
+              '2xl': '4.25rem',
+              '3xl': '5rem',
+            }
+          : '8rem'
+      }
       mx="2px"
       className={variantId}
       animation={`blink 0.7s infinite`}

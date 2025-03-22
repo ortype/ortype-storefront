@@ -44,10 +44,10 @@ export const buttonRecipe = defineRecipe({
         },
       },
       xs: {
-        h: '8',
-        minW: '8',
+        h: '7',
+        minW: '6',
         textStyle: 'xs',
-        px: '2.5',
+        px: '2',
         gap: '1',
         _icon: {
           width: '4',

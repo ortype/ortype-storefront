@@ -48,6 +48,7 @@ export const Tester: React.FC<Props> = (props) => {
     styleGroups,
     defaultVariantId,
     href,
+    table,
   } = props
 
   // is controlled by the focus and blur events of the input
@@ -210,6 +211,7 @@ export const Tester: React.FC<Props> = (props) => {
   return (
     <>
       <Editable
+        table={table}
         handleUpdateFontTester={handleUpdateFontTester}
         handleChange={handleChange}
         entry={entry}
@@ -223,7 +225,12 @@ export const Tester: React.FC<Props> = (props) => {
       />
       <Flex align={'center'} justify={'center'}>
         <HStack gap={6}>
-          <Button variant={'block'} size={'sm'} asChild tabIndex={-1}>
+          <Button
+            variant={'block'}
+            size={table ? 'xs' : 'sm'}
+            asChild
+            tabIndex={-1}
+          >
             <Link
               href={`/fonts/${slug}`}
               data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
@@ -233,25 +240,29 @@ export const Tester: React.FC<Props> = (props) => {
               </Text>
             </Link>
           </Button>
-          {variants.length > 1 && (
-            <TieredSelect
-              currentVariantId={currentVariantId}
-              variants={variants}
-              styleGroups={styleGroups}
-              handleVariantChange={handleVariantChange}
-              tabIndex={-1} /* Prevent tab focus */
-            />
-          )}
-          <ChakraLink
-            as={Link}
-            href={`/fonts/${slug}/book/`}
-            className="hover:underline"
-            tabIndex={-1}
-          >
-            <Text as={'span'} fontSize="xs">
-              ({'Book'})
-            </Text>
-          </ChakraLink>
+          <HStack gap={6} display={table ? 'none' : 'flex'}>
+            {variants.length > 1 && (
+              <TieredSelect
+                currentVariantId={currentVariantId}
+                variants={variants}
+                styleGroups={styleGroups}
+                handleVariantChange={handleVariantChange}
+                tabIndex={-1} /* Prevent tab focus */
+              />
+            )}
+          </HStack>
+          {/*<Box display={table ? 'none' : 'flex'}>
+            <ChakraLink
+              as={Link}
+              href={`/fonts/${slug}/book/`}
+              className="hover:underline"
+              tabIndex={-1}
+            >
+              <Text as={'span'} fontSize="xs">
+                ({'Book'})
+              </Text>
+            </ChakraLink>
+          </Box>*/}
         </HStack>
       </Flex>
     </>

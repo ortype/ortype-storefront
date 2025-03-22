@@ -28,7 +28,7 @@ import { dialogSlotRecipe } from './dialog'
 // import { radioCardSlotRecipe } from "./radio-card"
 // import { radioGroupSlotRecipe } from "./radio-group"
 // import { ratingGroupSlotRecipe } from "./rating-group"
-// import { segmentGroupSlotRecipe } from "./segment-group"
+import { segmentGroupSlotRecipe } from './segment-group'
 import { selectSlotRecipe } from './select'
 // import { sliderSlotRecipe } from "./slider"
 // import { statSlotRecipe } from "./stat"
@@ -75,7 +75,7 @@ export const slotRecipes = {
   // radioCard: radioCardSlotRecipe,
   // radioGroup: radioGroupSlotRecipe,
   // ratingGroup: ratingGroupSlotRecipe,
-  // segmentGroup: segmentGroupSlotRecipe,
+  segmentGroup: segmentGroupSlotRecipe,
   select: selectSlotRecipe,
   // slider: sliderSlotRecipe,
   // stat: statSlotRecipe,
