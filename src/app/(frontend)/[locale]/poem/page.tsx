@@ -45,6 +45,5 @@ export default function Poem() {
 
   if (loading) return <p>Loading ...</p>
 
-  console.log('GET_LATEST_POEM_ENTRIES data: ', data)
   return <PoemPage latestPoemEntries={data?.latestPoemEntries} />
 }

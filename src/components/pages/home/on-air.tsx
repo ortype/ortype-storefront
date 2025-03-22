@@ -144,7 +144,7 @@ export const OnAir: FC<OnAirProps> = ({ ...props }) => {
   // Limit poem array to 4 items
   const limitedPoem = useMemo(() => {
     if (!poem) return []
-    return [...poem].slice(poem.length - 4, poem.length)
+    return [...poem].slice(-4)
   }, [poem])
 
   return (
