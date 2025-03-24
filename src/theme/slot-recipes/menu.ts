@@ -132,6 +132,28 @@ export const menuSlotRecipe = defineSlotRecipe({
           },
         },
       },
+      wrap: {
+        content: {
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0',
+          overflow: 'hidden',
+          overflowX: 'auto',
+          border: 'none',
+          borderLeft: '3px solid black',
+          ml: '-3px',
+          padding: 0,
+        },
+        item: {
+          _highlighted: {
+            bg: 'black',
+            color: 'white',
+          },
+          flex: '0 0 auto',
+          mt: '-3px',
+          ml: '-3px',
+        },
+      },
     },
     size: {
       sm: {

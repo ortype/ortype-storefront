@@ -5,9 +5,19 @@ import {
   MenuTrigger,
   MenuTriggerItem,
 } from '@/components/ui/menu'
-import { Box, Button, Flex, For, Group, Link, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Flex,
+  For,
+  Group,
+  Link,
+  Show,
+  Text,
+} from '@chakra-ui/react'
 import NextLink from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Font } from 'sanity.types'
 
 interface Props {
@@ -15,22 +25,55 @@ interface Props {
 }
 
 export const Nav: React.FC<Props> = ({ fonts }) => {
-  // controlled state so we can set an active state on the MenuTrigger button
-  const [open, setOpen] = useState(false)
-
+  // main menu
+  const [openMenu, setMenuOpen] = useState(false)
   const ref = useRef<HTMLDivElement | null>(null)
   const getAnchorRect = () => ref.current!.getBoundingClientRect()
 
-  // /typefaces submenu
-  // positioning={{ placement: "right-start" }}
+  // type trigger
+  const [typeTrigger, showTypeTrigger] = useState(false)
+  const typeRef = useRef<HTMLDivElement | null>(null)
+  const getTypeAnchorRect = () => typeRef.current!.getBoundingClientRect()
+
+  // type sub-menu
+  const [openTypeMenu, setTypeMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const [currentFont, setCurrentFont] = useState<Font | null>(null)
+
+  useEffect(() => {
+    const isFontPath = pathname.includes('fonts/')
+    if (isFontPath) {
+      const slug: string = pathname.split('/').filter(Boolean).pop() || ''
+      const currentFont = fonts.find((font) => font.slug === slug)
+      if (currentFont) {
+        setCurrentFont(currentFont)
+        showTypeTrigger(true)
+      }
+    } else {
+      setCurrentFont(null)
+      showTypeTrigger(false)
+    }
+  }, [pathname, showTypeTrigger, fonts])
+
+  // Create a sorted version of fonts array with current font first if it exists
+  const sortedFonts = useMemo(() => {
+    const sorted = [...fonts]
+    if (currentFont) {
+      const currentFontIndex = sorted.findIndex(
+        (font) => font.slug === currentFont.slug
+      )
+
+      if (currentFontIndex > -1) {
+        const [currentFontItem] = sorted.splice(currentFontIndex, 1)
+        sorted.unshift(currentFontItem)
+      }
+    }
+    return sorted
+  }, [fonts, currentFont])
 
   return (
-    <MenuRoot
-      open={open}
-      onOpenChange={(e) => setOpen(e.open)}
-      positioning={{ getAnchorRect }}
-    >
-      <MenuTrigger asChild>
+    <>
+      <Flex pos={'relative'}>
         <Button
           pos={'relative'}
           variant="square"
@@ -38,10 +81,12 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
           bg={'white'}
           h={11}
           w={11}
-          // onClick={() => setOpen(true)}
-          onMouseEnter={() => setOpen(true)}
-          // onMouseLeave={handleCloseMenu}
-          data-active={open ? 'true' : undefined}
+          onMouseEnter={() => {
+            setMenuOpen(true)
+            showTypeTrigger(true)
+            setTypeMenuOpen(false)
+          }}
+          data-active={openMenu ? 'true' : undefined}
           transition={'none'}
           _hover={{
             bg: 'black',
@@ -53,40 +98,83 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
             <Text as={'span'} fontSize={'1.5rem'} lineHeight={'1.25rem'}>
               Or
             </Text>
-            <Box ref={ref} pos={'absolute'} bottom={'10px'} left={'-3px'}></Box>
+            <Box ref={ref} pos={'absolute'} bottom={'8px'} left={'-3px'}></Box>
           </NextLink>
         </Button>
-      </MenuTrigger>
-      <MenuContent fontSize={'1.5rem'} onMouseLeave={() => setOpen(false)}>
-        <MenuItem asChild value="/" onClick={() => {}}>
-          <NextLink href={'/'}>{'Type'}</NextLink>
-        </MenuItem>
-        {/*<MenuRoot positioning={{ placement: 'right-start', gutter: 2 }}>
-          <MenuTriggerItem value="/typefaces">Type</MenuTriggerItem>
-          <MenuContent>
-            <For each={fonts}>
+
+        <Show when={currentFont || typeTrigger} fallback={<></>}>
+          <Button
+            ml={'-3px'}
+            p={2}
+            variant={'square'}
+            fontSize={'1.5rem'}
+            lineHeight={'1.25rem'}
+            h={11}
+            onMouseEnter={() => {
+              setTypeMenuOpen(true)
+              setMenuOpen(false)
+            }}
+            className={currentFont ? currentFont.defaultVariant?._id : ''}
+          >
+            {currentFont ? currentFont.shortName : 'Type'}
+            <Box
+              ref={typeRef}
+              pos={'absolute'}
+              top={'-11px'}
+              left={'0px'}
+            ></Box>
+          </Button>
+        </Show>
+        <MenuRoot
+          variant={'wrap'}
+          open={openTypeMenu}
+          onOpenChange={(e) => setTypeMenuOpen(e.open)}
+          positioning={{ getAnchorRect: getTypeAnchorRect }}
+        >
+          <MenuContent
+            maxW={'60vw'}
+            onMouseLeave={() => {
+              setTypeMenuOpen(false)
+              showTypeTrigger(false)
+            }}
+          >
+            <For each={sortedFonts}>
               {(item, index) => (
                 <MenuItem
                   key={index}
                   value={item.slug}
-                  asChild
-                  onClick={handleCloseMenu}
+                  className={item.defaultVariant?._id}
+                  fontSize={'1.5rem'}
+                  lineHeight={'1.25rem'}
                 >
-                  <NextLink href={`/fonts/${item.slug}`}>
-                    {item.shortName}
-                  </NextLink>
+                  <Box whiteSpace={'nowrap'} asChild>
+                    <NextLink href={`/fonts/${item.slug}`}>
+                      {item.shortName}
+                    </NextLink>
+                  </Box>
                 </MenuItem>
               )}
             </For>
           </MenuContent>
-        </MenuRoot>*/}
-        <MenuItem asChild value="/archive">
-          <NextLink href={'/archive'}>{'Archive'}</NextLink>
-        </MenuItem>
-        <MenuItem asChild value="/info">
-          <NextLink href={'/info'}>{'Info'}</NextLink>
-        </MenuItem>
-      </MenuContent>
-    </MenuRoot>
+        </MenuRoot>
+        <MenuRoot
+          open={openMenu}
+          onOpenChange={(e) => setMenuOpen(e.open)}
+          positioning={{ getAnchorRect }}
+        >
+          <MenuContent
+            fontSize={'1.5rem'}
+            onMouseLeave={() => setMenuOpen(false)}
+          >
+            <MenuItem asChild value="/archive">
+              <NextLink href={'/archive'}>{'Archive'}</NextLink>
+            </MenuItem>
+            <MenuItem asChild value="/info">
+              <NextLink href={'/info'}>{'Info'}</NextLink>
+            </MenuItem>
+          </MenuContent>
+        </MenuRoot>
+      </Flex>
+    </>
   )
 }

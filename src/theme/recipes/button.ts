@@ -198,6 +198,7 @@ export const buttonRecipe = defineRecipe({
         borderWidth: '3px',
         borderColor: 'colorPalette.border',
         px: 0,
+        bg: 'white',
         color: 'colorPalette.fg',
         _hover: {
           bg: 'black',

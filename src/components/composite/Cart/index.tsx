@@ -54,6 +54,7 @@ const Cart = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
         // onMouseLeave={handleCloseMenu}
         data-active={openMenu ? 'true' : undefined}
         transition={'none'}
+        bg={'white'}
         _hover={{
           bg: 'black',
           color: 'white',
