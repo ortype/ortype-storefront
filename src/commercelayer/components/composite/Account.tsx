@@ -28,10 +28,9 @@ import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { getStoredTokenKey } from '@/commercelayer/utils/oauthStorage'
 
-export const Account = () => {
+export const Account = ({ openLogin, setLoginOpen }) => {
   const { settings, config, customer, handleLogout } = useIdentityContext()
 
-  const [loginOpen, setLoginOpen] = useState(false)
   const [registerOpen, setRegisterOpen] = useState(false)
 
   const handleRegisterClick = () => {
@@ -50,14 +49,6 @@ export const Account = () => {
 
   return (
     <>
-      <Button
-        onClick={() => setLoginOpen(true)}
-        size={'xs'}
-        variant={'outline'}
-        bg={'white'}
-      >
-        {settings.customerId ? `Account` : `Login`}
-      </Button>
       <DialogRoot open={registerOpen} size={'md'}>
         {/*<DialogBackdrop />*/}
         <DialogContent bg={'white'}>
@@ -73,7 +64,7 @@ export const Account = () => {
           </DialogFooter>
         </DialogContent>
       </DialogRoot>
-      <DialogRoot open={loginOpen} size={'md'}>
+      <DialogRoot open={openLogin} size={'md'}>
         {/*<DialogBackdrop />*/}
         <DialogContent bg={'white'}>
           <DialogHeader>Login</DialogHeader>

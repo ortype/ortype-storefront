@@ -1,7 +1,9 @@
+import { Account } from '@/commercelayer/components/composite/Account'
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
-import { Button, Fieldset, Link } from '@chakra-ui/react'
+import { Box, Button, Fieldset, Link } from '@chakra-ui/react'
+import NextLink from 'next/link'
 
 import {
   DialogBody,
@@ -24,7 +26,7 @@ import {
 } from '@commercelayer/react-components'
 import type { Order } from '@commercelayer/sdk'
 import { useRapidForm } from 'rapid-form'
-import { useContext, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 
 const CheckoutButton = ({ isDisabled, order }) => {
   return (
@@ -34,7 +36,7 @@ const CheckoutButton = ({ isDisabled, order }) => {
   )
 }
 
-const Cart = () => {
+const Cart = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
   const { orderId, order, itemsCount, licenseSize, setLicenseSize } =
     useOrderContext()
 
@@ -45,7 +47,21 @@ const Cart = () => {
 
   return (
     <>
+      <IconButton
+        size={'md'}
+        variant={'circle'}
+        onMouseEnter={() => setMenuOpen(true)}
+        // onMouseLeave={handleCloseMenu}
+        data-active={openMenu ? 'true' : undefined}
+        transition={'none'}
+        _hover={{
+          bg: 'black',
+          color: 'white',
+        }}
+      >{`${itemsCount}`}</IconButton>
       <DialogRoot
+        open={openCart}
+        onOpenChange={(e) => setCartOpen(e.open)}
         size={'cover'}
         // placement="center"
         motionPreset="slide-in-bottom"
@@ -53,12 +69,6 @@ const Cart = () => {
         // modal
       >
         {/*<DialogBackdrop />*/}
-        <DialogTrigger asChild>
-          <IconButton
-            size={'md'}
-            variant={'circle'}
-          >{`${itemsCount}`}</IconButton>
-        </DialogTrigger>
         <DialogContent bg={'white'}>
           <DialogHeader>Cart or Bag Or Basket</DialogHeader>
           <DialogCloseTrigger />

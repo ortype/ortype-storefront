@@ -1,4 +1,3 @@
-import { Account } from '@/commercelayer/components/composite/Account'
 import {
   MenuContent,
   MenuItem,
@@ -87,9 +86,6 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
         <MenuItem asChild value="/info">
           <NextLink href={'/info'}>{'Info'}</NextLink>
         </MenuItem>
-        {/*<MenuItem asChild value="/info">
-          <Account />
-        </MenuItem>*/}
       </MenuContent>
     </MenuRoot>
   )

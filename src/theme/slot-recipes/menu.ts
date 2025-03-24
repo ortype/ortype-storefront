@@ -119,6 +119,19 @@ export const menuSlotRecipe = defineSlotRecipe({
         },
         itemText: {},
       },
+      right: {
+        content: {
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+        },
+        item: {
+          _highlighted: {
+            bg: 'black',
+            color: 'white',
+          },
+        },
+      },
     },
     size: {
       sm: {
