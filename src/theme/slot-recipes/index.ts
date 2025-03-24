@@ -18,7 +18,7 @@ import { dialogSlotRecipe } from './dialog'
 // import { fileUploadSlotRecipe } from "./file-upload"
 // import { hoverCardSlotRecipe } from "./hover-card"
 // import { listSlotRecipe } from "./list"
-// import { menuSlotRecipe } from "./menu"
+import { menuSlotRecipe } from './menu'
 // import { nativeSelectSlotRecipe } from "./native-select"
 // import { numberInputSlotRecipe } from "./number-input"
 // import { pinInputSlotRecipe } from "./pin-input"
@@ -65,7 +65,7 @@ export const slotRecipes = {
   // fileUpload: fileUploadSlotRecipe,
   // hoverCard: hoverCardSlotRecipe,
   // list: listSlotRecipe,
-  // menu: menuSlotRecipe,
+  menu: menuSlotRecipe,
   // nativeSelect: nativeSelectSlotRecipe,
   // numberInput: numberInputSlotRecipe,
   // pinInput: pinInputSlotRecipe,
