@@ -24,7 +24,7 @@ const BlinkingCursor = ({
               '2xl': '4.25rem',
               '3xl': '5rem',
             }
-          : '8rem'
+          : '9rem'
       }
       mx="2px"
       className={variantId}

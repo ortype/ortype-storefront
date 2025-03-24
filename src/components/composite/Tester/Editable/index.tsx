@@ -134,7 +134,7 @@ const Editable = ({
                   '2xl': '4.25rem',
                   '3xl': '5rem',
                 }
-              : '10rem'
+              : '9rem'
           }
         >
           <BlinkingCursor
