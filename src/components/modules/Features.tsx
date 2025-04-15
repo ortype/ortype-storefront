@@ -1,4 +1,4 @@
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import { Box, Center, Flex, Heading, Tabs, Text } from '@chakra-ui/react'
 import { useFont } from '../pages/fonts/FontContainer'
 
@@ -22,7 +22,7 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
   // features mapped to a subnav of tabs
   // features mapped to boxes
 
-  const { padding, conversion } = useSpreadContainer()
+  const { padding, conversion } = useDimensions()
   const font = useFont()
   return (
     features?.length > 0 && (

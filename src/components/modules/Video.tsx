@@ -1,16 +1,13 @@
+import getVideoId from '@/sanity/utils/get-video-id'
 import { AspectRatio, Box, Presence, Text } from '@chakra-ui/react'
 import {
   PortableText,
   PortableTextBlock,
   PortableTextComponents,
 } from '@portabletext/react'
-import { useInView } from 'framer-motion'
-import React, { useEffect, useRef, useState } from 'react'
-// import YoutubePlayer from 'react-player/youtube'
-// import VimeoPlayer from 'react-player/vimeo'
-import getVideoId from '@/sanity/utils/get-video-id'
-import ReactPlayer from 'react-player'
+import React, { useEffect, useState } from 'react'
 import { ReactPlayerProps } from 'react-player/types'
+import VimeoPlayer from 'react-player/vimeo'
 
 interface VideoValue {
   url?: string
@@ -34,16 +31,19 @@ const extractVideoId = (url: string): string | null => {
 const Video: React.FC<VideoProps> = ({ value = {} }) => {
   const { url, caption, isBackground = true } = value as VideoValue
 
+  const [loading, setLoading] = useState<boolean>(true)
+  const [playerReady, setPlayerReady] = useState<boolean>(false)
+
   const [videoId, setVideoId] = useState<string | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(containerRef)
+
   useEffect(() => {
+    setLoading(true)
     if (url) {
       setVideoId(extractVideoId(url))
     }
   }, [url])
 
-  if (!url) return null
+  if (!url || !videoId) return null
 
   let src: string | undefined
   const config: Record<string, any> = {}
@@ -65,30 +65,35 @@ const Video: React.FC<VideoProps> = ({ value = {} }) => {
         fullscreen: false,
         pip: false,
       },
+      preload: true,
+      iframeParams: {
+        allow: 'autoplay',
+      },
     }
-    // ReactPlayer = VimeoPlayer
+  }
+
+  const handlePlayerReady = () => {
+    setLoading(false)
+    setPlayerReady(true)
   }
 
   return (
     <>
-      <AspectRatio ratio={6 / 10} ref={containerRef}>
-        <Presence
-          lazyMount
-          present={isInView}
-          animationName={{ _open: 'fade-in', _closed: 'fade-out' }}
-          animationDuration="moderate"
-        >
-          <ReactPlayer
-            url={src}
-            volume={1}
-            muted={isBackground}
-            controls={isBackground ? false : true}
-            playing={isBackground && isInView}
-            config={config}
-            width="100%"
-            height="100%"
-          />
-        </Presence>
+      <AspectRatio ratio={6 / 10}>
+        <VimeoPlayer
+          url={src}
+          volume={1}
+          onReady={() => {
+            setLoading(false)
+            setPlayerReady(true)
+          }}
+          muted={true}
+          controls={false}
+          playing={playerReady}
+          config={config}
+          width="100%"
+          height="100%"
+        />
       </AspectRatio>
     </>
   )

@@ -1,4 +1,5 @@
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
+import { useSpreadState } from '@/components/pages/fonts/contexts/spreadStateContext'
 import { Box, Center, Editable, Flex, Heading, Text } from '@chakra-ui/react'
 import { useRef, useState } from 'react'
 import { useFont } from '../pages/fonts/FontContainer'
@@ -9,7 +10,8 @@ export interface TesterModuleProps {
 
 export default function TesterModule({ value }: TesterModuleProps) {
   const { title, defaultVariant, defaultText } = value
-  const { padding, conversion, state } = useSpreadContainer()
+  const { padding, conversion } = useDimensions()
+  const { state } = useSpreadState()
   const itemState = state.items[value._key]
   const font = useFont()
 

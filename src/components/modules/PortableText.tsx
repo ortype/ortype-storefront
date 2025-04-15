@@ -22,7 +22,7 @@ import Link from 'next/link'
 import Image from '@/components/global/Image'
 import Video from '@/components/modules/Video'
 import { useFont } from '@/components/pages/fonts/FontContainer'
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import { Box, Button, Heading, Text } from '@chakra-ui/react'
 
 export default function CustomPortableText({
@@ -34,7 +34,7 @@ export default function CustomPortableText({
   value: PortableTextBlock[]
   index: number
 }) {
-  const { conversion } = useSpreadContainer()
+  const { conversion } = useDimensions()
   const font = useFont()
   const components: PortableTextComponents = {
     block: {

@@ -1,6 +1,6 @@
 import { useFont } from '@/components/pages/fonts/FontContainer'
 import { Box, Flex, Heading } from '@chakra-ui/react'
-import { useSpreadContainer } from '../fonts/SpreadContainer'
+import { useDimensions } from '../fonts/contexts/dimensionsContext'
 import Column from './Column'
 
 const RectoVerso: React.FC<{
@@ -9,7 +9,7 @@ const RectoVerso: React.FC<{
   defaultVariantId: string
 }> = ({ page, label, defaultVariantId }) => {
   const font = useFont()
-  const { padding, conversion, colWidth } = useSpreadContainer()
+  const { padding, conversion, colWidth } = useDimensions()
   return (
     <>
       {font.shortName && (

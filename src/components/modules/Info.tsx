@@ -1,5 +1,5 @@
 import { useFont } from '@/components/pages/fonts/FontContainer'
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import { Box, Center, Flex, Heading, Text } from '@chakra-ui/react'
 import Link from 'next/link'
 import config from 'sanity.config'
@@ -21,7 +21,7 @@ function InfoPortableText({
   className?: string
   value: PortableTextBlock[]
 }) {
-  const { conversion } = useSpreadContainer()
+  const { conversion } = useDimensions()
   const font = useFont()
   const components: PortableTextComponents = {
     block: {
@@ -65,7 +65,7 @@ function InfoPortableText({
 export default function InfoModule({ value }: InfoModuleProps) {
   const { title, items } = value
 
-  const { padding, conversion } = useSpreadContainer()
+  const { padding, conversion } = useDimensions()
   const font = useFont()
   return (
     <>

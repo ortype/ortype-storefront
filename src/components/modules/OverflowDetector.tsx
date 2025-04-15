@@ -1,7 +1,16 @@
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
+import { useSpreadState } from '@/components/pages/fonts/contexts/spreadStateContext'
 import { Box, Flex } from '@chakra-ui/react'
 import type { ChildrenElement } from 'CustomApp'
-import React, { ReactNode, useEffect, useLayoutEffect, useRef } from 'react'
+import debounce from 'lodash.debounce'
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import PageModal from './PageModal'
 
 interface OverflowDetectorValue {
@@ -34,45 +43,78 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
 }) => {
   const hiddenRef = useRef<HTMLDivElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const {
-    state,
-    updateItemAction,
-    updateItemsAction,
-    padding,
-    pageAspect,
-    conversion,
-  } = useSpreadContainer()
+  const { padding, pageAspect, conversion, size } = useDimensions()
+  const { state, updateItemAction, updateItemsAction } = useSpreadState()
 
-  useEffect(() => {
+  // Memoized measurement function with performance tracking
+  const measureOverflow = useCallback(() => {
     // @NOTE: disable the SET_OVERFLOW logic for smaller breakpoints with chakra's useMediaQuery
-
     const hiddenContainer = hiddenRef.current
 
-    const measureOverflow = () => {
-      if (hiddenContainer) {
-        const isOverflowing =
-          hiddenContainer.scrollHeight > hiddenContainer.offsetHeight
-        // `clientHeight` probably works the same as `offsetHeight`
+    if (hiddenContainer) {
+      const isOverflowing =
+        hiddenContainer.scrollHeight > hiddenContainer.offsetHeight
+      // `clientHeight` probably works the same as `offsetHeight`
 
-        if (isOverflowing === state.items[_key]?.isOverflowing) {
-          return
-        }
-        updateItemAction({
-          _key,
-          isOverflowing,
-          index,
-          overflowCol,
-        })
-
-        updateItemsAction({
-          _key,
-          isOverflowing,
-        })
+      // Only update if the state has changed
+      if (isOverflowing === state.items[_key]?.isOverflowing) {
+        return
       }
+
+      // Update state with batched updates
+      updateItemAction({
+        _key,
+        isOverflowing,
+        index,
+        overflowCol,
+      })
+
+      updateItemsAction({
+        _key,
+        isOverflowing,
+      })
+    }
+  }, [
+    _key,
+    state.items,
+    updateItemAction,
+    updateItemsAction,
+    index,
+    overflowCol,
+  ])
+
+  // Create debounced version of the measurement function
+  const debouncedMeasureOverflow = useMemo(
+    () => debounce(measureOverflow, 100),
+    [measureOverflow]
+  )
+
+  // Effect for initial measurement and resize handling
+  useEffect(() => {
+    // Initial measurement
+    debouncedMeasureOverflow()
+
+    // Set up resize observer for dynamic measurements
+    const observer = new ResizeObserver(() => {
+      debouncedMeasureOverflow()
+    })
+
+    // Observe both the hidden container and the main container
+    if (hiddenRef.current) {
+      observer.observe(hiddenRef.current)
     }
 
-    measureOverflow()
-  })
+    // Also measure when the size from context changes
+    if (size.width && size.height) {
+      debouncedMeasureOverflow()
+    }
+
+    // Clean up
+    return () => {
+      debouncedMeasureOverflow.cancel()
+      observer.disconnect()
+    }
+  }, [debouncedMeasureOverflow, size.width, size.height])
 
   const itemState = state.items[_key]
   const isOverflowing = itemState.isOverflowing
@@ -156,4 +198,5 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
   )
 }
 
-export default OverflowDetector
+// Use React.memo to prevent unnecessary re-renders
+export default React.memo(OverflowDetector)

@@ -1,5 +1,5 @@
 import PortableText from '@/components/modules/PortableText'
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import { Box, Flex, Heading } from '@chakra-ui/react'
 import React from 'react'
 import OverflowDetector from './OverflowDetector'
@@ -36,7 +36,7 @@ const Content: React.FC<{
   value: any
   index: number
 }> = ({ value, index }) => {
-  const { padding, conversion } = useSpreadContainer()
+  const { padding, conversion } = useDimensions()
   return (
     <OverflowDetector
       index={index}

@@ -1,6 +1,7 @@
 'use client'
 import React, { createContext, useContext, ReactNode } from 'react'
 import { Font } from '@/sanity/lib/queries'
+import { validation } from 'sanity'
 
 // @TODO: consider moving to `components/data/` like `components/data/BuyProvider`
 
@@ -28,7 +29,16 @@ const FontContainer: React.FC<FontContainerProps> = ({
   font,
   children,
 }) => {
-  return <FontContext.Provider value={font}>{children}</FontContext.Provider>
+  // Filter out null variants
+  const validVariants = font?.variants.filter(
+    (variant): variant is NonNullable<typeof variant> => variant !== null
+  )
+
+  return (
+    <FontContext.Provider value={{ ...font, variants: validVariants }}>
+      {children}
+    </FontContext.Provider>
+  )
 }
 
 export default FontContainer

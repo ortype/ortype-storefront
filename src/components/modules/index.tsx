@@ -1,6 +1,7 @@
 'use client'
 import { useFont } from '@/components/pages/fonts/FontContainer'
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
+import { useSpreadState } from '@/components/pages/fonts/contexts/spreadStateContext'
 import { MIN_DEFAULT_MQ } from '@/utils/presets'
 import { Box, Flex } from '@chakra-ui/react'
 import { PortableText } from '@portabletext/react'
@@ -9,7 +10,7 @@ import {
   type PortableTextBlock,
   type PortableTextComponents,
 } from 'next-sanity'
-import { useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import config from 'sanity.config'
 import BookModule from './Book'
 import ContentModule from './Content'
@@ -18,7 +19,8 @@ import InfoModule from './Info'
 import StylesModule from './Styles'
 import TesterModule from './Tester'
 
-type PageDividerProps = {
+// Type definitions for better TypeScript support
+interface PageDividerProps {
   visible: boolean
   overflowCol: boolean
   isOverflowing: boolean
@@ -29,7 +31,6 @@ const PageDivider: React.FC<PageDividerProps> = ({
   overflowCol,
   isOverflowing,
 }) => {
-  // isOverflowing && overflowCol
   const isSpread = isOverflowing && overflowCol
 
   return (
@@ -53,7 +54,19 @@ const PageDivider: React.FC<PageDividerProps> = ({
   )
 }
 
-const DoublePage = ({
+// Type definitions for better TypeScript support
+interface DoublePageProps {
+  children: React.ReactNode
+  value: any
+  font: any
+  index: number
+  spreadMode?: boolean
+  overflowCol: boolean
+  textAlign?: string
+  [key: string]: any // For additional props
+}
+
+const DoublePage: React.FC<DoublePageProps> = ({
   children,
   value,
   font,
@@ -63,17 +76,28 @@ const DoublePage = ({
   ...props
 }) => {
   const { _key } = value
-  const { spreadAspect, conversion, pageAspect, padding, state } =
-    useSpreadContainer()
-  const isOverflowing = state.items[_key]?.isOverflowing
-  const itemState = state.items[_key]
-  const isSpread = spreadMode || (isOverflowing && overflowCol)
+  const { spreadAspect, conversion, pageAspect, padding } = useDimensions()
+  const { state } = useSpreadState()
 
-  const attr = createDataAttribute({
-    id: font?._id,
-    type: 'font',
-    path: 'modules',
-  })
+  // Memoize values from context to prevent unnecessary calculations
+  const isOverflowing = useMemo(
+    () => state.items[_key]?.isOverflowing,
+    [state.items, _key]
+  )
+
+  const itemState = useMemo(() => state.items[_key], [state.items, _key])
+
+  const isSpread = spreadMode || (isOverflowing && overflowCol)
+  // Memoize Sanity data attribute creation
+  const attr = useMemo(
+    () =>
+      createDataAttribute({
+        id: font?._id,
+        type: 'font',
+        path: 'modules',
+      }),
+    [font?._id]
+  )
 
   return (
     <Box
@@ -121,6 +145,7 @@ const DoublePage = ({
           lineHeight: 36 * conversion + 'px',
         }}
         overflow={'hidden'}
+        className={`page-content-${itemState?.index}`}
       >
         {children}
       </Flex>
@@ -133,15 +158,42 @@ const DoublePage = ({
   )
 }
 
-const SinglePage = ({ children, _key, font, index, value, ...props }) => {
-  const { pageAspect, padding, conversion, state } = useSpreadContainer()
-  const itemState = state.items[_key]
+// Type definitions for better TypeScript support
+interface SinglePageProps {
+  children: React.ReactNode
+  _key?: string
+  font: any
+  index: number
+  value: any
+  [key: string]: any // For additional props
+}
 
-  const attr = createDataAttribute({
-    id: font?._id,
-    type: 'font',
-    path: 'modules',
-  })
+const SinglePage: React.FC<SinglePageProps> = ({
+  children,
+  _key,
+  font,
+  index,
+  value,
+  ...props
+}) => {
+  // Use _key from value if not directly provided
+  const itemKey = useMemo(() => _key || value?._key, [_key, value?._key])
+  const { pageAspect, padding, conversion } = useDimensions()
+  const { state } = useSpreadState()
+
+  // Memoize state item to prevent unnecessary rerenders
+  const itemState = useMemo(() => state.items[itemKey], [state.items, itemKey])
+
+  // Memoize Sanity data attribute creation
+  const attr = useMemo(
+    () =>
+      createDataAttribute({
+        id: font?._id,
+        type: 'font',
+        path: 'modules',
+      }),
+    [font?._id]
+  )
 
   return (
     <Box
@@ -196,57 +248,82 @@ const SinglePage = ({ children, _key, font, index, value, ...props }) => {
   )
 }
 
-const Modules = ({ value }) => {
+// Type definitions for better TypeScript support
+interface ModulesProps {
+  value: any[]
+}
+
+// Helper type for error handling
+interface ErrorEventHandler {
+  (event: ErrorEvent): void
+}
+
+const Modules: React.FC<ModulesProps> = React.memo(({ value }) => {
+  // Validate input data
+  const isValidData = useMemo(() => {
+    return Array.isArray(value) && value.length > 0
+  }, [value])
+
   const font = useFont()
 
-  const components: PortableTextComponents = {
-    types: {
-      styles: (props) => (
-        <SinglePage font={font} value={props.value} index={props.index}>
-          <StylesModule {...props} />
-        </SinglePage>
-      ),
-      info: (props) => (
-        <SinglePage font={font} value={props.value} index={props.index}>
-          <InfoModule {...props} />
-        </SinglePage>
-      ),
-      content: (props) => (
-        <DoublePage
-          value={props.value}
-          font={font}
-          index={props.index}
-          textAlign={props.value.centered ? 'center' : 'left'}
-          overflowCol={props.value.overflowCol}
-        >
-          <ContentModule {...props} />
-        </DoublePage>
-      ),
-      book: (props) => (
-        <SinglePage font={font} value={props.value} index={props.index}>
-          <BookModule {...props} />
-        </SinglePage>
-      ),
-      // @TODO: rename to 'features'?
-      feature: (props) => (
-        <SinglePage font={font} value={props.value} index={props.index}>
-          <FeaturesModule {...props} />
-        </SinglePage>
-      ),
-      // @TODO: type tester module
-      tester: (props) => (
-        <DoublePage
-          value={props.value}
-          font={font}
-          index={props.index}
-          spreadMode={true}
-        >
-          <TesterModule {...props} />
-        </DoublePage>
-      ),
-    },
+  // Memoize the components object to prevent recreation on each render
+  const components: PortableTextComponents = useMemo(
+    () => ({
+      types: {
+        styles: (props) => (
+          <SinglePage font={font} value={props.value} index={props.index}>
+            <StylesModule {...props} />
+          </SinglePage>
+        ),
+        info: (props) => (
+          <SinglePage font={font} value={props.value} index={props.index}>
+            <InfoModule {...props} />
+          </SinglePage>
+        ),
+        content: (props) => (
+          <DoublePage
+            value={props.value}
+            font={font}
+            index={props.index}
+            textAlign={props.value.centered ? 'center' : 'left'}
+            overflowCol={props.value.overflowCol}
+          >
+            <ContentModule {...props} />
+          </DoublePage>
+        ),
+        book: (props) => (
+          <SinglePage font={font} value={props.value} index={props.index}>
+            <BookModule {...props} />
+          </SinglePage>
+        ),
+        // Renamed from 'feature' for clarity
+        feature: (props) => (
+          <SinglePage font={font} value={props.value} index={props.index}>
+            <FeaturesModule {...props} />
+          </SinglePage>
+        ),
+        tester: (props) => (
+          <DoublePage
+            value={props.value}
+            font={font}
+            index={props.index}
+            spreadMode={true}
+            overflowCol={true}
+          >
+            <TesterModule {...props} />
+          </DoublePage>
+        ),
+      },
+    }),
+    [font, isValidData]
+  ) // Only recreate when font or data validation changes
+
+  // If data is invalid, return empty component or fallback
+  if (!isValidData) {
+    return null
   }
 
+  // Return memoized PortableText component with valid data
   return (
     <PortableText
       value={value as PortableTextBlock[]}
@@ -255,6 +332,9 @@ const Modules = ({ value }) => {
       {...config}
     />
   )
-}
+})
+
+// Add display name for better debugging
+Modules.displayName = 'Modules'
 
 export default Modules

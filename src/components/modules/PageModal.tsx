@@ -1,4 +1,4 @@
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import { Box, Button, Center, Dialog, useDisclosure } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { ReactNode, useRef, useState } from 'react'
@@ -26,7 +26,7 @@ export default function PageModal({
   isEven,
   containerRef,
 }: PageModal) {
-  const { padding, conversion } = useSpreadContainer()
+  const { padding, conversion } = useDimensions()
   const font = useFont()
   const { isOpen, onOpen, onClose } = useDisclosure()
 

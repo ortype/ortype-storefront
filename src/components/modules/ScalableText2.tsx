@@ -1,4 +1,4 @@
-import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import { Box } from '@chakra-ui/react'
 import debounce from 'lodash.debounce'
 import React, {
@@ -29,7 +29,7 @@ const ScalableText: React.FC<OverflowDetectorProps> = ({
   const minFontSize = 12
   const initialFontSize = parseInt(maxFontSize / (1 + count / 20))
   const lineHeightConversion = 64 / 60 // base font size for ratio calculation
-  const { padding, pageAspect, conversion } = useSpreadContainer()
+  const { padding, pageAspect, conversion } = useDimensions()
 
   const [fontSize, setFontSize] = useState(initialFontSize)
 
