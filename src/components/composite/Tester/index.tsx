@@ -223,7 +223,7 @@ export const Tester: React.FC<Props> = (props) => {
         loading={loading}
         limiter={limiter}
       />
-      <Flex align={'center'} justify={'center'}>
+      <Flex align={'center'} justify={'center'} h={'2rem'}>
         <HStack gap={6}>
           <Button
             variant={'block'}

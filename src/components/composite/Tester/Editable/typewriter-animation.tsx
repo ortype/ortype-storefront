@@ -61,7 +61,7 @@ const TypewriterAnimation = ({
               '2xl': '4.25rem',
               '3xl': '5rem',
             }
-          : '9rem'
+          : '10rem'
       }
       width="100%"
     >

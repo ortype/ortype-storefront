@@ -24,8 +24,10 @@ const BlinkingCursor = ({
               '2xl': '4.25rem',
               '3xl': '5rem',
             }
-          : '9rem'
+          : '8rem'
       }
+      mb={table ? 0 : '1.5rem'}
+      mt={table ? 0 : '1rem'}
       mx="2px"
       className={variantId}
       animation={`blink 0.7s infinite`}

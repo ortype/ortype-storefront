@@ -18,24 +18,27 @@ const Bullet = ({ delay }) => {
 }
 
 const TypingIndicator = () => (
-  <Box
-    as={'span'}
-    css={{
-      textAlign: `center`,
-      fontSize: `4rem`,
-      lineHeight: `12.5rem`,
-      boxSizing: `border-box`,
-      padding: 0,
-      background: `transparent`,
-      border: `none`,
-      width: `100%`,
-      display: `block`,
-    }}
-  >
-    <Bullet delay={500} />
-    <Bullet delay={1000} />
-    <Bullet delay={1500} />
-  </Box>
+  <>
+    <Box
+      as={'span'}
+      css={{
+        textAlign: `center`,
+        fontSize: `4rem`,
+        lineHeight: `10rem`,
+        boxSizing: `border-box`,
+        padding: 0,
+        background: `transparent`,
+        border: `none`,
+        width: `100%`,
+        display: `block`,
+      }}
+    >
+      <Bullet delay={500} />
+      <Bullet delay={1000} />
+      <Bullet delay={1500} />
+    </Box>
+    <Box h={'2rem'} />
+  </>
 )
 
 export default TypingIndicator

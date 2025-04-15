@@ -65,7 +65,7 @@ export default function FontIndex({
                       '2xl': '4.25rem',
                       '3xl': '5rem',
                     }
-                  : '9rem'
+                  : '10rem'
               }
               pt={table ? '4rem' : '2rem'}
               flexDirection={'column'}
