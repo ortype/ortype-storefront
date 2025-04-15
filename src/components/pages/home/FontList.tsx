@@ -24,17 +24,16 @@ export default function FontIndex({
       <Wrap pb={10} px={10} align={'center'} justifyContent={'center'} gap={2}>
         {fonts.map((font, key) => {
           const href = resolveHref(font._type, font.slug)
-          const containsNull = font.variants.includes(null) // @TEMP: dealing broken data where variant refs come in as `null`
-          if (containsNull) {
-            console.log(
-              'font contains broken variants!!',
-              font.name,
-              containsNull
-            )
-          }
-          if (!href || containsNull) {
+          if (!href) {
             return null
           }
+
+          // Filter out null variants
+          const validVariants = font.variants.filter(
+            (variant): variant is NonNullable<typeof variant> =>
+              variant !== null
+          )
+
           return (
             <WrapItem
               key={key}
@@ -74,15 +73,15 @@ export default function FontIndex({
               <Tester
                 table={table}
                 fontId={font._id}
-                variants={font.variants}
+                variants={validVariants}
                 styleGroups={
                   font.styleGroups
                     ? font.styleGroups
-                    : [{ groupName: 'standard', variants: font.variants }]
+                    : [{ groupName: 'standard', variants: validVariants }]
                 }
                 defaultVariantId={
                   font.defaultVariant?._id ||
-                  (font.variants[0] && font.variants[0]._id)
+                  (validVariants[0] && validVariants[0]._id)
                 }
                 index={key + 1} // Start tabIndex from 1 for sequential tab navigation
                 title={font.shortName}
