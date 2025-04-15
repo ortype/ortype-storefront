@@ -133,6 +133,9 @@ export type Body = Array<
       _type: 'block'
       _key: string
     }
+  | ({
+      _key: string
+    } & ModuleVideo)
   | {
       asset?: {
         _ref: string
@@ -152,6 +155,11 @@ export type Body = Array<
       _key: string
     }
 >
+
+export type ModuleVideo = {
+  _type: 'module.video'
+  url?: string
+}
 
 export type ModuleContent = {
   _type: 'module.content'
@@ -591,6 +599,7 @@ export type AllSanitySchemaTypes =
   | Geopoint
   | BlockContent
   | Body
+  | ModuleVideo
   | ModuleContent
   | ModuleTester
   | ModuleStyles
@@ -974,6 +983,12 @@ export type HomePageQueryResult = {
                 _key: string
                 markDefs: null
               }
+            | {
+                _key: string
+                _type: 'module.video'
+                url?: string
+                markDefs: null
+              }
           > | null
           centered?: boolean
           overflowCol?: boolean
@@ -1170,6 +1185,12 @@ export type VisibleFontsQueryResult = Array<{
               _key: string
               markDefs: null
             }
+          | {
+              _key: string
+              _type: 'module.video'
+              url?: string
+              markDefs: null
+            }
         > | null
         centered?: boolean
         overflowCol?: boolean
@@ -1363,6 +1384,12 @@ export type FontsQueryResult = Array<{
               }
               _type: 'image'
               _key: string
+              markDefs: null
+            }
+          | {
+              _key: string
+              _type: 'module.video'
+              url?: string
               markDefs: null
             }
         > | null
@@ -1577,6 +1604,12 @@ export type FontAndMoreFontsQueryResult = {
                 _key: string
                 markDefs: null
               }
+            | {
+                _key: string
+                _type: 'module.video'
+                url?: string
+                markDefs: null
+              }
           > | null
           centered?: boolean
           overflowCol?: boolean
@@ -1768,6 +1801,12 @@ export type FontAndMoreFontsQueryResult = {
                 }
                 _type: 'image'
                 _key: string
+                markDefs: null
+              }
+            | {
+                _key: string
+                _type: 'module.video'
+                url?: string
                 markDefs: null
               }
           > | null

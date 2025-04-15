@@ -20,6 +20,7 @@ import fontModuleFeatures from './src/sanity/schemas/font/modules/features'
 import fontModuleInfo from './src/sanity/schemas/font/modules/info'
 import fontModuleStyles from './src/sanity/schemas/font/modules/styles'
 import fontModuleTester from './src/sanity/schemas/font/modules/tester'
+import fontModuleVideo from './src/sanity/schemas/font/modules/video'
 import pageType from './src/sanity/schemas/page'
 import postType from './src/sanity/schemas/post'
 import settingsType from './src/sanity/schemas/settings'
@@ -52,6 +53,7 @@ export default defineConfig({
       fontModuleStyles,
       fontModuleTester,
       fontModuleContent,
+      fontModuleVideo,
       fontPageBody,
       // info
       blockContent,

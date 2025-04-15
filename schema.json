@@ -802,6 +802,21 @@
           {
             "type": "object",
             "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "rest": {
+              "type": "inline",
+              "name": "module.video"
+            }
+          },
+          {
+            "type": "object",
+            "attributes": {
               "asset": {
                 "type": "objectAttribute",
                 "value": {
@@ -916,6 +931,29 @@
             }
           }
         ]
+      }
+    }
+  },
+  {
+    "name": "module.video",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "module.video"
+          }
+        },
+        "url": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        }
       }
     }
   },

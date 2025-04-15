@@ -64,11 +64,9 @@ export default defineType({
       type: 'block',
     }),
     // Custom blocks
-    /*
     {
-      type: 'module.image'
+      type: 'module.video',
     },
-    */
     defineField({
       name: 'image',
       title: 'Image',

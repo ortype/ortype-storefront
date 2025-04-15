@@ -20,6 +20,7 @@ import {
 import Link from 'next/link'
 
 import Image from '@/components/global/Image'
+import Video from '@/components/modules/Video'
 import { useFont } from '@/components/pages/fonts/FontContainer'
 import { useSpreadContainer } from '@/components/pages/fonts/SpreadContainer'
 import { Box, Button, Heading, Text } from '@chakra-ui/react'
@@ -55,6 +56,11 @@ export default function CustomPortableText({
       ),
     },
     types: {
+      'module.video': (props) => (
+        <Box>
+          <Video {...props} />
+        </Box>
+      ),
       image: (props) => {
         const display = props.value.config?.display
         const thumbnail = props.value.config?.thumbnail

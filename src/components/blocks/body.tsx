@@ -1,20 +1,17 @@
-import BlockCarousel from '@/components/blocks/carousel'
+// import BlockCarousel from '@/components/blocks/carousel'
 import BlockImage from '@/components/blocks/image'
-// import Video from '@/components/modules/video'
+import Video from '@/components/modules/Video'
 import { dataset, projectId } from '@/sanity/env'
 import { Box, Link as ChakraLink, Heading, Text } from '@chakra-ui/react'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import React from 'react'
 
-const GRID_COLUMN = { base: '1/9', lg: '1/7', xl: '3/7' }
-
 const components = {
   block: {
     h2: ({ children, value }) => (
       <Heading
         id={value._key}
-        // gridColumn={GRID_COLUMN}
         textAlign="center"
         size={{ base: 'md', lg: 'xl' }}
         lineHeight={'short'}
@@ -22,13 +19,7 @@ const components = {
         {children}
       </Heading>
     ),
-    normal: ({ children }) => (
-      <Text
-      // gridColumn={GRID_COLUMN}
-      >
-        {children}
-      </Text>
-    ),
+    normal: ({ children }) => <Text>{children}</Text>,
   },
   types: {
     // 'module.carousel': (props) => <BlockCarousel {...props} />,
@@ -44,11 +35,11 @@ const components = {
         />
       </Box>
     ),
-    // 'module.video': (props) => (
-    //   <Box gridColumn={GRID_COLUMN}>
-    //     <Video {...props} />
-    //   </Box>
-    // ),
+    'module.video': (props) => (
+      <Box>
+        <Video {...props} />
+      </Box>
+    ),
   },
   marks: {
     annotationLinkInternal: ({ text, value }) => {

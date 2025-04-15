@@ -34,7 +34,7 @@ export default {
       const { moduleTitle, config } = selection
       return {
         // media: <BookIcon />,
-        subtitle: `Italic toggle enabled: '${config.italicToggle}'`,
+        // subtitle: `Italic toggle enabled: '${config?.italicToggle}'`,
         title: moduleTitle || 'Styles',
       }
     },
