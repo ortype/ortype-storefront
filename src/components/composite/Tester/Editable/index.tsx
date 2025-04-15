@@ -152,12 +152,12 @@ const Editable = ({
               <ActionBar.SelectionTrigger>
                 {`${entry.length}/10 characters`}
               </ActionBar.SelectionTrigger>
-              <ActionBar.Separator />
+              {/*<ActionBar.Separator />
               <Text fontSize={'sm'}>
-                Press <Kbd size={'sm'}>return</Kbd> or{' '}
+                Press <Kbd size={'sm'}>return</Kbd> to{' '}
                 <Kbd size={'sm'}>esc</Kbd> to exit and{' '}
                 <Kbd size={'sm'}>tab</Kbd> for next
-              </Text>
+              </Text>*/}
             </ActionBar.Content>
           </ActionBar.Positioner>
         </Portal>
