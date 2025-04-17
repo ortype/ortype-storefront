@@ -71,7 +71,7 @@ const Block: React.FC<{
                 display: 'block',
                 mt: `${line.lineGap * layout.conversion}px`,
               },
-              'span:first-of-type': {
+              'span:firstOfType': {
                 mt: 0,
               },
             }}

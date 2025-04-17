@@ -87,6 +87,7 @@ const Video: React.FC<VideoProps> = ({ value = {} }) => {
             setLoading(false)
             setPlayerReady(true)
           }}
+          loop={true}
           muted={true}
           controls={false}
           playing={playerReady}
