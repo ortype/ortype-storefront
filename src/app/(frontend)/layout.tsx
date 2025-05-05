@@ -48,7 +48,7 @@ export default async function RootLayout({
       <SessionProvider basePath={BASE_PATH} session={session}>
         <Providers marketId={marketId}>{children}</Providers>
       </SessionProvider>
-      <SanityLive />
+      <SanityLive refreshOnFocus={false} />
       {(await draftMode()).isEnabled && (
         <>
           <DisableDraftMode />

@@ -35,7 +35,7 @@ const fontSlugs = defineQuery(
   `*[_type == "font" && defined(slug.current)]{"slug": slug.current}`
 )
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-static'
 
 export async function generateStaticParams() {
   const slugs = await client.fetch(fontSlugs)
