@@ -57,6 +57,9 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
 
   return (
     <Box bg={'#000'}>
+      <DynamicBuyContainer font={font}>
+        <DynamicBuy />
+      </DynamicBuyContainer>
       <FontContainer font={font} moreFonts={moreFonts}>
         {modules.length > 0 && (
           <SpreadContainerProvider initialItems={modules}>
