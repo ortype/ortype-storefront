@@ -24,11 +24,19 @@ const BuyContainer = ({ font, children }: Props): JSX.Element => {
     <DialogRoot size={'full'} lazyMount motionPreset="slide-in-bottom">
       <DialogTrigger asChild>
         <Button
-          bg={'green'}
-          size={'xl'}
-          textTransform={'uppercase'}
-          width={'full'}
-        >{`Buy`}</Button>
+          // @TODO: look into how to set this up in button.ts
+          bg={'red'}
+          color={'white'}
+          pos={'fixed'}
+          size={'md'}
+          top={4}
+          right={14}
+          fontSize={'lg'}
+          px={'0.75rem'}
+          minW={'auto'}
+          borderRadius={'3rem'}
+          zIndex={'docked'}
+        >{`Add to cart`}</Button>
       </DialogTrigger>
       <DialogContent bg={'white'}>
         <DialogHeader>
