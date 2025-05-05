@@ -54,25 +54,9 @@ const DimensionsContext = createContext<DimensionsContextValue | undefined>(
  */
 export const DimensionsProvider: React.FC<DimensionsProviderProps> = React.memo(
   ({ targetRef, children }) => {
-    // Track previous size to prevent unnecessary updates
-    const prevSizeRef = useRef<{ width?: number; height?: number } | null>(null)
-
     // Get container dimensions
-    const rawSize = useDimensionsHook(targetRef)
+    const size = useDimensionsHook(targetRef)
 
-    // Memoize size to prevent unnecessary updates
-    const size = useMemo(() => {
-      // Only update size if values have actually changed
-      if (
-        prevSizeRef.current?.width === rawSize.width &&
-        prevSizeRef.current?.height === rawSize.height
-      ) {
-        return prevSizeRef.current
-      }
-
-      prevSizeRef.current = rawSize
-      return rawSize
-    }, [rawSize.width, rawSize.height])
     // Fixed layout values
     const pageWidth = 680
     const pageHeight = 930

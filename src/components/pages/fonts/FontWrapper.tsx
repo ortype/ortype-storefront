@@ -1,6 +1,6 @@
 'use client'
 import Modules from '@/components/modules'
-import { Box } from '@chakra-ui/react'
+import { Box, Center, Spinner } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import React, { useEffect, useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
@@ -31,7 +31,13 @@ const SpreadModules = React.memo(({ value }: SpreadModulesProps) => {
   const { isLoading } = useDimensions()
 
   if (isLoading) {
-    return <div>{'Loading...'}</div>
+    return (
+      <Box pos="absolute" inset="0" bg="bg/80">
+        <Center h="full">
+          <Spinner color="white" />
+        </Center>
+      </Box>
+    )
   }
 
   return <Modules value={value} />

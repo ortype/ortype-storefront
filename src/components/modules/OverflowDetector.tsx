@@ -105,7 +105,7 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
     }
 
     // Also measure when the size from context changes
-    if (size.width && size.height) {
+    if (size?.width && size?.height) {
       debouncedMeasureOverflow()
     }
 
@@ -114,7 +114,7 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
       debouncedMeasureOverflow.cancel()
       observer.disconnect()
     }
-  }, [debouncedMeasureOverflow, size.width, size.height])
+  }, [debouncedMeasureOverflow, size?.width, size?.height])
 
   const itemState = state.items[_key]
   const isOverflowing = itemState.isOverflowing

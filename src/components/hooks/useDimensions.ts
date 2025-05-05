@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useDebounceCallback, useResizeObserver } from 'usehooks-ts'
 
 type Size = {
-  width?: number
-  height?: number
+  width: number
+  height: number
 }
 
 /**
@@ -13,8 +13,8 @@ type Size = {
  */
 export default function useDimensions(elementRef) {
   const [{ width, height }, setSize] = useState<Size>({
-    width: undefined,
-    height: undefined,
+    width: 1360,
+    height: 930,
   })
 
   const onResize = useDebounceCallback(setSize, 250)
