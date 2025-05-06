@@ -1,10 +1,10 @@
 'use client'
 import Modules from '@/components/modules'
-import { Box, Center, Spinner } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
-import { useDimensions } from './contexts/dimensionsContext'
+import { DimensionsProvider } from './contexts/dimensionsContext'
 import FontContainer from './FontContainer'
 
 const DynamicBuyContainer: any = dynamic(
@@ -22,30 +22,6 @@ const DynamicBuy: any = dynamic(() => import('@/components/composite/Buy'), {
 })
 
 // Type definitions for better TypeScript support
-interface SpreadModulesProps {
-  value: any[]
-}
-
-// Loading wrapper that consumes dimensions context directly
-const SpreadModules = React.memo(({ value }: SpreadModulesProps) => {
-  const { isLoading } = useDimensions()
-
-  if (isLoading) {
-    return (
-      <Box pos="absolute" inset="0" bg="bg/80">
-        <Center h="full">
-          <Spinner color="white" />
-        </Center>
-      </Box>
-    )
-  }
-
-  return <Modules value={value} />
-})
-
-// Add display name for better debugging
-SpreadModules.displayName = 'SpreadModules'
-// Type definitions for better TypeScript support
 interface FontWrapperProps {
   moreFonts?: any[]
   font: any
@@ -54,6 +30,7 @@ interface FontWrapperProps {
 const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
   // Memoize modules to prevent unnecessary rerenders
   const modules = useMemo(() => font?.modules || [], [font?.modules])
+  const targetRef = useRef<HTMLDivElement>(null)
 
   return (
     <Box bg={'#000'}>
@@ -61,11 +38,21 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
         <DynamicBuy />
       </DynamicBuyContainer>
       <FontContainer font={font} moreFonts={moreFonts}>
-        {modules.length > 0 && (
-          <SpreadContainerProvider initialItems={modules}>
-            <SpreadModules value={modules} />
-          </SpreadContainerProvider>
-        )}
+        <DimensionsProvider targetRef={targetRef}>
+          <Flex
+            // Spread
+            w={'80vw'}
+            mx={'auto'}
+            py={'10vh'}
+            pos={'relative'}
+            wrap={'wrap'}
+            ref={targetRef}
+          >
+            <SpreadContainerProvider initialItems={modules}>
+              <Modules value={modules} />
+            </SpreadContainerProvider>
+          </Flex>
+        </DimensionsProvider>
       </FontContainer>
     </Box>
   )
