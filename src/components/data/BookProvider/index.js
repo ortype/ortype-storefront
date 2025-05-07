@@ -1,11 +1,11 @@
 'use client'
-import { useQuery } from '@apollo/client'
 import {
   defaultBlock,
   defaultColumn,
   uuid,
 } from '@/components/data/BookProvider/bookDefaults'
 import { GET_BOOK_LAYOUT } from '@/graphql/queries'
+import { useQuery } from '@apollo/client'
 import cloneDeep from 'lodash.clonedeep'
 import { action, autorun, reaction, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'

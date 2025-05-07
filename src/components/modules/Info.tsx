@@ -36,7 +36,7 @@ function InfoPortableText({
         return blank ? (
           <Link
             color={'#0000FF'}
-            textDecor={'underline'}
+            textDecoration={'underline'}
             href={href}
             target="_blank"
             rel="noopener"
@@ -44,7 +44,7 @@ function InfoPortableText({
             {children}
           </Link>
         ) : (
-          <Link href={href} color={'#0000FF'} textDecor={'underline'}>
+          <Link href={href} color={'#0000FF'} textDecoration={'underline'}>
             {children}
           </Link>
         )
@@ -104,9 +104,8 @@ export default function InfoModule({ value }: InfoModuleProps) {
         >
           {items?.map((item) => {
             return (
-              <>
+              <div key={item.key}>
                 <Box
-                  key={item.key}
                   as={'dt'}
                   float={'left'}
                   clear={'left'}
@@ -118,7 +117,7 @@ export default function InfoModule({ value }: InfoModuleProps) {
                 <Box as={'dd'} ml={190 * conversion + 'px'}>
                   <InfoPortableText value={item.content} />
                 </Box>
-              </>
+              </div>
             )
           })}
         </Box>

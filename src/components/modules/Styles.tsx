@@ -138,7 +138,6 @@ export default function StylesModule({ value }: StylesModuleProps) {
               value={'tab-' + index}
               key={'tabPanel-' + index}
               p={0}
-              position={'relative'}
               w={'100%'}
               h={'100%'}
               bg={'#FFF'}

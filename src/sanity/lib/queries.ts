@@ -308,3 +308,48 @@ export const fontAndMoreFontsQuery = defineQuery(`{
     ${fontFields}
   }
 }`)
+
+export const fontQuery = defineQuery(`{
+  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
+    _id,
+    _type,
+    name,
+    shortName,
+    isVisible,
+    "slug": slug.current,
+    variants[]->{name, optionName, _id},
+    uid,
+    version,
+    metafields[]{key, value},
+    defaultVariant->{_id, optionName},
+    modules[]{
+      ..., 
+      _type == "content" => {
+        body[]{
+          ...,
+          markDefs[]{
+            ...,
+            _type == "internalLink" => {
+              "slug": @.reference->slug
+            }
+          }
+        }         
+      },
+      _type == "book" => {
+        book->{variantId, snapshots},
+      },
+      _type == "tester" => {
+        tester->{defaultVariant->{_id, optionName}, defaultText},
+  
+      }
+    },
+    modifiedAt,
+    languages[]{html, name},
+    styleGroups[]{
+      _type,
+      groupName,
+      variants[]->{_id, optionName},
+      italicVariants[]->{_id, optionName}
+    },
+  }
+}`)
