@@ -1,7 +1,7 @@
 import { FontPage } from '@/components/pages/fonts/FontPage'
 import { client } from '@/sanity/lib/client'
 import { sanityFetch } from '@/sanity/lib/live'
-import { fontAndMoreFontsQuery } from '@/sanity/lib/queries'
+import { fontQuery } from '@/sanity/lib/queries'
 import { toPlainText } from '@portabletext/react'
 import { Metadata, ResolvingMetadata } from 'next'
 import { defineQuery, QueryParams } from 'next-sanity'
@@ -15,7 +15,7 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { font } = await client.fetch(fontAndMoreFontsQuery, params)
+  const { font } = await client.fetch(fontQuery, params)
   const ogImage = false
 
   return {
@@ -48,7 +48,7 @@ export default async function FontSlugRoute({
   params: Promise<QueryParams>
 }) {
   const { data } = await sanityFetch({
-    query: fontAndMoreFontsQuery,
+    query: fontQuery,
     params: await params,
   })
 
