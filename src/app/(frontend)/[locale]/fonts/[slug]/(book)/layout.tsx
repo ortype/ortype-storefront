@@ -38,9 +38,16 @@ const getData = cache(async ({ slug }) => {
       initialBookLayout = assignedLayouts.bookLayouts.nodes[0]
     }
 
+    const validVariants = font.variants.filter(
+      (variant): variant is NonNullable<typeof variant> => variant !== null
+    )
+
     return {
       fonts,
-      font,
+      font: {
+        ...font,
+        variants: validVariants,
+      },
       initialBookLayout,
       bookLayouts: {
         assigned: assignedLayouts.bookLayouts.nodes,
