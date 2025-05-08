@@ -6,16 +6,33 @@ import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
 import {
   Box,
+  Button,
   Container,
   Fieldset,
   Flex,
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
+import Link from 'next/Link'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
 import { SingleStyles } from './SingleStyles'
+
+const CheckoutButton = ({ isDisabled, order }) => {
+  return (
+    <Button
+      variant={'solid'}
+      bg={'red'}
+      borderRadius={'5rem'}
+      disabled={isDisabled}
+      asChild
+      maxW={'xs'}
+    >
+      <Link href={`/checkout/${order?.id}`}>{'Checkout'}</Link>
+    </Button>
+  )
+}
 
 export const Buy = () => {
   const {
@@ -76,7 +93,8 @@ export const Buy = () => {
               ))}
             </Box>
           </SimpleGrid>
-          {/*<BuySummary />*/}
+          <BuySummary />
+          <CheckoutButton order={order} isDisabled={false} />
         </Stack>
       </Container>
     </>

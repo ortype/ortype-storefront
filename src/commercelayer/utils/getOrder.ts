@@ -54,6 +54,7 @@ export const getAsyncOrder = async (
       'shipping_address',
       'billing_address',
       'line_items',
+      'line_items.item',
       'line_items.line_item_options.sku_option',
     ],
   })
