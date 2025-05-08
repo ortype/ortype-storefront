@@ -286,7 +286,35 @@ export const homePageQuery = defineQuery(`
 
 export const visibleFontsQuery = defineQuery(`
 *[_type == "font" && isVisible == true] {
-  ${fontFields}
+  defaultVariant->{_id, optionName},
+  "slug": slug.current,
+  slug,
+  name,
+  shortName
+}`)
+
+export const buyFontsQuery = defineQuery(`{
+  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
+    _id,
+    _type,
+    name,
+    shortName,
+    "slug": slug.current,
+    variants[]->{name, optionName, _id},
+    defaultVariant->{_id, optionName},
+    styleGroups[]{
+      _type,
+      groupName,
+      variants[]->{_id, optionName},
+      italicVariants[]->{_id, optionName}
+    }    
+  },
+  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {
+      defaultVariant->{_id, optionName},
+      "slug": slug.current,
+      name,
+      shortName
+  }  
 }`)
 
 // used in `getAllFonts` @TODO: consider removing if not really needed

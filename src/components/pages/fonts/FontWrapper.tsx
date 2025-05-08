@@ -1,12 +1,14 @@
 'use client'
 import Modules from '@/components/modules'
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Button, Flex } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import React, { useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
 import { DimensionsProvider } from './contexts/dimensionsContext'
 import FontContainer from './FontContainer'
+import Link from 'next/link'
 
+/*
 const DynamicBuyContainer: any = dynamic(
   () => import('@/components/composite/BuyContainer'),
   {
@@ -20,6 +22,7 @@ const DynamicBuy: any = dynamic(() => import('@/components/composite/Buy'), {
     return <div />
   },
 })
+*/
 
 // Type definitions for better TypeScript support
 interface FontWrapperProps {
@@ -34,9 +37,26 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
 
   return (
     <Box bg={'#000'}>
-      <DynamicBuyContainer font={font}>
+      {/*<DynamicBuyContainer font={font}>
         <DynamicBuy />
-      </DynamicBuyContainer>
+      </DynamicBuyContainer>*/}
+      <Button
+        // @TODO: look into how to set this up in button.ts
+        bg={'red'}
+        color={'white'}
+        pos={'fixed'}
+        size={'md'}
+        top={4}
+        right={14}
+        fontSize={'lg'}
+        px={'0.75rem'}
+        minW={'auto'}
+        borderRadius={'3rem'}
+        zIndex={'docked'}
+        asChild
+      >
+        <Link href={`/buy/${font.slug}`}>{`Add to cart`}</Link>
+      </Button>
       <FontContainer font={font} moreFonts={moreFonts}>
         <DimensionsProvider targetRef={targetRef}>
           <Flex

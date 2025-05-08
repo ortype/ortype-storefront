@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button, Heading } from '@chakra-ui/react'
+import { Box, Button, Heading } from '@chakra-ui/react'
 import { OrderContainer } from '@commercelayer/react-components'
 
 interface Props {
@@ -40,16 +40,29 @@ const BuyContainer = ({ font, children }: Props): JSX.Element => {
       </DialogTrigger>
       <DialogContent bg={'white'}>
         <DialogHeader>
+          <Button
+            left={16}
+            pos={'absolute'}
+            p={2}
+            variant={'square'}
+            fontSize={'1.5rem'}
+            lineHeight={'1.25rem'}
+            h={11}
+            className={font.defaultVariant?._id}
+          >
+            {font ? font.shortName : 'Type'}
+          </Button>
           <Heading
             textAlign={'center'}
             size={'2xl'}
             fontWeight={'normal'}
             textTransform={'uppercase'}
+            mx={'auto'}
           >
             you or me or they are buying fonts
           </Heading>
         </DialogHeader>
-        <DialogCloseTrigger />
+        <DialogCloseTrigger insetStart={2} insetEnd={'auto'} />
         <DialogBody>
           <BuyProvider font={font}>{children}</BuyProvider>
         </DialogBody>

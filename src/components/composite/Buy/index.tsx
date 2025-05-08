@@ -1,6 +1,6 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
-import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
-import { LicenseTypeSelect } from '@/commercelayer/components/forms/LicenseTypeSelect'
+import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
+import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
@@ -40,29 +40,21 @@ export const Buy = () => {
     <>
       <Container maxW="container.lg" bg={'white'}>
         <Stack direction={'column'}>
-          <SimpleGrid columns={2} spacing={2}>
+          <SimpleGrid columns={2} gap={1}>
             <Box p={'1rem'}>
               <LicenseOwnerInput />
-              <Fieldset.Root>
-                <Field label={'A license for?'}>
-                  <LicenseTypeSelect
-                    font={font}
-                    skuOptions={skuOptions}
-                    selectedSkuOptions={selectedSkuOptions}
-                    setSelectedSkuOptions={setSelectedSkuOptions}
-                  />
-                </Field>
-              </Fieldset.Root>
-              <Fieldset.Root>
-                <Field label={'How big is your company?'}>
-                  {licenseSize && (
-                    <LicenseSizeSelect
-                      setLicenseSize={setLicenseSize}
-                      licenseSize={licenseSize}
-                    />
-                  )}
-                </Field>
-              </Fieldset.Root>
+              <LicenseTypeList
+                font={font}
+                skuOptions={skuOptions}
+                selectedSkuOptions={selectedSkuOptions}
+                setSelectedSkuOptions={setSelectedSkuOptions}
+              />
+              {licenseSize && (
+                <LicenseSizeList
+                  setLicenseSize={setLicenseSize}
+                  licenseSize={licenseSize}
+                />
+              )}
             </Box>
             <Box
               opacity={orderId ? 1 : 0.3}

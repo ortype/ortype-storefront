@@ -5,7 +5,7 @@
 // import { blockquoteSlotRecipe } from "./blockquote"
 // import { breadcrumbSlotRecipe } from "./breadcrumb"
 // import { cardSlotRecipe } from "./card"
-// import { checkboxSlotRecipe } from "./checkbox"
+import { checkboxSlotRecipe } from './checkbox'
 // import { checkboxCardSlotRecipe } from "./checkbox-card"
 // import { collapsibleSlotRecipe } from "./collapsible"
 // import { dataListSlotRecipe } from "./data-list"

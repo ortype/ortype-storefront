@@ -6,7 +6,7 @@ import { buttonRecipe } from './button'
 // import { inputRecipe } from './input'
 // import { inputAddonRecipe } from './input-addon'
 // import { kbdRecipe } from './kbd'
-// import { linkRecipe } from './link'
+import { linkRecipe } from './link'
 // import { markRecipe } from './mark'
 // import { separatorRecipe } from './separator'
 // import { skeletonRecipe } from './skeleton'
@@ -27,7 +27,7 @@ export const recipes = {
   // input: inputRecipe,
   // inputAddon: inputAddonRecipe,
   // kbd: kbdRecipe,
-  // link: linkRecipe,
+  link: linkRecipe,
   // mark: markRecipe,
   // separator: separatorRecipe,
   // skeleton: skeletonRecipe,
