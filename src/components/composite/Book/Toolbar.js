@@ -187,7 +187,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         toaster.create({
           title: 'Changes published.',
           description: 'The changes to the layout have been published.',
-          status: 'success',
+          type: 'success',
           duration: 5000,
           isClosable: true,
         })
@@ -204,7 +204,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         toaster.create({
           title: 'Snapshot exported.',
           description: 'A snapshot of this layout has been exported.',
-          status: 'success',
+          type: 'success',
           duration: 5000,
           isClosable: true,
         })
@@ -225,7 +225,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         toaster.create({
           title: `Layout "${data.addBookLayout.name}" created.`,
           description: 'The layout has been created.',
-          status: 'success',
+          type: 'success',
           duration: 5000,
           isClosable: true,
         })
@@ -246,7 +246,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         toaster.create({
           title: 'Layout deleted.',
           description: 'The layout has been permanently deleted.',
-          status: 'success',
+          type: 'success',
           duration: 5000,
           isClosable: true,
         })

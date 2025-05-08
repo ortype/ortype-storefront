@@ -27,10 +27,25 @@ const CheckoutButton = ({ isDisabled, order }) => {
       borderRadius={'5rem'}
       disabled={isDisabled}
       asChild
-      maxW={'xs'}
+      size={'sm'}
+      fontSize={'md'}
+      alignSelf={'center'}
     >
       <Link href={`/checkout/${order?.id}`}>{'Checkout'}</Link>
     </Button>
+  )
+}
+
+export const FieldsetLegend = ({ children }) => {
+  return (
+    <Fieldset.Legend
+      px={4}
+      fontSize={'xs'}
+      textTransform={'uppercase'}
+      color={'#737373'}
+    >
+      {children}
+    </Fieldset.Legend>
   )
 }
 
@@ -55,10 +70,10 @@ export const Buy = () => {
 
   return (
     <>
-      <Container maxW="container.lg" bg={'white'}>
-        <Stack direction={'column'}>
-          <SimpleGrid columns={2} gap={1}>
-            <Box p={'1rem'}>
+      <Container maxW="50rem" bg={'white'}>
+        <Stack direction={'column'} gap={4}>
+          <SimpleGrid columns={2} gap={4}>
+            <Stack direction={'column'} gap={4}>
               <LicenseOwnerInput />
               <LicenseTypeList
                 font={font}
@@ -72,26 +87,33 @@ export const Buy = () => {
                   licenseSize={licenseSize}
                 />
               )}
-            </Box>
-            <Box
-              opacity={orderId ? 1 : 0.3}
-              pointerEvents={orderId ? 'auto' : 'none'}
-            >
-              {font.variants?.map((variant) => (
-                <Flex key={variant._id} direction={'column'} bg={'#EEE'} p={4}>
-                  <SingleStyles
-                    order={order}
-                    orderId={orderId}
-                    name={variant.name}
-                    skuCode={variant._id}
-                    addLineItem={addLineItem}
-                    deleteLineItem={deleteLineItem}
-                    licenseSize={licenseSize}
-                    selectedSkuOptions={selectedSkuOptions}
-                  />
-                </Flex>
-              ))}
-            </Box>
+            </Stack>
+            <Fieldset.Root>
+              <FieldsetLegend>{'Single Styles'}</FieldsetLegend>
+              <Fieldset.Content asChild>
+                <Box
+                  mt={1}
+                  opacity={orderId ? 1 : 0.3}
+                  pointerEvents={orderId ? 'auto' : 'none'}
+                  bg={'#EEE'}
+                  p={2}
+                >
+                  {font.variants?.map((variant) => (
+                    <SingleStyles
+                      key={variant._id}
+                      order={order}
+                      orderId={orderId}
+                      name={variant.name}
+                      skuCode={variant._id}
+                      addLineItem={addLineItem}
+                      deleteLineItem={deleteLineItem}
+                      licenseSize={licenseSize}
+                      selectedSkuOptions={selectedSkuOptions}
+                    />
+                  ))}
+                </Box>
+              </Fieldset.Content>
+            </Fieldset.Root>
           </SimpleGrid>
           <BuySummary />
           <CheckoutButton order={order} isDisabled={false} />

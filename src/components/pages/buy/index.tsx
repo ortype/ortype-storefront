@@ -73,11 +73,11 @@ export function BuyPage({ data }: BuyPageProps) {
     <Container my={6}>
       <Heading
         textAlign={'center'}
-        size={'2xl'}
+        fontSize={'2rem'}
         fontWeight={'normal'}
         textTransform={'uppercase'}
         mx={'auto'}
-        my={2}
+        pb={8}
       >
         {`you or me or they are buying `}
         <BuyNav />

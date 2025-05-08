@@ -2,6 +2,7 @@ import { LicenseSize } from '@/commercelayer/providers/Order'
 import { Size, sizes } from '@/lib/settings'
 import { Fieldset, RadioGroup, Text, VStack } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
+import { FieldsetLegend } from '@/components/composite/Buy'
 
 interface Props {
   licenseSize: Size
@@ -37,11 +38,9 @@ export const LicenseSizeList: React.FC<Props> = ({
         onValueChange={(e) => handleSizeChange(e.value)}
         aria-label="License size options"
       >
-        <Fieldset.Legend fontSize="sm" mt={4} mb={2}>
-          {'How big is your company?'}
-        </Fieldset.Legend>
+        <FieldsetLegend>{'How big is your company?'}</FieldsetLegend>
         <Fieldset.Content asChild>
-          <VStack gap={2} p={2} alignItems={'flex-start'} bg={'#eee'}>
+          <VStack mt={1} gap={2} p={2} alignItems={'flex-start'} bg={'#eee'}>
             {sizes.map((size) => (
               <RadioGroup.Item
                 key={size.value}

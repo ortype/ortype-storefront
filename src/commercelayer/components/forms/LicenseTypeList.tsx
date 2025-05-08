@@ -2,6 +2,7 @@ import { Type } from '@/lib/settings'
 import { Checkbox, CheckboxGroup, Fieldset, Stack } from '@chakra-ui/react'
 import { SkuOption } from '@commercelayer/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
+import { FieldsetLegend } from '@/components/composite/Buy'
 
 interface Props {
   skuOptions: SkuOption[]
@@ -72,26 +73,25 @@ export const LicenseTypeList: React.FC<Props> = ({
 
   return (
     <Fieldset.Root>
-      <CheckboxGroup
-        // defaultValue={['1-licenseType-desktop']}
-        value={selectedTypes?.map((option) => option.value) || ['']}
-        onValueChange={(e) => handleTypeChange(e)}
-      >
-        <Fieldset.Legend fontSize="sm" mt={4}>
-          {'A license for?'}
-        </Fieldset.Legend>
-        <Fieldset.Content asChild>
-          <Stack gap={2} direction="column" align="stretch" bg={'#eee'} p={2}>
-            {typeOptions.map((option) => (
-              <Checkbox.Root key={option.value} value={option.value}>
-                <Checkbox.HiddenInput />
-                <Checkbox.Control />
-                <Checkbox.Label>{option.label}</Checkbox.Label>
-              </Checkbox.Root>
-            ))}
-          </Stack>
-        </Fieldset.Content>
-      </CheckboxGroup>
+      <FieldsetLegend>{'A license for?'}</FieldsetLegend>
+      <Fieldset.Content asChild>
+        <CheckboxGroup
+          value={selectedTypes?.map((option) => option.value) || ['']}
+          onValueChange={(e) => handleTypeChange(e)}
+          bg={'#eee'}
+          mt={1}
+          gap={2}
+          p={2}
+        >
+          {typeOptions.map((option) => (
+            <Checkbox.Root key={option.value} value={option.value}>
+              <Checkbox.HiddenInput />
+              <Checkbox.Control />
+              <Checkbox.Label>{option.label}</Checkbox.Label>
+            </Checkbox.Root>
+          ))}
+        </CheckboxGroup>
+      </Fieldset.Content>
     </Fieldset.Root>
   )
 }

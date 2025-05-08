@@ -4,6 +4,7 @@ import { toaster } from '@/components/ui/toaster'
 import { Button, Fieldset, HStack, Input, Text, VStack } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { FieldsetLegend } from '@/components/composite/Buy'
 
 interface FormValues {
   full_name: string
@@ -81,7 +82,7 @@ const LicenseOwnerInput = () => {
   return (
     <form onSubmit={onSubmit}>
       <Fieldset.Root invalid={!!errors.full_name}>
-        <Fieldset.Legend fontSize="sm">License Owner/Company*</Fieldset.Legend>
+        <FieldsetLegend>{'License Owner/Company*'}</FieldsetLegend>
         <Fieldset.Content asChild>
           <Input
             {...register('full_name', {
@@ -103,7 +104,7 @@ const LicenseOwnerInput = () => {
             aria-label="License owner name"
             variant="subtle"
             size="lg"
-            mt={2}
+            mt={1}
             borderRadius={0}
             disabled={isSubmitting}
             placeholder="Enter license owner or company name"

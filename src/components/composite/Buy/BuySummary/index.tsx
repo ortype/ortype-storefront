@@ -72,7 +72,7 @@ export const BuySummary = () => {
   }, [order?.line_items])
 
   return (
-    <Box bg={'#FFF8D3'} my={4} px={4} py={3} borderRadius={20}>
+    <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
       <Heading
         as={'h5'}
         fontSize={'xl'}

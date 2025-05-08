@@ -27,8 +27,8 @@ export const SingleStyles: React.FC<Props> = ({
   deleteLineItem,
 }) => {
   return (
-    <SimpleGrid columns={2} spacing={4}>
-      <Stack direction={'row'} spacing={2}>
+    <SimpleGrid columns={2} gap={4}>
+      <Stack direction={'row'} gap={2}>
         <ToggleLineItem
           order={order}
           skuCode={skuCode}
@@ -38,7 +38,7 @@ export const SingleStyles: React.FC<Props> = ({
         />
         <Text>{name}</Text>
       </Stack>
-      <Stack direction={'row'} spacing={2}>
+      <Stack direction={'row'} gap={2}>
         <Flex>
           {orderId ? (
             selectedSkuOptions.length > 0 &&
