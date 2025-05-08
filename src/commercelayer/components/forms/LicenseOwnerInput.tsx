@@ -1,56 +1,115 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
-import { Box, Button, Fieldset, Group, Input } from '@chakra-ui/react'
-import { useRapidForm } from 'rapid-form'
-import { useState } from 'react'
+import { toaster } from '@/components/ui/toaster'
+import { Button, Fieldset, HStack, Input, Text, VStack } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+interface FormValues {
+  full_name: string
+}
+
+interface LicenseOwner {
+  is_client: boolean
+  full_name: string
+}
+
+interface OrderMetadata {
+  license?: {
+    owner?: LicenseOwner
+  }
+}
+
+const MAX_NAME_LENGTH = 100
 
 const LicenseOwnerInput = () => {
-  const [isLocalLoader, setIsLocalLoader] = useState(false)
-  const { handleSubmit, submitValidation, validation, values, errors } =
-    useRapidForm()
-  const { order, orderId, setLicenseOwner, updateOrder } = useOrderContext()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { order, setLicenseOwner } = useOrderContext()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<FormValues>({
+    defaultValues: {
+      full_name: order?.metadata?.license?.owner?.full_name || '',
+    },
+  })
 
-  const s = async (values, err, e) => {
-    setIsLocalLoader(true)
-    const licenseOwner = {
-      is_client: false,
-      full_name: values['full_name'].value,
+  // Keep form in sync with order changes
+  useEffect(() => {
+    const ownerName = (order?.metadata as OrderMetadata)?.license?.owner
+      ?.full_name
+    // Always sync with order metadata, even if empty
+    setValue('full_name', ownerName || '')
+  }, [order?.metadata, setValue])
+
+  const onSubmit = handleSubmit(async (data) => {
+    setIsSubmitting(true)
+    try {
+      const licenseOwner: LicenseOwner = {
+        is_client: false,
+        full_name: data.full_name.trim(),
+      }
+      await setLicenseOwner({ licenseOwner })
+      toaster.create({
+        title: 'License owner updated successfully',
+        type: 'success',
+        duration: 2000,
+      })
+    } catch (error) {
+      console.error('Failed to update license owner:', error)
+      toaster.create({
+        title: 'Failed to update license owner. Please try again.',
+        description: error,
+        type: 'error',
+        duration: '2000',
+      })
+    } finally {
+      setIsSubmitting(false)
     }
-    console.log('LicenseOwnerInput: ', { licenseOwner })
-    setLicenseOwner({ licenseOwner })
-    setIsLocalLoader(false)
-  }
+  })
 
-  // @TODO: convert to react-hook-form
-  // https://www.chakra-ui.com/docs/components/input#hook-form
-  // @TODO: save input changes on blur
+  const handleBlur = handleSubmit(async (data) => {
+    const currentName = (order?.metadata as OrderMetadata)?.license?.owner
+      ?.full_name
+    if (data.full_name.trim() !== currentName) {
+      await onSubmit()
+    }
+  })
 
   return (
-    <form
-      as={Box}
-      ref={submitValidation}
-      autoComplete="off"
-      onSubmit={handleSubmit(s)}
-    >
-      <Fieldset.Root>
-        <Fieldset.Legend>{'License Owner/Company*'}</Fieldset.Legend>
+    <form onSubmit={onSubmit}>
+      <Fieldset.Root invalid={!!errors.full_name}>
+        <Fieldset.Legend fontSize="sm">License Owner/Company*</Fieldset.Legend>
         <Fieldset.Content asChild>
-          <Group attached w="full" bg={'#eee'}>
-            <Input
-              name={'full_name'}
-              type={'text'}
-              ref={validation}
-              borderRadius={0}
-              colorPalette={'gray'}
-              variant={'subtle'}
-              size={'lg'}
-              defaultValue={order?.metadata?.license?.owner?.full_name}
-            />
-            <Button type={'submit'} variant={'plain'}>
-              Save
-            </Button>
-          </Group>
+          <Input
+            {...register('full_name', {
+              required: 'License owner name is required',
+              minLength: {
+                value: 2,
+                message: 'Name must be at least 2 characters',
+              },
+              maxLength: {
+                value: MAX_NAME_LENGTH,
+                message: `Name cannot exceed ${MAX_NAME_LENGTH} characters`,
+              },
+              validate: {
+                notOnlySpaces: (value) =>
+                  value.trim().length > 0 || 'Name cannot be only spaces',
+              },
+            })}
+            onBlur={handleBlur}
+            aria-label="License owner name"
+            variant="subtle"
+            size="lg"
+            mt={2}
+            borderRadius={0}
+            disabled={isSubmitting}
+            placeholder="Enter license owner or company name"
+          />
         </Fieldset.Content>
+        <Fieldset.ErrorText>{errors.full_name?.message}</Fieldset.ErrorText>
       </Fieldset.Root>
     </form>
   )
