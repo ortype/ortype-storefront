@@ -55,7 +55,9 @@ export const LicenseSizeList: React.FC<Props> = ({
               >
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
-                <RadioGroup.ItemText pl={2}>{size.label}</RadioGroup.ItemText>
+                <RadioGroup.ItemText pl={2} fontSize={'xl'}>
+                  {size.label}
+                </RadioGroup.ItemText>
               </RadioGroup.Item>
             ))}
           </VStack>

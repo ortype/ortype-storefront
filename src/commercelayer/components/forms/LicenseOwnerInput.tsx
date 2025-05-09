@@ -104,6 +104,7 @@ const LicenseOwnerInput = () => {
             aria-label="License owner name"
             variant="subtle"
             size="lg"
+            fontSize={'lg'}
             mt={1}
             borderRadius={0}
             disabled={isSubmitting}

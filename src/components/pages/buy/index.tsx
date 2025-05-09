@@ -8,7 +8,9 @@ import {
   Container,
   For,
   Heading,
+  IconButton,
 } from '@chakra-ui/react'
+import { FiChevronDown } from 'react-icons/fi'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import type { BuyFontsQueryResult } from '@/types'
@@ -44,8 +46,17 @@ export function BuyPage({ data }: BuyPageProps) {
             href={'#'}
             variant={'underline'}
             className={font ? font.defaultVariant?._id : ''}
+            gap={0.5}
           >
             {font?.shortName}
+            <IconButton
+              variant={'plain'}
+              px={0}
+              minW={'auto'}
+              aria-label="Navigate to another font's buy page"
+            >
+              <FiChevronDown width={'5rem'} height={'5rem'} />
+            </IconButton>
           </ChakraLink>
         </MenuTrigger>
         <MenuContent maxW={'60vw'}>

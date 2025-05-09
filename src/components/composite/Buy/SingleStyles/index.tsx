@@ -1,4 +1,4 @@
-import { Flex, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import { Flex, Box, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 // import { useOrderContainer } from '@commercelayer/react-components'
 import { SkuOption, type Order } from '@commercelayer/sdk'
 import { Size } from '@/lib/settings'
@@ -25,10 +25,11 @@ export const SingleStyles: React.FC<Props> = ({
   licenseSize,
   addLineItem,
   deleteLineItem,
+  className,
 }) => {
   return (
-    <SimpleGrid columns={2} gap={4}>
-      <Stack direction={'row'} gap={2}>
+    <Flex justifyContent={'space-between'}>
+      <Stack direction={'row'} gap={2} alignItems={'center'}>
         <ToggleLineItem
           order={order}
           skuCode={skuCode}
@@ -36,34 +37,31 @@ export const SingleStyles: React.FC<Props> = ({
           addLineItem={addLineItem}
           deleteLineItem={deleteLineItem}
         />
-        <Text>{name}</Text>
+        <Text fontSize={'2xl'} as={'span'} className={className}>
+          {name}
+        </Text>
       </Stack>
-      <Stack direction={'row'} gap={2}>
-        <Flex>
-          {orderId ? (
-            selectedSkuOptions.length > 0 &&
-            licenseSize && (
-              <Text>
-                <b>
-                  {' '}
-                  {(selectedSkuOptions.reduce(
-                    (total, { price_amount_cents }) =>
-                      total + Number(price_amount_cents),
-                    0
-                  ) *
-                    licenseSize.modifier) /
-                    100}{' '}
-                  EUR
-                </b>
-              </Text>
-            )
-          ) : (
-            <Text>
-              <b>90 EUR</b>
+      <Flex alignItems={'center'}>
+        {orderId ? (
+          selectedSkuOptions.length > 0 &&
+          licenseSize && (
+            <Text as={'span'} fontSize={'xs'}>
+              EUR{' '}
+              {(selectedSkuOptions.reduce(
+                (total, { price_amount_cents }) =>
+                  total + Number(price_amount_cents),
+                0
+              ) *
+                licenseSize.modifier) /
+                100}{' '}
             </Text>
-          )}
-        </Flex>
-      </Stack>
-    </SimpleGrid>
+          )
+        ) : (
+          <Text as={'span'} fontSize={'xs'}>
+            <b>90 EUR</b>
+          </Text>
+        )}
+      </Flex>
+    </Flex>
   )
 }

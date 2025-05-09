@@ -6,6 +6,7 @@ import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
 import {
   Box,
+  Group,
   Button,
   Container,
   Fieldset,
@@ -18,6 +19,7 @@ import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
 import { SingleStyles } from './SingleStyles'
+import { InfoTip, ToggleTip } from '@/components/ui/toggle-tip'
 
 const CheckoutButton = ({ isDisabled, order }) => {
   return (
@@ -43,8 +45,14 @@ export const FieldsetLegend = ({ children }) => {
       fontSize={'xs'}
       textTransform={'uppercase'}
       color={'#737373'}
+      asChild
     >
-      {children}
+      <Flex gap={1} alignItems={'center'}>
+        {children}
+        <InfoTip
+          content={'This is additional information about this fieldset'}
+        />
+      </Flex>
     </Fieldset.Legend>
   )
 }
@@ -70,9 +78,9 @@ export const Buy = () => {
 
   return (
     <>
-      <Container maxW="50rem" bg={'white'}>
-        <Stack direction={'column'} gap={4}>
-          <SimpleGrid columns={2} gap={4}>
+      <Container maxW="60rem" bg={'white'}>
+        <Stack direction={'column'} gap={6}>
+          <SimpleGrid columns={2} gap={3}>
             <Stack direction={'column'} gap={4}>
               <LicenseOwnerInput />
               <LicenseTypeList
@@ -91,16 +99,18 @@ export const Buy = () => {
             <Fieldset.Root>
               <FieldsetLegend>{'Single Styles'}</FieldsetLegend>
               <Fieldset.Content asChild>
-                <Box
+                <Flex
                   mt={1}
                   opacity={orderId ? 1 : 0.3}
                   pointerEvents={orderId ? 'auto' : 'none'}
                   bg={'#EEE'}
                   p={2}
+                  gap={2}
                 >
                   {font.variants?.map((variant) => (
                     <SingleStyles
                       key={variant._id}
+                      className={variant._id}
                       order={order}
                       orderId={orderId}
                       name={variant.name}
@@ -111,7 +121,7 @@ export const Buy = () => {
                       selectedSkuOptions={selectedSkuOptions}
                     />
                   ))}
-                </Box>
+                </Flex>
               </Fieldset.Content>
             </Fieldset.Root>
           </SimpleGrid>

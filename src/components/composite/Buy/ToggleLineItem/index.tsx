@@ -46,9 +46,17 @@ export const ToggleLineItem: React.FC<Props> = ({
   const label = isLineItem ? '×' : '+'
 
   return (
-    <Button variant={'outline'} onClick={handleClick} disabled={isLoading}>
-      {isLoading ? isLoadingString : label}
-    </Button>
+    <Button
+      variant={'circle'}
+      w={6}
+      borderWidth={'2px'}
+      h={6}
+      minW={6}
+      p={0}
+      bg={isLineItem ? 'black' : 'white'}
+      onClick={handleClick}
+      disabled={isLoading}
+    />
   )
 }
 
