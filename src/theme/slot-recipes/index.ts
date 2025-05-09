@@ -26,7 +26,7 @@ import { menuSlotRecipe } from './menu'
 // import { progressSlotRecipe } from "./progress"
 // import { progressCircleSlotRecipe } from "./progress-circle"
 // import { radioCardSlotRecipe } from "./radio-card"
-// import { radioGroupSlotRecipe } from "./radio-group"
+import { radioGroupSlotRecipe } from './radio-group'
 // import { ratingGroupSlotRecipe } from "./rating-group"
 import { segmentGroupSlotRecipe } from './segment-group'
 import { selectSlotRecipe } from './select'
@@ -52,7 +52,7 @@ export const slotRecipes = {
   // blockquote: blockquoteSlotRecipe,
   // breadcrumb: breadcrumbSlotRecipe,
   // card: cardSlotRecipe,
-  // checkbox: checkboxSlotRecipe,
+  checkbox: checkboxSlotRecipe,
   // checkboxCard: checkboxCardSlotRecipe,
   // collapsible: collapsibleSlotRecipe,
   // dataList: dataListSlotRecipe,
@@ -73,7 +73,7 @@ export const slotRecipes = {
   // progress: progressSlotRecipe,
   // progressCircle: progressCircleSlotRecipe,
   // radioCard: radioCardSlotRecipe,
-  // radioGroup: radioGroupSlotRecipe,
+  radioGroup: radioGroupSlotRecipe,
   // ratingGroup: ratingGroupSlotRecipe,
   segmentGroup: segmentGroupSlotRecipe,
   select: selectSlotRecipe,

@@ -84,7 +84,12 @@ export const LicenseTypeList: React.FC<Props> = ({
           p={2}
         >
           {typeOptions.map((option) => (
-            <Checkbox.Root key={option.value} value={option.value}>
+            <Checkbox.Root
+              key={option.value}
+              value={option.value}
+              variant={'outline'}
+              size={'lg'}
+            >
               <Checkbox.HiddenInput />
               <Checkbox.Control />
               <Checkbox.Label fontSize={'lg'}>{option.label}</Checkbox.Label>

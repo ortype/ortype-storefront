@@ -37,6 +37,8 @@ export const LicenseSizeList: React.FC<Props> = ({
         value={selectedSize}
         onValueChange={(e) => handleSizeChange(e.value)}
         aria-label="License size options"
+        variant={'outline'}
+        size={'lg'}
       >
         <FieldsetLegend>{'How big is your company?'}</FieldsetLegend>
         <Fieldset.Content asChild>
@@ -55,7 +57,7 @@ export const LicenseSizeList: React.FC<Props> = ({
               >
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
-                <RadioGroup.ItemText pl={2} fontSize={'xl'}>
+                <RadioGroup.ItemText fontSize={'xl'}>
                   {size.label}
                 </RadioGroup.ItemText>
               </RadioGroup.Item>
