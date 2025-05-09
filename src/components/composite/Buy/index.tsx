@@ -14,7 +14,7 @@ import {
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
-import Link from 'next/Link'
+import Link from 'next/link'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
