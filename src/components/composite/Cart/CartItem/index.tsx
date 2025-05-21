@@ -2,8 +2,15 @@ import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Box, Flex, Link, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 import { type LineItem, type SkuOption } from '@commercelayer/sdk'
 import { Size, sizes, Type, types } from '@/lib/settings'
-import React, { useContext, useEffect, useState } from 'react'
-import Select from 'react-select'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
+import {
+  SelectContent,
+  SelectItem,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from '@/components/ui/license-type-select'
+import { createListCollection } from '@chakra-ui/react'
 
 interface Props {
   types: Type[]
@@ -58,16 +65,33 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     initialSelectedSkuOptions
   )
 
-  const handleTypeChange = (selectedOptions: any) => {
-    const selectedSkuOptions = selectedOptions.map((option: any) =>
-      skuOptions.find((type) => type.reference === option.value)
-    )
-    setSelectedSkuOptions(selectedSkuOptions) // Update price calculation
+  const handleTypeChange = (e: { value: string[] }) => {
+    const values = e.value
+
+    // Find the corresponding options for the selected values
+    const selectedOptions = values
+      .map((value) =>
+        formattedTypeOptions.find((option) => option.value === value)
+      )
+      .filter(Boolean) as Type[]
+
+    // Find selected SkuOptions
+    const selectedSkuOptionsList = values
+      .map((value) => skuOptions.find((type) => type.reference === value))
+      .filter(Boolean) as SkuOption[]
+
     setSelectedTypeOptionValues(selectedOptions) // Update Select
-    setLicenseTypes({ lineItem, selectedSkuOptions }) // Call API and update Provider state
+    setSelectedSkuOptions(selectedSkuOptionsList) // Update price calculation
+    setLicenseTypes({ lineItem, selectedSkuOptions: selectedSkuOptionsList }) // Call API and update Provider state
 
     // @TODO: loading indicator?
   }
+
+  // Create a list collection for the type options
+  const typeOptionsCollection = useMemo(
+    () => createListCollection({ items: formattedTypeOptions }),
+    [formattedTypeOptions]
+  )
 
   // @TODO: prevent all the select from removing the last option or completely clearing the selected options
 
@@ -92,13 +116,25 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
         </Stack>
         <Flex direction={'row'} alignItems={'center'}>
           <Box flexGrow={1}>
-            <Select
-              placeholder={'Select a type'}
-              options={formattedTypeOptions}
-              isMulti
-              value={selectedTypeOptionValues}
-              onChange={handleTypeChange}
-            />
+            <SelectRoot
+              variant={'flushed'}
+              size={'sm'}
+              fontSize={'md'}
+              collection={typeOptionsCollection}
+              value={selectedTypeOptionValues.map((type) => type.value)}
+              onValueChange={handleTypeChange}
+              multiple
+            >
+              <SelectValueText placeholder="Select a type" />
+              <SelectTrigger>{'Edit license'}</SelectTrigger>
+              <SelectContent portalled={false}>
+                {formattedTypeOptions.map((option) => (
+                  <SelectItem key={option.value} item={option}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectRoot>
           </Box>
           <Box minW={24} textAlign={'right'}>
             {selectedSkuOptions?.length > 0 && licenseSize && (
