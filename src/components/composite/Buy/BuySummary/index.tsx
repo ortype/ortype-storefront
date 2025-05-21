@@ -120,7 +120,11 @@ export const BuySummary = () => {
           {'Total'}
         </Box>
         <Box></Box>
-        <Box fontSize={'xl'} textAlign={'right'}>
+        <Box
+          fontSize={'xl'}
+          textAlign={'right'}
+          fontVariantNumeric={'tabular-nums'}
+        >
           <TotalAmount />
         </Box>
       </SimpleGrid>

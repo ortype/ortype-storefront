@@ -19,9 +19,9 @@ import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import React from 'react'
 import { BuySummary } from './BuySummary'
 import { SingleStyles } from './SingleStyles'
-import { InfoTip, ToggleTip } from '@/components/ui/toggle-tip'
+import { InfoTip } from '@/components/ui/toggle-tip'
 
-const CheckoutButton = ({ isDisabled, order }) => {
+export const CheckoutButton = ({ isDisabled, order }) => {
   return (
     <Button
       variant={'solid'}
@@ -41,7 +41,7 @@ const CheckoutButton = ({ isDisabled, order }) => {
 export const FieldsetLegend = ({ children }) => {
   return (
     <Fieldset.Legend
-      px={4}
+      px={3}
       fontSize={'xs'}
       textTransform={'uppercase'}
       color={'#737373'}

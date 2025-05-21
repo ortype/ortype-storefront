@@ -1,11 +1,12 @@
 'use client'
 import { Account } from '@/commercelayer/components/composite/Account'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
-import { Box, Button, Flex, Group, Link } from '@chakra-ui/react'
+import { Box, Button, Flex, Group } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import { Font } from 'sanity.types'
 import { Nav } from './Nav'
 import { SessionId } from './SessionId'
+import Link from 'next/link'
 
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import {
@@ -53,13 +54,13 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
         <Nav fonts={fonts} />
       </Box>
       <Box p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
-        <DynamicCartContainer>
-          <DynamicCart
+        <DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu}>
+          {/*<DynamicCart
             openCart={openCart}
             openMenu={openMenu}
             setCartOpen={setCartOpen}
             setMenuOpen={setMenuOpen}
-          />
+          />*/}
         </DynamicCartContainer>
         <Box ref={ref} pos={'absolute'} bottom={'20px'} right={'20px'}></Box>
       </Box>
@@ -75,8 +76,12 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
           onMouseLeave={() => setMenuOpen(false)}
         >
           <MenuItem asChild value="#">
-            <Button variant={'plain'} onClick={() => setCartOpen(true)}>
-              {'Cart'}
+            <Button
+              variant={'plain'}
+              // onClick={() => setCartOpen(true)}
+              asChild
+            >
+              <Link href={'/cart'}>{`Cart`}</Link>
             </Button>
           </MenuItem>
           <MenuItem asChild value="/account">

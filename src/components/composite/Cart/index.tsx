@@ -2,7 +2,7 @@ import { Account } from '@/commercelayer/components/composite/Account'
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
-import { Box, Button, Fieldset, Link } from '@chakra-ui/react'
+import { Box, Button, Fieldset, Link, Heading } from '@chakra-ui/react'
 import NextLink from 'next/link'
 
 import {
@@ -63,7 +63,7 @@ const Cart = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
       <DialogRoot
         open={openCart}
         onOpenChange={(e) => setCartOpen(e.open)}
-        size={'cover'}
+        size={'full'}
         // placement="center"
         motionPreset="slide-in-bottom"
         scrollBehavior="inside"
@@ -71,8 +71,18 @@ const Cart = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
       >
         {/*<DialogBackdrop />*/}
         <DialogContent bg={'white'}>
-          <DialogHeader>Cart or Bag Or Basket</DialogHeader>
-          <DialogCloseTrigger />
+          <DialogHeader>
+            <Heading
+              textAlign={'center'}
+              size={'2xl'}
+              fontWeight={'normal'}
+              textTransform={'uppercase'}
+              mx={'auto'}
+            >
+              Cart or Bag Or Basket
+            </Heading>
+          </DialogHeader>
+          <DialogCloseTrigger insetStart={2} insetEnd={'auto'} />
           <DialogBody>
             <LicenseOwnerInput />
             <Fieldset.Root>

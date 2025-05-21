@@ -7,8 +7,9 @@ import {
   SelectValueText,
 } from '@/components/ui/chakra-select'
 import { Size, sizes } from '@/lib/settings'
-import { createListCollection } from '@chakra-ui/react'
+import { createListCollection, Fieldset } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { FieldsetLegend } from '@/components/composite/Buy'
 
 interface Props {
   licenseSize: Size
@@ -46,24 +47,33 @@ export const LicenseSizeSelect: React.FC<Props> = ({
   // *************************************
 
   return (
-    <SelectRoot
-      variant={'subtle'}
-      size={'sm'}
-      fontSize={'md'}
-      collection={licenseSizeCollection}
-      value={[selectedSize?.value || '']}
-      onValueChange={handleSizeChange}
-    >
-      <SelectTrigger>
-        <SelectValueText placeholder="Select a size" />
-      </SelectTrigger>
-      <SelectContent portalled={false}>
-        {sizes.map((option) => (
-          <SelectItem key={option.value} item={option}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </SelectRoot>
+    <Fieldset.Root>
+      <FieldsetLegend>{'Company size of the license owner'}</FieldsetLegend>
+      <Fieldset.Content asChild>
+        <SelectRoot
+          mt={1}
+          variant={'subtle'}
+          size={'lg'}
+          fontSize={'md'}
+          collection={licenseSizeCollection}
+          value={[selectedSize?.value || '']}
+          onValueChange={handleSizeChange}
+          w={'100%'}
+          positioning={{ sameWidth: true }}
+          fontVariantNumeric={'tabular-nums'}
+        >
+          <SelectTrigger width={'100%'}>
+            <SelectValueText placeholder="Select a size" />
+          </SelectTrigger>
+          <SelectContent portalled={false}>
+            {sizes.map((option) => (
+              <SelectItem key={option.value} item={option}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </SelectRoot>
+      </Fieldset.Content>
+    </Fieldset.Root>
   )
 }

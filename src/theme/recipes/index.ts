@@ -3,7 +3,7 @@ import { buttonRecipe } from './button'
 // import { codeRecipe } from './code'
 // import { containerRecipe } from './container'
 // import { headingRecipe } from './heading'
-// import { inputRecipe } from './input'
+import { inputRecipe } from './input'
 // import { inputAddonRecipe } from './input-addon'
 // import { kbdRecipe } from './kbd'
 import { linkRecipe } from './link'
@@ -24,7 +24,7 @@ export const recipes = {
   // code: codeRecipe,
   // container: containerRecipe,
   // heading: headingRecipe,
-  // input: inputRecipe,
+  input: inputRecipe,
   // inputAddon: inputAddonRecipe,
   // kbd: kbdRecipe,
   link: linkRecipe,

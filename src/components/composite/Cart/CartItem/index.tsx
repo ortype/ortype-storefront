@@ -79,16 +79,18 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
 
   return (
     <>
-      <SimpleGrid columns={2} spacing={4}>
-        <Stack direction={'row'} spacing={2}>
-          <Text>{lineItem.name}</Text>
+      <SimpleGrid columns={2} spacing={3} bg={'brand.50'} p={3}>
+        <Stack direction={'row'} spacing={2} alignItems={'center'}>
+          <Text fontSize={'2xl'} as={'span'} className={lineItem.sku_code}>
+            {lineItem.name}
+          </Text>
           <Text>
             <Link onClick={handleRemove} cursor={'pointer'}>
               {'(Remove)'}
             </Link>
           </Text>
         </Stack>
-        <Flex direction={'row'}>
+        <Flex direction={'row'} alignItems={'center'}>
           <Box flexGrow={1}>
             <Select
               placeholder={'Select a type'}
@@ -100,18 +102,15 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
           </Box>
           <Box minW={24} textAlign={'right'}>
             {selectedSkuOptions?.length > 0 && licenseSize && (
-              <Text>
-                <b>
-                  {' '}
-                  {(selectedSkuOptions.reduce(
-                    (total, { price_amount_cents }) =>
-                      total + Number(price_amount_cents),
-                    0
-                  ) *
-                    licenseSize.modifier) /
-                    100}{' '}
-                  EUR
-                </b>
+              <Text as={'span'} fontVariantNumeric={'tabular-nums'}>
+                EUR{' '}
+                {(selectedSkuOptions.reduce(
+                  (total, { price_amount_cents }) =>
+                    total + Number(price_amount_cents),
+                  0
+                ) *
+                  licenseSize.modifier) /
+                  100}{' '}
               </Text>
             )}
           </Box>

@@ -95,6 +95,7 @@ export const SelectValueText = React.forwardRef<
           if (children) return children(items)
           if (items.length === 1)
             return select.collection.stringifyItem(items[0])
+          // show multiselect as `tag style` with `clear`
           return `${items.length} selected`
         }}
       </ChakraSelect.Context>

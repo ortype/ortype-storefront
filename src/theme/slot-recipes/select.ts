@@ -31,11 +31,11 @@ export const selectSlotRecipe = defineSlotRecipe({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      width: 'auto',
+      width: '100%',
       whiteSpace: 'nowrap',
       minH: 'var(--select-trigger-height)',
       px: 'var(--select-trigger-padding-x)',
-      borderRadius: 'l2',
+      borderRadius: 'none',
       userSelect: 'none',
       textAlign: 'start',
       focusVisibleRing: 'inside',
@@ -75,7 +75,7 @@ export const selectSlotRecipe = defineSlotRecipe({
       display: 'flex',
       flexDirection: 'column',
       zIndex: 'dropdown',
-      borderRadius: 'l2',
+      borderRadius: 'none',
       outline: 0,
       maxH: '96',
       overflowY: 'auto',
@@ -160,7 +160,11 @@ export const selectSlotRecipe = defineSlotRecipe({
         trigger: {
           borderWidth: '1px',
           borderColor: 'transparent',
-          bg: 'bg.muted',
+          bg: 'brand.50',
+        },
+        content: {
+          bg: 'brand.50',
+          boxShadow: 'none',
         },
       },
       flushed: {
@@ -284,11 +288,11 @@ export const selectSlotRecipe = defineSlotRecipe({
       },
       lg: {
         root: {
-          '--select-trigger-height': 'sizes.12',
-          '--select-trigger-padding-x': 'spacing.4',
+          '--select-trigger-height': 'sizes.11',
+          '--select-trigger-padding-x': 'spacing.3',
         },
         content: {
-          p: '1.5',
+          p: '1.4',
           textStyle: 'md',
         },
         itemGroup: {
@@ -304,7 +308,7 @@ export const selectSlotRecipe = defineSlotRecipe({
         },
         trigger: {
           textStyle: 'md',
-          py: '3',
+          py: '1',
           gap: '2',
         },
         indicator: {
