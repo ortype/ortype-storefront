@@ -5,62 +5,87 @@ import {
   NumberInputLabel,
   NumberInputRoot,
 } from '@/components/ui/number-input'
+import type { NumberFormatOptions, ValueChangeDetails } from '@chakra-ui/react'
+import { InputGroup, Text } from '@chakra-ui/react'
 
 import debounce from 'lodash.debounce'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 
 interface NumericInputProps {
-  value: number
-  onChange: (val: number) => void
+  value?: number
+  label: string
+  onChange?: (key: string, val: number) => void
+  defaultValue?: number
+  step?: number
+  withScrubber?: boolean
+  min?: number
+  max?: number
+  formatOptions?: NumberFormatOptions
+  /** Set to true to display the value with 'pt' suffix */
+  usePointFormat?: boolean
+  /**
+   * Debounce delay in milliseconds
+   * Set to 0 to disable debounce
+   * @default 500
+   */
+  debounceDelay?: number
 }
 
 const NumericInput: React.FC<NumericInputProps> = (props) => {
-  const { value } = props
-  /*
-  // @TODO: check if we still need a controlled component for chakra-ui v3
-  const [inputValue, setInputValue] = useState(value || 0)
+  const {
+    value,
+    label,
+    step,
+    defaultValue = 0,
+    usePointFormat = false,
+    debounceDelay = 500,
+  } = props
 
   const onChange = useCallback(
-    debounce((val: number) => {
-      // handle your change logic here
-      if (props.onChange) {
-        props.onChange(val)
-      }
-    }, 500), // Adjust the time (in milliseconds) as needed
-    []
+    debounceDelay > 0
+      ? debounce((val: number) => {
+          // handle your change logic here
+          if (props.onChange) {
+            props.onChange(label, val)
+          }
+        }, debounceDelay)
+      : // No debounce when debounceDelay is 0
+        (val: number) => {
+          if (props.onChange) {
+            props.onChange(label, val)
+          }
+        },
+    [label, props.onChange, debounceDelay]
   )
 
-  const handleInputChange = (val) => {
-    const numericValue = Number(val)
-    console.log('handleInputChange: ', val, numericValue)
-
-    // numericValue !== '-' @TODO: this prevents typing in negative values
-    if (val === '-') {
-      setInputValue(val)
-      return
-    }
-
-    if (Number.isNaN(numericValue)) return
-    setInputValue(numericValue)
-    onChange(numericValue)
-  }
-
-  const handleIncrementButton = () => {
-    onChange(inputValue + 1)
-    setInputValue(inputValue + 1)
-  }
-
-  const handleDecrementButton = () => {
-    onChange(inputValue - 1)
-    setInputValue(inputValue - 1)
-  }
-  */
-
   return (
-    <Flex alignItems={`center`}>
-      <NumberInputRoot value={value}>
-        <NumberInputField fontSize={'sm'} h={'2rem'} />
-      </NumberInputRoot>
+    <Flex alignItems={`center`} position="relative">
+      {usePointFormat ? (
+        <InputGroup endElement="pt">
+          <NumberInputRoot
+            value={value !== undefined ? value.toString() : ''}
+            defaultValue={
+              defaultValue !== undefined ? defaultValue.toString() : '0'
+            }
+            onValueChange={(e: ValueChangeDetails) => onChange(e.valueAsNumber)}
+            {...props}
+          >
+            <NumberInputField fontSize={'sm'} h={'2rem'} />
+          </NumberInputRoot>
+        </InputGroup>
+      ) : (
+        <NumberInputRoot
+          value={value !== undefined ? value.toString() : ''}
+          defaultValue={
+            defaultValue !== undefined ? defaultValue.toString() : '0'
+          }
+          step={step}
+          onValueChange={(e: ValueChangeDetails) => onChange(e.valueAsNumber)}
+          {...props}
+        >
+          <NumberInputField fontSize={'sm'} h={'2rem'} />
+        </NumberInputRoot>
+      )}
     </Flex>
   )
 }

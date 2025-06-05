@@ -35,8 +35,6 @@ import {
 } from '@sanity/icons'
 import { type BlockStyle, type LineParams, type Update } from './bookTypes'
 
-const pointFormat = (num) => `${num}pt`
-
 const BlockPopover: React.FC<{
   line: LineParams
   isLoadingBookItem: boolean
@@ -114,69 +112,17 @@ const BlockPopover: React.FC<{
             width={'16rem'}
             isClearable
           />
-          <SimpleGrid columns={3} spacing={3}>
+          <SimpleGrid columns={3} gap={3}>
             <Box>
               <Text as={'span'} fontSize={'xs'}>
                 Font size
               </Text>
               <NumericInput
-                onChange={(value) => handleChange('fontSize', value)}
+                onChange={handleChange}
+                label={'fontSize'}
                 value={line.fontSize}
-                // formatter={pointFormat}
                 step={5}
                 min={0}
-                style={{
-                  wrap: {
-                    display: `block`,
-                    marginBottom: `0.5rem`,
-                  },
-                  input: {
-                    fontSize: `24px`,
-                    width: `100%`,
-                  },
-                }}
-              />
-            </Box>
-            <Box>
-              <Text as={'span'} fontSize={'xs'}>
-                Line gap (↕)
-              </Text>
-              <NumericInput
-                onChange={(value) => handleChange('lineGap', value)}
-                value={line.lineGap}
-                format={pointFormat}
-                step={1}
-                style={{
-                  wrap: {
-                    display: `block`,
-                    marginBottom: `0.5rem`,
-                  },
-                  input: {
-                    fontSize: `24px`,
-                    width: `100%`,
-                  },
-                }}
-              />
-            </Box>
-            <Box>
-              <Text as={'span'} fontSize={'xs'}>
-                Offset (↓)
-              </Text>
-              <NumericInput
-                onChange={(value) => handleChange('marginBottom', value)}
-                value={line.marginBottom}
-                format={pointFormat}
-                step={1}
-                style={{
-                  wrap: {
-                    display: `block`,
-                    marginBottom: `0.5rem`,
-                  },
-                  input: {
-                    fontSize: `24px`,
-                    width: `100%`,
-                  },
-                }}
               />
             </Box>
             <Box>
@@ -185,21 +131,12 @@ const BlockPopover: React.FC<{
               </Text>
               <NumericInput
                 disabled={line.isParagraph}
-                onChange={(value) => handleChange('wordCount', value)}
+                onChange={handleChange}
+                label={'wordCount'}
                 value={line.wordCount}
                 step={1}
                 min={1}
                 max={10}
-                style={{
-                  wrap: {
-                    display: `block`,
-                    marginBottom: `0.5rem`,
-                  },
-                  input: {
-                    fontSize: `24px`,
-                    width: `100%`,
-                  },
-                }}
               />
             </Box>
             <Box>
@@ -207,20 +144,39 @@ const BlockPopover: React.FC<{
                 Line count
               </Text>
               <NumericInput
-                onChange={(value) => handleChange('lineCount', value)}
+                onChange={handleChange}
+                label={'lineCount'}
                 value={line.lineCount}
                 step={1}
                 min={1}
-                style={{
-                  wrap: {
-                    display: `block`,
-                    marginBottom: `0.5rem`,
-                  },
-                  input: {
-                    fontSize: `24px`,
-                    width: `100%`,
-                  },
-                }}
+              />
+            </Box>
+          </SimpleGrid>
+          <SimpleGrid columns={2} gap={3}>
+            <Box>
+              <Text as={'span'} fontSize={'xs'}>
+                Line gap (↕)
+              </Text>
+              <NumericInput
+                onChange={handleChange}
+                label={'lineGap'}
+                value={line.lineGap}
+                step={1}
+                withScrubber
+                debounceDelay={0}
+              />
+            </Box>
+            <Box>
+              <Text as={'span'} fontSize={'xs'}>
+                Offset (↓)
+              </Text>
+              <NumericInput
+                onChange={handleChange}
+                label={'marginBottom'}
+                value={line.marginBottom}
+                step={1}
+                withScrubber
+                debounceDelay={0}
               />
             </Box>
           </SimpleGrid>
