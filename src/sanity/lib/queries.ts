@@ -288,7 +288,6 @@ export const visibleFontsQuery = defineQuery(`
 *[_type == "font" && isVisible == true] {
   defaultVariant->{_id, optionName},
   "slug": slug.current,
-  slug,
   name,
   shortName
 }`)
