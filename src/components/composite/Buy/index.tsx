@@ -4,22 +4,22 @@ import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeLis
 import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
+import { InfoTip } from '@/components/ui/toggle-tip'
 import {
   Box,
-  Group,
   Button,
   Container,
   Fieldset,
   Flex,
+  Group,
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
-import Link from 'next/link'
 import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
+import Link from 'next/link'
 import React from 'react'
 import { BuySummary } from './BuySummary'
 import { SingleStyles } from './SingleStyles'
-import { InfoTip } from '@/components/ui/toggle-tip'
 
 export const CheckoutButton = ({ isDisabled, order }) => {
   return (
@@ -113,7 +113,7 @@ export const Buy = () => {
                       className={variant._id}
                       order={order}
                       orderId={orderId}
-                      name={variant.name}
+                      name={`${font.shortName} ${variant.optionName}`}
                       skuCode={variant._id}
                       addLineItem={addLineItem}
                       deleteLineItem={deleteLineItem}

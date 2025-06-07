@@ -1,44 +1,19 @@
 'use client'
-import { Account } from '@/commercelayer/components/composite/Account'
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
+import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { CheckoutButton } from '@/components/composite/Buy'
+import { CartItem } from '@/components/composite/Cart/CartItem'
+import { InfoTip } from '@/components/ui/toggle-tip'
 import {
   Box,
-  Flex,
-  Button,
   Container,
-  Fieldset,
-  Link,
+  Flex,
   Heading,
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
-import NextLink from 'next/link'
-
-import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-
-import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
-import { CartItem } from '@/components/composite/Cart/CartItem'
-import { IconButton } from '@/components/ui/chakra-iconbutton'
-import {
-  LineItem,
-  LineItemsContainer,
-  useOrderContainer,
-} from '@commercelayer/react-components'
-import type { Order } from '@commercelayer/sdk'
-import { useContext, useRef, useState } from 'react'
-import { InfoTip } from '@/components/ui/toggle-tip'
 import Summary from './Summary'
-import { CheckoutButton } from '@/components/composite/Buy'
 
 const Legend = ({ children }) => {
   return (

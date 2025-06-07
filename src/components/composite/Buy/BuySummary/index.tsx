@@ -1,16 +1,6 @@
-import { Box, Heading, SimpleGrid } from '@chakra-ui/react'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import {
-  LineItem,
-  LineItemAmount,
-  LineItemName,
-  LineItemOption,
-  LineItemOptions,
-  LineItemRemoveLink,
-  LineItemsContainer,
-  TotalAmount,
-} from '@commercelayer/react-components'
 import { sizes } from '@/lib/settings'
+import { Box, Heading, SimpleGrid } from '@chakra-ui/react'
 import { useMemo } from 'react'
 
 interface LineItemType {
@@ -82,39 +72,36 @@ export const BuySummary = () => {
       >
         {"What's in your cart"}
       </Heading>
-      {/* @TODO: the LineItemsContainer does not reliably update when adding items manually */}
-      <LineItemsContainer>
-        <SimpleGrid
-          columns={3}
-          py={3}
-          borderTop={'1px solid #E7E0BF'}
-          borderBottom={'1px solid #E7E0BF'}
-          mb={1.5}
-        >
-          <Box>{parentFontString}</Box>
+      <SimpleGrid
+        columns={3}
+        py={3}
+        borderTop={'1px solid #E7E0BF'}
+        borderBottom={'1px solid #E7E0BF'}
+        mb={1.5}
+      >
+        <Box>{parentFontString}</Box>
+        <Box>
+          {sizes.find(
+            ({ value }) => value === order?.metadata?.license?.size?.value
+          )?.label || 'No size selected'}
+        </Box>
+        <Box></Box>
+      </SimpleGrid>
+      {order?.line_items?.map((lineItem) => (
+        <SimpleGrid key={lineItem.id} columns={3} py={1.5}>
+          <Box>{lineItem.item?.name}</Box>
           <Box>
-            {sizes.find(
-              ({ value }) => value === order?.metadata?.license?.size?.value
-            )?.label || 'No size selected'}
+            {lineItem?.line_item_options
+              ?.map((option) => option.name)
+              .filter(Boolean)
+              .join(', ')}
           </Box>
-          <Box></Box>
+          <Box
+            textAlign={'right'}
+            fontVariantNumeric={'tabular-nums'}
+          >{`EUR ${lineItem.unit_amount_float}`}</Box>
         </SimpleGrid>
-
-        <LineItem>
-          <SimpleGrid columns={3} py={1.5}>
-            <LineItemName />
-            <Box>
-              <LineItemOptions showName showAll>
-                <LineItemOption />
-              </LineItemOptions>
-            </Box>
-            <Box textAlign={'right'}>
-              <LineItemAmount />
-            </Box>
-          </SimpleGrid>
-        </LineItem>
-      </LineItemsContainer>
-
+      ))}
       <SimpleGrid columns={3} py={3} mt={1.5} borderTop={'1px solid #E7E0BF'}>
         <Box fontSize={'xl'} textTransform={'uppercase'} fontWeight={'normal'}>
           {'Total'}
@@ -125,7 +112,7 @@ export const BuySummary = () => {
           textAlign={'right'}
           fontVariantNumeric={'tabular-nums'}
         >
-          <TotalAmount />
+          {`EUR ${order?.total_amount_with_taxes_float}`}
         </Box>
       </SimpleGrid>
     </Box>

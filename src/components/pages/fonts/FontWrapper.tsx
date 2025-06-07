@@ -2,11 +2,11 @@
 import Modules from '@/components/modules'
 import { Box, Button, Flex } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import React, { useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
 import { DimensionsProvider } from './contexts/dimensionsContext'
 import FontContainer from './FontContainer'
-import Link from 'next/link'
 
 /*
 const DynamicBuyContainer: any = dynamic(
@@ -55,7 +55,7 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
         zIndex={'docked'}
         asChild
       >
-        <Link href={`/buy/${font.slug}`}>{`Add to cart`}</Link>
+        <Link href={`/buy/${font.slug}`}>{`Buy`}</Link>
       </Button>
       <FontContainer font={font} moreFonts={moreFonts}>
         <DimensionsProvider targetRef={targetRef}>
