@@ -1,10 +1,10 @@
-import { useOrderContainer } from '@commercelayer/react-components'
 import { createContext, FC, useContext, useReducer } from 'react'
 
 import { ActionType, reducer } from '@/commercelayer/providers/Buy/reducer'
 import { addLineItemLicenseTypes } from '@/commercelayer/providers/Buy/utils'
 
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import type { AddToCartError } from '@/commercelayer/providers/Order'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { Font } from '@/sanity/lib/queries'
 import { useOrderContext } from '../Order'
@@ -17,7 +17,10 @@ export interface BuyProviderData {
   font: Font
   itemsCount: number
   isLoading: boolean
-  addLineItem: (params: { skuCode: string }) => void
+  addLineItem: (params: { skuCode: string }) => Promise<{
+    success: boolean
+    error?: AddToCartError
+  }>
 }
 
 interface BuyProviderProps {
@@ -43,23 +46,37 @@ export const useBuyContext = (): BuyProviderData => useContext(BuyContext)
 export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { addToCart } = useOrderContainer()
+  const { clientConfig: config } = useIdentityContext()
 
-  const {
-    settings: { accessToken },
-    clientConfig: config,
-  } = useIdentityContext()
-
-  const { orderId, order, refetchOrder, selectedSkuOptions, licenseSize } =
+  const { order, addToCart, refetchOrder, selectedSkuOptions, licenseSize } =
     useOrderContext()
 
-  const addLineItem = async (params: { skuCode: string }) => {
+  /**
+   * Adds a line item to the cart with proper license metadata.
+   *
+   * @param params - Parameters for adding the line item
+   * @param params.skuCode - The SKU code of the item to add
+   *
+   * @returns Promise resolving to result object containing:
+   * - success: boolean indicating if operation was successful
+   * - error?: error information if operation failed, including:
+   *   - message: human-readable error message
+   *   - originalError?: the underlying error object
+   */
+  const addLineItem = async (params: {
+    skuCode: string
+  }): Promise<{
+    success: boolean
+    error?: AddToCartError
+  }> => {
     dispatch({ type: ActionType.START_LOADING })
     const cl = config != null ? getCommerceLayer(config) : undefined
+
     try {
-      if (config == null) return
-      // @types
-      // https://github.com/commercelayer/commercelayer-react-components/blob/main/packages/react-components/src/reducers/OrderReducer.ts#L383
+      if (config == null) {
+        throw new Error('Commerce Layer client not initialized')
+      }
+
       const attrs = {
         skuCode: params.skuCode,
         lineItem: {
@@ -74,36 +91,80 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         orderMetadata: { license: { size: licenseSize } },
         quantity: 1,
       }
-      console.log('addLineItem addToCart attrs: ', attrs)
-      await addToCart(attrs)
-      const { order } = await refetchOrder()
-      console.log('addLineItem order: ', order)
 
-      if (order && order.line_items && order.line_items?.length > 0) {
-        // @NOTE: we have issues with fetching the order returning `metadata` on initial create
-        // use the param `skuCode` to match the right `order.lineItems`
-        const lineItem = order.line_items.find(
-          ({ sku_code }) => sku_code === params.skuCode
-        )
-        console.log('addLineItem lineItem: ', lineItem)
-        if (lineItem) {
-          const res = await addLineItemLicenseTypes({
-            cl,
-            lineItem,
-            selectedSkuOptions: selectedSkuOptions,
-          })
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('addLineItem addToCart attrs: ', attrs)
+      }
 
-          const { order } = await refetchOrder()
-          order &&
-            dispatch({
-              type: ActionType.ADD_LINE_ITEM,
-              payload: { order },
-              // @TODO: maybe need to update `state.itemsCount` here
-            })
+      const result = await addToCart(attrs)
+      if (!result.success) {
+        return {
+          success: false,
+          error: result.error,
         }
       }
-    } catch (error: any) {
-      console.log('addLineItem error: ', error)
+
+      const { order } = await refetchOrder()
+      if (!order?.line_items?.length) {
+        return {
+          success: false,
+          error: {
+            message: 'Failed to add item to cart: Order not found',
+          },
+        }
+      }
+
+      // Find the line item we just added
+      const lineItem = order.line_items.find(
+        ({ sku_code }) => sku_code === params.skuCode
+      )
+
+      if (!lineItem) {
+        return {
+          success: false,
+          error: {
+            message: 'Failed to add item to cart: Line item not found',
+          },
+        }
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('addLineItem lineItem: ', lineItem)
+      }
+
+      // Update line item with license types
+      await addLineItemLicenseTypes({
+        cl,
+        lineItem,
+        selectedSkuOptions,
+      })
+
+      // Get updated order and update state
+      const { order: updatedOrder } = await refetchOrder()
+      if (updatedOrder) {
+        dispatch({
+          type: ActionType.ADD_LINE_ITEM,
+          payload: { order: updatedOrder },
+        })
+      }
+
+      return { success: true }
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Error adding line item:', error)
+      }
+      return {
+        success: false,
+        error: {
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Failed to add item to cart',
+          originalError: error,
+        },
+      }
+    } finally {
+      dispatch({ type: ActionType.STOP_LOADING })
     }
   }
 

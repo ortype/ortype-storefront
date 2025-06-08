@@ -12,6 +12,7 @@ import {
   Fieldset,
   Flex,
   Group,
+  Show,
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
@@ -126,7 +127,9 @@ export const Buy = () => {
             </Fieldset.Root>
           </SimpleGrid>
           <BuySummary />
-          <CheckoutButton order={order} isDisabled={false} />
+          <Show when={order}>
+            <CheckoutButton order={order} isDisabled={false} />
+          </Show>
         </Stack>
       </Container>
     </>

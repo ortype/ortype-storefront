@@ -1,13 +1,4 @@
-import {
-  type CommerceLayerClient,
-  type LineItem,
-  type LineItemOptionCreate,
-  type LineItemUpdate,
-  type Order,
-  type OrderUpdate,
-  type SkuOption,
-} from '@commercelayer/sdk'
-import { sizes } from '@/lib/settings'
+import { type LineItemOptionCreate } from '@commercelayer/sdk'
 import { AddLineItemLicenseTypes } from './types'
 
 // @NOTE: move these utils to @/commmercelayer/utils in named files (??)
@@ -40,3 +31,10 @@ export async function addLineItemLicenseTypes({
     }
   }
 }
+
+// Default export containing all utility functions
+const utils = {
+  addLineItemLicenseTypes,
+}
+
+export default utils

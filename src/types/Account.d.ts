@@ -42,6 +42,7 @@ declare global {
 
     slug?: string
     endpoint: string
+    persistKey: string
   }
 }
 

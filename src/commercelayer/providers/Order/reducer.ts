@@ -1,5 +1,6 @@
 import {
   LicenseOwnerInput,
+  LicenseSize,
   OrderStateData,
 } from '@/commercelayer/providers/Order'
 import { Order, SkuOption } from '@commercelayer/sdk'
@@ -8,11 +9,13 @@ export enum ActionType {
   STOP_LOADING = 'STOP_LOADING',
   SET_ORDER = 'SET_ORDER',
   UPDATE_ORDER = 'UPDATE_ORDER',
+  CREATE_ORDER = 'CREATE_ORDER',
   SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
   SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
   DELETE_LINE_ITEM = 'DELETE_LINE_ITEM',
+  ADD_TO_CART = 'ADD_TO_CART',
 }
 
 export type Action =
@@ -29,28 +32,41 @@ export type Action =
       type: ActionType.UPDATE_ORDER
       payload: {
         order: Order
-        // others: Partial<OrderStateData>
+      }
+    }
+  | {
+      type: ActionType.CREATE_ORDER
+      payload: {
+        order: Order
+        orderId: string
+        others: Partial<OrderStateData> & {
+          itemsCount: number
+          isInvalid: boolean
+          hasLicenseOwner: boolean
+          isLicenseForClient: boolean
+          licenseOwner: LicenseOwnerInput
+          licenseSize: LicenseSize
+        }
       }
     }
   | {
       type: ActionType.SET_LICENSE_OWNER
       payload: {
         order: Order
-        // others: Partial<OrderStateData>
       }
     }
   | {
       type: ActionType.SET_LICENSE_SIZE
       payload: {
         order: Order
-        licenseSize: string
+        licenseSize: LicenseSize
       }
     }
   | {
       type: ActionType.SET_LICENSE_TYPES
       payload: {
         order: Order
-        others?: Partial<OrderStateData>
+        others: Partial<OrderStateData>
       }
     }
   | {
@@ -58,6 +74,20 @@ export type Action =
       payload: {
         skuOptions: SkuOption[]
         others: Partial<OrderStateData>
+      }
+    }
+  | {
+      type: ActionType.ADD_TO_CART
+      payload: {
+        order: Order
+        orderId: string
+        others: Partial<OrderStateData> & {
+          itemsCount: number
+          hasLicenseOwner: boolean
+          isLicenseForClient: boolean
+          licenseOwner: LicenseOwnerInput
+          licenseSize: LicenseSize
+        }
       }
     }
   | {
@@ -79,21 +109,31 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         ...state,
         isLoading: false,
       }
-    case ActionType.SET_ORDER:
+    case ActionType.SET_ORDER: {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('SET_ORDER: action.payload:', action.payload)
+      }
       return {
         ...state,
         order: action.payload.order,
         ...action.payload.others,
         isLoading: false,
       }
-    case ActionType.UPDATE_ORDER:
+    }
+    case ActionType.UPDATE_ORDER: {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('UPDATE_ORDER: action.payload:', action.payload)
+      }
       return {
         ...state,
         order: action.payload.order,
         isLoading: false,
       }
+    }
     case ActionType.SET_LICENSE_OWNER: {
-      console.log('SET_LICENSE_OWNER: action.payload: ', action.payload)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('SET_LICENSE_OWNER: action.payload:', action.payload)
+      }
       return {
         ...state,
         order: action.payload.order,
@@ -101,7 +141,9 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
     }
     case ActionType.SET_LICENSE_SIZE: {
-      console.log('SET_LICENSE_SIZE: action.payload: ', action.payload)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('SET_LICENSE_SIZE: action.payload:', action.payload)
+      }
       return {
         ...state,
         order: action.payload.order,
@@ -110,7 +152,9 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
     }
     case ActionType.SET_LICENSE_TYPES: {
-      console.log('SET_LICENSE_TYPES: action.payload: ', action.payload)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('SET_LICENSE_TYPES: action.payload:', action.payload)
+      }
       return {
         ...state,
         order: action.payload.order,
@@ -119,6 +163,9 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
     }
     case ActionType.SET_SKU_OPTIONS: {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('SET_SKU_OPTIONS: action.payload:', action.payload)
+      }
       return {
         ...state,
         skuOptions: action.payload.skuOptions,
@@ -126,7 +173,34 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         isLoading: false,
       }
     }
+    case ActionType.CREATE_ORDER: {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('CREATE_ORDER: action.payload:', action.payload)
+      }
+      return {
+        ...state,
+        order: action.payload.order,
+        orderId: action.payload.orderId,
+        ...action.payload.others,
+        isLoading: false,
+      }
+    }
+    case ActionType.ADD_TO_CART: {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('ADD_TO_CART: action.payload:', action.payload)
+      }
+      return {
+        ...state,
+        order: action.payload.order,
+        orderId: action.payload.orderId,
+        ...action.payload.others,
+        isLoading: false,
+      }
+    }
     case ActionType.DELETE_LINE_ITEM: {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('DELETE_LINE_ITEM: action.payload:', action.payload)
+      }
       return {
         ...state,
         order: action.payload.order,

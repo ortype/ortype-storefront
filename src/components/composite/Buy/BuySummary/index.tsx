@@ -1,6 +1,6 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { sizes } from '@/lib/settings'
-import { Box, Heading, SimpleGrid } from '@chakra-ui/react'
+import { Box, Heading, Show, SimpleGrid } from '@chakra-ui/react'
 import { useMemo } from 'react'
 
 interface LineItemType {
@@ -102,19 +102,25 @@ export const BuySummary = () => {
           >{`EUR ${lineItem.unit_amount_float}`}</Box>
         </SimpleGrid>
       ))}
-      <SimpleGrid columns={3} py={3} mt={1.5} borderTop={'1px solid #E7E0BF'}>
-        <Box fontSize={'xl'} textTransform={'uppercase'} fontWeight={'normal'}>
-          {'Total'}
-        </Box>
-        <Box></Box>
-        <Box
-          fontSize={'xl'}
-          textAlign={'right'}
-          fontVariantNumeric={'tabular-nums'}
-        >
-          {`EUR ${order?.total_amount_with_taxes_float}`}
-        </Box>
-      </SimpleGrid>
+      <Show when={order}>
+        <SimpleGrid columns={3} py={3} mt={1.5} borderTop={'1px solid #E7E0BF'}>
+          <Box
+            fontSize={'xl'}
+            textTransform={'uppercase'}
+            fontWeight={'normal'}
+          >
+            {'Total'}
+          </Box>
+          <Box></Box>
+          <Box
+            fontSize={'xl'}
+            textAlign={'right'}
+            fontVariantNumeric={'tabular-nums'}
+          >
+            {`EUR ${order?.total_amount_with_taxes_float}`}
+          </Box>
+        </SimpleGrid>
+      </Show>
     </Box>
   )
 }
