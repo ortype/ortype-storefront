@@ -34,6 +34,7 @@ export const SingleStyles: React.FC<Props> = ({
           order={order}
           skuCode={skuCode}
           quantity={1}
+          name={name}
           addLineItem={addLineItem}
           deleteLineItem={deleteLineItem}
         />

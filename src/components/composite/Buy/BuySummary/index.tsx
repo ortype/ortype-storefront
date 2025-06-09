@@ -112,10 +112,13 @@ export const BuySummary = () => {
           >
             <Box>{lineItem.item?.name}</Box>
             <Box>
-              {lineItem?.line_item_options
-                ?.map((option) => option.name)
-                .filter(Boolean)
-                .join(', ')}
+              {
+                // @TODO: these should be sorted in the same order as the 'license types' data source
+                lineItem?.line_item_options
+                  ?.map((option) => option.name)
+                  .filter(Boolean)
+                  .join(', ')
+              }
             </Box>
             <Box
               textAlign={'right'}

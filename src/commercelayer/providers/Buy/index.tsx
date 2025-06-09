@@ -3,6 +3,7 @@ import { createContext, FC, useContext, useReducer } from 'react'
 import { ActionType, reducer } from '@/commercelayer/providers/Buy/reducer'
 import { addLineItemLicenseTypes } from '@/commercelayer/providers/Buy/utils'
 
+import { toaster } from '@/components/ui/toaster'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import type { AddToCartError } from '@/commercelayer/providers/Order'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
@@ -65,6 +66,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
    */
   const addLineItem = async (params: {
     skuCode: string
+    name: string
   }): Promise<{
     success: boolean
     error?: AddToCartError
@@ -98,11 +100,35 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
 
       const result = await addToCart(attrs)
       if (!result.success) {
+        // Show error notification
+        const errorMessage = result.error?.message || 'Failed to add item to cart'
+        toaster.create({
+          title: 'Failed to add to cart',
+          description: errorMessage,
+          type: 'error',
+          duration: 4000,
+        })
         return {
           success: false,
           error: result.error,
         }
       }
+
+      // Format license types for display
+      const licenseTypes = selectedSkuOptions
+        ?.map(option => option.name)
+        ?.join(', ')
+
+      // Format license size for display
+      const licenseSizeLabel = licenseSize?.label
+
+      // Show success notification with item details
+      toaster.create({
+        title: 'Added to cart',
+        description: `${params.name}${licenseTypes ? ` (${licenseTypes})` : ''}${licenseSizeLabel ? ` - ${licenseSizeLabel}` : ''}`,
+        type: 'success',
+        duration: 3000,
+      })
 
       const { order } = await refetchOrder()
       if (!order?.line_items?.length) {
@@ -153,13 +179,20 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       if (process.env.NODE_ENV !== 'production') {
         console.error('Error adding line item:', error)
       }
+
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart'
+      // Show error notification
+      toaster.create({
+        title: 'Failed to add to cart',
+        description: errorMessage,
+        type: 'error',
+        duration: 4000,
+      })
+
       return {
         success: false,
         error: {
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Failed to add item to cart',
+          message: errorMessage,
           originalError: error,
         },
       }

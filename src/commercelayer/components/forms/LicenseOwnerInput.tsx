@@ -1,6 +1,5 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { FieldsetLegend } from '@/components/composite/Buy'
-import { toaster } from '@/components/ui/toaster'
 import { Fieldset, Input } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -46,28 +45,14 @@ const LicenseOwnerInput = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     setIsSubmitting(true)
-    try {
-      const licenseOwner: LicenseOwner = {
-        is_client: false,
-        full_name: data.full_name.trim(),
-      }
-      await setLicenseOwner({ licenseOwner })
-      toaster.create({
-        title: 'License owner updated successfully',
-        type: 'success',
-        duration: 2000,
-      })
-    } catch (error) {
-      console.error('Failed to update license owner:', error)
-      toaster.create({
-        title: 'Failed to update license owner. Please try again.',
-        description: error,
-        type: 'error',
-        duration: '2000',
-      })
-    } finally {
-      setIsSubmitting(false)
+    
+    const licenseOwner: LicenseOwner = {
+      is_client: false,
+      full_name: data.full_name.trim(),
     }
+    
+    await setLicenseOwner({ licenseOwner });
+    setIsSubmitting(false);
   })
 
   const handleBlur = handleSubmit(async (data) => {

@@ -236,6 +236,9 @@ export function calculateSettings(order: Order) {
     isLicenseForClient: order.metadata?.license?.owner?.is_client || false,
     licenseOwner: order.metadata?.license?.owner || {},
     licenseSize: order.metadata?.license?.size,
+    types: order.metadata?.license?.types || [], // Add types to settings
+    hasValidLicenseType: Array.isArray(order.metadata?.license?.types) && 
+                        order.metadata?.license?.types.length > 0
   }
 }
 

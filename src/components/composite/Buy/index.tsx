@@ -5,12 +5,15 @@ import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { InfoTip } from '@/components/ui/toggle-tip'
 import {
+  Box,
   Button,
+  Center,
   Container,
   Fieldset,
   Flex,
   Show,
   SimpleGrid,
+  Spinner,
   Stack,
 } from '@chakra-ui/react'
 import Link from 'next/link'
@@ -59,6 +62,7 @@ export const Buy = () => {
   const {
     order,
     orderId,
+    isLoading,
     licenseSize,
     skuOptions,
     setLicenseSize,
@@ -129,6 +133,13 @@ export const Buy = () => {
           </Show>
         </Stack>
       </Container>
+      <Show when={isLoading}>
+        <Box pos="absolute" inset="0" bg="bg/80">
+          <Center h="full">
+            <Spinner color="black" size={'xl'} />
+          </Center>
+        </Box>
+      </Show>
     </>
   )
 }

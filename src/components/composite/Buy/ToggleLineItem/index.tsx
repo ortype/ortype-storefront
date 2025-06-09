@@ -6,6 +6,7 @@ import React, { useContext, useState } from 'react'
 interface Props {
   order: Order
   skuCode: string
+  name: string
   quantity?: number
   addLineItem: (params: { skuCode: string }) => Promise<void>
   deleteLineItem: (params: { lineItemId: string }) => Promise<void>
@@ -14,6 +15,7 @@ interface Props {
 export const ToggleLineItem: React.FC<Props> = ({
   order,
   skuCode,
+  name,
   addLineItem,
   deleteLineItem,
   quantity,
@@ -33,7 +35,7 @@ export const ToggleLineItem: React.FC<Props> = ({
       await deleteLineItem({ lineItemId: isLineItem.id })
     } else {
       try {
-        await addLineItem({ skuCode })
+        await addLineItem({ name, skuCode })
         setIsLoading(false)
       } catch (e) {
         console.log('addToCart error: ', e)
