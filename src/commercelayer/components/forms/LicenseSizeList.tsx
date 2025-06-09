@@ -40,7 +40,7 @@ export const LicenseSizeList: React.FC<Props> = ({
         variant={'outline'}
         size={'lg'}
       >
-        <FieldsetLegend>{'How big is your company?'}</FieldsetLegend>
+        <FieldsetLegend>{'3. How big is your company?'}</FieldsetLegend>
         <Fieldset.Content asChild>
           <VStack
             mt={1}

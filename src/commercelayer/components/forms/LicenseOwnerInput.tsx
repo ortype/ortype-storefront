@@ -82,7 +82,7 @@ const LicenseOwnerInput = () => {
   return (
     <form onSubmit={onSubmit}>
       <Fieldset.Root invalid={!!errors.full_name}>
-        <FieldsetLegend>{'License Owner/Company*'}</FieldsetLegend>
+        <FieldsetLegend>{'1. License Owner/Company*'}</FieldsetLegend>
         <Fieldset.Content asChild>
           <Input
             {...register('full_name', {

@@ -53,6 +53,11 @@ export type Action =
       type: ActionType.SET_LICENSE_OWNER
       payload: {
         order: Order
+        others: {
+          hasLicenseOwner: boolean
+          isLicenseForClient: boolean
+          licenseOwner: LicenseOwnerInput
+        }
       }
     }
   | {
@@ -137,6 +142,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       return {
         ...state,
         order: action.payload.order,
+        orderId: action.payload.order.id,
+        hasLicenseOwner: action.payload.others.hasLicenseOwner,
+        isLicenseForClient: action.payload.others.isLicenseForClient,
+        licenseOwner: action.payload.others.licenseOwner,
         isLoading: false,
       }
     }

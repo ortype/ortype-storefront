@@ -3,20 +3,16 @@ import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeLis
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { Field } from '@/components/ui/field'
 import { InfoTip } from '@/components/ui/toggle-tip'
 import {
-  Box,
   Button,
   Container,
   Fieldset,
   Flex,
-  Group,
   Show,
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
-import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import Link from 'next/link'
 import React from 'react'
 import { BuySummary } from './BuySummary'
@@ -45,6 +41,7 @@ export const FieldsetLegend = ({ children }) => {
       px={3}
       fontSize={'xs'}
       textTransform={'uppercase'}
+      fontVariantNumeric={'tabular-nums'}
       color={'#737373'}
       asChild
     >
@@ -90,15 +87,13 @@ export const Buy = () => {
                 selectedSkuOptions={selectedSkuOptions}
                 setSelectedSkuOptions={setSelectedSkuOptions}
               />
-              {licenseSize && (
-                <LicenseSizeList
-                  setLicenseSize={setLicenseSize}
-                  licenseSize={licenseSize}
-                />
-              )}
+              <LicenseSizeList
+                setLicenseSize={setLicenseSize}
+                licenseSize={licenseSize}
+              />
             </Stack>
             <Fieldset.Root>
-              <FieldsetLegend>{'Single Styles'}</FieldsetLegend>
+              <FieldsetLegend>{'4. Single Styles'}</FieldsetLegend>
               <Fieldset.Content asChild>
                 <Flex
                   mt={1}

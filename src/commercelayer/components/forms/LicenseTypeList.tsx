@@ -47,14 +47,22 @@ export const LicenseTypeList: React.FC<Props> = ({
 
   const handleTypeChange = useCallback(
     (values: string[]) => {
+      // If no values selected, update state with empty arrays
+      if (values.length === 0) {
+        setSelectedTypes([])
+        setSelectedSkuOptions({
+          selectedSkuOptions: [],
+          font,
+        })
+        return
+      }
+
       const selectedTypeOptions = values.map((value) =>
         typeOptions.find((option) => option.value === value)
       )
 
-      console.log({ values, selectedTypeOptions, typeOptions })
-
-      if (selectedTypeOptions.length === 0) {
-        return false
+      if (process.env.NODE_ENV !== 'production') {
+        console.log({ values, selectedTypeOptions, typeOptions })
       }
 
       setSelectedTypes(selectedTypeOptions)
@@ -73,10 +81,10 @@ export const LicenseTypeList: React.FC<Props> = ({
 
   return (
     <Fieldset.Root>
-      <FieldsetLegend>{'A license for?'}</FieldsetLegend>
+      <FieldsetLegend>{'2. A license for?'}</FieldsetLegend>
       <Fieldset.Content asChild>
         <CheckboxGroup
-          value={selectedTypes?.map((option) => option.value) || ['']}
+          value={selectedTypes?.map((option) => option.value) || []}
           onValueChange={(e) => handleTypeChange(e)}
           bg={'#eee'}
           mt={1}

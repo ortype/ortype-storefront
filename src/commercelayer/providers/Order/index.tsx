@@ -162,10 +162,10 @@ type OrderProviderData = {
 export type OrderStateData = {
   order?: Order
   orderId?: string
-  licenseOwner: LicenseOwnerInput
-  hasLicenseOwner?: boolean
-  isLicenseForClient?: boolean
-  licenseSize: LicenseSize
+  licenseOwner?: LicenseOwnerInput // Make optional
+  hasLicenseOwner: boolean // Required, with boolean type
+  isLicenseForClient: boolean // Required, with boolean type
+  licenseSize?: LicenseSize // Make optional
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
   itemsCount: number
@@ -176,9 +176,10 @@ export type OrderStateData = {
 const initialState: OrderStateData = {
   order: undefined,
   orderId: undefined,
+  licenseOwner: undefined,
   hasLicenseOwner: false,
-  licenseOwner: { is_client: false, full_name: '' },
-  licenseSize: {},
+  isLicenseForClient: false, // Add default value
+  licenseSize: undefined,
   selectedSkuOptions: [],
   skuOptions: [],
   itemsCount: 0,
@@ -206,29 +207,11 @@ export function OrderProvider({
 }: OrderProviderProps): JSX.Element {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  // @NOTE: possbily interesting to repurpose this accessTokenSync from useCartSettingsOrInvalid
-  // this bit checks the orderId in localStorage and updates it if not synced
-  // import { useLocalStorage } from 'usehooks-ts'
-  // import { useLocalStorageToken } from '@/commercelayer/hooks/useLocalStorage'
-  /*
-  const [savedOrderId, setOrderId] = useLocalStorageToken(
-    'order',
-    orderId as string
-  )
+  // Order persistence is handled through OrderStorageContext
+  // using getLocalOrder/setLocalOrder for consistent storage management
 
-  useEffect(() => {
-    if (orderId && orderId !== savedOrderId) {
-      setOrderId(orderId)
-    }
-  }, [orderId])
-  
-  const syncedOrderId =
-    orderId === savedOrderId || (!orderId && savedOrderId)
-  
-  */
-
-  // @TODO: setup createOrder call here
-  // we need to setup the signature differently then the example so that it matches our Provider/Reducer/Util structure
+  // Order creation is handled through createOrder method
+  // following our Provider/Reducer/Utils pattern
 
   const {
     persistKey = 'order',
@@ -262,8 +245,20 @@ export function OrderProvider({
 
         // Combine default metadata/attributes with custom ones if provided
         const mergedMetadata: OrderMetadata = {
-          ...metadata,
-          ...params?.customMetadata,
+          license: {
+            ...(metadata?.license || {}),
+            ...(params?.customMetadata?.license || {}),
+          },
+          ...(metadata || {}),
+          ...(params?.customMetadata || {}),
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('createOrder: mergedMetadata:', {
+            metadata,
+            customMetadata: params?.customMetadata,
+            merged: mergedMetadata,
+          })
         }
 
         const mergedAttributes: OrderAttributes = {
@@ -345,19 +340,28 @@ export function OrderProvider({
       success: boolean
       order?: Order // Assuming Order is your type for order object
     }> => {
-      // @TODO: use this sytnax
-      // `const localOrder = persistKey ? getLocalOrder(persistKey) : orderId`
-      const orderId = params?.orderId ?? localStorage.getItem('order')
+      const orderId =
+        params?.orderId ?? (persistKey ? getLocalOrder(persistKey) : undefined)
       const cl = config != null ? getCommerceLayer(config) : undefined
       try {
         if (!orderId || cl == null) {
           return { success: false }
         }
-        console.log('fetchOrder: ', orderId)
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('fetchOrder: ', orderId)
+        }
         const orderResponse = await getOrder({ client: cl, orderId })
         const order = orderResponse?.object
 
-        // @NOTE: on initial createOrder, and subsequently calling `fetchOrder` this order response has no metadata
+        // Handle order metadata after initial creation
+        if (order && !order.metadata?.license) {
+          const settings = calculateSettings(order)
+          order.metadata = {
+            license: {
+              size: settings.licenseSize,
+            },
+          }
+        }
 
         // @NOTE: consider these utils for checking the orderId and order object
         // import { isValidOrderIdFormat } from '@/utils/isValidOrderIdFormat'
@@ -385,7 +389,7 @@ export function OrderProvider({
         return { success: false }
       }
     },
-    [config]
+    [config, persistKey, getLocalOrder]
   )
 
   const updateOrder = useCallback(
@@ -456,8 +460,8 @@ export function OrderProvider({
         payload: {
           skuOptions,
           others: {
-            // initial license type setting
-            selectedSkuOptions: [skuOptions[0]],
+            // Remove default selection, start with empty array
+            selectedSkuOptions: [],
           },
         },
       })
@@ -490,38 +494,132 @@ export function OrderProvider({
       order?: Order
     }> => {
       dispatch({ type: ActionType.START_LOADING })
+      const cl = config != null ? getCommerceLayer(config) : undefined
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('setLicenseOwner: Starting with params:', {
+          licenseOwner: params.licenseOwner,
+          hasOrder: !!state.order,
+          orderId: state.orderId,
+          hasLicenseSize: !!state.licenseSize?.value,
+          currentOrderMetadata: state.order?.metadata,
+        })
+      }
+
       try {
-        if (!params.licenseOwner || !state.orderId) {
-          throw new Error('Missing license owner or order ID')
+        if (!params.licenseOwner || !cl) {
+          throw new Error(
+            'Missing license owner or Commerce Layer client not initialized'
+          )
         }
 
-        const { order: updatedOrder } = await updateOrder({
-          id: state.orderId,
-          attributes: {
-            metadata: {
-              license: {
-                ...state.order?.metadata?.license,
-                owner: params.licenseOwner,
-              },
-            },
+        // Use createOrUpdateOrder for both new and existing orders
+        const licenseOwnerMetadata = {
+          owner: {
+            is_client: params.licenseOwner.is_client,
+            full_name: params.licenseOwner.full_name,
           },
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(
+            'setLicenseOwner: Using createOrUpdateOrder with metadata:',
+            {
+              licenseOwnerMetadata,
+              hasOrder: !!state.order,
+              hasOrderId: !!state.orderId,
+              licenseSize: state.licenseSize,
+            }
+          )
+        }
+
+        const orderId = await createOrUpdateOrder({
+          order: state.order,
+          createOrder,
+          updateOrder,
+          licenseSize: state.licenseSize,
+          persistKey,
+          getLocalOrder,
+          additionalMetadata: licenseOwnerMetadata,
         })
 
-        if (!updatedOrder) {
-          throw new Error('Failed to update order with license owner')
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(
+            'setLicenseOwner: createOrUpdateOrder returned orderId:',
+            orderId,
+            {
+              licenseOwner: params.licenseOwner,
+              existingMetadata: state.order?.metadata,
+              licenseSize: state.licenseSize,
+              selectedSkuOptions: state.selectedSkuOptions,
+              isNewOrder: !state.orderId,
+            }
+          )
         }
+
+        if (!orderId) {
+          throw new Error('Failed to create or update order with license owner')
+        }
+
+        const { order, success } = await fetchOrder({ orderId })
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('setLicenseOwner: fetchOrder result:', {
+            success,
+            hasOrder: !!order,
+          })
+        }
+
+        if (!success || !order) {
+          throw new Error(
+            'Failed to fetch updated order after setting license owner'
+          )
+        }
+
+        // Validate that the license owner was properly set
+        const updatedLicenseOwner = order.metadata?.license?.owner
+        if (!updatedLicenseOwner?.full_name) {
+          throw new Error(
+            'License owner was not properly set in order metadata'
+          )
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('setLicenseOwner: Order metadata:', {
+            metadata: order.metadata,
+            license: order.metadata?.license,
+            owner: order.metadata?.license?.owner,
+          })
+        }
+
+        const licenseOwner =
+          order.metadata?.license?.owner || params.licenseOwner
 
         dispatch({
           type: ActionType.SET_LICENSE_OWNER,
           payload: {
-            order: updatedOrder,
+            order,
+            others: {
+              hasLicenseOwner: !!licenseOwner,
+              isLicenseForClient: licenseOwner?.is_client ?? false,
+              licenseOwner: licenseOwner || { is_client: false, full_name: '' },
+            },
           },
         })
 
-        return { success: true, order: updatedOrder }
+        return { success: true, order }
       } catch (error) {
         if (process.env.NODE_ENV !== 'production') {
-          console.error('Error setting license owner:', error)
+          console.error('Error in setLicenseOwner:', {
+            errorMessage:
+              error instanceof Error ? error.message : String(error),
+            stateInfo: {
+              hasOrder: !!state.order,
+              orderId: state.orderId,
+              hasLicenseSize: !!state.licenseSize?.value,
+              currentOrderMetadata: state.order?.metadata,
+            },
+          })
         }
         return {
           success: false,
@@ -537,25 +635,17 @@ export function OrderProvider({
         dispatch({ type: ActionType.STOP_LOADING })
       }
     },
-    [updateOrder, state.orderId, state.order]
-  )
-
-  /*
-  addToCart: async (
-    params: Parameters<typeof addToCart>[number],
-  ): ReturnType<typeof addToCart> =>
-    await addToCart({
-      ...params,
-      persistKey,
-      dispatch,
-      state,
+    [
       config,
-      errors: state.errors,
-      orderMetadata: metadata || {},
-      orderAttributes: attributes,
-      setLocalOrder,
-    }),
-  */
+      createOrder,
+      updateOrder,
+      fetchOrder,
+      state.order,
+      state.licenseSize,
+      persistKey,
+      getLocalOrder,
+    ]
+  )
 
   /**
    * Adds an item to the cart, creating a new order if necessary.
@@ -685,6 +775,8 @@ export function OrderProvider({
           updateOrder,
           order: state.order,
           licenseSize: params.licenseSize,
+          persistKey,
+          getLocalOrder,
         })
 
         if (!orderId) {
@@ -738,6 +830,7 @@ export function OrderProvider({
     [config, createOrder, updateOrder, fetchOrder, state.order]
   )
 
+  // @NOTE: this method is used in the cart to selectively update a single line item
   const setLicenseTypes = useCallback(
     async (params: {
       lineItem: LineItem
@@ -749,11 +842,27 @@ export function OrderProvider({
     }> => {
       dispatch({ type: ActionType.START_LOADING })
       const cl = config != null ? getCommerceLayer(config) : undefined
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('setLicenseTypes: Starting with params:', {
+          hasOrder: !!state.order,
+          orderId: state.orderId,
+          hasLineItems: !!(
+            state.order?.line_items && state.order.line_items.length > 0
+          ),
+          currentOrderMetadata: state.order?.metadata,
+          selectedSkuOptions: params.selectedSkuOptions,
+        })
+      }
+
       try {
-        if (config == null || !params.lineItem || !params.selectedSkuOptions) {
+        if (!cl || !params.lineItem || !params.selectedSkuOptions) {
           throw new Error(
-            'Commerce Layer client not initialized or missing required parameters'
+            'Missing required parameters or Commerce Layer client not initialized'
           )
+        }
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('setLicenseTypes: Updating line item license types')
         }
 
         await updateLineItemLicenseTypes({
@@ -762,9 +871,17 @@ export function OrderProvider({
           lineItem: params.lineItem,
         })
 
-        const { order } = await fetchOrder()
+        const { order, success } = await fetchOrder({ orderId: state.orderId })
 
-        if (!order) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('setLicenseTypes: fetchOrder result:', {
+            success,
+            hasOrder: !!order,
+            updatedMetadata: order?.metadata?.license,
+          })
+        }
+
+        if (!success || !order) {
           throw new Error(
             'Failed to fetch updated order after setting license types'
           )
@@ -772,13 +889,29 @@ export function OrderProvider({
 
         dispatch({
           type: ActionType.SET_LICENSE_TYPES,
-          payload: { order },
+          payload: {
+            order,
+            others: {
+              selectedSkuOptions: params.selectedSkuOptions,
+            },
+          },
         })
 
         return { success: true, order }
       } catch (error) {
         if (process.env.NODE_ENV !== 'production') {
-          console.error('Error setting license types:', error)
+          console.error('Error in setLicenseTypes:', {
+            errorMessage:
+              error instanceof Error ? error.message : String(error),
+            stateInfo: {
+              hasOrder: !!state.order,
+              orderId: state.orderId,
+              hasLineItems: !!(
+                state.order?.line_items && state.order.line_items.length > 0
+              ),
+              currentOrderMetadata: state.order?.metadata,
+            },
+          })
         }
         return {
           success: false,
@@ -794,7 +927,16 @@ export function OrderProvider({
         dispatch({ type: ActionType.STOP_LOADING })
       }
     },
-    [config, fetchOrder]
+    [
+      config,
+      createOrder,
+      updateOrder,
+      fetchOrder,
+      state.order,
+      state.licenseSize,
+      persistKey,
+      getLocalOrder,
+    ]
   )
 
   const deleteLineItem = useCallback(
@@ -871,6 +1013,38 @@ export function OrderProvider({
           throw new Error(
             'Missing required parameters or Commerce Layer client not initialized'
           )
+        }
+
+        // Structure the license types metadata
+        const licenseTypesMetadata = {
+          types: params.selectedSkuOptions.map((option) => option.reference),
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(
+            'setLicenseTypes: Using createOrUpdateOrder with metadata:',
+            {
+              licenseTypesMetadata,
+              hasOrder: !!state.order,
+              hasOrderId: !!state.orderId,
+              licenseSize: state.licenseSize,
+            }
+          )
+        }
+
+        // Create or update order if it doesn't exist
+        const orderId = await createOrUpdateOrder({
+          order: state.order,
+          createOrder,
+          updateOrder,
+          licenseSize: state.licenseSize,
+          persistKey,
+          getLocalOrder,
+          additionalMetadata: licenseTypesMetadata,
+        })
+
+        if (!orderId) {
+          throw new Error('Failed to create or update order')
         }
 
         // When you change the License Size in Dinamo buy page, a notification appears
@@ -964,7 +1138,6 @@ export function OrderProvider({
     ...state,
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
-    // ...calculateSettings({order}), // @NOTE: since we may not have an order
     createOrder,
     fetchOrder,
     refetchOrder,
