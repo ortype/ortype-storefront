@@ -1,8 +1,9 @@
 import { LicenseSize } from '@/commercelayer/providers/Order'
-import { Size, sizes } from '@/lib/settings'
-import { Fieldset, RadioGroup, Text, VStack } from '@chakra-ui/react'
-import React, { useCallback, useEffect, useState } from 'react'
 import { FieldsetLegend } from '@/components/composite/Buy'
+import { toaster } from '@/components/ui/toaster'
+import { Size, sizes } from '@/lib/settings'
+import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 interface Props {
   licenseSize: Size

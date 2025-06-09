@@ -124,6 +124,10 @@ type OrderProviderData = {
   }>
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
+  hasValidLicenseSize: boolean
+  hasValidLicenseType: boolean
+  allLicenseInfoSet: boolean
+  hasLineItems: boolean
   setLicenseOwner: (params: { licenseOwner?: LicenseOwnerInput }) => Promise<{
     success: boolean
     error?: AddToCartError
@@ -165,6 +169,10 @@ export type OrderStateData = {
   licenseOwner?: LicenseOwnerInput // Make optional
   hasLicenseOwner: boolean // Required, with boolean type
   isLicenseForClient: boolean // Required, with boolean type
+  hasValidLicenseSize: boolean // Whether licenseSize is valid
+  hasValidLicenseType: boolean // Whether license type is valid
+  allLicenseInfoSet: boolean // Whether all license info is set
+  hasLineItems: boolean // Whether the order has line items
   licenseSize?: LicenseSize // Make optional
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
@@ -179,6 +187,10 @@ const initialState: OrderStateData = {
   licenseOwner: undefined,
   hasLicenseOwner: false,
   isLicenseForClient: false, // Add default value
+  hasValidLicenseSize: false,
+  hasValidLicenseType: false,
+  allLicenseInfoSet: false,
+  hasLineItems: false,
   licenseSize: undefined,
   selectedSkuOptions: [],
   skuOptions: [],
@@ -1134,10 +1146,20 @@ export function OrderProvider({
     return unsubscribe()
   }, [config.accessToken, fetchOrder, fetchSkuOptions])
 
+  // Compute additional state properties
+  const hasValidLicenseSize = !!(state.licenseSize && state.licenseSize.value)
+  const hasValidLicenseType = !!(state.selectedSkuOptions && state.selectedSkuOptions.length > 0)
+  const allLicenseInfoSet = !!(state.hasLicenseOwner && hasValidLicenseType && hasValidLicenseSize)
+  const hasLineItems = !!(state.order?.line_items && state.order.line_items.length > 0)
+
   const value = {
     ...state,
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
+    hasValidLicenseSize,
+    hasValidLicenseType,
+    allLicenseInfoSet,
+    hasLineItems,
     createOrder,
     fetchOrder,
     refetchOrder,

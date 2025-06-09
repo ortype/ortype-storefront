@@ -65,6 +65,8 @@ export const Buy = () => {
     deleteLineItem,
     selectedSkuOptions,
     setSelectedSkuOptions,
+    allLicenseInfoSet,
+    hasLineItems,
   } = useOrderContext()
   const { font, addLineItem } = useBuyContext()
 
@@ -97,8 +99,8 @@ export const Buy = () => {
               <Fieldset.Content asChild>
                 <Flex
                   mt={1}
-                  opacity={orderId ? 1 : 0.3}
-                  pointerEvents={orderId ? 'auto' : 'none'}
+                  opacity={allLicenseInfoSet ? 1 : 0.3}
+                  pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
                   bg={'#EEE'}
                   p={2}
                   gap={2}
@@ -122,8 +124,8 @@ export const Buy = () => {
             </Fieldset.Root>
           </SimpleGrid>
           <BuySummary />
-          <Show when={order}>
-            <CheckoutButton order={order} isDisabled={false} />
+          <Show when={order && hasLineItems}>
+            <CheckoutButton order={order} isDisabled={!allLicenseInfoSet} />
           </Show>
         </Stack>
       </Container>

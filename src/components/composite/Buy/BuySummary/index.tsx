@@ -42,7 +42,13 @@ export const getFontReferenceCounts = (
 }
 
 export const BuySummary = () => {
-  const { order, isLoading } = useOrderContext()
+  const {
+    order,
+    isLoading,
+    hasLineItems,
+    selectedSkuOptions,
+    hasValidLicenseType,
+  } = useOrderContext()
 
   // Memoize font reference calculations to prevent unnecessary recalculations
   const { fontRefCounts, fontCount, parentFontString } = useMemo(() => {
@@ -62,47 +68,61 @@ export const BuySummary = () => {
   }, [order?.line_items])
 
   return (
-    <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
-      <Heading
-        as={'h5'}
-        fontSize={'xl'}
-        textTransform={'uppercase'}
-        fontWeight={'normal'}
-        mb={1}
-      >
-        {"What's in your cart"}
-      </Heading>
-      <SimpleGrid
-        columns={3}
-        py={3}
-        borderTop={'1px solid #E7E0BF'}
-        borderBottom={'1px solid #E7E0BF'}
-        mb={1.5}
-      >
-        <Box>{parentFontString}</Box>
-        <Box>
-          {sizes.find(
-            ({ value }) => value === order?.metadata?.license?.size?.value
-          )?.label || 'No size selected'}
+    <Show
+      when={hasLineItems}
+      fallback={
+        <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
+          <Heading
+            as={'h5'}
+            fontSize={'xl'}
+            textTransform={'uppercase'}
+            fontWeight={'normal'}
+            mb={1}
+          >
+            {'Your cart is empty'}
+          </Heading>
         </Box>
-        <Box></Box>
-      </SimpleGrid>
-      {order?.line_items?.map((lineItem) => (
-        <SimpleGrid key={lineItem.id} columns={3} py={1.5}>
-          <Box>{lineItem.item?.name}</Box>
+      }
+    >
+      <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
+        <Heading
+          as={'h5'}
+          fontSize={'xl'}
+          textTransform={'uppercase'}
+          fontWeight={'normal'}
+          mb={1}
+        >
+          {"What's in your cart"}
+        </Heading>
+        <SimpleGrid columns={3} py={3} borderTop={'1px solid #E7E0BF'} mb={1.5}>
+          <Box>{parentFontString}</Box>
           <Box>
-            {lineItem?.line_item_options
-              ?.map((option) => option.name)
-              .filter(Boolean)
-              .join(', ')}
+            {sizes.find(
+              ({ value }) => value === order?.metadata?.license?.size?.value
+            )?.label || ''}
           </Box>
-          <Box
-            textAlign={'right'}
-            fontVariantNumeric={'tabular-nums'}
-          >{`EUR ${lineItem.unit_amount_float}`}</Box>
+          <Box></Box>
         </SimpleGrid>
-      ))}
-      <Show when={order}>
+        {order?.line_items?.map((lineItem) => (
+          <SimpleGrid
+            key={lineItem.id}
+            columns={3}
+            py={1.5}
+            borderTop={'1px solid #E7E0BF'}
+          >
+            <Box>{lineItem.item?.name}</Box>
+            <Box>
+              {lineItem?.line_item_options
+                ?.map((option) => option.name)
+                .filter(Boolean)
+                .join(', ')}
+            </Box>
+            <Box
+              textAlign={'right'}
+              fontVariantNumeric={'tabular-nums'}
+            >{`EUR ${lineItem.unit_amount_float}`}</Box>
+          </SimpleGrid>
+        ))}
         <SimpleGrid columns={3} py={3} mt={1.5} borderTop={'1px solid #E7E0BF'}>
           <Box
             fontSize={'xl'}
@@ -120,7 +140,7 @@ export const BuySummary = () => {
             {`EUR ${order?.total_amount_with_taxes_float}`}
           </Box>
         </SimpleGrid>
-      </Show>
-    </Box>
+      </Box>
+    </Show>
   )
 }

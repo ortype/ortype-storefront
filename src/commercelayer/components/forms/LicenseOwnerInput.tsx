@@ -1,10 +1,9 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { Field } from '@/components/ui/field'
+import { FieldsetLegend } from '@/components/composite/Buy'
 import { toaster } from '@/components/ui/toaster'
-import { Button, Fieldset, HStack, Input, Text, VStack } from '@chakra-ui/react'
+import { Fieldset, Input } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FieldsetLegend } from '@/components/composite/Buy'
 
 interface FormValues {
   full_name: string
