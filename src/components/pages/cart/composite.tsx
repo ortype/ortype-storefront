@@ -1,9 +1,7 @@
-import { Account } from '@/commercelayer/components/composite/Account'
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
-import { Box, Button, Fieldset, Link, Heading } from '@chakra-ui/react'
-import NextLink from 'next/link'
+import { Button, Fieldset, Heading, Link } from '@chakra-ui/react'
 
 import {
   DialogBody,
@@ -12,21 +10,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogRoot,
-  DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
-import { CartItem } from '@/components/composite/Cart/CartItem'
+import { CartItem } from '@/components/pages/cart/cart-item'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
-import {
-  LineItem,
-  LineItemsContainer,
-  useOrderContainer,
-} from '@commercelayer/react-components'
-import type { Order } from '@commercelayer/sdk'
-import { useRapidForm } from 'rapid-form'
-import { useContext, useRef, useState } from 'react'
 
 const CheckoutButton = ({ isDisabled, order }) => {
   return (

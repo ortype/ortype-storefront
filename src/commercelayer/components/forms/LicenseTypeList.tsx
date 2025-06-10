@@ -2,7 +2,7 @@ import { Type } from '@/lib/settings'
 import { Checkbox, CheckboxGroup, Fieldset, Stack } from '@chakra-ui/react'
 import { SkuOption } from '@commercelayer/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
-import { FieldsetLegend } from '@/components/composite/Buy'
+import { FieldsetLegend } from '@/components/pages/buy/composite'
 
 interface Props {
   skuOptions: SkuOption[]

@@ -1,9 +1,9 @@
-import { Flex, Box, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import { Box, Flex, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 // import { useOrderContainer } from '@commercelayer/react-components'
-import { SkuOption, type Order } from '@commercelayer/sdk'
 import { Size } from '@/lib/settings'
+import { SkuOption, type Order } from '@commercelayer/sdk'
 import React, { useState } from 'react'
-import { ToggleLineItem } from '../ToggleLineItem'
+import { ToggleLineItem } from './toggle-line-item'
 
 interface Props {
   orderId: string

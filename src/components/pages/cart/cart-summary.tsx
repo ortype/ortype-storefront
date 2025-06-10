@@ -1,11 +1,8 @@
-import { Box, Heading, SimpleGrid } from '@chakra-ui/react'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { TotalAmount } from '@commercelayer/react-components'
-import { sizes } from '@/lib/settings'
-import { useMemo } from 'react'
+import { Box, SimpleGrid } from '@chakra-ui/react'
 
 const Summary = () => {
-  const { order, isLoading } = useOrderContext()
+  const { order } = useOrderContext()
 
   return (
     <Box bg={'#FFF8D3'} px={4} py={5} borderRadius={30}>
@@ -19,7 +16,7 @@ const Summary = () => {
           textAlign={'right'}
           fontVariantNumeric={'tabular-nums'}
         >
-          <TotalAmount />
+          {`EUR ${order?.total_amount_with_taxes_float}`}
         </Box>
       </SimpleGrid>
     </Box>

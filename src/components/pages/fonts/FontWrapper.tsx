@@ -1,28 +1,11 @@
 'use client'
 import Modules from '@/components/modules'
 import { Box, Button, Flex } from '@chakra-ui/react'
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import React, { useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
 import { DimensionsProvider } from './contexts/dimensionsContext'
 import FontContainer from './FontContainer'
-
-/*
-const DynamicBuyContainer: any = dynamic(
-  () => import('@/components/composite/BuyContainer'),
-  {
-    loading: function LoadingSkeleton() {
-      return <div />
-    },
-  }
-)
-const DynamicBuy: any = dynamic(() => import('@/components/composite/Buy'), {
-  loading: function LoadingSkeleton() {
-    return <div />
-  },
-})
-*/
 
 // Type definitions for better TypeScript support
 interface FontWrapperProps {

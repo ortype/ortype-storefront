@@ -9,7 +9,7 @@ import {
 import { Size, sizes } from '@/lib/settings'
 import { createListCollection, Fieldset } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FieldsetLegend } from '@/components/composite/Buy'
+import { FieldsetLegend } from '@/components/pages/buy/composite'
 
 interface Props {
   licenseSize: Size

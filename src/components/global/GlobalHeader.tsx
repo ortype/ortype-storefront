@@ -3,10 +3,10 @@ import { Account } from '@/commercelayer/components/composite/Account'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
 import { Box, Button, Flex, Group } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { Font } from 'sanity.types'
 import { Nav } from './Nav'
 import { SessionId } from './SessionId'
-import Link from 'next/link'
 
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import {
@@ -26,11 +26,14 @@ const DynamicCartContainer: any = dynamic(
     },
   }
 )
-const DynamicCart: any = dynamic(() => import('@/components/composite/Cart'), {
-  loading: function LoadingSkeleton() {
-    return <div />
-  },
-})
+const DynamicCart: any = dynamic(
+  () => import('@/components/pages/cart/composite'),
+  {
+    loading: function LoadingSkeleton() {
+      return <div />
+    },
+  }
+)
 
 interface Props {
   fonts: Font[]

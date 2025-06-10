@@ -1,84 +1,27 @@
 'use client'
 import { BuyProvider } from '@/commercelayer/providers/Buy'
-import type { FontPagePayload } from '@/types'
-import {
-  Box,
-  Button,
-  Link as ChakraLink,
-  Container,
-  For,
-  Heading,
-  IconButton,
-} from '@chakra-ui/react'
-import { FiChevronDown } from 'react-icons/fi'
+import type { BuyFontsQueryResult, FontPagePayload } from '@/types'
+import { Container, Heading } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
-import type { BuyFontsQueryResult } from '@/types'
-
-import {
-  MenuContent,
-  MenuItem,
-  MenuRoot,
-  MenuTrigger,
-  MenuTriggerItem,
-} from '@/components/ui/menu'
 import { useMemo } from 'react'
+import BuyNav from './buy-nav'
 
 export interface BuyPageProps {
   data: BuyFontsQueryResult | null
 }
 
-const DynamicBuy: any = dynamic(() => import('@/components/composite/Buy'), {
-  loading: function LoadingSkeleton() {
-    return <div />
-  },
-})
+const DynamicBuy: any = dynamic(
+  () => import('@/components/pages/buy/composite'),
+  {
+    loading: function LoadingSkeleton() {
+      return <div />
+    },
+  }
+)
 
 export function BuyPage({ data }: BuyPageProps) {
   // Default to an empty object to allow previews on non-existent documents
   const { font, moreFonts } = data ?? {}
-
-  const BuyNav = () => {
-    return (
-      <MenuRoot>
-        <MenuTrigger asChild>
-          <ChakraLink
-            href={'#'}
-            variant={'underline'}
-            className={font ? font.defaultVariant?._id : ''}
-            gap={0.5}
-          >
-            {font?.shortName}
-            <IconButton
-              variant={'plain'}
-              px={0}
-              minW={'auto'}
-              aria-label="Navigate to another font's buy page"
-            >
-              <FiChevronDown width={'5rem'} height={'5rem'} />
-            </IconButton>
-          </ChakraLink>
-        </MenuTrigger>
-        <MenuContent maxW={'60vw'}>
-          <For each={moreFonts}>
-            {(item, index) => (
-              <MenuItem
-                key={index}
-                value={item.slug}
-                className={item.defaultVariant?._id}
-                fontSize={'1.5rem'}
-                lineHeight={'1.25rem'}
-              >
-                <Box whiteSpace={'nowrap'} asChild>
-                  <Link href={`/buy/${item.slug}`}>{item.shortName}</Link>
-                </Box>
-              </MenuItem>
-            )}
-          </For>
-        </MenuContent>
-      </MenuRoot>
-    )
-  }
 
   return (
     <Container my={6}>
@@ -91,7 +34,7 @@ export function BuyPage({ data }: BuyPageProps) {
         pb={8}
       >
         {`you or me or they are buying `}
-        <BuyNav />
+        <BuyNav font={font} moreFonts={moreFonts} />
       </Heading>
       <BuyProvider font={font}>
         <DynamicBuy />

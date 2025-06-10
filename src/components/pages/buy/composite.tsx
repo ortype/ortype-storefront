@@ -18,8 +18,8 @@ import {
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import React from 'react'
-import { BuySummary } from './BuySummary'
-import { SingleStyles } from './SingleStyles'
+import { BuySummary } from './buy-summary'
+import { SingleStyles } from './single-styles'
 
 export const CheckoutButton = ({ isDisabled, order }) => {
   return (

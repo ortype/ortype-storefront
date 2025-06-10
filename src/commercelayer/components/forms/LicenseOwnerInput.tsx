@@ -1,5 +1,5 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { FieldsetLegend } from '@/components/composite/Buy'
+import { FieldsetLegend } from '@/components/pages/buy/composite'
 import { Fieldset, Input } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -45,14 +45,14 @@ const LicenseOwnerInput = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     setIsSubmitting(true)
-    
+
     const licenseOwner: LicenseOwner = {
       is_client: false,
       full_name: data.full_name.trim(),
     }
-    
-    await setLicenseOwner({ licenseOwner });
-    setIsSubmitting(false);
+
+    await setLicenseOwner({ licenseOwner })
+    setIsSubmitting(false)
   })
 
   const handleBlur = handleSubmit(async (data) => {

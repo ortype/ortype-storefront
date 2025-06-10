@@ -2,8 +2,8 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { CheckoutButton } from '@/components/composite/Buy'
-import { CartItem } from '@/components/composite/Cart/CartItem'
+import { CheckoutButton } from '@/components/pages/buy/composite'
+import { CartItem } from '@/components/pages/cart/cart-item'
 import { InfoTip } from '@/components/ui/toggle-tip'
 import {
   Box,
@@ -13,7 +13,7 @@ import {
   SimpleGrid,
   Stack,
 } from '@chakra-ui/react'
-import Summary from './Summary'
+import Summary from './cart-summary'
 
 const Legend = ({ children }) => {
   return (
@@ -39,7 +39,7 @@ const CartComponent = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
     useOrderContext()
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
-  if (!orderId || !order) {
+  if (!orderId || !order || !order.line_items) {
     return <div>{'No items in your cart'}</div>
   }
 
@@ -76,13 +76,9 @@ const CartComponent = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
           </SimpleGrid>
 
           <Stack gap={2}>
-            {
-              // @TODO: this check for order being defined shouldn't be needed
-              order.line_items &&
-                order.line_items.map((lineItem) => (
-                  <CartItem key={lineItem.id} lineItem={lineItem} />
-                ))
-            }
+            {order.line_items.map((lineItem) => (
+              <CartItem key={lineItem.id} lineItem={lineItem} />
+            ))}
           </Stack>
         </Box>
         <Summary />
