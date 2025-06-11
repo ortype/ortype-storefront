@@ -1,3 +1,4 @@
+'use client'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
 import { getSettings } from '@/commercelayer/utils/getSettings'
