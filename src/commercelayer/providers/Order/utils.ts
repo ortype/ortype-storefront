@@ -305,12 +305,14 @@ export async function createOrUpdateOrder({
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log('buildLicenseMetadata output:', {
+      console.log('🔧 buildLicenseMetadata output:', {
         input: { base, additions, licenseSize },
         result: metadata,
         resultOwner: metadata.license.owner,
         resultTypes: metadata.license.types,
         resultSize: metadata.license.size,
+        hasTypes: !!metadata.license.types,
+        typesLength: metadata.license.types?.length || 0
       })
     }
 

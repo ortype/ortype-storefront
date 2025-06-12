@@ -3,10 +3,10 @@ import { createContext, FC, useContext, useReducer } from 'react'
 import { ActionType, reducer } from '@/commercelayer/providers/Buy/reducer'
 import { addLineItemLicenseTypes } from '@/commercelayer/providers/Buy/utils'
 
-import { toaster } from '@/components/ui/toaster'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import type { AddToCartError } from '@/commercelayer/providers/Order'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
+import { toaster } from '@/components/ui/toaster'
 import { Font } from '@/sanity/lib/queries'
 import { useOrderContext } from '../Order'
 
@@ -34,7 +34,7 @@ export interface AppStateData {
 }
 
 const initialState: AppStateData = {
-  isLoading: true,
+  isLoading: false,
 }
 
 const BuyContext = createContext<BuyProviderData>(
@@ -101,7 +101,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       const result = await addToCart(attrs)
       if (!result.success) {
         // Show error notification
-        const errorMessage = result.error?.message || 'Failed to add item to cart'
+        const errorMessage =
+          result.error?.message || 'Failed to add item to cart'
         toaster.create({
           title: 'Failed to add to cart',
           description: errorMessage,
@@ -116,7 +117,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
 
       // Format license types for display
       const licenseTypes = selectedSkuOptions
-        ?.map(option => option.name)
+        ?.map((option) => option.name)
         ?.join(', ')
 
       // Format license size for display
@@ -125,7 +126,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       // Show success notification with item details
       toaster.create({
         title: 'Added to cart',
-        description: `${params.name}${licenseTypes ? ` (${licenseTypes})` : ''}${licenseSizeLabel ? ` - ${licenseSizeLabel}` : ''}`,
+        description: `${params.name}${
+          licenseTypes ? ` (${licenseTypes})` : ''
+        }${licenseSizeLabel ? ` - ${licenseSizeLabel}` : ''}`,
         type: 'success',
         duration: 3000,
       })
@@ -180,7 +183,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         console.error('Error adding line item:', error)
       }
 
-      const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to add item to cart'
       // Show error notification
       toaster.create({
         title: 'Failed to add to cart',

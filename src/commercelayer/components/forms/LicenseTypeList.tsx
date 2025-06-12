@@ -42,7 +42,17 @@ export const LicenseTypeList: React.FC<Props> = ({
 
   // Keep selectedTypes in sync with prop changes
   useEffect(() => {
-    setSelectedTypes(mapSkuOptionsToTypes(selectedSkuOptions))
+    const mappedTypes = mapSkuOptionsToTypes(selectedSkuOptions)
+    
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('🎯 LicenseTypeList: Syncing selected types:', {
+        selectedSkuOptions: selectedSkuOptions.map(opt => ({ id: opt.id, name: opt.name, reference: opt.reference })),
+        mappedTypes,
+        currentSelectedTypes: selectedTypes
+      })
+    }
+    
+    setSelectedTypes(mappedTypes)
   }, [selectedSkuOptions])
 
   const handleTypeChange = useCallback(

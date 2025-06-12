@@ -6,9 +6,7 @@ import {
   getStoredTokenKey,
   setStoredCustomerToken,
 } from '@/commercelayer/utils/oauthStorage'
-import CommerceLayer from '@commercelayer/sdk'
 import type { ChildrenElement } from 'CustomApp'
-import { access } from 'fs'
 import {
   createContext,
   useContext,

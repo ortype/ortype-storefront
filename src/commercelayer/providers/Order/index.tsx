@@ -475,10 +475,11 @@ export function OrderProvider({
       )
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log('fetchSkuOptions: Initializing with existing types:', {
+        console.log('🎯 fetchSkuOptions: Processing types and options:', {
           existingTypes,
-          matchingOptions: existingSelectedOptions,
-          allOptions: skuOptions.length
+          matchingOptions: existingSelectedOptions.map(opt => ({ id: opt.id, name: opt.name, reference: opt.reference })),
+          allOptionsCount: skuOptions.length,
+          allOptionsReferences: skuOptions.map(opt => opt.reference)
         })
       }
 
@@ -1106,20 +1107,19 @@ export function OrderProvider({
           throw new Error('At least one license type must be selected')
         }
 
-        // Structure the license types metadata with proper nesting and merging
+        // Structure the license types metadata for createOrUpdateOrder
+        // Note: createOrUpdateOrder expects additionalMetadata to contain the license object contents
         const licenseTypesMetadata = {
-          license: {
-            ...state.order?.metadata?.license,  // Preserve existing license metadata
-            types: params.selectedSkuOptions.map((option) => option.reference),
-          }
+          types: params.selectedSkuOptions.map((option) => option.reference),
         }
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(
-            'setSelectedSkuOptions: Using createOrUpdateOrder with metadata:',
+            '🔧 setSelectedSkuOptions: Using createOrUpdateOrder with metadata:',
             {
               licenseTypesMetadata,
-              existingMetadata: state.order?.metadata,
+              selectedTypes: params.selectedSkuOptions.map(opt => opt.reference),
+              existingLicenseMetadata: state.order?.metadata?.license,
               hasOrder: !!state.order,
               hasOrderId: !!state.orderId,
               licenseSize: state.licenseSize,
@@ -1271,24 +1271,43 @@ export function OrderProvider({
       // Sequential initialization
       const { order, success } = await fetchOrder()
       
+      // Always fetch SKU options, passing existing license types if order exists
+      let existingTypes: string[] = []
+      
       if (success && order) {
-        // Only fetch SKU options if we have an order
-        // Pass the types from the order directly to fetchSkuOptions
-        const existingTypes = order.metadata?.license?.types || []
+        // If order is found, use its license types
+        existingTypes = order.metadata?.license?.types || []
         
         if (process.env.NODE_ENV !== 'production') {
-          console.log('Initializing with types from order:', existingTypes)
+          console.log('🔄 initializeProvider: Found existing order with types:', {
+            orderId: order.id,
+            existingTypes,
+            fullMetadata: order.metadata,
+            licenseMetadata: order.metadata?.license
+          })
         }
-        
-        const result = await fetchSkuOptions(existingTypes)
-        
-        if (!result.success) {
-          console.warn('Failed to fetch SKU options during initialization')
+      } else {
+        // If no order is found, use empty array
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('🔄 initializeProvider: No existing order found, using empty types array', {
+            success,
+            hasOrder: !!order
+          })
+        }
+      }
+      
+      const result = await fetchSkuOptions(existingTypes)
+      
+      if (!result.success) {
+        console.warn('Failed to fetch SKU options during initialization')
+      } else {
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('✅ initializeProvider: Successfully fetched SKU options')
         }
       }
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
-        console.error('Error during provider initialization:', error)
+        console.error('❌ Error during provider initialization:', error)
       }
     } finally {
       dispatch({ type: ActionType.STOP_LOADING })
