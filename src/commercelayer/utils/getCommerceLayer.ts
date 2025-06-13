@@ -6,6 +6,18 @@ export interface CommerceLayerConfig {
   organization?: string
 }
 
+// Helper function to validate config before calling getCommerceLayer
+export function isValidCommerceLayerConfig(
+  config: CommerceLayerConfig | null | undefined
+): config is Required<CommerceLayerConfig> {
+  return (
+    config != null &&
+    config.accessToken != null &&
+    config.domain != null &&
+    config.organization != null
+  )
+}
+
 export default function getCommerceLayer({
   domain,
   accessToken,

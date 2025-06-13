@@ -1,5 +1,5 @@
 'use client'
-import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
+import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
 import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
 import { getSettings } from '@/commercelayer/utils/getSettings'
 import {
@@ -98,8 +98,9 @@ export function IdentityProvider({
 
   // get customer
   const fetchCustomerHandle = async (customerId?: string) => {
-    const client =
-      clientConfig != null ? getCommerceLayer(clientConfig) : undefined
+    const client = isValidCommerceLayerConfig(clientConfig)
+      ? getCommerceLayer(clientConfig)
+      : undefined
     if (!customerId || client == null) {
       return
     }

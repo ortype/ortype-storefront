@@ -6,7 +6,7 @@ import utils, {
   updateLineItemLicenseTypes,
   updateLineItemsLicenseSize,
 } from '@/commercelayer/providers/Order/utils'
-import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
+import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
 import { getOrder } from '@/commercelayer/utils/getOrder'
 import { LicenseOwner } from '@/components/data/CheckoutProvider'
 import {
@@ -249,7 +249,7 @@ export function OrderProvider({
       }
 
       dispatch({ type: ActionType.START_LOADING })
-      const cl = config != null ? getCommerceLayer(config) : undefined
+      const cl = isValidCommerceLayerConfig(config) ? getCommerceLayer(config) : undefined
 
       try {
         if (cl == null) {

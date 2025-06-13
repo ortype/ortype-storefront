@@ -16,7 +16,7 @@ import {
 } from 'react'
 
 import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
-import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
+import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
 import { ActionType, reducer } from '@/components/data/CheckoutProvider/reducer'
 import {
   calculateSettings,
@@ -194,7 +194,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   const { accessToken } = config
 
-  const cl = config != null ? getCommerceLayer(config) : undefined
+  const cl = isValidCommerceLayerConfig(config) ? getCommerceLayer(config) : undefined
 
   // @NOTE: this is exclusively used in the `OrderContainer`` fetchOrder callback
   // the callback updates the the order stored on the ref whenever there are changes
@@ -433,7 +433,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       fetchInitialOrder(orderId, accessToken)
     }
     return unsubscribe()
-  }, [orderId, accessToken])
+  }, [orderId, accessToken, state.isLoading])
 
   return (
     <CheckoutContext.Provider

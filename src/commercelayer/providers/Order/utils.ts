@@ -1,5 +1,6 @@
 import getCommerceLayer, {
   CommerceLayerConfig,
+  isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
 import { sizes } from '@/lib/settings'
 import {
@@ -202,7 +203,7 @@ export async function createOrder(
   params: CreateOrderParams
 ): Promise<CreateOrderResult> {
   const { config, metadata, attributes = {} } = params
-  const cl = config != null ? getCommerceLayer(config) : undefined
+  const cl = isValidCommerceLayerConfig(config) ? getCommerceLayer(config) : undefined
 
   try {
     if (cl == null) {
