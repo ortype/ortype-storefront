@@ -7,7 +7,7 @@ import {
 import React, { useContext, useEffect, useState } from 'react'
 
 import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
-import { TypeAccepted } from '@/components/data/CheckoutProvider/utils'
+import type { TypeAccepted } from '@/commercelayer/providers/checkout/utils'
 
 export const defaultSettings: UseCheckoutSettingsOrInvalid = {
   isValid: false,

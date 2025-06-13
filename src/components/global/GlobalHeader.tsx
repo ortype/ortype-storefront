@@ -1,5 +1,5 @@
 'use client'
-import { Account } from '@/commercelayer/components/composite/Account'
+import { Account } from '@/commercelayer/components/global/account'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
 import { Box, Button, Flex, Group } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'

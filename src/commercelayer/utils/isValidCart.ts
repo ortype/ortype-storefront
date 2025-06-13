@@ -7,7 +7,7 @@ import {
 } from 'CustomApp'
 import React, { useContext, useEffect, useState } from 'react'
 
-import { TypeAccepted } from '@/components/data/CheckoutProvider/utils'
+import type { TypeAccepted } from '@/commercelayer/providers/checkout/utils'
 
 // default settings are by their nature not valid to show a full cart
 // they will be used as fallback for errors or 404 page

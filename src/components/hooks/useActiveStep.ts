@@ -1,5 +1,5 @@
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
-import { CheckoutContext } from '@/components/data/CheckoutProvider'
+import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { useContext, useEffect, useState } from 'react'
 
 interface UseActiveStep {

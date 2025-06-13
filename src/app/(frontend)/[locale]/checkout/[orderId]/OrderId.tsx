@@ -4,7 +4,7 @@ import { CommerceLayer, OrderStorage } from '@commercelayer/react-components'
 import dynamic from 'next/dynamic'
 
 const DynamicCheckoutContainer: any = dynamic(
-  () => import('src/commercelayer/components/composite/CheckoutContainer'),
+  () => import('@/commercelayer/components/pages/checkout/container'),
   {
     loading: function LoadingSkeleton() {
       return <div />
@@ -12,7 +12,7 @@ const DynamicCheckoutContainer: any = dynamic(
   }
 )
 const DynamicCheckout: any = dynamic(
-  () => import('@/components/composite/Checkout'),
+  () => import('@/commercelayer/components/pages/checkout/checkout'),
   {
     loading: function LoadingSkeleton() {
       return <div />

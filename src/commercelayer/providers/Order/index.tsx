@@ -8,7 +8,7 @@ import utils, {
 } from '@/commercelayer/providers/Order/utils'
 import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
 import { getOrder } from '@/commercelayer/utils/getOrder'
-import { LicenseOwner } from '@/components/data/CheckoutProvider'
+import { LicenseOwner } from '@/commercelayer/providers/checkout'
 import {
   LineItem,
   OrderUpdate,

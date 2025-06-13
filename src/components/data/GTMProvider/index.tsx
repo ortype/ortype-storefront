@@ -2,8 +2,8 @@ import CommerceLayer, { LineItem } from '@commercelayer/sdk'
 import { createContext, useContext, useEffect } from 'react'
 // import TagManager from 'react-gtm-module'
 
-import { CheckoutContext } from '@/components/data/CheckoutProvider'
-import type { TypeAccepted } from '@/components/data/CheckoutProvider/utils'
+import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import type { TypeAccepted } from '@/commercelayer/providers/checkout/utils'
 import { LINE_ITEMS_SHOPPABLE } from '@/components/utils/constants'
 
 import { DataLayerItemProps, DataLayerProps } from './typings'
