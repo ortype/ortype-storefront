@@ -429,11 +429,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }
 
   useEffect(() => {
-    const unsubscribe = () => {
-      fetchInitialOrder(orderId, accessToken)
-    }
-    return unsubscribe()
-  }, [orderId, accessToken, state.isLoading])
+    fetchInitialOrder(orderId, accessToken)
+  }, [orderId, accessToken])
 
   return (
     <CheckoutContext.Provider

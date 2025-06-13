@@ -20,20 +20,23 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
   const [valid, setValid] = useState(true)
 
   useEffect(() => {
-    setFetching(true)
-    isValidCheckout(
-      orderId,
-      order,
-      isLoading,
-      paymentReturn,
-      redirectResult,
-      clientConfig
-    ).then(({ validCheckout }) => {
-      setFetching(false)
-      setValid(validCheckout)
-      console.log('validCheckout: then() ', validCheckout)
-    })
-  }, [orderId])
+    if (!isLoading) {
+      console.log('isValidCheckout running:')
+      setFetching(true)
+      isValidCheckout(
+        orderId,
+        order,
+        isLoading,
+        paymentReturn,
+        redirectResult,
+        clientConfig
+      ).then(({ validCheckout }) => {
+        setFetching(false)
+        setValid(validCheckout)
+        console.log('validCheckout: then() ', validCheckout)
+      })
+    }
+  }, [orderId, isLoading])
 
   if (!valid) {
     return (

@@ -79,8 +79,16 @@ const Checkout: React.FC<Props> = ({
     return steps.indexOf(stepName) + 1
   }
 
+  // @NOTE: checkoutCtx.order stays undefined
+  // we already have an order from OrderProvider, but the CheckoutContext order should contain
+  // additional data like addressses which we don't need on the buy page or cart
+
+  // @NOTE: after SET_ORDER is called isFirstLoading is set to false
+
+  console.log({ checkoutCtx: ctx, isFirstLoading: ctx?.isFirstLoading })
+
   if (!ctx || ctx.isFirstLoading) {
-    return <div>{'Loading...'}</div>
+    return <div>{'Loading... hi'}</div>
   }
   const renderComplete = () => {
     return (
@@ -237,9 +245,12 @@ const Checkout: React.FC<Props> = ({
   }
 
   return (
-    <OrderContainer orderId={ctx.orderId} fetchOrder={ctx.getOrder as any}>
-      {ctx.isComplete ? renderComplete() : renderSteps()}
-    </OrderContainer>
+    <>
+      <OrderContainer orderId={ctx.orderId} fetchOrder={ctx.getOrder as any}>
+        {ctx.isComplete ? renderComplete() : renderSteps()}
+      </OrderContainer>
+      {/*ctx.isComplete ? renderComplete() : renderSteps()*/}
+    </>
   )
 }
 
