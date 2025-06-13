@@ -6,7 +6,7 @@ import CommerceLayer, {
 import { InvalidCartSettings } from 'CustomApp'
 import { createContext, FC, useContext, useEffect, useReducer } from 'react'
 
-import { ActionType, reducer } from '@/components/data/CartProvider/reducer'
+import { ActionType, reducer } from './reducer'
 
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { useOrderContext } from '@/commercelayer/providers/Order'

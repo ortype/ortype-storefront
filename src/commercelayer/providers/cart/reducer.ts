@@ -1,4 +1,4 @@
-import { AppStateData } from '@/components/data/CartProvider'
+import { AppStateData } from './index'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',
