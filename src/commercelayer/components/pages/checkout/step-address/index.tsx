@@ -1,4 +1,4 @@
-import { AccordionContext } from '@/components/data/AccordionProvider'
+import { AccordionContext } from '@/commercelayer/providers/accordion'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'

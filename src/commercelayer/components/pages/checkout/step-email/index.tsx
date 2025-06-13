@@ -1,7 +1,7 @@
 import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
 import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
-import { AccordionContext } from '@/components/data/AccordionProvider'
+import { AccordionContext } from '@/commercelayer/providers/accordion'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'

@@ -21,8 +21,11 @@ import classNames from 'classnames'
 import { Trans, useTranslation } from 'next-i18next'
 import { useContext, useEffect, useState } from 'react'
 
-import { AccordionContext } from '@/components/data/AccordionProvider'
-import { CheckoutContext, useCheckoutContext } from '@/commercelayer/providers/checkout'
+import { AccordionContext } from '@/commercelayer/providers/accordion'
+import {
+  CheckoutContext,
+  useCheckoutContext,
+} from '@/commercelayer/providers/checkout'
 import { TypeAccepted } from '@/commercelayer/providers/checkout/utils'
 import { GTMContext } from '@/components/data/GTMProvider'
 import { StepHeader } from '@/components/ui/StepHeader'

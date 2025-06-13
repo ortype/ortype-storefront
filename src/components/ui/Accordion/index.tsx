@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react'
-import { AccordionContext } from '@/components/data/AccordionProvider'
+import { AccordionContext } from '@/commercelayer/providers/accordion'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { ReactNode, useContext } from 'react'
 

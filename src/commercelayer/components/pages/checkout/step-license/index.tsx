@@ -22,7 +22,7 @@ import { Radio, RadioGroup } from '@/components/ui/radio'
 import { Field } from '@/components/ui/field'
 // @TODO: Look at exporting this from package
 // import { getCountries } from '@commercelayer/react-components/utils/countryStateCity'
-import { AccordionContext } from '@/components/data/AccordionProvider'
+import { AccordionContext } from '@/commercelayer/providers/accordion'
 import {
   CheckoutContext,
   LicenseOwner,

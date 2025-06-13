@@ -31,7 +31,7 @@ import {
   StepShipping,
 } from '@/commercelayer/components/pages/checkout/step-shipping'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { AccordionProvider } from '@/components/data/AccordionProvider'
+import { AccordionProvider } from '@/commercelayer/providers/accordion'
 import { useActiveStep } from '@/components/hooks/useActiveStep'
 import { LayoutDefault } from '@/components/layouts/LayoutDefault'
 import { Accordion, AccordionItem } from '@/components/ui/Accordion'
