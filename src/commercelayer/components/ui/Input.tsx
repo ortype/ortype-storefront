@@ -1,6 +1,4 @@
 import { useValidationFeedback } from '@/commercelayer/components/forms/useValidationFeedback'
-import { InputLabel } from '@/commercelayer/components/ui/InputLabel'
-import { InputValidationError } from '@/commercelayer/components/ui/InputValidationError'
 import { Field } from '@/components/ui/field'
 import { Input as ChakraInput } from '@chakra-ui/react'
 import { type InputHTMLAttributes } from 'react'
@@ -19,7 +17,7 @@ export const Input = ({
   const form = useFormContext()
   const { hasError, errorMessage } = useValidationFeedback(name)
   return (
-    <Field label={label} hasError={errorMessage} invalid={hasError}>
+    <Field label={label} errorText={errorMessage} invalid={hasError}>
       <ChakraInput
         {...form?.register(name)}
         {...props}

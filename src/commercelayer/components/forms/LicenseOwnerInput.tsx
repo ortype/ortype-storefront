@@ -3,6 +3,7 @@ import { FieldsetLegend } from '@/components/pages/buy/composite'
 import { Fieldset, Input } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Alert } from '@/components/ui/alert'
 
 interface FormValues {
   full_name: string
@@ -95,7 +96,12 @@ const LicenseOwnerInput = () => {
             placeholder="Enter license owner or company name"
           />
         </Fieldset.Content>
-        <Fieldset.ErrorText>{errors.full_name?.message}</Fieldset.ErrorText>
+        {errors.full_name && (
+          <Alert status="error" my="4">
+            {errors.full_name.message}
+          </Alert>
+        )}
+        <Fieldset.ErrorText className="sr-only">{errors.full_name?.message}</Fieldset.ErrorText>
       </Fieldset.Root>
     </form>
   )

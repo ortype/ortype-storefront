@@ -28,7 +28,7 @@ const getMarketId = unstable_cache(async () => {
       },
     })
     if (markets.length) {
-      return `market:${markets.shift().number}`
+      return `market:id:${markets.shift().id}`
     }
   } catch (e) {
     console.log('getmarketId error: ', e)

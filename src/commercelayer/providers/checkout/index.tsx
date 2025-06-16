@@ -24,6 +24,7 @@ import {
   checkIfShipmentRequired,
   fetchOrder,
   FetchOrderByIdResponse,
+  saveCustomerUser as saveCustomerUserUtil,
 } from './utils'
 
 type AddressType = 'addresses'
@@ -110,6 +111,11 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     order?: Order
   }>
   setCustomerEmail: (email: string) => void
+  saveCustomerUser: (customerEmail: string) => Promise<{
+    success: boolean
+    error?: unknown
+    order?: Order
+  }>
   setAddresses: (order?: Order) => Promise<void>
   setCouponOrGiftCard: () => Promise<void>
   saveShipments: () => void
@@ -420,6 +426,36 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     [config, fetchOrder]
   )
 
+  const saveCustomerUser = useCallback(
+    async (customerEmail: string): Promise<{
+      success: boolean
+      error?: unknown
+      order?: Order
+    }> => {
+      try {
+        if (!cl) {
+          return { success: false, error: 'CommerceLayer client not available' }
+        }
+
+        const result = await saveCustomerUserUtil({
+          cl,
+          orderId,
+          customerEmail,
+        })
+
+        if (result.success && result.order) {
+          // Update local state
+          setCustomerEmail(customerEmail)
+        }
+
+        return result
+      } catch (error) {
+        return { success: false, error }
+      }
+    },
+    [cl, orderId, setCustomerEmail]
+  )
+
   const setLicenseOwner = async (params: {
     licenseOwner?: LicenseOwnerInput
     order?: Order
@@ -456,6 +492,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         setCouponOrGiftCard,
         placeOrder,
         setCustomerEmail,
+        saveCustomerUser,
         autoSelectShippingMethod,
         setLicenseOwner,
       }}

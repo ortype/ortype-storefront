@@ -1,27 +1,50 @@
+import {
+  PasswordInput,
+  PasswordStrengthMeter,
+} from '@/components/ui/password-input'
 import { authenticate } from '@commercelayer/js-auth'
-import CommerceLayer from '@commercelayer/sdk'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import getCommerceLayer, {
+  isValidCommerceLayerConfig,
+} from '@/commercelayer/utils/getCommerceLayer'
 
-import { Button, Link as ChakraLink, Fieldset, Stack } from '@chakra-ui/react'
-import Link from 'next/link'
+import { Alert } from '@/components/ui/alert'
+import {
+  Box,
+  Button,
+  Link as ChakraLink,
+  Fieldset,
+  Stack,
+} from '@chakra-ui/react'
 
-import { setStoredCustomerToken } from '@/commercelayer/utils/oauthStorage'
 import type { SignUpFormValues } from 'Forms'
 import { useState } from 'react'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
-import { ValidationApiError } from './ValidationApiError'
 
 const validationSchema = yup.object().shape({
   customerEmail: yup
     .string()
     .email('Email is invalid')
     .required('Email is required'),
-  customerPassword: yup.string().required('Password is required'),
+  customerPassword: yup
+    .string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters')
+    .test('password-strength', 'Password must contain uppercase, lowercase, number, and special character', (value) => {
+      if (!value) return false
+      
+      const hasLowercase = /[a-z]/.test(value)
+      const hasUppercase = /[A-Z]/.test(value)
+      const hasNumber = /\d/.test(value)
+      const hasSpecialChar = /[^\w\s]/.test(value)
+      
+      return hasLowercase && hasUppercase && hasNumber && hasSpecialChar
+    }),
   customerConfirmPassword: yup
     .string()
     .required('Confirm password is required')
@@ -29,11 +52,9 @@ const validationSchema = yup.object().shape({
 })
 
 export const SignUpForm = ({ emailAddress }): JSX.Element => {
-  const { settings, config, isLoading, handleLogin, customer } =
+  const { settings, clientConfig, config, isLoading, handleLogin } =
     useIdentityContext()
   const [apiError, setApiError] = useState({})
-  const customerEmail =
-    (customer.email && customer.email.length > 0) || emailAddress
 
   // Loading IdentityProvider settings
   if (isLoading) {
@@ -48,17 +69,46 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
   const form: UseFormReturn<SignUpFormValues, UseFormProps> =
     useForm<SignUpFormValues>({
       resolver: yupResolver(validationSchema),
-      defaultValues: { customerEmail: customerEmail ?? '' },
+      defaultValues: { customerEmail: emailAddress ?? '' },
     })
 
   const isSubmitting = form.formState.isSubmitting
 
+  // Watch the password field for strength calculation
+  const watchedPassword = form.watch('customerPassword')
+
+  // Calculate password strength (0-4 scale)
+  const calculatePasswordStrength = (password: string): number => {
+    if (!password) return 0
+
+    let score = 0
+
+    // Length check
+    if (password.length >= 8) score++
+
+    // Lowercase and uppercase
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++
+
+    // Numbers
+    if (/\d/.test(password)) score++
+
+    // Special characters
+    if (/[^\w\s]/.test(password)) score++
+
+    return score
+  }
+
+  const passwordStrength = calculatePasswordStrength(watchedPassword || '')
+
   const onSubmit = form.handleSubmit(async (formData) => {
-    const client = CommerceLayer({
-      organization: settings.companySlug,
-      accessToken: settings.accessToken,
-      domain: config.domain,
-    })
+    if (!isValidCommerceLayerConfig(clientConfig)) {
+      setApiError({
+        errors: [{ detail: 'Invalid Commerce Layer configuration' }],
+      })
+      return
+    }
+
+    const client = getCommerceLayer(clientConfig)
 
     const createCustomerResponse = await client.customers
       .create({
@@ -83,7 +133,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
             handleLogin(tokenData)
           }
         })
-        .catch(() => {
+        .catch((err) => {
           form.setError('root', {
             type: 'custom',
             message: 'Invalid credentials',
@@ -103,12 +153,14 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
           <Fieldset.Content>
             <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
               <Input name="customerEmail" label="Email" type="email" />
-              <Input name="customerPassword" label="Password" type="password" />
-              <Input
+              <PasswordInput name="customerPassword" label="Password" />
+              <PasswordInput
                 name="customerConfirmPassword"
-                label="Confirm password"
-                type="password"
+                label="Confirm Password"
               />
+              <Box w={'50%'}>
+                <PasswordStrengthMeter value={passwordStrength} py={1} />
+              </Box>
               <Button
                 variant={'outline'}
                 type="submit"
@@ -117,13 +169,13 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
                 disabled={isSubmitting}
                 loading={isSubmitting}
               >
-                {'Login'}
+                {'Sign Up'}
               </Button>
 
-              {form.formState.errors?.root != null && (
-                <Fieldset.ErrorText>
-                  Alert - danger - Invalid credentials
-                </Fieldset.ErrorText>
+              {form.formState.errors.root && (
+                <Alert status="error" my="4">
+                  {form.formState.errors.root.message}
+                </Alert>
               )}
             </Stack>
           </Fieldset.Content>

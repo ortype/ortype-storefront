@@ -15,12 +15,8 @@ import {
   WireTransfer,
 } from '@commercelayer/sdk'
 
-import {
-  AppStateData,
-  LicenseOwner,
-  LicenseSize,
-} from './index'
 import { LINE_ITEMS_SHIPPABLE } from '@/components/utils/constants'
+import { AppStateData, LicenseOwner, LicenseSize } from './index'
 
 export type LineItemType =
   | 'gift_cards'
@@ -280,6 +276,7 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
     },
     include: [
       'line_items',
+      'line_items.item',
       'line_items.line_item_options.sku_option',
       'shipping_address',
       'billing_address',
@@ -293,6 +290,43 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
       'customer.customer_addresses.address',
     ],
   })
+}
+
+/**
+ * Utility function to save customer email to order
+ * Based on the saveCustomerUser function from Commerce Layer React Components
+ */
+export const saveCustomerUser = async ({
+  cl,
+  orderId,
+  customerEmail,
+}: {
+  cl: CommerceLayerClient
+  orderId: string
+  customerEmail: string
+}): Promise<{
+  success: boolean
+  error?: unknown
+  order?: Order
+}> => {
+  try {
+    if (!cl || !orderId || !customerEmail) {
+      return { 
+        success: false, 
+        error: 'Missing required parameters: cl, orderId, or customerEmail' 
+      }
+    }
+
+    // Update the order with customer email
+    const updatedOrder = await cl.orders.update({
+      id: orderId,
+      customer_email: customerEmail,
+    })
+
+    return { success: true, order: updatedOrder }
+  } catch (error) {
+    return { success: false, error }
+  }
 }
 
 export async function checkIfShipmentRequired(

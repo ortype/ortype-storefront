@@ -1,10 +1,27 @@
+import { Input } from '@/commercelayer/components/ui/Input'
+import { useCheckoutContext } from '@/commercelayer/providers/checkout'
 import { Button } from '@/components/ui/chakra-button'
 import { Field } from '@/components/ui/field'
-import { Box, Container, Fieldset, Input } from '@chakra-ui/react'
-import CustomerInput from '@commercelayer/react-components/customers/CustomerInput'
-import Errors from '@commercelayer/react-components/errors/Errors'
+import {
+  Box,
+  Input as ChakraInput,
+  Container,
+  Fieldset,
+} from '@chakra-ui/react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
+
+const emailSchema = z.object({
+  customer_email: z
+    .string()
+    .email('Please enter a valid email address')
+    .min(1, 'Email is required'),
+})
+
+type EmailFormData = z.infer<typeof emailSchema>
 
 interface Props {
   readonly?: boolean
@@ -18,58 +35,73 @@ export const Email: React.FC<Props> = ({
   emailAddress,
 }) => {
   const { t } = useTranslation()
+  const { saveCustomerUser } = useCheckoutContext()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const messages: Parameters<typeof Errors>[0]['messages'] = [
-    {
-      code: 'EMPTY_ERROR',
-      resource: 'orders',
-      field: 'customer_email',
-      message: t('input.cantBlank'),
+  const form = useForm<EmailFormData>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      customer_email: emailAddress || '',
     },
-    {
-      code: 'VALIDATION_ERROR',
-      resource: 'orders',
-      field: 'customer_email',
-      message: t('input.mustBeValidEmail'),
-    },
-  ]
+  })
 
-  const [email, setEmail] = useState('')
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = form
 
-  const handleBlur = (value) => {
-    // the event.target.value has been validated by CustomerInput handlers
-    // @WARNING: wrapping `CustomerInput` in a chakra input breaks the component
-    console.log('StepEmail/Email: handleBlur: ', value)
-    setEmail && setEmail(value)
-  }
+  const onSubmit = async (data: EmailFormData) => {
+    setIsLoading(true)
+    setError(null)
 
-  const saveEmail = () => {
-    if (setCustomerEmail && email.length > 0) {
-      setCustomerEmail(email)
+    try {
+      const result = await saveCustomerUser(data.customer_email)
+
+      if (result.success) {
+        // Also call the legacy setCustomerEmail if provided for backward compatibility
+        if (setCustomerEmail) {
+          setCustomerEmail(data.customer_email)
+        }
+      } else {
+        setError(result.error?.message || 'Failed to save email')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save email')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
-    <Fieldset.Root size="lg" maxW="sm">
-      <Fieldset.Content>
-        <Field label={t('addressForm.customer_email')} errorText={messages}>
-          <Input asChild variant={'subtle'}>
-            <CustomerInput
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Fieldset.Root size="lg" maxW="md">
+          <Fieldset.Content>
+            <Input
+              name="customer_email"
+              label={t('addressForm.customer_email')}
+              type="email"
               data-testid="customer_email"
-              id="customer_email"
-              errorClassName="hasError"
-              saveOnBlur={true}
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              onBlur={handleBlur}
-              value={emailAddress}
+              disabled={readonly || isLoading}
             />
-          </Input>
-        </Field>
-        <Button onClick={saveEmail} variant={'outline'} alignSelf="flex-end">
-          Save
-        </Button>
-      </Fieldset.Content>
-    </Fieldset.Root>
+            {error && (
+              <Box color="red.500" fontSize="sm" mt={2}>
+                {error}
+              </Box>
+            )}
+            <Button
+              type="submit"
+              variant={'outline'}
+              alignSelf="flex-end"
+              isLoading={isLoading}
+              disabled={readonly}
+            >
+              {isLoading ? 'Saving...' : 'Save'}
+            </Button>
+          </Fieldset.Content>
+        </Fieldset.Root>
+      </form>
+    </FormProvider>
   )
 }

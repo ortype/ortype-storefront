@@ -55,7 +55,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
           <DialogHeader>Register</DialogHeader>
           <DialogCloseTrigger onClick={() => setRegisterOpen(false)} />
           <DialogBody>
-            <SignUpForm />
+            <SignUpForm emailAddress={customer.email} />
           </DialogBody>
           <DialogFooter>
             <Button size={'sm'} onClick={handleLoginClick}>
@@ -70,7 +70,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
           <DialogHeader>Login</DialogHeader>
           <DialogCloseTrigger onClick={() => setLoginOpen(false)} />
           <DialogBody>
-            <LoginForm />
+            <LoginForm emailAddress={customer.email} />
           </DialogBody>
           <DialogFooter>
             <Group gap={2}>

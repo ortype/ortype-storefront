@@ -1,16 +1,19 @@
 import { authenticate } from '@commercelayer/js-auth'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { parseAuthError } from '@/commercelayer/utils/parseAuthError'
+import { useDevLogger } from '@/hooks/useDevLogger'
 
+import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/chakra-button'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Link as ChakraLink, Fieldset, Stack } from '@chakra-ui/react'
 import Link from 'next/link'
-
-import { setStoredCustomerToken } from '@/commercelayer/utils/oauthStorage'
 import type { LoginFormValues } from 'Forms'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
 
@@ -23,8 +26,41 @@ const validationSchema = yup.object().shape({
 })
 
 export const LoginForm = ({ emailAddress }): JSX.Element => {
-  const { settings, config, customer, isLoading, handleLogin } =
-    useIdentityContext()
+  const { settings, config, isLoading, handleLogin } = useIdentityContext()
+  const log = useDevLogger()
+  const [rateLimitCountdown, setRateLimitCountdown] = useState<number>(0)
+
+  // @TODO: password reset flow (?)
+  const resetPasswordUrl = false // config.resetPasswordUrl ?? ''
+
+  const form: UseFormReturn<LoginFormValues, UseFormProps> =
+    useForm<LoginFormValues>({
+      resolver: yupResolver(validationSchema),
+      defaultValues: { customerEmail: emailAddress ?? '' },
+    })
+
+  const isSubmitting = form.formState.isSubmitting
+  const isRateLimited = rateLimitCountdown > 0
+
+  // Effect to handle rate limit countdown
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+    if (rateLimitCountdown > 0) {
+      interval = setInterval(() => {
+        setRateLimitCountdown((prev) => {
+          if (prev <= 1) {
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
+    }
+  }, [rateLimitCountdown])
 
   // Loading IdentityProvider settings
   if (isLoading) {
@@ -36,42 +72,41 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
     return <div>Application error (Commerce Layer).</div>
   }
 
-  const customerEmail =
-    (customer.email && customer.email.length > 0) || emailAddress
-  // @TODO: password reset flow (?)
-  const resetPasswordUrl = false // config.resetPasswordUrl ?? ''
-
-  const form: UseFormReturn<LoginFormValues, UseFormProps> =
-    useForm<LoginFormValues>({
-      resolver: yupResolver(validationSchema),
-      defaultValues: { customerEmail: customerEmail ?? '' },
-    })
-
-  const isSubmitting = form.formState.isSubmitting
   const onSubmit = form.handleSubmit(async (formData) => {
-    await authenticate('password', {
-      clientId: config.clientId,
-      domain: config.domain,
-      scope: config.scope, // marketId
-      username: formData.customerEmail,
-      password: formData.customerPassword,
-    })
-      .then((tokenData) => {
-        if (tokenData.accessToken != null) {
-          handleLogin(tokenData)
-        } else {
-          form.setError('root', {
-            type: 'custom',
-            message: 'Invalid credentials',
-          })
-        }
+    try {
+      const tokenData = await authenticate('password', {
+        clientId: config.clientId,
+        domain: config.domain,
+        scope: config.scope, // marketId
+        username: formData.customerEmail,
+        password: formData.customerPassword,
       })
-      .catch(() => {
+      if (tokenData.accessToken) {
+        handleLogin(tokenData)
+      } else {
+        // If no access token but no error thrown, treat as invalid credentials
         form.setError('root', {
-          type: 'custom',
-          message: 'Invalid credentials',
+          type: 'INVALID_CREDENTIALS',
+          message: 'The email or password you entered is incorrect.',
         })
-      })
+      }
+    } catch (err) {
+      const parsed = parseAuthError(err)
+
+      // Handle rate limiting with countdown
+      if (parsed.type === 'RATE_LIMIT' && parsed.retryAfter) {
+        setRateLimitCountdown(parsed.retryAfter)
+        const rateLimitMessage = `Too many attempts. Try again in ${parsed.retryAfter} seconds.`
+        form.setError('root', { type: parsed.type, message: rateLimitMessage })
+      } else {
+        form.setError('root', {
+          type: parsed.type,
+          message: parsed.userMessage,
+        })
+      }
+
+      log('LoginForm', parsed, err)
+    }
   })
 
   return settings.isGuest ? (
@@ -85,7 +120,8 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
           <Fieldset.Content>
             <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
               <Input name="customerEmail" label="Email" type="email" />
-              <Input name="customerPassword" label="Password" type="password" />
+              <PasswordInput name="customerPassword" label="Password" />
+
               {resetPasswordUrl.length > 0 && (
                 <div className="text-right">
                   <ChakraLink
@@ -103,16 +139,19 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
                 type="submit"
                 alignSelf={'flex-end'}
                 loadingText={'Submitting'}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isRateLimited}
                 loading={isSubmitting}
               >
-                {'Login'}
+                {isRateLimited ? `Wait ${rateLimitCountdown}s` : 'Login'}
               </Button>
 
-              {form.formState.errors?.root != null && (
-                <Fieldset.ErrorText>
-                  Alert - danger - Invalid credentials
-                </Fieldset.ErrorText>
+              {form.formState.errors.root && (
+                <Alert status="error" my="4">
+                  {form.formState.errors.root.type === 'RATE_LIMIT' &&
+                  rateLimitCountdown > 0
+                    ? `Too many attempts. Try again in ${rateLimitCountdown} seconds.`
+                    : form.formState.errors.root.message}
+                </Alert>
               )}
             </Stack>
           </Fieldset.Content>
@@ -120,6 +159,6 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
       </form>
     </FormProvider>
   ) : (
-    <>{`Logged in as ${customer.email}`}</>
+    <>{`Logged in as ${emailAddress}`}</>
   )
 }

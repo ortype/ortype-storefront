@@ -149,28 +149,32 @@ export const getStoredSalesChannelToken = async ({
 }: GetStoredSalesChannelTokenConfig): Promise<StoredOauthResponse | null> => {
   const tokenData = getStoredTokenData({ app, slug, scope })
   if (!isValidStoredTokenData({ tokenData, clientId })) {
-    const auth = await authenticate('client_credentials', {
-      domain,
-      clientId,
-      scope
-    })
-    if (auth.accessToken != null) {
-      const decodedJWT = jwtDecode(auth.accessToken)
-      const slug = jwtIsSalesChannel(decodedJWT.payload)
-        ? decodedJWT.payload.organization.slug
-        : ''
+    try {
+      const auth = await authenticate('client_credentials', {
+        domain,
+        clientId,
+        scope
+      })
+      if (auth.accessToken != null) {
+        const decodedJWT = jwtDecode(auth.accessToken)
+        const slug = jwtIsSalesChannel(decodedJWT.payload)
+          ? decodedJWT.payload.organization.slug
+          : ''
 
-      const tokenData: StoredOauthResponse = {
-        client_id: clientId,
-        access_token: auth.accessToken,
-        scope,
-        token_type: auth.tokenType,
-        expires: decodedJWT.payload.exp
+        const tokenData: StoredOauthResponse = {
+          client_id: clientId,
+          access_token: auth.accessToken,
+          scope,
+          token_type: auth.tokenType,
+          expires: decodedJWT.payload.exp
+        }
+        const storageKey = getStoredTokenKey({ app, slug, scope })
+        localStorage.setItem(storageKey, JSON.stringify(tokenData))
+        return tokenData
+      } else {
+        return null
       }
-      const storageKey = getStoredTokenKey({ app, slug, scope })
-      localStorage.setItem(storageKey, JSON.stringify(tokenData))
-      return tokenData
-    } else {
+    } catch (err) {
       return null
     }
   } else {

@@ -6,7 +6,6 @@ import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
 import { Box, Flex } from '@chakra-ui/react'
-import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -73,11 +72,10 @@ export const StepEmail: React.FC<Props> = () => {
     return null
   }
 
-  // @NOTE: at this stage we are managing the identity/customer in two providers
-  // because there is the concept of attaching a `customer_email` to the `order`
-  // CLayer allows guest checkout `order.isGuest + order.customer_email`
-  // however, we do not allow guest checkout, so we should move away from this logic
-  const email = customer.email
+  // @NOTE: Use checkout provider's emailAddress as the source of truth
+  // since it persists across page refreshes and comes from the order data
+  // The identity provider's customer.email is for authenticated customers only
+  const email = emailAddress || customer.email
 
   return (
     <StepContainer
