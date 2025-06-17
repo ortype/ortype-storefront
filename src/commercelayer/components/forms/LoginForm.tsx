@@ -13,8 +13,8 @@ import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/chakra-button'
 import { PasswordInput } from '@/components/ui/password-input'
 import { Link as ChakraLink, Fieldset, Stack } from '@chakra-ui/react'
-import Link from 'next/link'
 import type { LoginFormValues } from 'Forms'
+import Link from 'next/link'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
 
 const validationSchema = yup.object().shape({
@@ -30,8 +30,7 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
   const log = useDevLogger()
   const [rateLimitCountdown, setRateLimitCountdown] = useState<number>(0)
 
-  // @TODO: password reset flow (?)
-  const resetPasswordUrl = false // config.resetPasswordUrl ?? ''
+  const { resetPasswordUrl } = config
 
   const form: UseFormReturn<LoginFormValues, UseFormProps> =
     useForm<LoginFormValues>({
@@ -123,15 +122,13 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
               <PasswordInput name="customerPassword" label="Password" />
 
               {resetPasswordUrl.length > 0 && (
-                <div className="text-right">
-                  <ChakraLink
-                    as={Link}
-                    href={`${resetPasswordUrl}`}
-                    target="_blank"
-                  >
-                    Forgot password?
-                  </ChakraLink>
-                </div>
+                <ChakraLink
+                  as={Link}
+                  href={`${resetPasswordUrl}`}
+                  target="_blank"
+                >
+                  Forgot password?
+                </ChakraLink>
               )}
 
               <Button

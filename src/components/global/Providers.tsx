@@ -32,7 +32,7 @@ function Providers({
                 ...config,
                 scope: marketId,
                 returnUrl: '/',
-                resetPasswordUrl: '/',
+                resetPasswordUrl: '/forgot-password',
               }}
             >
               {(ctx) => (
