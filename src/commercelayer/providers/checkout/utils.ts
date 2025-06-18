@@ -311,9 +311,9 @@ export const saveCustomerUser = async ({
 }> => {
   try {
     if (!cl || !orderId || !customerEmail) {
-      return { 
-        success: false, 
-        error: 'Missing required parameters: cl, orderId, or customerEmail' 
+      return {
+        success: false,
+        error: 'Missing required parameters: cl, orderId, or customerEmail',
       }
     }
 

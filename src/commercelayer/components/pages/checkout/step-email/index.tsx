@@ -63,7 +63,7 @@ export const StepEmail: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
   const { customer, setCustomerEmail } = useIdentityContext()
-  const { isGuest, hasEmailAddress, hasCustomer, emailAddress } = checkoutCtx
+  const { hasEmailAddress, emailAddress } = checkoutCtx
 
   // @NOTE: not doing anything yet with this state
   const [isLocalLoader, setIsLocalLoader] = useState(false)
@@ -76,6 +76,9 @@ export const StepEmail: React.FC<Props> = () => {
   // since it persists across page refreshes and comes from the order data
   // The identity provider's customer.email is for authenticated customers only
   const email = emailAddress || customer.email
+
+  // Derive which auth form to show (Login vs Sign-Up)
+  const requiresLogin = customer?.hasPassword === true
 
   return (
     <StepContainer
@@ -90,7 +93,7 @@ export const StepEmail: React.FC<Props> = () => {
           <>
             {hasEmailAddress ? (
               <>
-                {hasCustomer ? (
+                {requiresLogin ? (
                   <LoginFormNew emailAddress={email} />
                 ) : (
                   <SignUpForm emailAddress={email} />

@@ -6,10 +6,7 @@ import {
   SkuOption,
 } from '@commercelayer/sdk'
 
-import {
-  AppStateData,
-  type LicenseOwner,
-} from './index'
+import { AppStateData, type LicenseOwner } from './index'
 import {
   checkPaymentMethod,
   creditCardPayment,
@@ -54,6 +51,7 @@ export type Action =
       type: ActionType.SET_CUSTOMER_EMAIL
       payload: {
         customerEmail?: string
+        order: Order
       }
     }
   | {
@@ -145,6 +143,7 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
     case ActionType.SET_CUSTOMER_EMAIL:
       return {
         ...state,
+        order: action.payload.order,
         emailAddress: action.payload.customerEmail,
         hasEmailAddress: Boolean(action.payload.customerEmail),
         isLoading: false,

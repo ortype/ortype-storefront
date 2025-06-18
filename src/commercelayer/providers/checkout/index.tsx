@@ -442,10 +442,15 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
         if (result.success && result.order) {
           // Update local state with reducer dispatch
+
+          const freshOrder = await fetchOrder(cl, result.order.id)
+
           dispatch({
             type: ActionType.SET_CUSTOMER_EMAIL,
-            payload: { customerEmail },
+            payload: { customerEmail, order: freshOrder },
           })
+
+          return { success: result.success, order: freshOrder }
         }
 
         return result

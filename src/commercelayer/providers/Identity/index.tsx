@@ -1,5 +1,7 @@
 'use client'
-import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
+import getCommerceLayer, {
+  isValidCommerceLayerConfig,
+} from '@/commercelayer/utils/getCommerceLayer'
 import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
 import { getSettings } from '@/commercelayer/utils/getSettings'
 import {
@@ -44,7 +46,6 @@ interface IdentityProviderProps {
     | ((props: IdentityProviderValue) => ChildrenElement)
     | ChildrenElement
   config: CommerceLayerAppConfig
-  clientConfig: CLayerClientConfig
 }
 
 const IdentityContext = createContext<IdentityProviderValue>(
@@ -96,8 +97,37 @@ export function IdentityProvider({
     }
   }, [clientId, scope, customer.userMode])
 
-  // get customer
+  // get customer using API route (secure server-side lookup)
+  const lookupCustomer = async (customerId: string) => {
+    try {
+      const response = await fetch(`/api/customer/${customerId}`)
+      const data = await response.json()
+
+      if (data.success && data.customer) {
+        // Update customer state with the lookup result
+        setCustomer({
+          ...customer,
+          userMode: true,
+          email: data.customer.email,
+          hasPassword: data.customer.hasPassword,
+          isLoading: false,
+        })
+      }
+
+      return data
+    } catch (error) {
+      console.error('Customer lookup error:', error)
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to lookup customer',
+      }
+    }
+  }
+
+  // get customer using client-side token (for authenticated users)
   const fetchCustomerHandle = async (customerId?: string) => {
+    console.log('fetchCustomerHandle: ', customerId)
     const client = isValidCommerceLayerConfig(clientConfig)
       ? getCommerceLayer(clientConfig)
       : undefined
@@ -111,6 +141,7 @@ export function IdentityProvider({
       customerId,
     }).then((customerResponse) => {
       const customerDetails = customerResponse?.object
+      console.log('getCustomerDetails.then: ', customerResponse)
       setCustomer({
         ...customer,
         userMode: true,
@@ -122,6 +153,11 @@ export function IdentityProvider({
   }
 
   useEffect(() => {
+    console.log(
+      'does this ever run?',
+      state.settings.accessToken,
+      state.settings.customerId
+    )
     state.settings.accessToken && fetchCustomerHandle(state.settings.customerId)
   }, [state.settings.customerId, state.settings.accessToken])
 
@@ -159,6 +195,7 @@ export function IdentityProvider({
         userMode: false,
       })
     },
+    lookupCustomer,
     setCustomerEmail: (email) => {
       setCustomer({
         ...initialCustomerState,

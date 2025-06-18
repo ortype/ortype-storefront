@@ -1,5 +1,6 @@
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { Button } from '@/components/ui/chakra-button'
 import { Field } from '@/components/ui/field'
 import {
@@ -36,6 +37,7 @@ export const Email: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation()
   const { saveCustomerUser } = useCheckoutContext()
+  const { lookupCustomer } = useIdentityContext()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -58,8 +60,13 @@ export const Email: React.FC<Props> = ({
     try {
       const result = await saveCustomerUser(data.customer_email)
 
+      console.log('Email onSubmit: ', result)
+
       if (!result.success) {
         setError(result.error?.message || 'Failed to save email')
+      } else if (result.order?.customer?.id) {
+        // After successful saveCustomerUser, lookup customer to get hasPassword info
+        await lookupCustomer(result.order.customer.id)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save email')
