@@ -16,7 +16,9 @@ import React, {
 } from 'react'
 
 import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
-import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
+import getCommerceLayer, {
+  isValidCommerceLayerConfig,
+} from '@/commercelayer/utils/getCommerceLayer'
 import { ActionType, reducer } from './reducer'
 import {
   calculateSettings,
@@ -110,7 +112,6 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     error?: unknown
     order?: Order
   }>
-  setCustomerEmail: (email: string) => void
   saveCustomerUser: (customerEmail: string) => Promise<{
     success: boolean
     error?: unknown
@@ -208,7 +209,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   const { accessToken } = config
 
-  const cl = isValidCommerceLayerConfig(config) ? getCommerceLayer(config) : undefined
+  const cl = isValidCommerceLayerConfig(config)
+    ? getCommerceLayer(config)
+    : undefined
 
   // @NOTE: this is exclusively used in the `OrderContainer`` fetchOrder callback
   // the callback updates the the order stored on the ref whenever there are changes
@@ -245,14 +248,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
 
     // await changeLanguage(order.language_code)
-  }
-
-  const setCustomerEmail = (email: string) => {
-    // @NOTE: @commercelayer/react-components/customers/CustomerInput is responsible for calling `updateOrder`
-    dispatch({
-      type: ActionType.SET_CUSTOMER_EMAIL,
-      payload: { customerEmail: email },
-    })
   }
 
   const setAddresses = async (order?: Order) => {
@@ -427,7 +422,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   )
 
   const saveCustomerUser = useCallback(
-    async (customerEmail: string): Promise<{
+    async (
+      customerEmail: string
+    ): Promise<{
       success: boolean
       error?: unknown
       order?: Order
@@ -444,8 +441,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         })
 
         if (result.success && result.order) {
-          // Update local state
-          setCustomerEmail(customerEmail)
+          // Update local state with reducer dispatch
+          dispatch({
+            type: ActionType.SET_CUSTOMER_EMAIL,
+            payload: { customerEmail },
+          })
         }
 
         return result
@@ -453,7 +453,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         return { success: false, error }
       }
     },
-    [cl, orderId, setCustomerEmail]
+    [cl, orderId, dispatch]
   )
 
   const setLicenseOwner = async (params: {
@@ -491,7 +491,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         setPayment,
         setCouponOrGiftCard,
         placeOrder,
-        setCustomerEmail,
         saveCustomerUser,
         autoSelectShippingMethod,
         setLicenseOwner,

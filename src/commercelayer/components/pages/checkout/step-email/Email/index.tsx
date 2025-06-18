@@ -58,12 +58,7 @@ export const Email: React.FC<Props> = ({
     try {
       const result = await saveCustomerUser(data.customer_email)
 
-      if (result.success) {
-        // Also call the legacy setCustomerEmail if provided for backward compatibility
-        if (setCustomerEmail) {
-          setCustomerEmail(data.customer_email)
-        }
-      } else {
+      if (!result.success) {
         setError(result.error?.message || 'Failed to save email')
       }
     } catch (err) {
