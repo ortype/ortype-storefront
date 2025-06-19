@@ -59,10 +59,18 @@ const validationSchema = yup.object().shape({
 export const SignUpForm = ({ emailAddress }): JSX.Element => {
   const { settings, clientConfig, config, isLoading, handleLogin, customer } =
     useIdentityContext()
-  const { setCustomerPassword } = useCheckoutContext()
+  
+  // Try to get checkout context, but don't require it (for global header usage)
+  let checkoutCtx
+  try {
+    checkoutCtx = useCheckoutContext()
+  } catch {
+    // Not in checkout context (e.g., global header), that's fine
+    checkoutCtx = null
+  }
+  
+  const { setCustomerPassword, isGuest } = checkoutCtx || { setCustomerPassword: null, isGuest: false }
   const [apiError, setApiError] = useState({})
-
-  console.log('SignUpForm', customer)
 
   const form: UseFormReturn<SignUpFormValues, UseFormProps> =
     useForm<SignUpFormValues>({
@@ -106,8 +114,9 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
       return
     }
 
-    // Check if customer exists and has no password (shortcut signup case)
-    if (customer.userMode && customer.email && !customer.hasPassword) {
+    // Check if we're in checkout context with existing customer that needs password setup
+    // isGuest: false = customer exists but has no password (use shortcut signup)
+    if (setCustomerPassword && !isGuest) {
       try {
         // Use Commerce Layer's shortcut to sign up the associated customer
         const result = await setCustomerPassword(formData.customerPassword)
