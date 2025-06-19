@@ -76,7 +76,8 @@ const DoublePage: React.FC<DoublePageProps> = ({
   ...props
 }) => {
   const { _key } = value
-  const { spreadAspect, conversion, pageAspect, padding } = useDimensions()
+  const { spreadAspect, conversion, pageAspect, marginBottom, padding } =
+    useDimensions()
   const { state } = useSpreadState()
 
   // Memoize values from context to prevent unnecessary calculations
@@ -104,7 +105,7 @@ const DoublePage: React.FC<DoublePageProps> = ({
       className={'spread-page'}
       flex={{ base: '0 0 100%', lg: isSpread ? '0 0 100%' : '0 0 50%' }} // responsive values
       data-sanity={attr(`[${index}]`).toString()}
-      mb={padding}
+      mb={marginBottom}
       position="relative"
       // the before creates the height
       _before={{
@@ -178,7 +179,7 @@ const SinglePage: React.FC<SinglePageProps> = ({
 }) => {
   // Use _key from value if not directly provided
   const itemKey = useMemo(() => _key || value?._key, [_key, value?._key])
-  const { pageAspect, padding, conversion } = useDimensions()
+  const { pageAspect, padding, conversion, marginBottom } = useDimensions()
   const { state } = useSpreadState()
 
   // Memoize state item to prevent unnecessary rerenders
@@ -200,7 +201,7 @@ const SinglePage: React.FC<SinglePageProps> = ({
       className={'single-page'}
       data-sanity={attr(`[${index}]`).toString()}
       flex={{ base: '0 0 100%', lg: '0 0 50%' }} // responsive values
-      mb={padding}
+      mb={marginBottom}
       position="relative"
       // the before creates the height
       _before={{

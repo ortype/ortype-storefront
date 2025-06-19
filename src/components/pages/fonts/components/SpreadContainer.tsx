@@ -13,14 +13,15 @@ import { SpreadContainerProviderProps } from '../contexts/types'
 interface DoublePageProps {}
 
 const DoublePage: React.FC<DoublePageProps> = ({ ...props }) => {
-  const { spreadAspect, conversion, pageAspect, padding } = useDimensions()
+  const { spreadAspect, conversion, pageAspect, marginBottom, padding } =
+    useDimensions()
   const isSpread = true
 
   return (
     <Box
       className={'spread-page'}
       flex={{ base: '0 0 100%', lg: isSpread ? '0 0 100%' : '0 0 50%' }} // responsive values
-      mb={padding}
+      mb={marginBottom}
       position="relative"
       // the before creates the height
       _before={{

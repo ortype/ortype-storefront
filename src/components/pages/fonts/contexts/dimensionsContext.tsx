@@ -93,6 +93,11 @@ export const DimensionsProvider: React.FC<DimensionsProviderProps> = React.memo(
       [pageMargin, conversion]
     )
 
+    const marginBottom = useMemo(
+      () => `${pageMargin * 2 * conversion}px`,
+      [pageMargin, conversion]
+    )
+
     // Memoize the context value to prevent unnecessary rerenders
     const dimensionsValue = useMemo(
       () => ({
@@ -102,9 +107,11 @@ export const DimensionsProvider: React.FC<DimensionsProviderProps> = React.memo(
         spreadAspect: spreadAspectValue,
         pageAspect: pageAspectValue,
         padding: paddingValue,
+        marginBottom,
         size,
       }),
       [
+        marginBottom,
         colWidth,
         conversion,
         isLoading,

@@ -43,8 +43,6 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
       <FontContainer font={font} moreFonts={moreFonts}>
         <DimensionsProvider targetRef={targetRef}>
           <Flex
-            // Spread
-            w={'80vw'}
             mx={'auto'}
             py={'10vh'}
             pos={'relative'}

@@ -93,7 +93,6 @@ export const StepEmail: React.FC<Props> = () => {
       <>
         {accordionCtx.isActive && (
           <>
-            <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
             {hasEmailAddress ? (
               <>
                 {requiresLogin ? (

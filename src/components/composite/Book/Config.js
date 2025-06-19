@@ -121,7 +121,7 @@ const Config = () => {
                           }
                           onClick={() => handleDuplicate('verso', 'recto')}
                         >
-                          <Text fontSize={'sm'}>{`Copy verso to right`}</Text>
+                          <Text fontSize={'sm'}>{`Copy verso to recto`}</Text>
                         </MenuItem>
                         <MenuItem
                           icon={
