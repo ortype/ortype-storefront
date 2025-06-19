@@ -63,7 +63,7 @@ export const StepEmail: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
   const { customer, setCustomerEmail } = useIdentityContext()
-  const { hasEmailAddress, emailAddress } = checkoutCtx
+  const { hasEmailAddress, emailAddress, order } = checkoutCtx
 
   // @NOTE: not doing anything yet with this state
   const [isLocalLoader, setIsLocalLoader] = useState(false)
@@ -78,7 +78,10 @@ export const StepEmail: React.FC<Props> = () => {
   const email = emailAddress || customer.email
 
   // Derive which auth form to show (Login vs Sign-Up)
-  const requiresLogin = customer?.hasPassword === true
+  // Use order.guest property: false = customer has password (show Login), true = guest (show Sign-Up)
+  // Provide graceful fallback: show Sign-Up if order.guest is undefined
+  const isGuestCustomer = order?.guest ?? true
+  const requiresLogin = !isGuestCustomer && hasEmailAddress
 
   return (
     <StepContainer
@@ -91,6 +94,7 @@ export const StepEmail: React.FC<Props> = () => {
       <>
         {accordionCtx.isActive && (
           <>
+            <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
             {hasEmailAddress ? (
               <>
                 {requiresLogin ? (

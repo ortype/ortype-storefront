@@ -9,6 +9,7 @@ import * as yup from 'yup'
 
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useCheckoutContext } from '@/commercelayer/providers/checkout'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
@@ -35,16 +36,20 @@ const validationSchema = yup.object().shape({
     .string()
     .required('Password is required')
     .min(8, 'Password must be at least 8 characters')
-    .test('password-strength', 'Password must contain uppercase, lowercase, number, and special character', (value) => {
-      if (!value) return false
-      
-      const hasLowercase = /[a-z]/.test(value)
-      const hasUppercase = /[A-Z]/.test(value)
-      const hasNumber = /\d/.test(value)
-      const hasSpecialChar = /[^\w\s]/.test(value)
-      
-      return hasLowercase && hasUppercase && hasNumber && hasSpecialChar
-    }),
+    .test(
+      'password-strength',
+      'Password must contain uppercase, lowercase, number, and special character',
+      (value) => {
+        if (!value) return false
+
+        const hasLowercase = /[a-z]/.test(value)
+        const hasUppercase = /[A-Z]/.test(value)
+        const hasNumber = /\d/.test(value)
+        const hasSpecialChar = /[^\w\s]/.test(value)
+
+        return hasLowercase && hasUppercase && hasNumber && hasSpecialChar
+      }
+    ),
   customerConfirmPassword: yup
     .string()
     .required('Confirm password is required')
@@ -52,19 +57,12 @@ const validationSchema = yup.object().shape({
 })
 
 export const SignUpForm = ({ emailAddress }): JSX.Element => {
-  const { settings, clientConfig, config, isLoading, handleLogin } =
+  const { settings, clientConfig, config, isLoading, handleLogin, customer } =
     useIdentityContext()
+  const { setCustomerPassword } = useCheckoutContext()
   const [apiError, setApiError] = useState({})
 
-  // Loading IdentityProvider settings
-  if (isLoading) {
-    return <div>Loading</div>
-  }
-
-  // Loading IdentityProvider settings are valid?
-  if (!settings?.isValid) {
-    return <div>Application error (Commerce Layer).</div>
-  }
+  console.log('SignUpForm', customer)
 
   const form: UseFormReturn<SignUpFormValues, UseFormProps> =
     useForm<SignUpFormValues>({
@@ -108,6 +106,48 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
       return
     }
 
+    // Check if customer exists and has no password (shortcut signup case)
+    if (customer.userMode && customer.email && !customer.hasPassword) {
+      try {
+        // Use Commerce Layer's shortcut to sign up the associated customer
+        const result = await setCustomerPassword(formData.customerPassword)
+
+        if (result.success) {
+          // After successful password setup, authenticate the customer
+          await authenticate('password', {
+            clientId: config.clientId,
+            domain: config.domain,
+            scope: config.scope,
+            username: formData.customerEmail,
+            password: formData.customerPassword,
+          })
+            .then(async (tokenData) => {
+              if (tokenData.accessToken != null) {
+                await handleLogin(tokenData)
+              }
+            })
+            .catch((err) => {
+              form.setError('root', {
+                type: 'custom',
+                message: 'Authentication failed after password setup',
+              })
+            })
+        } else {
+          form.setError('root', {
+            type: 'custom',
+            message: 'Failed to set customer password',
+          })
+        }
+      } catch (error) {
+        form.setError('root', {
+          type: 'custom',
+          message: 'Failed to set customer password',
+        })
+      }
+      return
+    }
+
+    // Regular customer creation flow
     const client = getCommerceLayer(clientConfig)
 
     const createCustomerResponse = await client.customers
@@ -128,9 +168,9 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
         username: formData.customerEmail,
         password: formData.customerPassword,
       })
-        .then((tokenData) => {
+        .then(async (tokenData) => {
           if (tokenData.accessToken != null) {
-            handleLogin(tokenData)
+            await handleLogin(tokenData)
           }
         })
         .catch((err) => {
@@ -141,6 +181,16 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
         })
     }
   })
+
+  // Loading IdentityProvider settings
+  if (isLoading) {
+    return <div>Loading</div>
+  }
+
+  // Loading IdentityProvider settings are valid?
+  if (!settings?.isValid) {
+    return <div>Application error (Commerce Layer).</div>
+  }
 
   return (
     <FormProvider {...form}>

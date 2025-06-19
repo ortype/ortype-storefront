@@ -97,33 +97,6 @@ export function IdentityProvider({
     }
   }, [clientId, scope, customer.userMode])
 
-  // get customer using API route (secure server-side lookup)
-  const lookupCustomer = async (customerId: string) => {
-    try {
-      const response = await fetch(`/api/customer/${customerId}`)
-      const data = await response.json()
-
-      if (data.success && data.customer) {
-        // Update customer state with the lookup result
-        setCustomer({
-          ...customer,
-          userMode: true,
-          email: data.customer.email,
-          hasPassword: data.customer.hasPassword,
-          isLoading: false,
-        })
-      }
-
-      return data
-    } catch (error) {
-      console.error('Customer lookup error:', error)
-      return {
-        success: false,
-        error:
-          error instanceof Error ? error.message : 'Failed to lookup customer',
-      }
-    }
-  }
 
   // get customer using client-side token (for authenticated users)
   const fetchCustomerHandle = async (customerId?: string) => {
@@ -161,6 +134,16 @@ export function IdentityProvider({
     state.settings.accessToken && fetchCustomerHandle(state.settings.customerId)
   }, [state.settings.customerId, state.settings.accessToken])
 
+  // Reset customer loading state when provider finishes loading and there's no authenticated session
+  useEffect(() => {
+    if (!state.isLoading && !state.settings.customerId && customer.isLoading) {
+      console.log(
+        'Resetting customer isLoading to false - no authenticated session'
+      )
+      setCustomer((prev) => ({ ...prev, isLoading: false }))
+    }
+  }, [state.isLoading, state.settings.customerId, customer.isLoading])
+
   if (clientId.length === 0 || scope.length === 0) {
     console.log('IdentityProvider: Missing required parameter.')
     // return <div>Error 500 - Missing required parameter.</div>
@@ -172,7 +155,7 @@ export function IdentityProvider({
     customer,
     clientConfig,
     config,
-    handleLogin: (tokenData) => {
+    handleLogin: async (tokenData) => {
       setStoredCustomerToken({
         app: 'identity',
         clientId,
@@ -180,7 +163,48 @@ export function IdentityProvider({
         scope,
         tokenData,
       })
-      setCustomer({ ...customer, userMode: true })
+
+      // Update clientConfig with the new access token
+      const updatedClientConfig = {
+        ...clientConfig,
+        accessToken: tokenData.accessToken,
+      }
+
+      // Fetch full customer details using the new token
+      if (tokenData.ownerId) {
+        const client = isValidCommerceLayerConfig(updatedClientConfig)
+          ? getCommerceLayer(updatedClientConfig)
+          : undefined
+
+        if (client) {
+          try {
+            const customerResponse = await getCustomerDetails({
+              client,
+              customerId: tokenData.ownerId,
+            })
+
+            const customerDetails = customerResponse?.object
+            setCustomer({
+              ...customer,
+              userMode: true,
+              email: customerDetails?.email ?? '',
+              hasPassword: customerDetails?.has_password ?? false,
+              isLoading: false,
+            })
+          } catch (error) {
+            console.error(
+              'Failed to fetch customer details after login:',
+              error
+            )
+            // Fallback to just setting userMode if fetching details fails
+            setCustomer({ ...customer, userMode: true, isLoading: false })
+          }
+        } else {
+          setCustomer({ ...customer, userMode: true, isLoading: false })
+        }
+      } else {
+        setCustomer({ ...customer, userMode: true, isLoading: false })
+      }
     },
     handleLogout: () => {
       const storageKey = getStoredTokenKey({
@@ -195,7 +219,7 @@ export function IdentityProvider({
         userMode: false,
       })
     },
-    lookupCustomer,
+    fetchCustomerHandle,
     setCustomerEmail: (email) => {
       setCustomer({
         ...initialCustomerState,

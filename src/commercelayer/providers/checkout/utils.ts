@@ -321,6 +321,7 @@ export const saveCustomerUser = async ({
     const updatedOrder = await cl.orders.update({
       id: orderId,
       customer_email: customerEmail,
+      // @TODO: add include field with `customer` (?)
     })
 
     return { success: true, order: updatedOrder }

@@ -37,7 +37,6 @@ export const Email: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation()
   const { saveCustomerUser } = useCheckoutContext()
-  const { lookupCustomer } = useIdentityContext()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -64,10 +63,8 @@ export const Email: React.FC<Props> = ({
 
       if (!result.success) {
         setError(result.error?.message || 'Failed to save email')
-      } else if (result.order?.customer?.id) {
-        // After successful saveCustomerUser, lookup customer to get hasPassword info
-        await lookupCustomer(result.order.customer.id)
       }
+      // Note: No longer need to lookup customer info - using order.guest property instead
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save email')
     } finally {

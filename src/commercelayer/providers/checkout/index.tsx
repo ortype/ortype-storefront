@@ -117,6 +117,11 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     error?: unknown
     order?: Order
   }>
+  setCustomerPassword: (password: string) => Promise<{
+    success: boolean
+    error?: unknown
+    order?: Order
+  }>
   setAddresses: (order?: Order) => Promise<void>
   setCouponOrGiftCard: () => Promise<void>
   saveShipments: () => void
@@ -401,7 +406,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         }
 
         const resource = { ...attributes, id }
-        await cl.orders.update(resource, { include })
+        const updatedOrder = await cl.orders.update(resource, { include })
+        console.log('updateOrder util: ', updatedOrder)
         const currentOrder = await getOrderFromRef()
         // @WARNING: is this `order` object getting updated by the `getOrder` callback?
 
@@ -461,6 +467,41 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     [cl, orderId, dispatch]
   )
 
+  const setCustomerPassword = useCallback(
+    async (
+      password: string
+    ): Promise<{
+      success: boolean
+      error?: unknown
+      order?: Order
+    }> => {
+      try {
+        if (!cl) {
+          return { success: false, error: 'CommerceLayer client not available' }
+        }
+
+        // Use Commerce Layer's shortcut to sign up the associated customer
+        // by setting customer_password attribute on the order
+        const result = await updateOrder({
+          id: orderId,
+          attributes: {
+            customer_password: password,
+          },
+          include: ['customer'],
+        })
+
+        if (result.success && result.order) {
+          return { success: true, order: result.order }
+        }
+
+        return result
+      } catch (error) {
+        return { success: false, error }
+      }
+    },
+    [cl, orderId, updateOrder]
+  )
+
   const setLicenseOwner = async (params: {
     licenseOwner?: LicenseOwnerInput
     order?: Order
@@ -497,6 +538,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         setCouponOrGiftCard,
         placeOrder,
         saveCustomerUser,
+        setCustomerPassword,
         autoSelectShippingMethod,
         setLicenseOwner,
       }}

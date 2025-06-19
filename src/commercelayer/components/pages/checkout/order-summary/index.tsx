@@ -13,8 +13,8 @@ import { Trans, useTranslation } from 'react-i18next'
 import { CheckoutProviderData } from '@/commercelayer/providers/checkout'
 import { LINE_ITEMS_SHOPPABLE } from '@/components/utils/constants'
 
-import { Box, Heading, SimpleGrid } from '@chakra-ui/react'
 import { Size, sizes, Type, types } from '@/lib/settings'
+import { Box, Heading, SimpleGrid } from '@chakra-ui/react'
 
 import {
   LineItem,
@@ -72,7 +72,7 @@ export const OrderSummary: React.FC<Props> = ({ checkoutCtx, readonly }) => {
         <LineItemsContainer>
           <SimpleGrid
             columns={3}
-            spacing={4}
+            gap={4}
             borderTop={'1px solid #EEE'}
             borderBottom={'1px solid #EEE'}
           >
@@ -87,7 +87,7 @@ export const OrderSummary: React.FC<Props> = ({ checkoutCtx, readonly }) => {
             <Box></Box>
           </SimpleGrid>
           <LineItem>
-            <SimpleGrid columns={3} spacing={4} borderBottom={'1px solid #EEE'}>
+            <SimpleGrid columns={3} gap={4} borderBottom={'1px solid #EEE'}>
               {/*<LineItemImage width={50} />*/}
               <LineItemName />
               <Box>
@@ -104,7 +104,7 @@ export const OrderSummary: React.FC<Props> = ({ checkoutCtx, readonly }) => {
           </LineItem>
         </LineItemsContainer>
 
-        <SimpleGrid columns={3} spacing={4}>
+        <SimpleGrid columns={3} gap={4}>
           <Box
             fontSize={20}
             textTransform={'uppercase'}

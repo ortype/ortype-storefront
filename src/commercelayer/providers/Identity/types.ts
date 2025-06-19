@@ -19,10 +19,9 @@ export interface IdentityProviderValue {
   customer: CustomerStateData
   config: CommerceLayerAppConfig
   clientConfig: CLayerClientConfig
-  handleLogin: (data: CustomerTokenData) => void
+  handleLogin: (data: CustomerTokenData) => Promise<void>
   handleLogout: () => void
   fetchCustomerHandle: (customerId?: string) => Promise<Customer | undefined>
-  lookupCustomer: (customerId: string) => Promise<{ success: boolean; customer?: { id: string; email: string; hasPassword: boolean }; error?: string }>
   setCustomerEmail: (email: string) => void
 }
 
