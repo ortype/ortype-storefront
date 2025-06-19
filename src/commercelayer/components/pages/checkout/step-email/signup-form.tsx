@@ -9,6 +9,7 @@ import * as yup from 'yup'
 
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useCheckoutContext } from '@/commercelayer/providers/checkout'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
@@ -59,6 +60,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
   const { settings, clientConfig, config, isLoading, handleLogin, customer } =
     useIdentityContext()
 
+  const { setCustomerPassword, isGuest, hasCustomer } = useCheckoutContext()
   const [apiError, setApiError] = useState({})
 
   const form: UseFormReturn<SignUpFormValues, UseFormProps> =
@@ -100,6 +102,48 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
       setApiError({
         errors: [{ detail: 'Invalid Commerce Layer configuration' }],
       })
+      return
+    }
+
+    // Check if we're in checkout context with existing customer that needs password setup
+    // isGuest: true +  = customer exists but has no password (use shortcut signup)
+    if (setCustomerPassword && isGuest && hasCustomer) {
+      try {
+        // Use Commerce Layer's shortcut to sign up the associated customer
+        const result = await setCustomerPassword(formData.customerPassword)
+
+        if (result.success) {
+          // After successful password setup, authenticate the customer
+          await authenticate('password', {
+            clientId: config.clientId,
+            domain: config.domain,
+            scope: config.scope,
+            username: formData.customerEmail,
+            password: formData.customerPassword,
+          })
+            .then(async (tokenData) => {
+              if (tokenData.accessToken != null) {
+                await handleLogin(tokenData)
+              }
+            })
+            .catch((err) => {
+              form.setError('root', {
+                type: 'custom',
+                message: 'Authentication failed after password setup',
+              })
+            })
+        } else {
+          form.setError('root', {
+            type: 'custom',
+            message: 'Failed to set customer password',
+          })
+        }
+      } catch (error) {
+        form.setError('root', {
+          type: 'custom',
+          message: 'Failed to set customer password',
+        })
+      }
       return
     }
 
