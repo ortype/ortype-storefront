@@ -286,6 +286,7 @@ export const homePageQuery = defineQuery(`
 
 export const visibleFontsQuery = defineQuery(`
 *[_type == "font" && isVisible == true] {
+  _id,
   defaultVariant->{_id, optionName},
   "slug": slug.current,
   name,
