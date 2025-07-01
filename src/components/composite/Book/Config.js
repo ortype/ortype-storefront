@@ -100,7 +100,10 @@ const Config = () => {
                 <VStack spacing={2} alignItems={'start'} width={'100%'}>
                   <Text fontSize={'sm'}>Pages</Text>
                   <Group spacing={2} width={'100%'}>
-                    <MenuRoot>
+                    <MenuRoot
+                      variant={'right'}
+                      positioning={{ placement: 'right-start' }}
+                    >
                       <MenuTrigger
                         // width={'50%'}
                         as={Button}
@@ -111,7 +114,7 @@ const Config = () => {
                       >
                         <Text fontSize={'sm'}>{'Duplicate'}</Text>
                       </MenuTrigger>
-                      <MenuContent>
+                      <MenuContent portalled={false}>
                         <MenuItem
                           icon={
                             <ArrowRightIcon
