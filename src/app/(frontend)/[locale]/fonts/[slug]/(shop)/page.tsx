@@ -1,5 +1,5 @@
 import { FontPage } from '@/components/pages/fonts/FontPage'
-import { client } from '@/sanity/lib/client'
+import { client, getAllFontsSlugs } from '@/sanity/lib/client'
 import { sanityFetch } from '@/sanity/lib/live'
 import { fontQuery } from '@/sanity/lib/queries'
 import { toPlainText } from '@portabletext/react'
@@ -31,15 +31,10 @@ export async function generateMetadata(
   } satisfies Metadata
 }
 
-const fontSlugs = defineQuery(
-  `*[_type == "font" && defined(slug.current)]{"slug": slug.current}`
-)
-
 export const dynamic = 'force-static'
 
 export async function generateStaticParams() {
-  const slugs = await client.fetch(fontSlugs)
-  return slugs.map(({ slug }) => slug)
+  return await getAllFontsSlugs()
 }
 
 export default async function FontSlugRoute({
