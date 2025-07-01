@@ -19,7 +19,7 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
   const targetRef = useRef<HTMLDivElement>(null)
 
   return (
-    <Box bg={'#000'}>
+    <Box bg={'brand.900'}>
       {/*<DynamicBuyContainer font={font}>
         <DynamicBuy />
       </DynamicBuyContainer>*/}

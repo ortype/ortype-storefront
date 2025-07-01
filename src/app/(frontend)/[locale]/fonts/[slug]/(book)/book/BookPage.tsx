@@ -2,12 +2,12 @@
 
 import { disableDraftMode } from '@/app/actions'
 import Spread from '@/components/composite/Book/Spread'
-import { useQuery } from '@apollo/client'
-import { Box, Center, Flex, Text } from '@chakra-ui/react'
 import Toolbar from '@/components/composite/Book/Toolbar'
 import { useBookLayoutStore } from '@/components/data/BookProvider'
 import { makeLocalStorage } from '@/components/utils/makeLocalStorage'
 import { GET_BOOK_LAYOUT } from '@/graphql/queries'
+import { useQuery } from '@apollo/client'
+import { Box, Center, Flex, Text } from '@chakra-ui/react'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -96,7 +96,7 @@ const BookPage = ({
   */
 
   return (
-    <Box bg={'#000'} height={'100%'}>
+    <Box bg={'brand.900'} height={'100%'}>
       <Toolbar font={font} fonts={fonts} bookLayoutData={data} />
       <Spread />
     </Box>

@@ -8,10 +8,10 @@ export const colors = defineTokens.colors({
     300: { value: '#b3b3b3' },
     400: { value: '#999999' },
     500: { value: '#808080' },
-    600: { value: '#000000' },
-    700: { value: '#000000' },
+    600: { value: '#555555' },
+    700: { value: '#444444' },
     800: { value: '#333333' },
-    900: { value: '#000000' }, // Darker black
+    900: { value: '#282828' }, // Darker black
   },
   transparent: {
     value: 'transparent',
