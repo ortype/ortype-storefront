@@ -7,6 +7,36 @@ import { Box, Container, Flex, Text } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import React from 'react'
 
+const EntrySpans = ({ entry, line, layout }) => {
+  // Split the string by the closing tag of the span
+  const elements = entry.split(/<\/span>/).map((item, index) => {
+    // Trim the item and check if it's not empty
+    const trimmedItem = item.trim()
+    if (trimmedItem) {
+      return (
+        <Box
+          as={'span'}
+          key={index}
+          display={'block'}
+          style={{
+            marginTop:
+              index === 0 ? 0 : `${line.lineGap * layout.conversion}px`,
+          }}
+        >
+          {trimmedItem.replace(/<span>/, '')}
+        </Box>
+      )
+    }
+    return null
+  })
+
+  return (
+    <Box as={'div'} whiteSpace={'pre-wrap'}>
+      {elements}
+    </Box>
+  )
+}
+
 const Block: React.FC<{
   entry: string
   delay: number
@@ -62,20 +92,7 @@ const Block: React.FC<{
             bottom: 0,
           }}
         >
-          <Box
-            as={'div'}
-            whiteSpace={'pre-wrap'}
-            dangerouslySetInnerHTML={{ __html: entry }}
-            css={{
-              span: {
-                display: 'block',
-                mt: `${line.lineGap * layout.conversion}px`,
-              },
-              'span:firstOfType': {
-                mt: 0,
-              },
-            }}
-          />
+          <EntrySpans entry={entry} line={line} layout={layout} />
         </Box>
       </Box>
     </motion.div>
