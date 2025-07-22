@@ -2,7 +2,13 @@
 import BlockImage from '@/components/blocks/image'
 import Video from '@/components/modules/Video'
 import { dataset, projectId } from '@/sanity/env'
-import { Box, Link as ChakraLink, Heading, Text } from '@chakra-ui/react'
+import {
+  AspectRatio,
+  Box,
+  Link as ChakraLink,
+  Heading,
+  Text,
+} from '@chakra-ui/react'
 import { PortableText } from '@portabletext/react'
 import Link from 'next/link'
 import React from 'react'
@@ -36,8 +42,17 @@ const components = {
       </Box>
     ),
     'module.video': (props) => (
-      <Box>
-        <Video {...props} />
+      <Box
+        pos={'relative'}
+        overflow={'hidden'}
+        css={{
+          '& > div > div > div': { position: 'inherit !important' },
+        }}
+      >
+        <Video
+          {...props}
+          style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+        />
       </Box>
     ),
   },

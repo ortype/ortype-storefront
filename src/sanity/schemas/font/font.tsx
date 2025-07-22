@@ -96,6 +96,12 @@ export default defineType({
         title: 'name',
       },
     },
+    defineField({
+      type: 'module.video',
+      name: 'headerVideo',
+      title: 'Header Video',
+      group: 'presentation',
+    }),
     // Modules
     {
       name: 'modules',

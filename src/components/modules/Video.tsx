@@ -1,5 +1,5 @@
 import getVideoId from '@/sanity/utils/get-video-id'
-import { AspectRatio, Box, Presence, Text } from '@chakra-ui/react'
+import { Box, Presence, Text } from '@chakra-ui/react'
 import {
   PortableText,
   PortableTextBlock,
@@ -17,6 +17,7 @@ interface VideoValue {
 
 interface VideoProps {
   value?: VideoValue
+  style: any
 }
 
 const extractVideoId = (url: string): string | null => {
@@ -28,7 +29,7 @@ const extractVideoId = (url: string): string | null => {
   }
 }
 
-const Video: React.FC<VideoProps> = ({ value = {} }) => {
+const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
   const { url, caption, isBackground = true } = value as VideoValue
 
   const [loading, setLoading] = useState<boolean>(true)
@@ -78,25 +79,22 @@ const Video: React.FC<VideoProps> = ({ value = {} }) => {
   }
 
   return (
-    <>
-      <AspectRatio ratio={6 / 10}>
-        <VimeoPlayer
-          url={src}
-          volume={1}
-          onReady={() => {
-            setLoading(false)
-            setPlayerReady(true)
-          }}
-          loop={true}
-          muted={true}
-          controls={false}
-          playing={playerReady}
-          config={config}
-          width="100%"
-          height="100%"
-        />
-      </AspectRatio>
-    </>
+    <VimeoPlayer
+      url={src}
+      volume={1}
+      onReady={() => {
+        setLoading(false)
+        setPlayerReady(true)
+      }}
+      loop={true}
+      muted={true}
+      controls={false}
+      playing={playerReady}
+      config={config}
+      width="100%"
+      height="100%"
+      style={style}
+    />
   )
 }
 

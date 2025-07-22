@@ -79,7 +79,7 @@ export const DimensionsProvider: React.FC<DimensionsProviderProps> = React.memo(
 
     // Calculate derived values only when inputs change
     const spreadAspectValue = useMemo(
-      () => mapResponsive(ratio, (r) => `${(r / 1) * 100}%`),
+      () => mapResponsive(ratio, (r) => `${(r / 1) * 100}`),
       [ratio]
     )
 
@@ -104,7 +104,8 @@ export const DimensionsProvider: React.FC<DimensionsProviderProps> = React.memo(
         colWidth,
         conversion,
         isLoading,
-        spreadAspect: spreadAspectValue,
+        spreadAspectValue,
+        spreadAspect: `${spreadAspectValue}%`,
         pageAspect: pageAspectValue,
         padding: paddingValue,
         marginBottom,

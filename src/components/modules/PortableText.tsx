@@ -57,8 +57,17 @@ export default function CustomPortableText({
     },
     types: {
       'module.video': (props) => (
-        <Box>
-          <Video {...props} />
+        <Box
+          pos={'relative'}
+          overflow={'hidden'}
+          css={{
+            '& > div > div > div': { position: 'inherit !important' },
+          }}
+        >
+          <Video
+            {...props}
+            style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+          />
         </Box>
       ),
       image: (props) => {

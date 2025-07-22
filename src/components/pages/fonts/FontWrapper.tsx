@@ -6,6 +6,7 @@ import React, { useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
 import { DimensionsProvider } from './contexts/dimensionsContext'
 import FontContainer from './FontContainer'
+import FontHeader from './FontHeader'
 
 // Type definitions for better TypeScript support
 interface FontWrapperProps {
@@ -40,6 +41,7 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
       >
         <Link href={`/buy/${font.slug}`}>{`Buy`}</Link>
       </Button>
+
       <FontContainer font={font} moreFonts={moreFonts}>
         <DimensionsProvider targetRef={targetRef}>
           <Flex
@@ -49,6 +51,13 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
             wrap={'wrap'}
             ref={targetRef}
           >
+            {font?.headerVideo && (
+              <FontHeader
+                title={font.shortName}
+                variantId={font.defaultVariant?._id}
+                video={font.headerVideo}
+              />
+            )}
             <SpreadContainerProvider initialItems={modules}>
               <Modules value={modules} />
             </SpreadContainerProvider>
