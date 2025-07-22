@@ -53,7 +53,7 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
           >
             {font?.headerVideo && (
               <FontHeader
-                title={font.shortName}
+                title={font.title || font.shortName || 'Untitled'}
                 variantId={font.defaultVariant?._id}
                 video={font.headerVideo}
               />

@@ -350,6 +350,7 @@ export const fontQuery = defineQuery(`{
     version,
     metafields[]{key, value},
     defaultVariant->{_id, optionName},
+    title,
     headerVideo,
     modules[]{
       ..., 

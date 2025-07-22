@@ -97,6 +97,12 @@ export default defineType({
       },
     },
     defineField({
+      type: 'string',
+      name: 'title',
+      title: 'Title',
+      group: 'presentation',
+    }),
+    defineField({
       type: 'module.video',
       name: 'headerVideo',
       title: 'Header Video',
