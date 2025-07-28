@@ -55,6 +55,7 @@ const Webfonts = ({ children }) => {
           */
           fontFaceArray.push({
             '@font-face': {
+              fontDisplay: 'block' /* Prevents fallback font from displaying */,
               fontFamily: `'${font.fontFamilyVariable}'`,
               src: `url('${variable}') format('truetype-variations')`,
               // src: `url('${woff2}') format('woff2'), url('${woff}') format('woff')`,
@@ -72,6 +73,7 @@ const Webfonts = ({ children }) => {
         } else {
           fontFaceArray.push({
             '@font-face': {
+              fontDisplay: 'block' /* Prevents fallback font from displaying */,
               fontFamily: `'${font.fontFamily}'`,
               src: `url('${woff2}') format('woff2'), url('${woff}') format('woff')`,
               fontWeight: `normal`,

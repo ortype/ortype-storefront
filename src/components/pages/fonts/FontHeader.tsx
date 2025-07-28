@@ -20,7 +20,8 @@ export default function FontHeader({
   variantId,
   video,
 }: FontHeaderProps) {
-  const { spreadAspectValue, marginBottom, conversion } = useDimensions()
+  const { spreadAspectValue, isLoading, marginBottom, conversion } =
+    useDimensions()
   return (
     <Box
       className={'header-spread'}
@@ -33,6 +34,8 @@ export default function FontHeader({
     >
       <AbsoluteCenter zIndex={1}>
         <Heading
+          transition="opacity 0.3s ease-in-out"
+          opacity={isLoading ? 0 : 1}
           className={variantId}
           pt={'0.5rem'}
           pb={'0.25rem'}

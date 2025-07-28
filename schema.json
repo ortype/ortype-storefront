@@ -935,29 +935,6 @@
     }
   },
   {
-    "name": "module.video",
-    "type": "type",
-    "value": {
-      "type": "object",
-      "attributes": {
-        "_type": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string",
-            "value": "module.video"
-          }
-        },
-        "url": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          },
-          "optional": true
-        }
-      }
-    }
-  },
-  {
     "name": "module.content",
     "type": "type",
     "value": {
@@ -2440,6 +2417,21 @@
         },
         "optional": true
       },
+      "title": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "headerVideo": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "module.video"
+        },
+        "optional": true
+      },
       "modules": {
         "type": "objectAttribute",
         "value": {
@@ -2891,6 +2883,29 @@
           }
         },
         "optional": true
+      }
+    }
+  },
+  {
+    "name": "module.video",
+    "type": "type",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "module.video"
+          }
+        },
+        "url": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        }
       }
     }
   },

@@ -156,11 +156,6 @@ export type Body = Array<
     }
 >
 
-export type ModuleVideo = {
-  _type: 'module.video'
-  url?: string
-}
-
 export type ModuleContent = {
   _type: 'module.content'
   title?: string
@@ -391,6 +386,8 @@ export type Font = {
     _weak?: boolean
     [internalGroqTypeReferenceTo]?: 'fontVariant'
   }
+  title?: string
+  headerVideo?: ModuleVideo
   modules?: Array<
     | ({
         _key: string
@@ -462,6 +459,11 @@ export type Font = {
     _type: 'metafield'
     _key: string
   }>
+}
+
+export type ModuleVideo = {
+  _type: 'module.video'
+  url?: string
 }
 
 export type FontVariant = {
@@ -599,7 +601,6 @@ export type AllSanitySchemaTypes =
   | Geopoint
   | BlockContent
   | Body
-  | ModuleVideo
   | ModuleContent
   | ModuleTester
   | ModuleStyles
@@ -611,6 +612,7 @@ export type AllSanitySchemaTypes =
   | Page
   | Post
   | Font
+  | ModuleVideo
   | FontVariant
   | Category
   | Author
@@ -1088,7 +1090,7 @@ export type HomePageQueryResult = {
   }>
 }
 // Variable: visibleFontsQuery
-// Query: *[_type == "font" && isVisible == true] {  _id,  defaultVariant->{_id, optionName},  "slug": slug.current,  name,  shortName}
+// Query: *[_type == "font" && isVisible == true] {  _id,  defaultVariant->{_id, optionName},  "slug": slug.current,  name,  shortName,  metafields[]{key, value},}
 export type VisibleFontsQueryResult = Array<{
   _id: string
   defaultVariant: {
@@ -1098,6 +1100,10 @@ export type VisibleFontsQueryResult = Array<{
   slug: string | null
   name: string | null
   shortName: string | null
+  metafields: Array<{
+    key: string | null
+    value: string | null
+  }> | null
 }>
 // Variable: buyFontsQuery
 // Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {    _id,    _type,    name,    shortName,    "slug": slug.current,    variants[]->{name, optionName, _id},    defaultVariant->{_id, optionName},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    }      },  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {      defaultVariant->{_id, optionName},      "slug": slug.current,      name,      shortName  }  }
@@ -1760,7 +1766,7 @@ export type FontAndMoreFontsQueryResult = {
   }>
 }
 // Variable: fontQuery
-// Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {    _id,    _type,    name,    shortName,    isVisible,    "slug": slug.current,    variants[]->{name, optionName, _id},    uid,    version,    metafields[]{key, value},    defaultVariant->{_id, optionName},    modules[]{      ...,       _type == "content" => {        body[]{          ...,          markDefs[]{            ...,            _type == "internalLink" => {              "slug": @.reference->slug            }          }        }               },      _type == "book" => {        book->{variantId, snapshots},      },      _type == "tester" => {        tester->{defaultVariant->{_id, optionName}, defaultText},        }    },    modifiedAt,    languages[]{html, name},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
+// Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {    _id,    _type,    name,    shortName,    isVisible,    "slug": slug.current,    variants[]->{name, optionName, _id},    uid,    version,    metafields[]{key, value},    defaultVariant->{_id, optionName},    title,    headerVideo,    modules[]{      ...,       _type == "content" => {        body[]{          ...,          markDefs[]{            ...,            _type == "internalLink" => {              "slug": @.reference->slug            }          }        }               },      _type == "book" => {        book->{variantId, snapshots},      },      _type == "tester" => {        tester->{defaultVariant->{_id, optionName}, defaultText},        }    },    modifiedAt,    languages[]{html, name},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
 export type FontQueryResult = {
   font: {
     _id: string
@@ -1784,6 +1790,8 @@ export type FontQueryResult = {
       _id: string
       optionName: string | null
     } | null
+    title: string | null
+    headerVideo: ModuleVideo | null
     modules: Array<
       | {
           _key: string
@@ -1906,12 +1914,12 @@ declare module '@sanity/client' {
     '\n*[_type == "font" && defined(slug.current)][].slug.current\n': FontSlugsQueryResult
     "\n*[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    \"postCount\": count(*[_type == 'post' && references(^._id)])\n  }\n": CategoryFitersResult
     '\n{\n  "fonts": *[_type == "font" && isVisible == true] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  }\n}\n': HomePageQueryResult
-    '\n*[_type == "font" && isVisible == true] {\n  _id,\n  defaultVariant->{_id, optionName},\n  "slug": slug.current,\n  name,\n  shortName\n}': VisibleFontsQueryResult
+    '\n*[_type == "font" && isVisible == true] {\n  _id,\n  defaultVariant->{_id, optionName},\n  "slug": slug.current,\n  name,\n  shortName,\n  metafields[]{key, value},\n}': VisibleFontsQueryResult
     '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {\n    _id,\n    _type,\n    name,\n    shortName,\n    "slug": slug.current,\n    variants[]->{name, optionName, _id},\n    defaultVariant->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    }    \n  },\n  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {\n      defaultVariant->{_id, optionName},\n      "slug": slug.current,\n      name,\n      shortName\n  }  \n}': BuyFontsQueryResult
     '\n*[_type == "font"] {\n  \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n}': FontsQueryResult
     '\n*[_type == "fontVariant"] {\n  \n  _id,\n  _type,\n  name,\n  optionName,\n  "slug": slug.current,\n  uid,\n  parentUid,\n  version,\n  metafields[]{key, value}\n\n}': FontVariantsQueryResult
     '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  },\n  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(date desc, _updatedAt desc) [0...2] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  }\n}': FontAndMoreFontsQueryResult
-    '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {\n    _id,\n    _type,\n    name,\n    shortName,\n    isVisible,\n    "slug": slug.current,\n    variants[]->{name, optionName, _id},\n    uid,\n    version,\n    metafields[]{key, value},\n    defaultVariant->{_id, optionName},\n    modules[]{\n      ..., \n      _type == "content" => {\n        body[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == "internalLink" => {\n              "slug": @.reference->slug\n            }\n          }\n        }         \n      },\n      _type == "book" => {\n        book->{variantId, snapshots},\n      },\n      _type == "tester" => {\n        tester->{defaultVariant->{_id, optionName}, defaultText},\n  \n      }\n    },\n    modifiedAt,\n    languages[]{html, name},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}': FontQueryResult
+    '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {\n    _id,\n    _type,\n    name,\n    shortName,\n    isVisible,\n    "slug": slug.current,\n    variants[]->{name, optionName, _id},\n    uid,\n    version,\n    metafields[]{key, value},\n    defaultVariant->{_id, optionName},\n    title,\n    headerVideo,\n    modules[]{\n      ..., \n      _type == "content" => {\n        body[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == "internalLink" => {\n              "slug": @.reference->slug\n            }\n          }\n        }         \n      },\n      _type == "book" => {\n        book->{variantId, snapshots},\n      },\n      _type == "tester" => {\n        tester->{defaultVariant->{_id, optionName}, defaultText},\n  \n      }\n    },\n    modifiedAt,\n    languages[]{html, name},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}': FontQueryResult
     '*[_type == "post" && defined(slug.current)]{"slug": slug.current}': PostSlugsResult
   }
 }

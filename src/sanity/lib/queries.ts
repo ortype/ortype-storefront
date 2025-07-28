@@ -290,7 +290,8 @@ export const visibleFontsQuery = defineQuery(`
   defaultVariant->{_id, optionName},
   "slug": slug.current,
   name,
-  shortName
+  shortName,
+  metafields[]{key, value},
 }`)
 
 export const buyFontsQuery = defineQuery(`{
