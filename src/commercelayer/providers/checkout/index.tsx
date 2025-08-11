@@ -1,4 +1,7 @@
 import CommerceLayer, {
+  type Address,
+  type AddressCreate,
+  type AddressUpdate,
   type LineItem,
   type Order,
   type OrderUpdate,
@@ -19,6 +22,12 @@ import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
+import {
+  createBillingAddress as createBillingAddressUtil,
+  updateBillingAddress as updateBillingAddressUtil,
+  setOrderBillingAddress as attachBillingAddressToOrderUtil,
+  type AddressOperationResult,
+} from '@/commercelayer/utils/address'
 import { ActionType, reducer } from './reducer'
 import {
   calculateSettings,
@@ -139,6 +148,10 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     order?: Order
     licenseOwner?: LicenseOwner
   }) => void
+  // New address helper methods
+  createBillingAddress: (addressData: AddressCreate) => Promise<AddressOperationResult<Address>>
+  updateBillingAddress: (addressId: string, addressData: AddressUpdate) => Promise<AddressOperationResult<Address>>
+  attachBillingAddressToOrder: (addressId: string, useAsShipping?: boolean) => Promise<AddressOperationResult<Order>>
   licenseOwner: LicenseOwner
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
@@ -259,6 +272,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     dispatch({ type: ActionType.START_LOADING })
     const currentOrder = order ?? (await getOrderFromRef())
     console.log('setAddresses: currentOrder: ', currentOrder)
+    
+    // Update the order ref with the current order to keep cache fresh
+    orderRef.current = currentOrder
+    
     const isShipmentRequired = await checkIfShipmentRequired(cl, orderId)
 
     const others = calculateSettings(
@@ -510,6 +527,91 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     return orderRef.current || (await fetchOrder(cl, orderId))
   }
 
+  // New address helper methods that call utils layer
+  const createBillingAddress = useCallback(
+    async (addressData: AddressCreate): Promise<AddressOperationResult<Address>> => {
+      if (!cl) {
+        return {
+          success: false,
+          error: {
+            errors: [
+              {
+                title: 'Missing Commerce Layer client',
+                detail: 'Commerce Layer client is required',
+                code: 'MISSING_CLIENT',
+              },
+            ],
+          },
+        }
+      }
+      
+      return await createBillingAddressUtil({ cl, addressData })
+    },
+    [cl]
+  )
+
+  const updateBillingAddress = useCallback(
+    async (
+      addressId: string,
+      addressData: AddressUpdate
+    ): Promise<AddressOperationResult<Address>> => {
+      if (!cl) {
+        return {
+          success: false,
+          error: {
+            errors: [
+              {
+                title: 'Missing Commerce Layer client',
+                detail: 'Commerce Layer client is required',
+                code: 'MISSING_CLIENT',
+              },
+            ],
+          },
+        }
+      }
+      
+      return await updateBillingAddressUtil({ cl, addressId, addressData })
+    },
+    [cl]
+  )
+
+  const attachBillingAddressToOrder = useCallback(
+    async (
+      addressId: string,
+      useAsShipping: boolean = false
+    ): Promise<AddressOperationResult<Order>> => {
+      if (!cl) {
+        return {
+          success: false,
+          error: {
+            errors: [
+              {
+                title: 'Missing Commerce Layer client',
+                detail: 'Commerce Layer client is required',
+                code: 'MISSING_CLIENT',
+              },
+            ],
+          },
+        }
+      }
+      
+      const result = await attachBillingAddressToOrderUtil({
+        cl,
+        orderId,
+        addressId,
+        useAsShipping,
+      })
+      
+      // If successful, refresh the order state using setAddresses
+      if (result.success && result.data) {
+        await setAddresses(result.data)
+      }
+      
+      return result
+    },
+    [cl, orderId]
+  )
+
   useEffect(() => {
     fetchInitialOrder(orderId, accessToken)
   }, [orderId, accessToken])
@@ -533,6 +635,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         setCustomerPassword,
         autoSelectShippingMethod,
         setLicenseOwner,
+        // New address helper methods
+        createBillingAddress,
+        updateBillingAddress,
+        attachBillingAddressToOrder,
       }}
     >
       {children}

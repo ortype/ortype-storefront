@@ -2,7 +2,7 @@ import { Address } from '@commercelayer/sdk'
 import { useContext } from 'react'
 
 import { ShippingToggleProps } from '@/commercelayer/components/pages/checkout/step-address'
-import { AddressInputGroup } from '@/commercelayer/components/pages/checkout/step-address/AddressInputGroup'
+import { AddressInputGroup } from '@/commercelayer/components/pages/checkout/step-address/address-input-group'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Container, Grid } from '@chakra-ui/react'
 

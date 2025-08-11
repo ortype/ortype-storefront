@@ -1,4 +1,6 @@
+import SaveBillingAddressButton from '@/commercelayer/components/ui/save-billing-address-button'
 import { AccordionContext } from '@/commercelayer/providers/accordion'
+import { AddressProvider } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
@@ -7,7 +9,7 @@ import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckoutCustomerAddresses } from './CheckoutCustomerAddresses'
+import { BillingAddressForm } from './billing-address-form'
 
 interface Props {
   className?: string
@@ -63,6 +65,7 @@ export const StepHeaderCustomer: React.FC<Props> = ({ step }) => {
 export const StepAddress: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
+  const { t } = useTranslation()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
 
@@ -113,55 +116,59 @@ export const StepAddress: React.FC<Props> = () => {
   const handleSave = async (params: { success: boolean; order?: Order }) => {
     setIsLocalLoader(true)
     await setAddresses(params.order)
-
-    // it is used temporarily to scroll
-    // to the next step and fix
-    // the mobile and desktop bug that led to the bottom of the page
-    const tab = document.querySelector('div[tabindex="2"]')
-    const top = tab?.scrollLeft as number
-    const left = tab?.scrollTop as number
-    window.scrollTo({ left, top, behavior: 'smooth' })
-
     setIsLocalLoader(false)
-
-    // @TODO: proceed to License tab on click (is it something to do with these tabs?)
-    console.log('tab: ', tab) // is undefined
   }
 
   return (
-    <StepContainer
-      className={classNames({
-        current: accordionCtx.isActive,
-        done: !accordionCtx.isActive,
-        submitting: isLocalLoader,
-      })}
-    >
-      <Box>
-        <>
-          {accordionCtx.isActive && (
-            <>
-              <CheckoutCustomerAddresses
-                shippingAddress={shippingAddress}
-                billingAddress={billingAddress}
-                emailAddress={emailAddress}
-                hasCustomerAddresses={hasCustomerAddresses}
-                isShipmentRequired={isShipmentRequired}
-                isUsingNewShippingAddress={isUsingNewShippingAddress}
-                isUsingNewBillingAddress={isUsingNewBillingAddress}
-                hasSameAddresses={hasSameAddresses}
-                isLocalLoader={isLocalLoader}
-                shippingCountryCodeLock={shippingCountryCodeLock}
-                openShippingAddress={openShippingAddress}
-                shipToDifferentAddress={shipToDifferentAddress}
-                setShipToDifferentAddress={setShipToDifferentAddress}
-                disabledShipToDifferentAddress={disabledShipToDifferentAddress}
-                handleSave={handleSave}
-              />
-            </>
-          )}
-        </>
-      </Box>
-    </StepContainer>
+    <AddressProvider>
+      <StepContainer
+        className={classNames({
+          current: accordionCtx.isActive,
+          done: !accordionCtx.isActive,
+          submitting: isLocalLoader,
+        })}
+      >
+        <Box>
+          <>
+            {accordionCtx.isActive && (
+              <>
+                <BillingAddressForm
+                  billingAddress={billingAddress}
+                  openShippingAddress={openShippingAddress}
+                />
+                {/* TODO: Replace with shipping address form when implementing shipping flow
+                 * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
+                 * Components needed:
+                 * - shipping-address-form-new/index.tsx
+                 * - Update AddressProvider for shipping state
+                 * - Add shipping validation and save logic
+                 */}
+                {isShipmentRequired && (
+                  <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+                    <p className="text-yellow-800">
+                      Shipping address form - TODO: Implement
+                    </p>
+                    <p className="text-sm text-yellow-600 mt-2">
+                      See SHIPPING_MIGRATION_TODO.md for implementation details
+                    </p>
+                  </div>
+                )}
+                <SaveBillingAddressButton
+                  label={
+                    isShipmentRequired
+                      ? t('stepCustomer.continueToDelivery')
+                      : t('stepAddress.continueToLicense')
+                  }
+                  data-test-id="save-customer-button"
+                  onClick={() => handleSave({ success: true })}
+                  orderId={checkoutCtx.order?.id}
+                />
+              </>
+            )}
+          </>
+        </Box>
+      </StepContainer>
+    </AddressProvider>
   )
 }
 

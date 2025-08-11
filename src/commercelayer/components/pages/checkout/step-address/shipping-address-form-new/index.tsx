@@ -1,7 +1,7 @@
 import { Address } from '@commercelayer/sdk'
 import { Fragment } from 'react'
 
-import { AddressInputGroup } from '@/commercelayer/components/pages/checkout/step-address/AddressInputGroup'
+import { AddressInputGroup } from '@/commercelayer/components/pages/checkout/step-address/address-input-group'
 import { Grid } from '@chakra-ui/react'
 
 interface Props {

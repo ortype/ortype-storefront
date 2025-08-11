@@ -1,6 +1,6 @@
 import { Field } from '@/components/ui/field'
 import { Flex } from '@chakra-ui/react'
-import { AddressInput } from '@commercelayer/react-components'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useTranslation } from 'react-i18next'
 
 interface Props {
@@ -23,17 +23,12 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
 
   return (
     <Flex className="items-center">
-      <Field label={t('stepCustomer.saveAddressBook')}>
-        <AddressInput
-          data-testid={dataTestId}
-          // @ts-expect-error Missing attribute
-          name={fieldName}
-          id={fieldName}
-          type="checkbox"
-          required={false}
-          className="form-checkbox"
-        />
-      </Field>
+      <Checkbox
+        data-testid={dataTestId}
+        name={fieldName}
+        id={fieldName}
+        label={t('stepCustomer.saveAddressBook')}
+      />
     </Flex>
   )
 }

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { AddressSectionSaveOnAddressBook } from '../AddressSectionSaveOnAddressBook'
+import { AddressSectionSaveOnAddressBook } from '../address-section-save-on-address-book'
 
 import { Box } from '@chakra-ui/react'
 import { Button } from '@/components/ui/chakra-button'
@@ -25,11 +25,12 @@ export const AddressFormBottom: React.FC<Props> = ({
       <AddressSectionSaveOnAddressBook addressType={addressType} />
       {hasCustomerAddresses && (
         <Button
-          variant={'link'}
+          variant="ghost"
           data-testid={`close-${addressType}-form`}
-          label={t('stepCustomer.closeForm')}
           onClick={onClick}
-        />
+        >
+          {t('stepCustomer.closeForm')}
+        </Button>
       )}
     </Box>
   )
