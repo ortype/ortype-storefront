@@ -15,8 +15,8 @@ import { AccordionContext } from '@/commercelayer/providers/accordion'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
-import { CheckoutCustomerPayment } from './CheckoutCustomerPayment'
-import { CheckoutPayment } from './CheckoutPayment'
+import { CheckoutCustomerPayment } from './checkout-customer-payment'
+import { CheckoutPayment } from './checkout-payment'
 
 export type THandleClick = (params: {
   payment?: PaymentMethodType | Record<string, any>

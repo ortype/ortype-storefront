@@ -1,5 +1,5 @@
 import React, { type ReactNode } from 'react'
-import { usePaymentMethodContext } from './PaymentMethod'
+import { usePaymentMethodContext } from './payment-method'
 
 interface PaymentMethodNameProps {
   children?: (props: { htmlFor: string; labelName: string }) => ReactNode

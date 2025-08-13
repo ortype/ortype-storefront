@@ -6,8 +6,8 @@ import {
 import { MouseEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PaymentDetails } from './PaymentDetails'
-import { PaymentSummaryList } from './PaymentSummaryList'
+import { PaymentDetails } from './payment-details'
+import { PaymentSummaryList } from './payment-summary-list'
 
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field } from '@/components/ui/field'

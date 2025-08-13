@@ -24,7 +24,7 @@ import {
   StepHeaderPayment,
   StepPayment,
 } from '@/commercelayer/components/pages/checkout/step-payment'
-import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/PaymentContainer'
+import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/payment-container'
 import StepPlaceOrder from '@/commercelayer/components/pages/checkout/step-place-order'
 import {
   StepHeaderShipping,

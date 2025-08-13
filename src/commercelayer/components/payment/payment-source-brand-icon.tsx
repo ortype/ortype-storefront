@@ -1,6 +1,6 @@
 import React from 'react'
-import { usePaymentSourceContext } from './PaymentSource'
-import { getCardBrand } from './utils/getCardBrand'
+import { usePaymentSourceContext } from './payment-source'
+import { getCardBrand } from './utils/get-card-brand'
 
 interface PaymentSourceBrandIconProps {
   className?: string

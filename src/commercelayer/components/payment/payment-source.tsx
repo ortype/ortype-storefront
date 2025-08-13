@@ -1,7 +1,7 @@
 import React, { useContext, type ReactNode } from 'react'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { usePaymentMethodContext } from './PaymentMethod'
+import { usePaymentMethodContext } from './payment-method'
 
 export interface CustomerCardsProps {
   handleClick: () => void

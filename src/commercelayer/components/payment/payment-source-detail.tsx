@@ -1,5 +1,5 @@
 import React from 'react'
-import { usePaymentSourceContext } from './PaymentSource'
+import { usePaymentSourceContext } from './payment-source'
 
 interface PaymentSourceDetailProps {
   className?: string

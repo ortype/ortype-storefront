@@ -6,7 +6,7 @@ import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
 import { OrderSummary } from '@/commercelayer/components/pages/checkout/order-summary'
-import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/PaymentContainer'
+import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/payment-container'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { CustomAddress } from '@/components/ui/CustomerAddressCard'
 import { getTranslations } from '@/components/utils/payments'

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { usePaymentMethodContext } from './PaymentMethod'
+import { usePaymentMethodContext } from './payment-method'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
 interface PaymentMethodPriceProps {

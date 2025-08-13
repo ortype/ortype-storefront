@@ -1,6 +1,6 @@
 import React, { type ReactNode } from 'react'
-import { usePaymentSourceContext } from './PaymentSource'
-import { getCardBrand } from './utils/getCardBrand'
+import { usePaymentSourceContext } from './payment-source'
+import { getCardBrand } from './utils/get-card-brand'
 
 interface PaymentSourceBrandNameProps {
   className?: string

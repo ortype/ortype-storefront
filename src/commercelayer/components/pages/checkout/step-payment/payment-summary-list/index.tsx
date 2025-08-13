@@ -1,7 +1,7 @@
 import { PaymentMethodPrice } from '@/commercelayer/components'
 import { useTranslation } from 'react-i18next'
 
-import { PaymentMethodNameWithStripe } from '../PaymentMethodNameWithStripe'
+import { PaymentMethodNameWithStripe } from '../payment-method-name-with-stripe'
 import { Box, Radiomark } from '@chakra-ui/react'
 
 export const PaymentSummaryList = ({ hasTitle }: { hasTitle: boolean }) => {

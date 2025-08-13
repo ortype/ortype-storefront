@@ -1,7 +1,7 @@
 import { PaymentMethod, PaymentSource } from '@/commercelayer/components'
 
-import { PaymentDetails } from './PaymentDetails'
-import { PaymentSummaryList } from './PaymentSummaryList'
+import { PaymentDetails } from './payment-details'
+import { PaymentSummaryList } from './payment-summary-list'
 
 import { Box, Container } from '@chakra-ui/react'
 import { THandleClick } from '.'
