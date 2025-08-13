@@ -20,6 +20,8 @@ import { Radio, RadioGroup } from '@/components/ui/radio'
 } from '@/components/ui/radio-card'*/
 
 import { Field } from '@/components/ui/field'
+import { AddressField } from '@/commercelayer/components/ui/address/address-field'
+import { CountrySelect } from '@/commercelayer/components/ui/address/country-select'
 // @TODO: Look at exporting this from package
 // import { getCountries } from '@commercelayer/react-components/utils/countryStateCity'
 import { AccordionContext } from '@/commercelayer/providers/accordion'
@@ -31,9 +33,25 @@ import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
 import type { Order } from '@commercelayer/sdk'
 import classNames from 'classnames'
-import { useRapidForm } from 'rapid-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useContext, useEffect, useState } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
+
+// License owner form schema
+const licenseOwnerSchema = z.object({
+  company: z.string().min(1, 'Company name is required'),
+  full_name: z.string().min(1, 'Full name is required'),
+  line_1: z.string().min(1, 'Address is required'),
+  line_2: z.string().optional().or(z.literal('')),
+  city: z.string().min(1, 'City is required'),
+  zip_code: z.string().min(1, 'Zip code is required'),
+  country_code: z.string().min(1, 'Country is required'),
+  state_code: z.string().optional().or(z.literal('')),
+})
+
+type LicenseOwnerFormData = z.infer<typeof licenseOwnerSchema>
 
 interface Props {
   className?: string
@@ -86,11 +104,9 @@ export const StepHeaderLicense: React.FC<Props> = ({ step }) => {
 export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const accordionCtx = useContext(AccordionContext)
+  const { t } = useTranslation()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
-
-  const { handleSubmit, submitValidation, validation, values, errors } =
-    useRapidForm()
 
   const {
     orderId,
@@ -121,15 +137,32 @@ export const StepLicense: React.FC<Props> = () => {
     setProjectType(isLicenseForClient ? 'client' : 'yourself')
   }, [isLicenseForClient])
 
-  const s = async (values, err, e) => {
+  // Initialize form with existing data
+  const form = useForm<LicenseOwnerFormData>({
+    resolver: zodResolver(licenseOwnerSchema),
+    defaultValues: {
+      company: order?.metadata?.license?.owner?.company || '',
+      full_name: order?.metadata?.license?.owner?.full_name || '',
+      line_1: order?.metadata?.license?.owner?.line_1 || '',
+      line_2: order?.metadata?.license?.owner?.line_2 || '',
+      city: order?.metadata?.license?.owner?.city || '',
+      zip_code: order?.metadata?.license?.owner?.zip_code || '',
+      country_code: order?.metadata?.license?.owner?.country_code || '',
+      state_code: order?.metadata?.license?.owner?.state_code || '',
+    },
+  })
+
+  const { handleSubmit, formState: { errors } } = form
+
+  const onSubmit = async (data: LicenseOwnerFormData) => {
     setIsLocalLoader(true)
-    // @TODO: How to declare type "LicenseOwner" here
-    const owner =
+    
+    const owner: LicenseOwner =
       projectType === 'client'
-        ? Object.assign(
-            { is_client: projectType === 'client' },
-            ...Object.keys(values).map((key) => ({ [key]: values[key].value }))
-          ) // if `projectType === 'yourself'` grab the billing address details
+        ? {
+            is_client: true,
+            ...data,
+          }
         : {
             is_client: false,
             company: billingAddress.company,
@@ -165,8 +198,9 @@ export const StepLicense: React.FC<Props> = () => {
       })
     } catch (e) {
       console.log('License updateOrder error: ', e)
+    } finally {
+      setIsLocalLoader(false)
     }
-    setIsLocalLoader(false)
   }
 
   if (!checkoutCtx || !accordionCtx) {
@@ -218,116 +252,124 @@ export const StepLicense: React.FC<Props> = () => {
                 ))}
               </Group>
             </RadioCardRoot>*/}
-            <form
-              ref={submitValidation}
-              autoComplete="off"
-              onSubmit={handleSubmit(s)}
-            >
-              <Fieldset.Root size="lg" minW="sm">
-                <Fieldset.Content>
-                  {projectType === 'client' ? (
-                    <>
-                      <Field label={'License Owner/Company*'}>
-                        <Input
-                          name={'company'}
-                          type={'text'}
-                          ref={validation}
-                          borderRadius={0}
-                          colorPalette={'gray'}
-                          variant={'subtle'}
-                          size={'lg'}
-                          defaultValue={
-                            order?.metadata?.license?.owner?.company
-                          }
+            <FormProvider {...form}>
+              <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+                <Fieldset.Root size="lg" minW="sm">
+                  <Fieldset.Content>
+                    {projectType === 'client' ? (
+                      <>
+                        <Controller
+                          name="company"
+                          render={({ field, fieldState: { error } }) => (
+                            <AddressField
+                              label={t('stepLicense.companyLabel', 'License Owner/Company*')}
+                              type="text"
+                              value={field.value}
+                              onChange={field.onChange}
+                              error={error?.message}
+                            />
+                          )}
                         />
-                      </Field>
 
-                      <Field label={'Name'}>
-                        <Input
-                          name={'full_name'}
-                          type={'text'}
-                          ref={validation}
-                          borderRadius={0}
-                          colorPalette={'gray'}
-                          variant={'subtle'}
-                          size={'lg'}
-                          defaultValue={
-                            order?.metadata?.license?.owner?.full_name
-                          }
+                        <Controller
+                          name="full_name"
+                          render={({ field, fieldState: { error } }) => (
+                            <AddressField
+                              label={t('stepLicense.fullNameLabel', 'Full Name*')}
+                              type="text"
+                              value={field.value}
+                              onChange={field.onChange}
+                              error={error?.message}
+                            />
+                          )}
                         />
-                      </Field>
-                      <Field label={'Address'}>
-                        <Input
-                          name={'line_1'}
-                          type={'text'}
-                          ref={validation}
-                          borderRadius={0}
-                          colorPalette={'gray'}
-                          variant={'subtle'}
-                          size={'lg'}
-                          defaultValue={order?.metadata?.license?.owner?.line_1}
+                        
+                        <Controller
+                          name="line_1"
+                          render={({ field, fieldState: { error } }) => (
+                            <AddressField
+                              label={t('stepLicense.addressLabel', 'Address*')}
+                              type="text"
+                              value={field.value}
+                              onChange={field.onChange}
+                              error={error?.message}
+                            />
+                          )}
                         />
-                      </Field>
-                      <Field label={'Apartment, suite, etc.'}>
-                        <Input
-                          name={'line_2'}
-                          type={'text'}
-                          ref={validation}
-                          borderRadius={0}
-                          colorPalette={'gray'}
-                          variant={'subtle'}
-                          size={'lg'}
-                          defaultValue={order?.metadata?.license?.owner?.line_2}
+                        
+                        <Controller
+                          name="line_2"
+                          render={({ field, fieldState: { error } }) => (
+                            <AddressField
+                              label={t('stepLicense.apartmentLabel', 'Apartment, suite, etc.')}
+                              type="text"
+                              value={field.value || ''}
+                              onChange={field.onChange}
+                              error={error?.message}
+                            />
+                          )}
                         />
-                      </Field>
-                      <Field label={'City*'}>
-                        <Input
-                          name={'city'}
-                          type={'text'}
-                          ref={validation}
-                          borderRadius={0}
-                          colorPalette={'gray'}
-                          variant={'subtle'}
-                          size={'lg'}
-                          defaultValue={order?.metadata?.license?.owner?.city}
+                        
+                        <Controller
+                          name="city"
+                          render={({ field, fieldState: { error } }) => (
+                            <AddressField
+                              label={t('stepLicense.cityLabel', 'City*')}
+                              type="text"
+                              value={field.value}
+                              onChange={field.onChange}
+                              error={error?.message}
+                            />
+                          )}
                         />
-                      </Field>
-                      <Field label={'Zip Code*'}>
-                        <Input
-                          name={'zip_code'}
-                          type={'text'}
-                          ref={validation}
-                          borderRadius={0}
-                          colorPalette={'gray'}
-                          variant={'subtle'}
-                          size={'lg'}
-                          defaultValue={
-                            order?.metadata?.license?.owner?.zip_code
-                          }
+                        
+                        <Controller
+                          name="zip_code"
+                          render={({ field, fieldState: { error } }) => (
+                            <AddressField
+                              label={t('stepLicense.zipCodeLabel', 'Zip Code*')}
+                              type="text"
+                              value={field.value}
+                              onChange={field.onChange}
+                              error={error?.message}
+                            />
+                          )}
                         />
-                      </Field>
-                      <Field label={'Country'}>
-                        <Input
-                          name={'country_code'}
-                          type={'text'}
-                          ref={validation}
-                          borderRadius={0}
-                          colorPalette={'gray'}
-                          variant={'subtle'}
-                          size={'lg'}
-                          defaultValue={
-                            order?.metadata?.license?.owner?.country_code
-                          }
+                        
+                        <Controller
+                          name="country_code"
+                          render={({ field, fieldState: { error } }) => (
+                            <CountrySelect
+                              label={t('stepLicense.countryLabel', 'Country*')}
+                              value={field.value}
+                              onChange={field.onChange}
+                              error={error?.message}
+                            />
+                          )}
                         />
-                      </Field>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                  <Button type={'submit'}>Save & proceed</Button>
-                </Fieldset.Content>
-              </Fieldset.Root>
-            </form>
+                      </>
+                    ) : (
+                      <Text>{t('stepLicense.billingAddressUsed', 'Billing address will be used for license owner information.')}</Text>
+                    )}
+                    
+                    {/* Display form errors */}
+                    {Object.keys(errors).length > 0 && (
+                      <Box color="red.500" fontSize="sm" mt={2}>
+                        {t('stepLicense.formErrors', 'Please correct the errors above.')}
+                      </Box>
+                    )}
+                    
+                    <Button 
+                      type="submit" 
+                      isLoading={isLocalLoader}
+                      disabled={isLocalLoader}
+                    >
+                      {isLocalLoader ? t('stepLicense.saving', 'Saving...') : t('stepLicense.saveAndProceed', 'Save & proceed')}
+                    </Button>
+                  </Fieldset.Content>
+                </Fieldset.Root>
+              </form>
+            </FormProvider>
           </VStack>
         )}
       </>
