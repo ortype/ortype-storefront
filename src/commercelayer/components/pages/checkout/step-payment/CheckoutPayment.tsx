@@ -1,10 +1,10 @@
-import { PaymentMethod, PaymentSource } from '@commercelayer/react-components'
+import { PaymentMethod, PaymentSource } from '@/commercelayer/components'
 
 import { PaymentDetails } from './PaymentDetails'
 import { PaymentSummaryList } from './PaymentSummaryList'
 
-import { THandleClick } from '.'
 import { Box, Container } from '@chakra-ui/react'
+import { THandleClick } from '.'
 
 interface Props {
   selectPayment: THandleClick
@@ -31,7 +31,7 @@ export const CheckoutPayment = ({
       <Box data-testid="payment-sources-container">
         <PaymentSummaryList hasTitle={hasTitle} />
         <Container data-testid="payment-source">
-          <PaymentSource className="flex flex-col" loader={<PaymentSkeleton />}>
+          <PaymentSource className="flex flex-col" loader={<div />}>
             <Box>
               <PaymentDetails hasEditButton />
             </Box>

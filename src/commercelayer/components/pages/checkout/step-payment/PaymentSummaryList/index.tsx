@@ -1,4 +1,4 @@
-import { PaymentMethodPrice } from '@commercelayer/react-components'
+import { PaymentMethodPrice } from '@/commercelayer/components'
 import { useTranslation } from 'react-i18next'
 
 import { PaymentMethodNameWithStripe } from '../PaymentMethodNameWithStripe'

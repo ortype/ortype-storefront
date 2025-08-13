@@ -3,7 +3,7 @@ import {
   PaymentSourceBrandName,
   PaymentSourceDetail,
   PaymentSourceEditButton,
-} from '@commercelayer/react-components'
+} from '@/commercelayer/components'
 import { Fragment, useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 

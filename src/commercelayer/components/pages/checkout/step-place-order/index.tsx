@@ -6,7 +6,7 @@ import { CheckoutContext } from '@/commercelayer/providers/checkout'
 // import { GTMContext } from '@/components/data/GTMProvider'
 import { Button } from '@/components/ui/chakra-button'
 import { Box, Container, Flex } from '@chakra-ui/react'
-import { Errors, PlaceOrderButton } from '@commercelayer/react-components'
+import { Errors, PlaceOrderButton } from '@/commercelayer/components'
 import { messages } from './messages'
 
 interface Props {
@@ -43,10 +43,11 @@ const StepPlaceOrder: React.FC<Props> = ({
     if (placed) {
       setIsPlacingOrder(true)
       await placeOrder(order)
-      if (gtmCtx?.firePurchase && gtmCtx?.fireAddPaymentInfo) {
-        await gtmCtx.fireAddPaymentInfo()
-        await gtmCtx.firePurchase()
-      }
+      // TODO: Re-enable GTM tracking when GTMContext is available
+      // if (gtmCtx?.firePurchase && gtmCtx?.fireAddPaymentInfo) {
+      //   await gtmCtx.fireAddPaymentInfo()
+      //   await gtmCtx.firePurchase()
+      // }
       setIsPlacingOrder(false)
     }
   }

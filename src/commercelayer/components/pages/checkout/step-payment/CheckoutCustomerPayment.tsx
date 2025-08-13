@@ -1,7 +1,8 @@
-import PaymentMethod from '@commercelayer/react-components/payment_methods/PaymentMethod'
-import PaymentSource, {
-  CustomerSaveToWalletProps,
-} from '@commercelayer/react-components/payment_source/PaymentSource'
+import {
+  PaymentMethod,
+  PaymentSource,
+  type CustomerSaveToWalletProps,
+} from '@/commercelayer/components'
 import { MouseEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

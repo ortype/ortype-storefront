@@ -1,6 +1,5 @@
-import { Errors } from "@commercelayer/react-components/errors/Errors"
-
-export const messages: Parameters<typeof Errors>[0]["messages"] = [
+// Error message configuration for place order step
+export const messages = [
   {
     code: "VALIDATION_ERROR",
     resource: "orders",

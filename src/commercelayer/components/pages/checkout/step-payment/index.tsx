@@ -4,7 +4,7 @@ import {
   PaymentSourceBrandIcon,
   PaymentSourceBrandName,
   PaymentSourceDetail,
-} from '@commercelayer/react-components'
+} from '@/commercelayer/components'
 import { Box } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import classNames from 'classnames'
