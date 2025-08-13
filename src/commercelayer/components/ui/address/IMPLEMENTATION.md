@@ -15,14 +15,14 @@ This implementation provides three atomic UI components for building address for
   - TypeScript support with proper typing
 
 ### 2. CountrySelect (`CountrySelect.tsx`)
-- **Purpose**: Async country selector from CommerceLayer countries endpoint
+- **Purpose**: Synchronous country selector using predefined country list
 - **Features**:
-  - Caches countries list to avoid repeated API calls
-  - Uses CommerceLayer SDK for data fetching
-  - Handles loading and error states
-  - Sorts countries alphabetically by code
-  - Integrates with Identity Provider for API access
+  - Uses predefined country list for instant loading
+  - No API calls or loading states required
+  - Sorts countries alphabetically by name
+  - Fully synchronous with minimal dependencies
   - Forwards refs for form integration
+  - Supports custom country lists via props
 
 ### 3. StateSelect (`StateSelect.tsx`)
 - **Purpose**: State/province selector that depends on selected country
@@ -36,11 +36,11 @@ This implementation provides three atomic UI components for building address for
 
 ## Key Implementation Decisions
 
-### 1. Caching Strategy
-- Countries are cached in memory after first API call
-- Cache persists across component unmounts/remounts
-- Failed requests don't cache, allowing for retries
-- Uses singleton pattern with module-level variables
+### 1. Data Strategy
+- Countries use predefined list from utility functions for instant loading
+- No API calls required for country selection
+- Fully synchronous operation with no network dependencies
+- Country list is maintained in `@/commercelayer/utils/country-utils`
 
 ### 2. State Management Approach
 - Countries with predefined states use dropdown
@@ -54,11 +54,11 @@ This implementation provides three atomic UI components for building address for
 - Error state handling built into each component
 - TypeScript interfaces for proper type safety
 
-### 4. API Integration
-- Uses existing CommerceLayer SDK patterns
-- Integrates with Identity Provider for authentication
-- Follows existing error handling patterns
-- Compatible with existing Commerce Layer infrastructure
+### 4. Dependency Management
+- Minimal external dependencies for CountrySelect
+- Uses utility functions for country data
+- No network dependencies or API integration
+- Compatible with existing Commerce Layer form patterns
 
 ## Files Structure
 
@@ -111,31 +111,30 @@ function AddressForm() {
 ## Integration Notes
 
 ### Dependencies
-- CommerceLayer SDK (`@commercelayer/sdk`)
-- Identity Provider context
 - Chakra UI components
+- Country utilities (`@/commercelayer/utils/country-utils`)
 - React Hook Form (optional, for form integration)
+- Native Select components (`@/components/ui/native-select`)
 
 ### Error Handling
-- Network errors are caught and displayed
-- API validation errors are handled gracefully  
-- Loading states are managed automatically
 - Client-side validation follows Commerce Layer patterns
+- Error state handling built into each component
+- Form validation errors are displayed consistently
+- TypeScript ensures type safety at compile time
 
 ### Performance Considerations
-- Countries list is cached to minimize API calls
-- State data is bundled (no additional API calls)
+- CountrySelect uses predefined data for instant loading
+- State data is bundled (no API calls)
 - Components are optimized for re-renders
-- Lazy loading ready if needed
+- No network dependencies or loading states
 
 ## Compliance with Requirements
 
-✅ **URL Management**: Does not use `ProductContext`, follows `useUpdateURL` pattern where needed  
 ✅ **Form Integration**: All components forward refs and support form libraries  
 ✅ **Error Display**: Built-in error handling with consistent UI  
 ✅ **Atomic Design**: Each component serves a single, focused purpose  
-✅ **CommerceLayer Integration**: Uses SDK and follows existing patterns  
-✅ **Caching**: Countries endpoint results are cached efficiently  
+✅ **Performance**: Synchronous operations with no network dependencies  
+✅ **Data Management**: Uses utility functions for country/state data  
 ✅ **TypeScript**: Full type safety with proper interfaces
 
 ## Future Enhancements

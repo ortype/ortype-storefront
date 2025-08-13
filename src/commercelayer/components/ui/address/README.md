@@ -30,7 +30,7 @@ import { AddressField } from '@/commercelayer/components/ui/address'
 
 ### `CountrySelect`
 
-Async country selector that fetches from CommerceLayer's `countries` endpoint with caching.
+Synchronous country selector using predefined country list.
 
 **Props:**
 - `label?: string` - Field label (defaults to "Country")
@@ -39,12 +39,13 @@ Async country selector that fetches from CommerceLayer's `countries` endpoint wi
 - `onChange?: (countryCode: string) => void` - Change handler
 - `placeholder?: string` - Placeholder text
 - `disabled?: boolean` - Whether the select is disabled
+- `countries?: CountryOption[]` - Optional custom country list
 
 **Features:**
-- Caches countries list to avoid repeated API calls
-- Automatically sorts countries by code
-- Handles loading and error states
-- Uses CommerceLayer SDK for data fetching
+- Uses predefined country list for fast loading
+- Automatically sorts countries alphabetically
+- No loading states or API calls required
+- Fully synchronous with no network dependencies
 
 **Usage:**
 ```tsx
@@ -138,14 +139,13 @@ function AddressForm() {
 ## Dependencies
 
 These components require:
-- CommerceLayer SDK
-- Identity Provider (for API access)
 - Chakra UI components
 - React Hook Form (optional, for form integration)
+- Country utilities (`@/commercelayer/utils/country-utils`)
 
-## Caching
+## Performance
 
-The `CountrySelect` component implements caching to avoid repeated API calls:
-- Countries are cached in memory after first load
-- Cache persists across component unmounts/remounts
-- Failed requests don't cache and allow retries
+The `CountrySelect` component is fully synchronous:
+- Uses predefined country list for instant loading
+- No network requests or loading states
+- Optimal performance with minimal dependencies
