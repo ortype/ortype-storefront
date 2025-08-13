@@ -1,4 +1,4 @@
-import { AddressInputGroup } from '@/components/composite/Account/Address/AddressInputGroup'
+import { AddressInputGroup } from '@/components/composite/Account/Address/address-input-group'
 import { CustomerAddressContext } from '@/components/data/CustomerAddressProvider'
 import {
   Button,
@@ -39,13 +39,11 @@ function CustomerAddressForm({
         <SimpleGrid columns={2} gap={4}>
           <AddressInputGroup
             fieldName="billing_address_first_name"
-            resource="billing_address"
             type="text"
             value={address?.first_name || ''}
           />
           <AddressInputGroup
             fieldName="billing_address_last_name"
-            resource="billing_address"
             type="text"
             value={address?.last_name || ''}
           />
@@ -53,14 +51,12 @@ function CustomerAddressForm({
         <SimpleGrid columns={1}>
           <AddressInputGroup
             fieldName="billing_address_line_1"
-            resource="billing_address"
             type="text"
             value={address?.line_1 || ''}
           />
           <AddressInputGroup
             required={false}
             fieldName="billing_address_line_2"
-            resource="billing_address"
             type="text"
             value={address?.line_2 || ''}
           />
@@ -68,13 +64,11 @@ function CustomerAddressForm({
         <SimpleGrid columns={2} gap={4}>
           <AddressInputGroup
             fieldName="billing_address_city"
-            resource="billing_address"
             type="text"
             value={address?.city || ''}
           />
           <AddressInputGroup
             fieldName="billing_address_country_code"
-            resource="billing_address"
             type="text"
             value={address?.country_code || ''}
           />
@@ -82,27 +76,23 @@ function CustomerAddressForm({
         <SimpleGrid columns={2} gap={4}>
           <AddressInputGroup
             fieldName="billing_address_state_code"
-            resource="billing_address"
             type="text"
             value={address?.state_code || ''}
           />
           <AddressInputGroup
             fieldName="billing_address_zip_code"
-            resource="billing_address"
             type="text"
             value={address?.zip_code || ''}
           />
         </SimpleGrid>
         <AddressInputGroup
           fieldName="billing_address_phone"
-          resource="billing_address"
           type="tel"
           value={address?.phone || ''}
         />
         <AddressInputGroup
           required={false}
           fieldName="billing_address_billing_info"
-          resource="billing_address"
           type="text"
           value={address?.billing_info || ''}
         />

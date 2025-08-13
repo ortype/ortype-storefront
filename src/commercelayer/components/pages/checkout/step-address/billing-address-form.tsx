@@ -6,23 +6,17 @@ import {
   evaluateShippingToggle,
   ShippingToggleProps,
 } from '@/commercelayer/components/pages/checkout/step-address'
+import { AddressInputGroup } from '@/commercelayer/components/ui/address/address-input-group'
 import {
   useAddressActions,
   useAddressState,
 } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Box, Grid } from '@chakra-ui/react'
-import { AddressField, CountrySelect, StateSelect } from '@/commercelayer/components/ui/address'
 
 interface Props {
   billingAddress?: Address
   openShippingAddress: (props: ShippingToggleProps) => void
-}
-
-// Simple error display component to replace Errors
-const ErrorDisplay = ({ message }: { message?: string }) => {
-  if (!message) return null
-  return <div className="text-red-500 text-sm mt-1">{message}</div>
 }
 
 export const BillingAddressForm: React.FC<Props> = ({
@@ -58,195 +52,150 @@ export const BillingAddressForm: React.FC<Props> = ({
     }
   }, [billingAddress, updateBillingAddressData])
 
-  // Handle country change to evaluate shipping toggle
-  const handleCountryChange = (countryCode: string) => {
-    updateBillingAddressData({ country_code: countryCode })
-    const toggleProps = evaluateShippingToggle({
-      countryCode,
-      shippingCountryCodeLock,
-    })
-    openShippingAddress(toggleProps)
-  }
-
-  // Handle state change
-  const handleStateChange = (stateCode: string) => {
-    updateBillingAddressData({ state_code: stateCode })
+  // Create a unified change handler for AddressInputGroup components
+  const handleAddressInputChange = (fieldName: string, value: string) => {
+    switch (fieldName) {
+      case 'billing_address_first_name':
+        updateBillingAddressData({ first_name: value })
+        break
+      case 'billing_address_last_name':
+        updateBillingAddressData({ last_name: value })
+        break
+      case 'billing_address_line_1':
+        updateBillingAddressData({ line_1: value })
+        break
+      case 'billing_address_line_2':
+        updateBillingAddressData({ line_2: value })
+        break
+      case 'billing_address_city':
+        updateBillingAddressData({ city: value })
+        break
+      case 'billing_address_country_code':
+        updateBillingAddressData({ country_code: value })
+        break
+      case 'billing_address_state_code':
+        updateBillingAddressData({ state_code: value })
+        break
+      case 'billing_address_zip_code':
+        updateBillingAddressData({ zip_code: value })
+        break
+      case 'billing_address_phone':
+        updateBillingAddressData({ phone: value })
+        break
+      case 'billing_address_billing_info':
+        updateBillingAddressData({ billing_info: value })
+        break
+    }
   }
 
   return (
     <>
       <Grid>
-        <div className="mb-8">
-          <Box>
-            <div className="relative h-10">
-              <AddressField
-                id="billing_address_first_name"
-                data-testid="input_billing_address_first_name"
-                name="billing_address_first_name"
-                type="text"
-                label={t('addressForm.billing_address_first_name')}
-                value={billing.first_name || billingAddress?.first_name || ''}
-                onChange={(value) => updateBillingAddressData({ first_name: value })}
-                error={errors.first_name as string}
-              />
-            </div>
-          </Box>
-          <ErrorDisplay message={errors.first_name} />
-        </div>
-        <div className="mb-8">
-          <Box>
-            <div className="relative h-10">
-              <AddressField
-                id="billing_address_last_name"
-                data-testid="input_billing_address_last_name"
-                name="billing_address_last_name"
-                type="text"
-                label={t('addressForm.billing_address_last_name')}
-                value={billing.last_name || billingAddress?.last_name || ''}
-                onChange={(value) => updateBillingAddressData({ last_name: value })}
-                error={errors.last_name as string}
-              />
-            </div>
-          </Box>
-          <ErrorDisplay message={errors.last_name} />
-        </div>
+        <Box>
+          <AddressInputGroup
+            fieldName="billing_address_first_name"
+            resource="billing_address"
+            type="text"
+            value={billing.first_name || billingAddress?.first_name || ''}
+            onChange={handleAddressInputChange}
+            required
+          />
+        </Box>
+        <Box>
+          <AddressInputGroup
+            fieldName="billing_address_last_name"
+            resource="billing_address"
+            type="text"
+            value={billing.last_name || billingAddress?.last_name || ''}
+            onChange={handleAddressInputChange}
+            required
+          />
+        </Box>
       </Grid>
-      <div className="mb-8">
-        <Box>
-          <div className="relative h-10">
-            <AddressField
-              id="billing_address_line_1"
-              data-testid="input_billing_address_line_1"
-              name="billing_address_line_1"
-              type="text"
-              label={t('addressForm.billing_address_line_1')}
-              value={billing.line_1 || billingAddress?.line_1 || ''}
-              onChange={(value) => updateBillingAddressData({ line_1: value })}
-              error={errors.line_1 as string}
-            />
-          </div>
-        </Box>
-        <ErrorDisplay message={errors.line_1} />
-      </div>
-      <div className="mb-8">
-        <Box>
-          <div className="relative h-10">
-            <AddressField
-              id="billing_address_line_2"
-              data-testid="input_billing_address_line_2"
-              name="billing_address_line_2"
-              type="text"
-              label={t('addressForm.billing_address_line_2')}
-              value={billing.line_2 || billingAddress?.line_2 || ''}
-              onChange={(value) => updateBillingAddressData({ line_2: value })}
-              error={errors.line_2 as string}
-            />
-          </div>
-        </Box>
-        <ErrorDisplay message={errors.line_2} />
-      </div>
+      <Box>
+        <AddressInputGroup
+          fieldName="billing_address_line_1"
+          resource="billing_address"
+          type="text"
+          value={billing.line_1 || billingAddress?.line_1 || ''}
+          onChange={handleAddressInputChange}
+          required
+        />
+      </Box>
+      <Box>
+        <AddressInputGroup
+          fieldName="billing_address_line_2"
+          resource="billing_address"
+          type="text"
+          value={billing.line_2 || billingAddress?.line_2 || ''}
+          onChange={handleAddressInputChange}
+        />
+      </Box>
       <Grid>
-        <div className="mb-8">
-          <Box>
-            <div className="relative h-10">
-              <AddressField
-                id="billing_address_city"
-                data-testid="input_billing_address_city"
-                name="billing_address_city"
-                type="text"
-                label={t('addressForm.billing_address_city')}
-                value={billing.city || billingAddress?.city || ''}
-                onChange={(value) => updateBillingAddressData({ city: value })}
-                error={errors.city as string}
-              />
-            </div>
-          </Box>
-          <ErrorDisplay message={errors.city} />
-        </div>
-        <div className="mb-8">
-          <Box>
-            <div className="relative h-10">
-              <CountrySelect
-                id="billing_address_country_code"
-                data-testid="input_billing_address_country_code"
-                name="billing_address_country_code"
-                value={billing.country_code || billingAddress?.country_code || ''}
-                onChange={handleCountryChange}
-              />
-            </div>
-          </Box>
-          <ErrorDisplay message={errors.country_code} />
-        </div>
+        <Box>
+          <AddressInputGroup
+            fieldName="billing_address_city"
+            resource="billing_address"
+            type="text"
+            value={billing.city || billingAddress?.city || ''}
+            onChange={handleAddressInputChange}
+            required
+          />
+        </Box>
+        <Box>
+          <AddressInputGroup
+            fieldName="billing_address_country_code"
+            resource="billing_address"
+            type="text"
+            value={billing.country_code || billingAddress?.country_code || ''}
+            onChange={handleAddressInputChange}
+            openShippingAddress={openShippingAddress}
+            required
+          />
+        </Box>
       </Grid>
       <Grid>
-        <div className="mb-8">
-          <Box>
-            <div className="relative h-10">
-              <StateSelect
-                id="billing_address_state_code"
-                data-testid="input_billing_address_state_code"
-                name="billing_address_state_code"
-                value={billing.state_code || billingAddress?.state_code || ''}
-                onChange={handleStateChange}
-                countryCode={billing.country_code || billingAddress?.country_code || ''}
-              />
-            </div>
-          </Box>
-          <ErrorDisplay message={errors.state_code} />
-        </div>
-        <div className="mb-8">
-          <Box>
-            <div className="relative h-10">
-              <AddressField
-                id="billing_address_zip_code"
-                data-testid="input_billing_address_zip_code"
-                name="billing_address_zip_code"
-                type="text"
-                label={t('addressForm.billing_address_zip_code')}
-                value={billing.zip_code || billingAddress?.zip_code || ''}
-                onChange={(value) => updateBillingAddressData({ zip_code: value })}
-                error={errors.zip_code as string}
-              />
-            </div>
-          </Box>
-          <ErrorDisplay message={errors.zip_code} />
-        </div>
-      </Grid>
-      <div className="mb-8">
         <Box>
-          <div className="relative h-10">
-            <AddressField
-              id="billing_address_phone"
-              data-testid="input_billing_address_phone"
-              name="billing_address_phone"
-              type="tel"
-              label={t('addressForm.billing_address_phone')}
-              value={billing.phone || billingAddress?.phone || ''}
-              onChange={(value) => updateBillingAddressData({ phone: value })}
-              error={errors.phone as string}
-            />
-          </div>
+          <AddressInputGroup
+            fieldName="billing_address_state_code"
+            resource="billing_address"
+            type="text"
+            value={billing.state_code || billingAddress?.state_code || ''}
+            onChange={handleAddressInputChange}
+            countryCode={billing.country_code || billingAddress?.country_code || ''}
+            required
+          />
         </Box>
-        <ErrorDisplay message={errors.phone} />
-      </div>
+        <Box>
+          <AddressInputGroup
+            fieldName="billing_address_zip_code"
+            resource="billing_address"
+            type="text"
+            value={billing.zip_code || billingAddress?.zip_code || ''}
+            onChange={handleAddressInputChange}
+            required
+          />
+        </Box>
+      </Grid>
+      <Box>
+        <AddressInputGroup
+          fieldName="billing_address_phone"
+          resource="billing_address"
+          type="tel"
+          value={billing.phone || billingAddress?.phone || ''}
+          onChange={handleAddressInputChange}
+        />
+      </Box>
       {requiresBillingInfo && (
-        <div className="mb-8">
-          <Box>
-            <div className="relative h-10">
-              <AddressField
-                id="billing_address_billing_info"
-                data-testid="input_billing_address_billing_info"
-                name="billing_address_billing_info"
-                type="text"
-                label={t('addressForm.billing_address_billing_info')}
-                value={billing.billing_info || billingAddress?.billing_info || ''}
-                onChange={(value) => updateBillingAddressData({ billing_info: value })}
-                error={errors.billing_info as string}
-              />
-            </div>
-          </Box>
-          <ErrorDisplay message={errors.billing_info} />
-        </div>
+        <Box>
+          <AddressInputGroup
+            fieldName="billing_address_billing_info"
+            resource="billing_address"
+            type="text"
+            value={billing.billing_info || billingAddress?.billing_info || ''}
+            onChange={handleAddressInputChange}
+          />
+        </Box>
       )}
     </>
   )

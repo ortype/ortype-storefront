@@ -1,4 +1,5 @@
 export { AddressField } from './address-field'
+export { AddressInputGroup } from './address-input-group'
 export { CountrySelect } from './country-select'
 export { StateSelect } from './state-select'
 
