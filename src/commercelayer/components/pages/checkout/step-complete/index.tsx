@@ -1,7 +1,3 @@
-import PaymentSource from '@commercelayer/react-components/payment_source/PaymentSource'
-import PaymentSourceBrandIcon from '@commercelayer/react-components/payment_source/PaymentSourceBrandIcon'
-import PaymentSourceBrandName from '@commercelayer/react-components/payment_source/PaymentSourceBrandName'
-import PaymentSourceDetail from '@commercelayer/react-components/payment_source/PaymentSourceDetail'
 import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
@@ -11,6 +7,14 @@ import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { CustomAddress } from '@/components/ui/CustomerAddressCard'
 import { getTranslations } from '@/components/utils/payments'
 import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react'
+
+// Import our own payment source components
+import { 
+  PaymentSource, 
+  PaymentSourceBrandIcon, 
+  PaymentSourceBrandName, 
+  PaymentSourceDetail 
+} from '@/commercelayer/components/payment'
 
 interface Props {
   logoUrl?: string
