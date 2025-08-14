@@ -44,7 +44,7 @@ export type Action =
       type: ActionType.UPDATE_ORDER
       payload: {
         order: Order
-        // others: Partial<OrderStateData>
+        others?: Partial<AppStateData>
       }
     }
   | {
@@ -137,6 +137,8 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
       return {
         ...state,
         order: action.payload.order,
+        // Apply computed state updates from merged order if provided
+        ...(action.payload.others || {}),
         isLoading: false,
       }
     case ActionType.SET_CUSTOMER_EMAIL:

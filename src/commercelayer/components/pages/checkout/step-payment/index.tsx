@@ -130,7 +130,6 @@ export const StepPayment: React.FC = () => {
         <>
           {accordionCtx.isActive && (
             <div>
-              {'hi'}
               {isPaymentRequired ? (
                 <CheckoutCustomerPayment
                   selectPayment={selectPayment}

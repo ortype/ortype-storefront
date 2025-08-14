@@ -634,12 +634,22 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         const result = await fetchPaymentMethods({ cl, orderId })
         
         if (result.success && result.order) {
-          // Update the order ref with payment methods data
-          orderRef.current = result.order
+          // Merge payment methods data with existing order data
+          const currentOrder = await getOrderFromRef()
+          const mergedOrder = {
+            ...currentOrder, // Keep existing order data
+            ...result.order, // Overlay payment methods data
+            // Ensure we preserve specific fields that might be newer in currentOrder
+            id: currentOrder.id,
+            status: result.order.status || currentOrder.status,
+          }
           
-          // Update the provider state with the fresh order data
+          // Update the order ref with merged data
+          orderRef.current = mergedOrder
+          
+          // Update the provider state with the merged order data
           const others = calculateSettings(
-            result.order,
+            mergedOrder,
             state.isShipmentRequired,
             state.customerAddresses
           )
@@ -647,7 +657,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           dispatch({
             type: ActionType.UPDATE_ORDER,
             payload: {
-              order: result.order,
+              order: mergedOrder,
               others,
             },
           })

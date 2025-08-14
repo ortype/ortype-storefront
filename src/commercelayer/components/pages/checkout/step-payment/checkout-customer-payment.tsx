@@ -87,7 +87,6 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
 
   return (
     <>
-      {'hi 2 u'}
       <PaymentMethod
         autoSelectSinglePaymentMethod={autoSelectCallback}
         activeClass="active group"
