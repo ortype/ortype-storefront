@@ -464,13 +464,74 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }
 
   const placeOrder = async (order?: Order) => {
+    console.log('placeOrder called in CheckoutProvider')
     dispatch({ type: ActionType.START_LOADING })
     const currentOrder = order ?? (await getOrderFromRef())
 
-    dispatch({
-      type: ActionType.PLACE_ORDER,
-      payload: { order: currentOrder },
-    })
+    try {
+      if (!cl) {
+        throw new Error('Commerce Layer client not available')
+      }
+
+      // Check if order is already placed
+      const orderStatus = await cl.orders.retrieve(currentOrder.id, {
+        fields: ['status']
+      })
+      
+      if (orderStatus.status === 'placed') {
+        console.log('Order already placed')
+        dispatch({
+          type: ActionType.PLACE_ORDER,
+          payload: { order: currentOrder },
+        })
+        return currentOrder
+      }
+      
+      if (orderStatus.status === 'draft') {
+        console.error('Draft order cannot be placed')
+        dispatch({ type: ActionType.STOP_LOADING })
+        throw new Error('Draft order cannot be placed')
+      }
+
+      // Check if this is a Stripe payment that needs confirmation first
+      const isStripePayment = currentOrder?.payment_source?.type === 'stripe_payments'
+      
+      if (isStripePayment) {
+        console.log('Stripe payment detected - payment confirmation should have happened in form submission')
+        // For Stripe, the payment confirmation should have already happened
+        // when the user submitted the payment form before clicking Place Order
+      }
+
+      // Place the order via Commerce Layer API (following official pattern)
+      console.log('Placing order via API...', currentOrder.id)
+      
+      const placedOrder = await cl.orders.update(
+        {
+          id: currentOrder.id,
+          _place: true, // Official Commerce Layer parameter to place the order
+        },
+        {
+          include: ['line_items', 'shipments', 'payment_source', 'payment_method'],
+        }
+      )
+
+      console.log('Order placed successfully:', placedOrder)
+      
+      // Update the order ref with the placed order
+      orderRef.current = placedOrder
+
+      dispatch({
+        type: ActionType.PLACE_ORDER,
+        payload: { order: placedOrder },
+      })
+      
+      return placedOrder
+      
+    } catch (error) {
+      console.error('Error placing order:', error)
+      dispatch({ type: ActionType.STOP_LOADING })
+      throw error
+    }
   }
 
   const updateOrder = useCallback(

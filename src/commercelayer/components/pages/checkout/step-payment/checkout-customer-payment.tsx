@@ -60,25 +60,15 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
     }
   }, [paymentMethods.length, isLoading, loadPaymentMethods])
 
-  // Auto-select if there's a currently selected payment method
+  // Restore previously selected payment method from context if available
   useEffect(() => {
     if (paymentMethod?.id && !selectedPaymentMethod) {
       setSelectedPaymentMethod(paymentMethod.id)
     }
   }, [paymentMethod, selectedPaymentMethod])
 
-  // Auto-select single payment method
-  useEffect(() => {
-    if (paymentMethods.length === 1 && !selectedPaymentMethod) {
-      const method = paymentMethods[0]
-      setSelectedPaymentMethod(method.id)
-      selectPayment({
-        payment: method,
-        paymentSource: order?.payment_source,
-      })
-      autoSelectCallback()
-    }
-  }, [paymentMethods, selectedPaymentMethod, selectPayment, order, autoSelectCallback])
+  // Removed auto-selection - let users choose their payment method manually
+  // This ensures payment sources are created properly when user explicitly selects
 
   const handlePaymentMethodSelection = (methodId: string) => {
     console.log('Payment method selection:', methodId)
@@ -99,23 +89,25 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
   
   // Store payment form reference
   const setPaymentRef = (ref: React.RefObject<HTMLFormElement>) => {
+    console.log('setPaymentRef called with:', ref.current)
     paymentFormRef.current = ref.current
-  }
-  
-  // Expose form submission method for external use (like PlaceOrder button)
-  useEffect(() => {
-    if (checkoutCtx && paymentFormRef.current) {
-      // Store the form submission method in the context or a global place
-      // For now, we'll attach it to the window for debugging
+    
+    // Set up the global submission function immediately when ref is set
+    if (ref.current && checkoutCtx) {
+      console.log('Setting up global submitStripePayment function')
       // @ts-expect-error - Temporary debugging access
       window.submitStripePayment = async () => {
-        if (paymentFormRef.current?.onsubmit) {
-          return await paymentFormRef.current.onsubmit()
+        console.log('submitStripePayment called, form ref:', ref.current)
+        if (ref.current?.onsubmit) {
+          console.log('Calling form.onsubmit()')
+          return await ref.current.onsubmit()
         }
+        console.log('No onsubmit method available')
         return false
       }
+      console.log('Global submitStripePayment function set up successfully')
     }
-  }, [checkoutCtx, paymentFormRef.current])
+  }
 
   const TemplateSaveToWalletCheckbox = ({
     name,
@@ -247,26 +239,28 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
         </Text>
       )}
       
-      {paymentMethods.length > 1 ? (
-        <RadioGroup
-          value={selectedPaymentMethod}
-          onValueChange={(e) => handlePaymentMethodSelection(e.value)}
-        >
-          <VStack gap="4" align="start">
-            {paymentMethods.map((method) => (
-              <Radio key={method.id} value={method.id}>
-                {method.name || method.payment_source_type}
-              </Radio>
-            ))}
-          </VStack>
-        </RadioGroup>
-      ) : (
-        paymentMethods.length === 1 && (
-          <Text>
-            {t('stepPayment.singleMethod', 'Payment method: ')} 
-            {paymentMethods[0].name || paymentMethods[0].payment_source_type}
+      {/* Always show payment methods as selectable radio buttons */}
+      {paymentMethods.length > 0 && (
+        <>
+          <Text color="gray.600" fontSize="sm">
+            {paymentMethods.length === 1 
+              ? t('stepPayment.selectSingle', 'Select payment method:')
+              : t('stepPayment.selectMultiple', 'Choose a payment method:')
+            }
           </Text>
-        )
+          <RadioGroup
+            value={selectedPaymentMethod}
+            onValueChange={(e) => handlePaymentMethodSelection(e.value)}
+          >
+            <VStack gap="4" align="start">
+              {paymentMethods.map((method) => (
+                <Radio key={method.id} value={method.id}>
+                  {method.name || method.payment_source_type}
+                </Radio>
+              ))}
+            </VStack>
+          </RadioGroup>
+        </>
       )}
       
       {/* Render existing PaymentSource for saved customer cards */}
