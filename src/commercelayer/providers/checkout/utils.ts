@@ -285,7 +285,6 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
       'shipments.available_shipping_methods',
       'payment_method',
       'payment_source',
-      'available_payment_methods',
       'customer',
       'customer.customer_addresses',
       'customer.customer_addresses.address',
