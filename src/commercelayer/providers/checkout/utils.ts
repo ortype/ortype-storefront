@@ -317,7 +317,13 @@ export const fetchPaymentMethods = async ({
 
     // Fetch order with available_payment_methods included
     const order = await cl.orders.retrieve(orderId, {
-      include: ['available_payment_methods', 'payment_method', 'payment_source'],
+      include: [
+        'available_payment_methods', 
+        'payment_method', 
+        'payment_source',
+        'billing_address',
+        'shipping_address'
+      ],
     })
 
     return { success: true, order }
