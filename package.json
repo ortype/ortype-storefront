@@ -38,6 +38,8 @@
     "@sanity/react-loader": "^1.7.0",
     "@sanity/ui": "^1.9.3",
     "@sanity/vision": "^3.64.3",
+    "@stripe/react-stripe-js": "^3.9.0",
+    "@stripe/stripe-js": "^7.8.0",
     "@types/node": "^22.4.0",
     "@types/react-dom": "^18.3.0",
     "@vercel/og": "^0.0.27",

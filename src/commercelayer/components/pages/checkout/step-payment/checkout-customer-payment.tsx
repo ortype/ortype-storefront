@@ -3,7 +3,7 @@ import {
   PaymentSource,
   type CustomerSaveToWalletProps,
 } from '@/commercelayer/components'
-import { MouseEvent, useState, useContext, useEffect } from 'react'
+import { MouseEvent, useState, useContext, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RadioGroup, Radio } from '@/components/ui/radio'
 import { Box, Container, HStack, Text, VStack } from '@chakra-ui/react'
@@ -40,6 +40,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
   // State for selected payment method ID
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
   const [checked, setChecked] = useState(false)
+  
+  // Reference to store the payment form for programmatic submission
+  const paymentFormRef = useRef<HTMLFormElement | null>(null)
 
   if (!checkoutCtx) {
     return null
@@ -93,6 +96,26 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
   const getSelectedPaymentMethod = () => {
     return paymentMethods.find(pm => pm.id === selectedPaymentMethod)
   }
+  
+  // Store payment form reference
+  const setPaymentRef = (ref: React.RefObject<HTMLFormElement>) => {
+    paymentFormRef.current = ref.current
+  }
+  
+  // Expose form submission method for external use (like PlaceOrder button)
+  useEffect(() => {
+    if (checkoutCtx && paymentFormRef.current) {
+      // Store the form submission method in the context or a global place
+      // For now, we'll attach it to the window for debugging
+      // @ts-expect-error - Temporary debugging access
+      window.submitStripePayment = async () => {
+        if (paymentFormRef.current?.onsubmit) {
+          return await paymentFormRef.current.onsubmit()
+        }
+        return false
+      }
+    }
+  }, [checkoutCtx, paymentFormRef.current])
 
   const TemplateSaveToWalletCheckbox = ({
     name,
@@ -175,6 +198,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
             clientSecret={clientSecret}
             containerClassName="mt-4"
             templateCustomerSaveToWallet={TemplateSaveToWalletCheckbox}
+            setPaymentRef={setPaymentRef}
             show={true}
           />
         )

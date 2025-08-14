@@ -28,9 +28,11 @@ interface StripePaymentFormProps {
   templateCustomerSaveToWallet?: (props: CustomerSaveToWalletProps) => JSX.Element
   stripe?: Stripe | null
   onPaymentReady?: (ready: boolean) => void
+  setPaymentRef?: (ref: React.RefObject<HTMLFormElement>) => void
 }
 
 interface OnSubmitArgs {
+  event: HTMLFormElement | null
   stripe: Stripe | null
   elements: StripeElements | null
 }
@@ -58,6 +60,7 @@ function StripePaymentForm({
   templateCustomerSaveToWallet,
   stripe,
   onPaymentReady,
+  setPaymentRef,
 }: StripePaymentFormProps): JSX.Element {
   const formRef = useRef<HTMLFormElement>(null)
   const checkoutCtx = useContext(CheckoutContext)
@@ -71,15 +74,28 @@ function StripePaymentForm({
 
   const { order, setPayment } = checkoutCtx
 
-  // Set up form submission handler
+  // Set up form submission handler - avoid re-rendering the form
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (formRef.current && stripe && elements) {
-      formRef.current.onsubmit = async (e) => {
-        e.preventDefault()
-        return await onSubmit({ stripe, elements })
+      formRef.current.onsubmit = async () => {
+        return await onSubmit({
+          event: formRef.current,
+          stripe,
+          elements,
+        })
+      }
+      // Store the form reference for external access
+      if (setPaymentRef) {
+        setPaymentRef(formRef)
       }
     }
-  }, [stripe, elements])
+    return () => {
+      if (setPaymentRef) {
+        setPaymentRef({ current: null })
+      }
+    }
+  }, [formRef, stripe, elements]) // Deliberately limited dependencies
 
   // Notify parent when payment is ready
   useEffect(() => {
@@ -89,12 +105,18 @@ function StripePaymentForm({
   }, [isComplete, stripe, elements, onPaymentReady])
 
   const onSubmit = async ({
+    event,
     stripe,
     elements,
   }: OnSubmitArgs): Promise<boolean> => {
     if (!stripe || !elements || !order) return false
 
     try {
+      // Check for save to wallet checkbox
+      const savePaymentSourceToCustomerWallet: boolean =
+        // @ts-expect-error no type available for form elements
+        event?.elements?.save_payment_source_to_customer_wallet?.checked ?? false
+      
       const billingInfo = order.billing_address
       const email = order.customer_email ?? ''
       
@@ -131,11 +153,9 @@ function StripePaymentForm({
         return false
       }
 
-      // Update checkout provider with successful payment method
-      if (paymentMethod && setPayment) {
-        await setPayment({ payment: paymentMethod })
-      }
-
+      console.log('Stripe payment confirmed successfully')
+      console.log('Save to wallet:', savePaymentSourceToCustomerWallet)
+      
       return true
     } catch (error) {
       console.error('Payment submission error:', error)
@@ -181,6 +201,7 @@ export interface StripePaymentProps {
   templateCustomerSaveToWallet?: (props: CustomerSaveToWalletProps) => JSX.Element
   connectedAccount?: string
   onPaymentReady?: (ready: boolean) => void
+  setPaymentRef?: (ref: React.RefObject<HTMLFormElement>) => void
 }
 
 export function StripePayment({
@@ -194,12 +215,14 @@ export function StripePayment({
   templateCustomerSaveToWallet,
   appearance,
   onPaymentReady,
+  setPaymentRef,
   ...divProps
 }: StripePaymentProps): JSX.Element | null {
   const [isLoaded, setIsLoaded] = useState(false)
   const [stripe, setStripe] = useState<Stripe | null>(null)
 
-  // Load Stripe when component shows
+  // Load Stripe when component shows - avoid refreshing the stripe object
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (show && publishableKey) {
       import('@stripe/stripe-js').then(({ loadStripe }) => {
@@ -222,7 +245,7 @@ export function StripePayment({
     return () => {
       setIsLoaded(false)
     }
-  }, [show, publishableKey, connectedAccount, locale])
+  }, [show, publishableKey, connectedAccount]) // Deliberately exclude locale
 
   const elementsOptions: StripeElementsOptions = {
     clientSecret,
@@ -241,6 +264,7 @@ export function StripePayment({
           options={options}
           templateCustomerSaveToWallet={templateCustomerSaveToWallet}
           onPaymentReady={onPaymentReady}
+          setPaymentRef={setPaymentRef}
         />
       </Elements>
     </div>
