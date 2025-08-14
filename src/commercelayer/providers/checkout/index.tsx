@@ -389,18 +389,77 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     payment?: PaymentMethod
     order?: Order
   }) => {
+    console.log('setPayment called in CheckoutProvider with:', params)
     dispatch({ type: ActionType.START_LOADING })
     const currentOrder = params.order ?? (await getOrderFromRef())
 
+    let updatedOrder = currentOrder
+
+    // If we have a payment method selected, set it on the order and create payment source
+    if (params.payment && cl) {
+      try {
+        console.log('Setting payment method on order:', params.payment.payment_source_type)
+        
+        // Step 1: Set the payment method on the order
+        updatedOrder = await cl.orders.update(
+          {
+            id: orderId,
+            payment_method: cl.payment_methods.relationship(params.payment.id),
+          },
+          {
+            include: ['payment_source', 'payment_method', 'available_payment_methods'],
+          }
+        )
+        
+        console.log('Updated order with payment method:', updatedOrder)
+        
+        // Step 2: Create payment source (following Commerce Layer pattern)
+        const paymentResource = params.payment.payment_source_type
+        let paymentSource: any
+        
+        // Prepare attributes based on payment type (following their pattern)
+        let attributes: Record<string, unknown> = {}
+        
+        if (paymentResource === 'stripe_payments') {
+          // Add return_url for Stripe (as in their StripeGateway)
+          attributes = {
+            return_url: window.location.href
+          }
+        }
+        
+        console.log('Creating payment source with attributes:', attributes)
+        
+        // Create payment source with order relationship
+        paymentSource = await cl[paymentResource].create({
+          ...attributes,
+          order: cl.orders.relationship(orderId),
+        })
+        
+        console.log('Created payment source:', paymentSource)
+        
+        // Step 3: Refresh order to get the updated payment source
+        updatedOrder = await fetchOrder(cl, orderId)
+        
+        console.log('Final updated order with payment source:', updatedOrder)
+        
+        // Update the order ref
+        orderRef.current = updatedOrder
+      } catch (error) {
+        console.error('Error setting payment method or creating payment source:', error)
+        // Continue with the original order if payment setup fails
+      }
+    }
+
     const others = calculateSettings(
-      currentOrder,
+      updatedOrder,
       state.isShipmentRequired,
       state.customerAddresses
     )
 
+    console.log('Dispatching SET_PAYMENT action with:', { payment: params.payment, order: updatedOrder, others })
     dispatch({
       type: ActionType.SET_PAYMENT,
-      payload: { payment: params.order, order: currentOrder, others },
+      payload: { payment: params.payment, order: updatedOrder, others },
     })
   }
 

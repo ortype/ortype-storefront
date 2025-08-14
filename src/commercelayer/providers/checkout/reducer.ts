@@ -192,11 +192,21 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         isLoading: false,
       }
     case ActionType.SET_PAYMENT:
+      // Calculate payment method status including hasPaymentMethod flag
+      const paymentMethodStatus = checkPaymentMethod({
+        ...action.payload.order,
+        payment_method: action.payload.payment,
+      })
+      
       return {
         ...state,
         order: action.payload.order,
         ...action.payload.others,
         isLoading: false,
+        // Override with calculated payment method status
+        ...paymentMethodStatus,
+        // If we have a payment method selected, consider it as having a payment method
+        hasPaymentMethod: Boolean(action.payload.payment) || paymentMethodStatus.hasPaymentMethod,
         isCreditCard: creditCardPayment(action.payload.payment),
         paymentMethod: action.payload.payment,
       }

@@ -109,9 +109,11 @@ export const StepPayment: React.FC = () => {
   const { isPaymentRequired, setPayment } = checkoutCtx
 
   const selectPayment: THandleClick = async ({ payment, paymentSource }) => {
+    console.log('selectPayment called with:', { payment, paymentSource })
     if (paymentSource?.payment_methods?.paymentMethods?.length > 1) {
       setHasMultiplePaymentMethods(true)
     }
+    console.log('Calling setPayment with:', { payment: payment as PaymentMethodType })
     setPayment({ payment: payment as PaymentMethodType })
   }
 
