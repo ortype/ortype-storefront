@@ -1,10 +1,10 @@
-import '@adyen/adyen-web/dist/adyen.css'
 import {
   PaymentSource,
   PaymentSourceBrandIcon,
   PaymentSourceBrandName,
   PaymentSourceDetail,
 } from '@/commercelayer/components'
+import '@adyen/adyen-web/dist/adyen.css'
 import { Box } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import classNames from 'classnames'
@@ -16,7 +16,6 @@ import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { StepContainer } from '@/components/ui/StepContainer'
 import { StepHeader } from '@/components/ui/StepHeader'
 import { CheckoutCustomerPayment } from './checkout-customer-payment'
-import { CheckoutPayment } from './checkout-payment'
 
 export type THandleClick = (params: {
   payment?: PaymentMethodType | Record<string, any>
@@ -107,7 +106,7 @@ export const StepPayment: React.FC = () => {
     }
   }, [autoSelected, hasMultiplePaymentMethods])
 
-  const { isGuest, isPaymentRequired, setPayment } = checkoutCtx
+  const { isPaymentRequired, setPayment } = checkoutCtx
 
   const selectPayment: THandleClick = async ({ payment, paymentSource }) => {
     if (paymentSource?.payment_methods?.paymentMethods?.length > 1) {
@@ -131,20 +130,13 @@ export const StepPayment: React.FC = () => {
         <>
           {accordionCtx.isActive && (
             <div>
+              {'hi'}
               {isPaymentRequired ? (
-                isGuest ? (
-                  <CheckoutPayment
-                    selectPayment={selectPayment}
-                    autoSelectCallback={autoSelectCallback}
-                    hasTitle={hasTitle}
-                  />
-                ) : (
-                  <CheckoutCustomerPayment
-                    selectPayment={selectPayment}
-                    autoSelectCallback={autoSelectCallback}
-                    hasTitle={hasTitle}
-                  />
-                )
+                <CheckoutCustomerPayment
+                  selectPayment={selectPayment}
+                  autoSelectCallback={autoSelectCallback}
+                  hasTitle={hasTitle}
+                />
               ) : (
                 <p className="text-sm text-gray-400">
                   {t('stepPayment.amountZero')}

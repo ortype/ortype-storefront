@@ -285,11 +285,46 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
       'shipments.available_shipping_methods',
       'payment_method',
       'payment_source',
+      'available_payment_methods',
       'customer',
       'customer.customer_addresses',
       'customer.customer_addresses.address',
     ],
   })
+}
+
+/**
+ * Utility function to fetch payment methods for an order
+ * Based on the getPaymentMethods function from Commerce Layer React Components
+ */
+export const fetchPaymentMethods = async ({
+  cl,
+  orderId,
+}: {
+  cl: CommerceLayerClient
+  orderId: string
+}): Promise<{
+  success: boolean
+  error?: unknown
+  order?: Order
+}> => {
+  try {
+    if (!cl || !orderId) {
+      return {
+        success: false,
+        error: 'Missing required parameters: cl or orderId',
+      }
+    }
+
+    // Fetch order with available_payment_methods included
+    const order = await cl.orders.retrieve(orderId, {
+      include: ['available_payment_methods', 'payment_method', 'payment_source'],
+    })
+
+    return { success: true, order }
+  } catch (error) {
+    return { success: false, error }
+  }
 }
 
 /**

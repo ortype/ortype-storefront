@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState, type ReactNode } from 'react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import classNames from 'classnames'
+import React, { useContext, useEffect, useState, type ReactNode } from 'react'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
@@ -35,17 +35,24 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
 }) => {
   const [loading, setLoading] = useState(true)
   const [paymentSelected, setPaymentSelected] = useState('')
-  
+
   const checkoutCtx = useContext(CheckoutContext)
 
   if (!checkoutCtx) {
     return null
   }
 
-  const { order, isLoading } = checkoutCtx
+  const { order, isLoading, loadPaymentMethods } = checkoutCtx
 
   // Get payment methods from order
   const paymentMethods = order?.available_payment_methods || []
+
+  // Load payment methods if not available
+  useEffect(() => {
+    if (!paymentMethods.length && !isLoading && loadPaymentMethods) {
+      loadPaymentMethods().catch(console.error)
+    }
+  }, [paymentMethods.length, isLoading, loadPaymentMethods])
 
   // Filter out hidden payment methods
   const filteredPaymentMethods = paymentMethods.filter((pm) => {
@@ -76,28 +83,30 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
       ) {
         const [paymentMethod] = sortedPaymentMethods
         setPaymentSelected(paymentMethod.id)
-        
+
         if (onClick) {
           onClick({
             payment: paymentMethod,
             paymentSource: order?.payment_source,
           })
         }
-        
+
         if (typeof autoSelectSinglePaymentMethod === 'function') {
           autoSelectSinglePaymentMethod()
         }
       }
-      
+
       setTimeout(() => {
         setLoading(false)
       }, 200)
     }
-  }, [sortedPaymentMethods, order, autoSelectSinglePaymentMethod, onClick, paymentSelected])
-
-  if (loading || isLoading) {
-    return <div>{loader}</div>
-  }
+  }, [
+    sortedPaymentMethods,
+    order,
+    autoSelectSinglePaymentMethod,
+    onClick,
+    paymentSelected,
+  ])
 
   const handlePaymentMethodClick = (paymentMethod: PaymentMethodType) => {
     if (clickableContainer && onClick) {
@@ -115,6 +124,10 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
       const [firstPaymentMethod] = sortedPaymentMethods
       handlePaymentMethodClick(firstPaymentMethod)
     }
+  }
+
+  if (loading || isLoading) {
+    return <div>{loader}</div>
   }
 
   return (
@@ -161,7 +174,9 @@ export const usePaymentMethodContext = () => {
 export const usePaymentMethodContextRequired = () => {
   const context = useContext(PaymentMethodContext)
   if (!context) {
-    throw new Error('usePaymentMethodContextRequired must be used within PaymentMethodProvider')
+    throw new Error(
+      'usePaymentMethodContextRequired must be used within PaymentMethodProvider'
+    )
   }
   return context
 }

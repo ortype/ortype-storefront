@@ -34,6 +34,7 @@ import {
   checkAndSetDefaultAddressForOrder,
   checkIfShipmentRequired,
   fetchOrder,
+  fetchPaymentMethods,
   FetchOrderByIdResponse,
   saveCustomerUser as saveCustomerUserUtil,
 } from './utils'
@@ -152,6 +153,12 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   createBillingAddress: (addressData: AddressCreate) => Promise<AddressOperationResult<Address>>
   updateBillingAddress: (addressId: string, addressData: AddressUpdate) => Promise<AddressOperationResult<Address>>
   attachBillingAddressToOrder: (addressId: string, useAsShipping?: boolean) => Promise<AddressOperationResult<Order>>
+  // Payment methods helper
+  loadPaymentMethods: () => Promise<{
+    success: boolean
+    error?: unknown
+    order?: Order
+  }>
   licenseOwner: LicenseOwner
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
@@ -612,6 +619,48 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     [cl, orderId]
   )
 
+  // Payment methods helper method
+  const loadPaymentMethods = useCallback(
+    async (): Promise<{
+      success: boolean
+      error?: unknown
+      order?: Order
+    }> => {
+      try {
+        if (!cl) {
+          return { success: false, error: 'CommerceLayer client not available' }
+        }
+
+        const result = await fetchPaymentMethods({ cl, orderId })
+        
+        if (result.success && result.order) {
+          // Update the order ref with payment methods data
+          orderRef.current = result.order
+          
+          // Update the provider state with the fresh order data
+          const others = calculateSettings(
+            result.order,
+            state.isShipmentRequired,
+            state.customerAddresses
+          )
+          
+          dispatch({
+            type: ActionType.UPDATE_ORDER,
+            payload: {
+              order: result.order,
+              others,
+            },
+          })
+        }
+        
+        return result
+      } catch (error) {
+        return { success: false, error }
+      }
+    },
+    [cl, orderId, state.isShipmentRequired, state.customerAddresses]
+  )
+
   useEffect(() => {
     fetchInitialOrder(orderId, accessToken)
   }, [orderId, accessToken])
@@ -639,6 +688,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         createBillingAddress,
         updateBillingAddress,
         attachBillingAddressToOrder,
+        // Payment methods helper
+        loadPaymentMethods,
       }}
     >
       {children}
