@@ -9,7 +9,7 @@ import React from 'react'
 
 const EntrySpans = ({ entry, line, layout }) => {
   // Split the string by the closing tag of the span
-  const elements = entry.split(/<\/span>/).map((item, index) => {
+  const elements = entry?.split(/<\/span>/).map((item, index) => {
     // Trim the item and check if it's not empty
     const trimmedItem = item.trim()
     if (trimmedItem) {
