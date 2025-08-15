@@ -1,7 +1,7 @@
+import { CheckoutProvider } from '@/commercelayer/providers/checkout'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { isValidCheckout } from '@/commercelayer/utils/isValidCheckout'
-import { CheckoutProvider } from '@/commercelayer/providers/checkout'
 import { Text } from '@chakra-ui/react'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -11,7 +11,8 @@ interface Props {
   children: JSX.Element[] | JSX.Element
 }
 
-// @TODO: move to components/pages/Checkout/composite.tsx (?)
+// @NOTE: Since the CheckoutContainer is specifically for the checkout flow, it should probably not rely on the global OrderProvider but instead get the order directly from the Commerce Layer SDK using the orderId from the URL.
+// Is this valid or is the order object that is created for the buy/cart pages actually a perfect fit for the checkout?
 
 const CheckoutContainer = ({ children }: Props): JSX.Element => {
   const { clientConfig } = useIdentityContext()

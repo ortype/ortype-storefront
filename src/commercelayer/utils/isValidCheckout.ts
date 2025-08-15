@@ -71,7 +71,7 @@ export const isValidCheckout = async (
         console.log('error refreshing order')
       }
     }
-  } else if (order.status !== 'placed') {
+  } else if (order.status !== 'placed' && order.status !== 'pending') {
     console.log('Invalid checkout: order is not draft, pending, or placed')
     return invalidateCheckout()
   }

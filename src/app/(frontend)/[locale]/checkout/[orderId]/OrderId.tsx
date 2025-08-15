@@ -27,13 +27,9 @@ const Order = () => {
   } = useIdentityContext()
 
   return (
-    <CommerceLayer accessToken={accessToken || ''} endpoint={config.endpoint}>
-      <OrderStorage persistKey={`order`}>
-        <DynamicCheckoutContainer>
-          <DynamicCheckout />
-        </DynamicCheckoutContainer>
-      </OrderStorage>
-    </CommerceLayer>
+    <DynamicCheckoutContainer>
+      <DynamicCheckout />
+    </DynamicCheckoutContainer>
   )
 }
 

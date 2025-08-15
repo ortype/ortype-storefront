@@ -317,7 +317,11 @@ export const fetchPaymentMethods = async ({
 
     // Fetch order with available_payment_methods included
     const order = await cl.orders.retrieve(orderId, {
-      include: ['available_payment_methods', 'payment_method', 'payment_source'],
+      include: [
+        'available_payment_methods',
+        'payment_method',
+        'payment_source',
+      ],
     })
 
     return { success: true, order }
@@ -478,7 +482,7 @@ export function checkPaymentMethod(order: Order) {
     hasPaymentMethod = true
   }
 
-  const isComplete = order.status === 'placed'
+  const isComplete = order.status === 'placed' || order.status === 'pending'
 
   return {
     hasPaymentMethod,
