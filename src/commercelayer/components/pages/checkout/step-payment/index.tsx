@@ -1,20 +1,10 @@
-import {
-  PaymentSource,
-  PaymentSourceBrandIcon,
-  PaymentSourceBrandName,
-  PaymentSourceDetail,
-} from '@/commercelayer/components'
 import '@adyen/adyen-web/dist/adyen.css'
 import { Box } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
-import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
-import { AccordionContext } from '@/commercelayer/providers/accordion'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { StepContainer } from '@/components/ui/StepContainer'
-import { StepHeader } from '@/components/ui/StepHeader'
 import { CheckoutCustomerPayment } from './checkout-customer-payment'
 
 export type THandleClick = (params: {
@@ -28,76 +18,16 @@ interface HeaderProps {
   info?: string
 }
 
-export const StepHeaderPayment: React.FC<HeaderProps> = ({ step }) => {
-  const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
-
-  if (!checkoutCtx || !accordionCtx) {
-    return null
-  }
-
-  const { hasPaymentMethod, isPaymentRequired, isCreditCard } = checkoutCtx
-
-  const { t } = useTranslation()
-
-  const recapText = () => {
-    if (!isPaymentRequired) {
-      return t('stepPayment.notRequired')
-    }
-    if (!hasPaymentMethod || accordionCtx.status === 'edit') {
-      return t('stepPayment.methodUnselected')
-    }
-
-    return (
-      <>
-        <div className="flex">
-          <PaymentSource readonly loader={<div />}>
-            <PaymentSourceBrandIcon className="mr-2" />
-            <PaymentSourceBrandName className="mr-1">
-              {({ brand }) => {
-                if (isCreditCard) {
-                  return (
-                    <Trans i18nKey="stepPayment.endingIn">
-                      {brand}
-                      <PaymentSourceDetail className="ml-1" type="last4" />
-                    </Trans>
-                  )
-                }
-                return <>{brand}</>
-              }}
-            </PaymentSourceBrandName>
-          </PaymentSource>
-        </div>
-      </>
-    )
-  }
-
-  return (
-    <StepHeader
-      stepNumber={step}
-      status={accordionCtx.status}
-      label={t('stepPayment.title')}
-      info={recapText()}
-      onEditRequest={accordionCtx.setStep}
-    />
-  )
-}
-
 export const StepPayment: React.FC = () => {
   const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
   const [hasMultiplePaymentMethods, setHasMultiplePaymentMethods] =
     useState(false)
   const [autoSelected, setAutoselected] = useState(false)
   const [hasTitle, setHasTitle] = useState(true)
 
-  const { t } = useTranslation()
+  const { isPaymentRequired, setPayment } = checkoutCtx
 
-  // if (!checkoutCtx || !checkoutCtx.hasShippingMethod) {
-  // this exit on shippingMethod is causing an error in useEffect to enable button
-  if (!checkoutCtx || !accordionCtx) {
-    return null
-  }
+  const { t } = useTranslation()
 
   useEffect(() => {
     // If single payment methods and has multiple payment methods, we hide the label of the box
@@ -106,14 +36,14 @@ export const StepPayment: React.FC = () => {
     }
   }, [autoSelected, hasMultiplePaymentMethods])
 
-  const { isPaymentRequired, setPayment } = checkoutCtx
-
   const selectPayment: THandleClick = async ({ payment, paymentSource }) => {
     console.log('selectPayment called with:', { payment, paymentSource })
     if (paymentSource?.payment_methods?.paymentMethods?.length > 1) {
       setHasMultiplePaymentMethods(true)
     }
-    console.log('Calling setPayment with:', { payment: payment as PaymentMethodType })
+    console.log('Calling setPayment with:', {
+      payment: payment as PaymentMethodType,
+    })
     setPayment({ payment: payment as PaymentMethodType })
   }
 
@@ -121,32 +51,29 @@ export const StepPayment: React.FC = () => {
     setAutoselected(true)
   }
 
+  // if (!checkoutCtx || !checkoutCtx.hasShippingMethod) {
+  // this exit on shippingMethod is causing an error in useEffect to enable button
+  if (!checkoutCtx) {
+    return null
+  }
+
   return (
-    <StepContainer
-      className={classNames({
-        current: accordionCtx.isActive,
-        done: !accordionCtx.isActive,
-      })}
-    >
-      <Box>
-        <>
-          {accordionCtx.isActive && (
-            <div>
-              {isPaymentRequired ? (
-                <CheckoutCustomerPayment
-                  selectPayment={selectPayment}
-                  autoSelectCallback={autoSelectCallback}
-                  hasTitle={hasTitle}
-                />
-              ) : (
-                <p className="text-sm text-gray-400">
-                  {t('stepPayment.amountZero')}
-                </p>
-              )}
-            </div>
+    <Box>
+      <>
+        <div>
+          {isPaymentRequired ? (
+            <CheckoutCustomerPayment
+              selectPayment={selectPayment}
+              autoSelectCallback={autoSelectCallback}
+              hasTitle={hasTitle}
+            />
+          ) : (
+            <p className="text-sm text-gray-400">
+              {t('stepPayment.amountZero')}
+            </p>
           )}
-        </>
-      </Box>
-    </StepContainer>
+        </div>
+      </>
+    </Box>
   )
 }

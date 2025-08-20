@@ -228,6 +228,7 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         isLoading: false,
       }
     }
+    
     default:
       throw new Error(`Unknown action type`)
   }

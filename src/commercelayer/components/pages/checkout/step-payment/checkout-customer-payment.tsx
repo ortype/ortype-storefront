@@ -87,26 +87,10 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
     return paymentMethods.find(pm => pm.id === selectedPaymentMethod)
   }
   
-  // Store payment form reference
+  // Store payment form reference for potential programmatic submission
   const setPaymentRef = (ref: React.RefObject<HTMLFormElement>) => {
     console.log('setPaymentRef called with:', ref.current)
     paymentFormRef.current = ref.current
-    
-    // Set up the global submission function immediately when ref is set
-    if (ref.current && checkoutCtx) {
-      console.log('Setting up global submitStripePayment function')
-      // @ts-expect-error - Temporary debugging access
-      window.submitStripePayment = async () => {
-        console.log('submitStripePayment called, form ref:', ref.current)
-        if (ref.current?.onsubmit) {
-          console.log('Calling form.onsubmit()')
-          return await ref.current.onsubmit()
-        }
-        console.log('No onsubmit method available')
-        return false
-      }
-      console.log('Global submitStripePayment function set up successfully')
-    }
   }
 
   const TemplateSaveToWalletCheckbox = ({

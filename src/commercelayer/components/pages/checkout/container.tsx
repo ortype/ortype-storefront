@@ -13,6 +13,9 @@ interface Props {
 
 // @NOTE: Since the CheckoutContainer is specifically for the checkout flow, it should probably not rely on the global OrderProvider but instead get the order directly from the Commerce Layer SDK using the orderId from the URL.
 // Is this valid or is the order object that is created for the buy/cart pages actually a perfect fit for the checkout?
+// Actually, this is valid, because the useOrderContext relies on localStorage
+// which means if a customer makes an order and then a new cart, and we persist the localStorage key
+// then there is a conflict when we attempt to create a new order
 
 const CheckoutContainer = ({ children }: Props): JSX.Element => {
   const { clientConfig } = useIdentityContext()

@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
-import { OrderSummary } from '@/commercelayer/components/pages/checkout/order-summary'
 import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/payment-container'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { CustomAddress } from '@/components/ui/CustomerAddressCard'
@@ -9,11 +8,11 @@ import { getTranslations } from '@/components/utils/payments'
 import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react'
 
 // Import our own payment source components
-import { 
-  PaymentSource, 
-  PaymentSourceBrandIcon, 
-  PaymentSourceBrandName, 
-  PaymentSourceDetail 
+import {
+  PaymentSource,
+  PaymentSourceBrandIcon,
+  PaymentSourceBrandName,
+  PaymentSourceDetail,
 } from '@/commercelayer/components/payment'
 
 interface Props {
@@ -65,7 +64,6 @@ export const StepComplete: React.FC<Props> = ({
         <Box>
           <Box>
             <Box>{t('stepComplete.summary_title')}</Box>
-            <OrderSummary checkoutCtx={ctx} readonly />
           </Box>
           <Box>
             <Box>{t('stepComplete.customer_title')}</Box>

@@ -1,9 +1,6 @@
 import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
-import { AccordionContext } from '@/commercelayer/providers/accordion'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { StepContainer } from '@/components/ui/StepContainer'
-import { StepHeader } from '@/components/ui/StepHeader'
 import { Box, Flex } from '@chakra-ui/react'
 import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
@@ -21,54 +18,15 @@ export interface ShippingToggleProps {
   disableToggle: boolean
 }
 
-export const StepHeaderEmail: React.FC<Props> = ({ step }) => {
-  const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
-  if (!checkoutCtx || !accordionCtx) {
-    return null
-  }
-
-  const { hasEmailAddress, emailAddress } = checkoutCtx
-
-  const { t } = useTranslation()
-
-  const recapText = () => {
-    if (!hasEmailAddress || accordionCtx.status === 'edit') {
-      return (
-        <>
-          <p>{t('stepEmail.notSet')}</p>
-        </>
-      )
-    }
-
-    return (
-      <>
-        <p data-testid="Email-email-step-header">{emailAddress}</p>
-      </>
-    )
-  }
-
-  return (
-    <StepHeader
-      stepNumber={step}
-      status={accordionCtx.status}
-      label={t('stepEmail.title')}
-      info={recapText()}
-      onEditRequest={accordionCtx.setStep}
-    />
-  )
-}
-
 export const StepEmail: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
   const { customer, setCustomerEmail } = useIdentityContext()
   const { hasEmailAddress, emailAddress, isGuest, hasCustomer } = checkoutCtx
 
   // @NOTE: not doing anything yet with this state
   const [isLocalLoader, setIsLocalLoader] = useState(false)
 
-  if (!checkoutCtx || !accordionCtx) {
+  if (!checkoutCtx) {
     return null
   }
 
@@ -83,30 +41,18 @@ export const StepEmail: React.FC<Props> = () => {
   const requiresLogin = !isGuest && hasEmailAddress
 
   return (
-    <StepContainer
-      className={classNames({
-        current: accordionCtx.isActive,
-        done: !accordionCtx.isActive,
-        submitting: isLocalLoader,
-      })}
-    >
-      <>
-        {accordionCtx.isActive && (
-          <>
-            {hasEmailAddress ? (
-              <>
-                {requiresLogin ? (
-                  <LoginFormNew emailAddress={email} />
-                ) : (
-                  <SignUpForm emailAddress={email} />
-                )}
-              </>
-            ) : (
-              <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
-            )}
-          </>
-        )}
-      </>
-    </StepContainer>
+    <>
+      {hasEmailAddress ? (
+        <>
+          {requiresLogin ? (
+            <LoginFormNew emailAddress={email} />
+          ) : (
+            <SignUpForm emailAddress={email} />
+          )}
+        </>
+      ) : (
+        <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
+      )}
+    </>
   )
 }

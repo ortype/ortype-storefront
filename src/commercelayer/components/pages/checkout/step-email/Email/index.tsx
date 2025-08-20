@@ -61,7 +61,11 @@ export const Email: React.FC<Props> = ({
 
       console.log('Email onSubmit: ', result)
 
-      if (!result.success) {
+      if (result.success) {
+        console.log('✅ Email saved successfully')
+        // Note: Do not advance step here - this is part 1 of 2-part auth step
+        // Step advancement happens after successful login/signup in part 2
+      } else {
         setError(result.error?.message || 'Failed to save email')
       }
       // Note: No longer need to lookup customer info - using order.guest property instead
@@ -74,7 +78,7 @@ export const Email: React.FC<Props> = ({
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form data-step="email" onSubmit={handleSubmit(onSubmit)}>
         <Fieldset.Root size="lg" maxW="md">
           <Fieldset.Content>
             <Input

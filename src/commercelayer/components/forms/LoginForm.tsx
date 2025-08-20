@@ -12,7 +12,7 @@ import { useDevLogger } from '@/hooks/useDevLogger'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/chakra-button'
 import { PasswordInput } from '@/components/ui/password-input'
-import { Link as ChakraLink, Fieldset, Stack } from '@chakra-ui/react'
+import { Link as ChakraLink, Fieldset, Stack, useStepsContext } from '@chakra-ui/react'
 import type { LoginFormValues } from 'Forms'
 import Link from 'next/link'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
@@ -27,6 +27,7 @@ const validationSchema = yup.object().shape({
 
 export const LoginForm = ({ emailAddress }): JSX.Element => {
   const { settings, config, isLoading, handleLogin } = useIdentityContext()
+  const stepsContext = useStepsContext()
   const log = useDevLogger()
   const [rateLimitCountdown, setRateLimitCountdown] = useState<number>(0)
 
@@ -81,7 +82,15 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
         password: formData.customerPassword,
       })
       if (tokenData.accessToken) {
-        handleLogin(tokenData)
+        await handleLogin(tokenData)
+        console.log('✅ Login successful - advancing to next step')
+        // Advance to next step using Chakra UI Steps context
+        if (stepsContext && stepsContext.goToNextStep) {
+          console.log('🚀 Advancing to next step after successful login')
+          stepsContext.goToNextStep()
+        } else {
+          console.warn('⚠️ Steps context not available for step advancement')
+        }
       } else {
         // If no access token but no error thrown, treat as invalid credentials
         form.setError('root', {

@@ -21,6 +21,7 @@ import {
   Link as ChakraLink,
   Fieldset,
   Stack,
+  useStepsContext,
 } from '@chakra-ui/react'
 
 import type { SignUpFormValues } from 'Forms'
@@ -61,6 +62,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
     useIdentityContext()
 
   const { setCustomerPassword, isGuest, hasCustomer } = useCheckoutContext()
+  const stepsContext = useStepsContext()
   const [apiError, setApiError] = useState({})
 
   const form: UseFormReturn<SignUpFormValues, UseFormProps> =
@@ -124,6 +126,14 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
             .then(async (tokenData) => {
               if (tokenData.accessToken != null) {
                 await handleLogin(tokenData)
+                console.log('✅ Sign up successful - advancing to next step')
+                // Advance to next step using Chakra UI Steps context
+                if (stepsContext && stepsContext.goToNextStep) {
+                  console.log('🚀 Advancing to next step after successful signup')
+                  stepsContext.goToNextStep()
+                } else {
+                  console.warn('⚠️ Steps context not available for step advancement')
+                }
               }
             })
             .catch((err) => {
@@ -171,6 +181,14 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
         .then(async (tokenData) => {
           if (tokenData.accessToken != null) {
             await handleLogin(tokenData)
+            console.log('✅ Regular signup successful - advancing to next step')
+            // Advance to next step using Chakra UI Steps context
+            if (stepsContext && stepsContext.goToNextStep) {
+              console.log('🚀 Advancing to next step after successful customer creation')
+              stepsContext.goToNextStep()
+            } else {
+              console.warn('⚠️ Steps context not available for step advancement')
+            }
           }
         })
         .catch((err) => {

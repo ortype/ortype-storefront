@@ -1,37 +1,27 @@
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import {
+  Button,
+  ButtonGroup,
+  Container,
+  Steps,
+  useSteps,
+} from '@chakra-ui/react'
 import { useParams } from 'next/navigation'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { MainHeader } from '@/commercelayer/components/pages/checkout/main-header'
 import { OrderSummary } from '@/commercelayer/components/pages/checkout/order-summary'
-import {
-  StepAddress,
-  StepHeaderCustomer,
-} from '@/commercelayer/components/pages/checkout/step-address'
+import { StepAddress } from '@/commercelayer/components/pages/checkout/step-address'
 import { StepComplete } from '@/commercelayer/components/pages/checkout/step-complete'
-import {
-  StepEmail,
-  StepHeaderEmail,
-} from '@/commercelayer/components/pages/checkout/step-email'
-import {
-  StepHeaderLicense,
-  StepLicense,
-} from '@/commercelayer/components/pages/checkout/step-license'
+import { StepEmail } from '@/commercelayer/components/pages/checkout/step-email'
+import { StepLicense } from '@/commercelayer/components/pages/checkout/step-license'
 import { StepNav } from '@/commercelayer/components/pages/checkout/step-nav'
-import {
-  StepHeaderPayment,
-  StepPayment,
-} from '@/commercelayer/components/pages/checkout/step-payment'
+import { StepPayment } from '@/commercelayer/components/pages/checkout/step-payment'
 import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/payment-container'
 import StepPlaceOrder from '@/commercelayer/components/pages/checkout/step-place-order'
-import {
-  StepHeaderShipping,
-  StepShipping,
-} from '@/commercelayer/components/pages/checkout/step-shipping'
-import { AccordionProvider } from '@/commercelayer/providers/accordion'
+import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shipping'
+import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { useActiveStep } from '@/components/hooks/useActiveStep'
-import { LayoutDefault } from '@/components/layouts/LayoutDefault'
-import { Accordion, AccordionItem } from '@/components/ui/Accordion'
 
 interface Props {
   logoUrl?: string
@@ -43,6 +33,22 @@ interface Props {
   privacyUrl?: string
 }
 
+const BASE_STEPS: Array<{
+  key: SingleStepEnum
+  title: string
+  description?: string
+}> = [
+  { key: 'Email', title: 'Email', description: 'Enter your email address' },
+  {
+    key: 'Address',
+    title: 'Address',
+    description: 'Enter billing and shipping addresses',
+  },
+  { key: 'License', title: 'License', description: 'License information' },
+  { key: 'Shipping', title: 'Shipping', description: 'Select shipping method' },
+  { key: 'Payment', title: 'Payment', description: 'Payment and place order' },
+]
+
 const Checkout: React.FC<Props> = ({
   logoUrl,
   orderNumber,
@@ -53,8 +59,82 @@ const Checkout: React.FC<Props> = ({
   privacyUrl,
 }) => {
   const ctx = useContext(CheckoutContext)
+  const { customer } = useIdentityContext()
 
   const params = useParams()
+  // Track when initial load step advancement has been completed
+  const [initialStepAdvancementDone, setInitialStepAdvancementDone] = useState(false)
+
+  // Filter steps based on checkout requirements
+  const steps = BASE_STEPS.filter((step) => {
+    if (step.key === 'Shipping' && !ctx?.isShipmentRequired) {
+      return false
+    }
+    if (step.key === 'License' && ctx?.isShipmentRequired) {
+      return false
+    }
+    return true
+  })
+
+  // Initialize stepper with correct starting step
+  const stepperHook = useSteps({
+    defaultStep: 0,
+    count: steps.length,
+  })
+
+  // Determine the correct current step based on checkout state (ONLY on initial load)
+  useEffect(() => {
+    // Only run automatic step advancement when:
+    // 1. Context is available
+    // 2. Initial loading is complete (isFirstLoading just changed from true to false)
+    // 3. We haven't already performed initial step advancement
+    if (!ctx || ctx.isFirstLoading || initialStepAdvancementDone) return
+
+    console.log('🔍 Initial step advancement - determining current step based on state:')
+    console.log('  customer.userMode:', customer.userMode)
+    console.log('  ctx.hasEmailAddress:', ctx.hasEmailAddress)
+    console.log('  ctx.hasBillingAddress:', ctx.hasBillingAddress)
+    console.log('  ctx.hasLicenseOwner:', ctx.hasLicenseOwner)
+    console.log('  ctx.isShipmentRequired:', ctx.isShipmentRequired)
+
+    let targetStepIndex = 0 // Default to Email step
+
+    // Logic similar to useActiveStep hook
+    const canSelectLicenseOwner = customer.userMode && ctx.hasBillingAddress
+    const canSelectPayment =
+      customer.userMode && ctx.hasBillingAddress && ctx.hasLicenseOwner
+
+    if (canSelectPayment) {
+      targetStepIndex = steps.findIndex((s) => s.key === 'Payment')
+    } else if (canSelectLicenseOwner && !ctx.isShipmentRequired) {
+      targetStepIndex = steps.findIndex((s) => s.key === 'License')
+    } else if (customer.userMode && ctx.hasEmailAddress) {
+      targetStepIndex = steps.findIndex((s) => s.key === 'Address')
+    } else {
+      targetStepIndex = 0 // Email step
+    }
+
+    if (targetStepIndex !== -1 && targetStepIndex !== stepperHook.value) {
+      console.log(
+        `🚀 Initial step advancement to index ${targetStepIndex} (${steps[targetStepIndex]?.key})`
+      )
+      stepperHook.setStep(targetStepIndex)
+      setInitialStepAdvancementDone(true) // Mark as completed to prevent future automatic advancement
+    } else {
+      // Even if we don't change step, mark advancement as done to prevent retriggering
+      setInitialStepAdvancementDone(true)
+    }
+  }, [
+    ctx?.isFirstLoading,
+    ctx?.hasEmailAddress,
+    ctx?.hasBillingAddress,
+    ctx?.hasLicenseOwner,
+    customer.userMode,
+    ctx?.isShipmentRequired,
+    steps,
+    stepperHook,
+    initialStepAdvancementDone,
+  ])
 
   let paypalPayerId = ''
   let checkoutComSession = ''
@@ -72,162 +152,48 @@ const Checkout: React.FC<Props> = ({
     checkoutComSession = params['cko-session-id'] as string
   }
 
-  const { activeStep, lastActivableStep, setActiveStep, steps } =
-    useActiveStep()
-
-  const getStepNumber = (stepName: SingleStepEnum) => {
-    return steps.indexOf(stepName) + 1
-  }
-
-  // @NOTE: checkoutCtx.order stays undefined
-  // we already have an order from OrderProvider, but the CheckoutContext order should contain
-  // additional data like addressses which we don't need on the buy page or cart
-
-  // @NOTE: after SET_ORDER is called isFirstLoading is set to false
-
   console.log({ checkoutCtx: ctx, isFirstLoading: ctx?.isFirstLoading })
 
   if (!ctx || ctx.isFirstLoading) {
     return <div>{'Loading...'}</div>
   }
-  const renderComplete = () => {
-    return (
-      <StepComplete
-        logoUrl={logoUrl}
-        companyName={companyName}
-        supportEmail={supportEmail}
-        supportPhone={supportPhone}
-        orderNumber={orderNumber}
-      />
-    )
-  }
 
-  const renderSteps = () => {
-    return (
-      <LayoutDefault
-        aside={<OrderSummary checkoutCtx={ctx} />}
-        main={
-          <>
-            <MainHeader orderNumber={orderNumber} />
-            <StepNav
-              steps={steps}
-              activeStep={activeStep}
-              onStepChange={setActiveStep}
-              lastActivable={lastActivableStep}
-            />
-            <Accordion>
-              <AccordionProvider
-                activeStep={activeStep}
-                lastActivableStep={lastActivableStep}
-                setActiveStep={setActiveStep}
-                step="Email"
-                steps={steps}
-                isStepDone={ctx.hasEmailAddress}
-              >
-                <AccordionItem
-                  index={1}
-                  header={<StepHeaderEmail step={getStepNumber('Email')} />}
-                >
-                  <StepEmail className="mb-6" step={1} />
-                </AccordionItem>
-              </AccordionProvider>
-            </Accordion>
-            <Accordion>
-              <AccordionProvider
-                activeStep={activeStep}
-                lastActivableStep={lastActivableStep}
-                setActiveStep={setActiveStep}
-                step="Address"
-                steps={steps}
-                isStepDone={ctx.hasShippingAddress && ctx.hasBillingAddress}
-              >
-                <AccordionItem
-                  index={1}
-                  header={
-                    <StepHeaderCustomer step={getStepNumber('Address')} />
-                  }
-                >
-                  <StepAddress className="mb-6" step={1} />
-                </AccordionItem>
-              </AccordionProvider>
-              <>
-                {ctx.isShipmentRequired && (
-                  <AccordionProvider
-                    activeStep={activeStep}
-                    lastActivableStep={lastActivableStep}
-                    setActiveStep={setActiveStep}
-                    step="Shipping"
-                    steps={steps}
-                    isStepRequired={ctx.isShipmentRequired}
-                    isStepDone={ctx.hasShippingMethod}
-                  >
-                    <AccordionItem
-                      index={2}
-                      header={
-                        <StepHeaderShipping step={getStepNumber('Shipping')} />
-                      }
-                    >
-                      <StepShipping className="mb-6" step={2} />
-                    </AccordionItem>
-                  </AccordionProvider>
-                )}
-              </>
-            </Accordion>
-            <Accordion>
-              <AccordionProvider
-                activeStep={activeStep}
-                lastActivableStep={lastActivableStep}
-                setActiveStep={setActiveStep}
-                step="License"
-                steps={steps}
-                isStepDone={ctx.hasLicenseOwner}
-              >
-                <AccordionItem
-                  index={1}
-                  header={<StepHeaderLicense step={getStepNumber('License')} />}
-                >
-                  <StepLicense className="mb-6" step={1} />
-                </AccordionItem>
-              </AccordionProvider>
-            </Accordion>
-            <Accordion>
-              <AccordionProvider
-                activeStep={activeStep}
-                lastActivableStep={lastActivableStep}
-                setActiveStep={setActiveStep}
-                step="Payment"
-                steps={steps}
-                isStepRequired={ctx.isPaymentRequired}
-                isStepDone={ctx.hasPaymentMethod}
-              >
+  // NOTE: at the moment isComplete is true when I guess it should not be
+  return (
+    <Container my={24} maxW="50rem" centerContent>
+      <MainHeader orderNumber={orderNumber} />
+      <Steps.RootProvider value={stepperHook}>
+        <StepNav steps={steps} />
+        {steps.map((step, index) => {
+          const stepNumber = index + 1
+          return (
+            <Steps.Content key={step.key} index={index}>
+              {step.key === 'Email' && <StepEmail />}
+              {step.key === 'Address' && <StepAddress />}
+              {step.key === 'License' && <StepLicense />}
+              {step.key === 'Shipping' && <StepShipping />}
+              {step.key === 'Payment' && (
                 <PaymentContainer>
-                  <AccordionItem
-                    index={3}
-                    header={
-                      <StepHeaderPayment step={getStepNumber('Payment')} />
-                    }
-                  >
-                    <div className="mb-6">
-                      <StepPayment />
-                    </div>
-                    <StepPlaceOrder
-                      isActive={
-                        activeStep === 'Payment' || activeStep === 'Complete'
-                      }
-                      termsUrl={termsUrl}
-                      privacyUrl={privacyUrl}
-                    />
-                  </AccordionItem>
+                  <StepPayment />
+                  <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
                 </PaymentContainer>
-              </AccordionProvider>
-            </Accordion>
-          </>
-        }
-      />
-    )
-  }
-
-  return <>{ctx.isComplete ? renderComplete() : renderSteps()}</>
+              )}
+            </Steps.Content>
+          )
+        })}
+        <Steps.CompletedContent>
+          <StepComplete
+            logoUrl={logoUrl}
+            companyName={companyName}
+            supportEmail={supportEmail}
+            supportPhone={supportPhone}
+            orderNumber={orderNumber}
+          />
+        </Steps.CompletedContent>
+      </Steps.RootProvider>
+      <OrderSummary checkoutCtx={ctx} />
+    </Container>
+  )
 }
 
 export default Checkout

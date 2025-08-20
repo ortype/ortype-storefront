@@ -21,7 +21,6 @@ import classNames from 'classnames'
 import { Trans, useTranslation } from 'next-i18next'
 import { useContext, useEffect, useState } from 'react'
 
-import { AccordionContext } from '@/commercelayer/providers/accordion'
 import {
   CheckoutContext,
   useCheckoutContext,
@@ -48,53 +47,14 @@ interface HeaderProps {
   info?: string
 }
 
-export const StepHeaderShipping: React.FC<HeaderProps> = ({ step }) => {
-  const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
-
-  if (!checkoutCtx || !accordionCtx) {
-    return null
-  }
-  const { t } = useTranslation()
-  const { hasShippingMethod, isShipmentRequired, shipments } = checkoutCtx
-
-  const recapText = () => {
-    if (!isShipmentRequired) {
-      return t('stepShipping.notRequired')
-    }
-    if (hasShippingMethod && accordionCtx.status !== 'edit') {
-      if (shipments.length === 1 && shipments[0]?.shippingMethodName) {
-        return shipments[0]?.shippingMethodName
-      }
-      if (checkoutCtx.shippingMethodName) {
-        return checkoutCtx.shippingMethodName
-      }
-      return t('stepShipping.methodSelected', { count: shipments.length })
-    } else {
-      return t('stepShipping.methodUnselected')
-    }
-  }
-
-  return (
-    <StepHeader
-      stepNumber={step}
-      status={accordionCtx.status}
-      label={t('stepShipping.title')}
-      info={recapText()}
-      onEditRequest={isShipmentRequired ? accordionCtx.setStep : undefined}
-    />
-  )
-}
-
 const Boxs: TypeAccepted[] = LINE_ITEMS_SHIPPABLE
 
 export const StepShipping: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
   const gtmCtx = useContext(GTMContext)
   const { t } = useTranslation()
 
-  if (!checkoutCtx || !accordionCtx) {
+  if (!checkoutCtx) {
     return null
   }
 
@@ -158,18 +118,12 @@ export const StepShipping: React.FC<Props> = () => {
   }
 
   return (
-    <Container
-      className={classNames({
-        current: accordionCtx.isActive,
-        done: !accordionCtx.isActive,
-        submitting: isLocalLoader,
-      })}
-    >
+    <Container>
       <Box>
         <>
           {isShipmentRequired && (
             <div>
-              {accordionCtx.isActive && (
+              {
                 <>
                   {
                     <ShipmentsContainer>
@@ -354,7 +308,7 @@ export const StepShipping: React.FC<Props> = () => {
                     </ShipmentsContainer>
                   }
                 </>
-              )}
+              }
             </div>
           )}
         </>

@@ -1,12 +1,9 @@
-import SaveBillingAddressButton from '@/commercelayer/components/ui/save-billing-address-button'
-import { AccordionContext } from '@/commercelayer/providers/accordion'
-import { AddressProvider } from '@/commercelayer/providers/address'
+import {
+  AddressProvider,
+  useAddressState,
+} from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { StepContainer } from '@/components/ui/StepContainer'
-import { StepHeader } from '@/components/ui/StepHeader'
-import { Box } from '@chakra-ui/react'
-import type { Order } from '@commercelayer/sdk'
-import classNames from 'classnames'
+import { Box, Button, useStepsContext } from '@chakra-ui/react'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BillingAddressForm } from './billing-address-form'
@@ -21,55 +18,118 @@ export interface ShippingToggleProps {
   disableToggle: boolean
 }
 
-export const StepHeaderCustomer: React.FC<Props> = ({ step }) => {
+// Container component that manages address submission with Proceed button
+const StepAddressContainer: React.FC<{
+  isShipmentRequired: boolean
+  billingAddress: any
+  openShippingAddress: (props: ShippingToggleProps) => void
+}> = ({ isShipmentRequired, billingAddress, openShippingAddress }) => {
+  const { billing } = useAddressState()
   const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
-  if (!checkoutCtx || !accordionCtx) {
+  const stepsContext = useStepsContext()
+  const { t } = useTranslation()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  if (!checkoutCtx) {
     return null
   }
 
-  const { hasShippingAddress, hasBillingAddress, emailAddress } = checkoutCtx
+  const handleProceed = async () => {
+    setIsLoading(true)
+    setError(null)
 
-  const { t } = useTranslation()
+    try {
+      console.log('Address Proceed button clicked - saving address')
+      const result = await checkoutCtx.saveAddress(billing, false) // useAsShipping = false by default
 
-  const recapText = () => {
-    if (
-      (!hasShippingAddress && !hasBillingAddress) ||
-      accordionCtx.status === 'edit'
-    ) {
-      return (
-        <>
-          <p>{t('stepAddress.notSet')}</p>
-        </>
-      )
+      if (result.success) {
+        console.log('✅ Address saved successfully - checking context state:')
+        console.log('hasBillingAddress:', checkoutCtx.hasBillingAddress)
+        console.log('hasEmailAddress:', checkoutCtx.hasEmailAddress)
+        console.log('isShipmentRequired:', checkoutCtx.isShipmentRequired)
+        console.log('hasShippingAddress:', checkoutCtx.hasShippingAddress)
+
+        // Advance to next step using Chakra UI Steps context
+        if (stepsContext && stepsContext.goToNextStep) {
+          console.log('🚀 Advancing to next step after successful address save')
+          stepsContext.goToNextStep()
+        } else {
+          console.warn('⚠️ Steps context not available for step advancement')
+        }
+      } else {
+        setError(result.error || 'Failed to save address')
+      }
+    } catch (error: any) {
+      console.error('Error saving address:', error)
+      setError(error?.message || 'Failed to save address')
+    } finally {
+      setIsLoading(false)
     }
-
-    return (
-      <>
-        <p data-testid="customer-email-step-header">{emailAddress}</p>
-      </>
-    )
   }
 
+  const canProceed = billing && Object.keys(billing).length > 0
+
   return (
-    <StepHeader
-      stepNumber={step}
-      status={accordionCtx.status}
-      label={t('stepAddress.title')}
-      info={recapText()}
-      onEditRequest={accordionCtx.setStep}
-    />
+    <Box>
+      <>
+        <>
+          <BillingAddressForm
+            billingAddress={billingAddress}
+            openShippingAddress={openShippingAddress}
+          />
+          {/* TODO: Replace with shipping address form when implementing shipping flow
+           * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
+           * Components needed:
+           * - shipping-address-form-new/index.tsx
+           * - Update AddressProvider for shipping state
+           * - Add shipping validation and save logic
+           */}
+          {isShipmentRequired && (
+            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+              <p className="text-yellow-800">
+                Shipping address form - TODO: Implement
+              </p>
+              <p className="text-sm text-yellow-600 mt-2">
+                See SHIPPING_MIGRATION_TODO.md for implementation details
+              </p>
+            </div>
+          )}
+
+          {/* Proceed button within the address step */}
+          <Box mt={6}>
+            {error && (
+              <Box color="red.500" fontSize="sm" mb={4}>
+                {error}
+              </Box>
+            )}
+            <Button
+              onClick={handleProceed}
+              loading={isLoading}
+              disabled={!canProceed || isLoading}
+              colorScheme="blue"
+              variant="solid"
+            >
+              {isLoading
+                ? 'Saving Address...'
+                : isShipmentRequired
+                ? t('stepAddress.continueToShipping', 'Continue to Shipping')
+                : t('stepAddress.continueToLicense', 'Continue to License')}
+            </Button>
+          </Box>
+        </>
+      </>
+    </Box>
   )
 }
 
 export const StepAddress: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
-  const accordionCtx = useContext(AccordionContext)
   const { t } = useTranslation()
 
-  const [isLocalLoader, setIsLocalLoader] = useState(false)
+  // Removed isLocalLoader - no longer needed since SaveBillingAddressButton manages its own loading state
 
-  if (!checkoutCtx || !accordionCtx) {
+  if (!checkoutCtx) {
     return null
   }
   const {
@@ -113,61 +173,15 @@ export const StepAddress: React.FC<Props> = () => {
     setDisabledShipToDifferentAddress(disableToggle)
   }
 
-  const handleSave = async (params: { success: boolean; order?: Order }) => {
-    setIsLocalLoader(true)
-    await setAddresses(params.order)
-    setIsLocalLoader(false)
-  }
+  // Removed handleSave - SaveBillingAddressButton now handles this directly
 
   return (
     <AddressProvider>
-      <StepContainer
-        className={classNames({
-          current: accordionCtx.isActive,
-          done: !accordionCtx.isActive,
-          submitting: isLocalLoader,
-        })}
-      >
-        <Box>
-          <>
-            {accordionCtx.isActive && (
-              <>
-                <BillingAddressForm
-                  billingAddress={billingAddress}
-                  openShippingAddress={openShippingAddress}
-                />
-                {/* TODO: Replace with shipping address form when implementing shipping flow
-                 * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
-                 * Components needed:
-                 * - shipping-address-form-new/index.tsx
-                 * - Update AddressProvider for shipping state
-                 * - Add shipping validation and save logic
-                 */}
-                {isShipmentRequired && (
-                  <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-                    <p className="text-yellow-800">
-                      Shipping address form - TODO: Implement
-                    </p>
-                    <p className="text-sm text-yellow-600 mt-2">
-                      See SHIPPING_MIGRATION_TODO.md for implementation details
-                    </p>
-                  </div>
-                )}
-                <SaveBillingAddressButton
-                  label={
-                    isShipmentRequired
-                      ? t('stepCustomer.continueToDelivery')
-                      : t('stepAddress.continueToLicense')
-                  }
-                  data-test-id="save-customer-button"
-                  onClick={() => handleSave({ success: true })}
-                  orderId={checkoutCtx.order?.id}
-                />
-              </>
-            )}
-          </>
-        </Box>
-      </StepContainer>
+      <StepAddressContainer
+        isShipmentRequired={isShipmentRequired}
+        billingAddress={billingAddress}
+        openShippingAddress={openShippingAddress}
+      />
     </AddressProvider>
   )
 }

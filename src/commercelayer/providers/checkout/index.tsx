@@ -26,8 +26,10 @@ import {
   createBillingAddress as createBillingAddressUtil,
   updateBillingAddress as updateBillingAddressUtil,
   setOrderBillingAddress as attachBillingAddressToOrderUtil,
+  validateAddress,
   type AddressOperationResult,
 } from '@/commercelayer/utils/address'
+import { type AddressInput } from '@/commercelayer/providers/address'
 import { ActionType, reducer } from './reducer'
 import {
   calculateSettings,
@@ -159,6 +161,10 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     error?: unknown
     order?: Order
   }>
+  
+  // Enhanced save method for address (orchestrates multiple steps)
+  saveAddress: (addressData: AddressInput, useAsShipping?: boolean) => Promise<{ success: boolean; error?: string; order?: Order }>
+  
   licenseOwner: LicenseOwner
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
@@ -791,6 +797,58 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     [cl, orderId, state.isShipmentRequired, state.customerAddresses]
   )
 
+  // New enhanced save methods
+  const saveAddress = useCallback(
+    async (addressData: AddressInput, useAsShipping: boolean = false): Promise<{ success: boolean; error?: string; order?: Order }> => {
+      try {
+        if (!cl) {
+          throw new Error('Commerce Layer client not available')
+        }
+
+        // Step 1: Validate the address data locally
+        const validationResult = validateAddress({ addressData })
+        if (!validationResult.success) {
+          const errorMessage = validationResult.error?.errors?.[0]?.detail || 'Invalid address data'
+          return { success: false, error: errorMessage }
+        }
+
+        // Step 2: Create the billing address
+        const createResult = await createBillingAddressUtil({
+          cl,
+          addressData: addressData as AddressCreate,
+        })
+
+        if (!createResult.success || !createResult.data) {
+          const errorMessage = createResult.error?.errors?.[0]?.detail || 'Failed to create address'
+          return { success: false, error: errorMessage }
+        }
+
+        // Step 3: Attach the address to the order
+        const attachResult = await attachBillingAddressToOrderUtil({
+          cl,
+          orderId,
+          addressId: createResult.data.id,
+          useAsShipping,
+        })
+
+        if (!attachResult.success || !attachResult.data) {
+          const errorMessage = attachResult.error?.errors?.[0]?.detail || 'Failed to attach address to order'
+          return { success: false, error: errorMessage }
+        }
+
+        // Step 4: Update the checkout provider state with the updated order
+        await setAddresses(attachResult.data)
+        return { success: true, order: attachResult.data }
+        
+      } catch (error: any) {
+        const errorMessage = error?.message || 'Failed to save address'
+        return { success: false, error: errorMessage }
+      }
+    },
+    [cl, orderId, setAddresses]
+  )
+
+
   useEffect(() => {
     fetchInitialOrder(orderId, accessToken)
   }, [orderId, accessToken])
@@ -820,6 +878,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         attachBillingAddressToOrder,
         // Payment methods helper
         loadPaymentMethods,
+        // Enhanced save method for address (orchestrates multiple steps)
+        saveAddress,
       }}
     >
       {children}
