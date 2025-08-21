@@ -1,7 +1,7 @@
-import { CustomerContainer } from "@commercelayer/react-components/customers/CustomerContainer"
-import type { Settings } from "CustomApp"
+import { CustomerContainer } from '@commercelayer/react-components/customers/CustomerContainer'
+import type { Settings } from 'CustomApp'
 
-type CustomerContainerProviderProps = Pick<Settings, "isGuest"> & {
+type CustomerContainerProviderProps = Pick<Settings, 'isGuest'> & {
   children: JSX.Element | JSX.Element[] | null
 }
 

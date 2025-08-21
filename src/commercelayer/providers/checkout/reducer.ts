@@ -197,7 +197,7 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         ...action.payload.order,
         payment_method: action.payload.payment,
       })
-      
+
       return {
         ...state,
         order: action.payload.order,
@@ -206,7 +206,9 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         // Override with calculated payment method status
         ...paymentMethodStatus,
         // If we have a payment method selected, consider it as having a payment method
-        hasPaymentMethod: Boolean(action.payload.payment) || paymentMethodStatus.hasPaymentMethod,
+        hasPaymentMethod:
+          Boolean(action.payload.payment) ||
+          paymentMethodStatus.hasPaymentMethod,
         isCreditCard: creditCardPayment(action.payload.payment),
         paymentMethod: action.payload.payment,
       }
@@ -228,7 +230,7 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         isLoading: false,
       }
     }
-    
+
     default:
       throw new Error(`Unknown action type`)
   }

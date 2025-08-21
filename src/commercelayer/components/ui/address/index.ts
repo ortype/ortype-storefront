@@ -11,9 +11,9 @@ export {
   requiresStateSelection,
   type CountryOption,
   type StateOption,
-  type States
+  type States,
 } from '@/commercelayer/utils/country-utils'
 
 // Re-export common types that consumers might need
-// Note: Country type not directly exported from @commercelayer/sdk, 
+// Note: Country type not directly exported from @commercelayer/sdk,
 // consumers should import from SDK directly if needed

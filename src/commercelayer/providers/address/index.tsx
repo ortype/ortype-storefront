@@ -131,7 +131,7 @@ export const useAddressState = (): AddressState => {
   if (!context) {
     throw new Error('useAddressState must be used within AddressProvider')
   }
-  
+
   return {
     billing: context.billing,
     errors: context.errors,
@@ -158,9 +158,7 @@ interface AddressProviderProps {
   children: ReactNode
 }
 
-export const AddressProvider: FC<AddressProviderProps> = ({
-  children,
-}) => {
+export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(addressReducer, initialState)
   const { clientConfig } = useIdentityContext()
 
@@ -312,7 +310,7 @@ export const AddressProvider: FC<AddressProviderProps> = ({
           // Return the create result with the updated order from setOrderResult
           return {
             ...createResult,
-            order: setOrderResult.data // The updated order from setOrderBillingAddress
+            order: setOrderResult.data, // The updated order from setOrderBillingAddress
           }
         }
 

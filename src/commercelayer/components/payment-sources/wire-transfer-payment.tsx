@@ -66,7 +66,7 @@ export function WireTransferPayment({
       if (setPayment) {
         await setPayment({
           payment: paymentMethod,
-          order
+          order,
         })
       }
 
@@ -102,19 +102,24 @@ export function WireTransferPayment({
                 </svg>
               </div>
               <div className="ml-3 flex-1 md:flex md:justify-between">
-                <p className={`text-sm text-blue-700 ${infoMessage?.className || ''}`}>
+                <p
+                  className={`text-sm text-blue-700 ${
+                    infoMessage?.className || ''
+                  }`}
+                >
                   {infoMessage?.text ?? defaultMessage}
                 </p>
               </div>
             </div>
           </div>
-          
+
           <div className="mt-4 text-sm text-gray-600">
             <p>
               <strong>Payment Method:</strong> Wire Transfer
             </p>
             <p className="mt-2">
-              You will receive detailed wire transfer instructions via email after completing your order.
+              You will receive detailed wire transfer instructions via email
+              after completing your order.
             </p>
           </div>
         </div>

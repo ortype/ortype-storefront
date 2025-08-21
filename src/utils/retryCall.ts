@@ -1,4 +1,4 @@
-import retry from "async-retry"
+import retry from 'async-retry'
 
 type FetchResource<T> = {
   /**

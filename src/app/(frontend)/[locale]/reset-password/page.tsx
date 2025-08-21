@@ -16,7 +16,10 @@ import {
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import { Alert } from '@/components/ui/alert'
-import { PasswordInput, PasswordStrengthMeter } from '@/components/ui/password-input'
+import {
+  PasswordInput,
+  PasswordStrengthMeter,
+} from '@/components/ui/password-input'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
@@ -27,16 +30,20 @@ const validationSchema = yup.object().shape({
     .string()
     .required('Password is required')
     .min(8, 'Password must be at least 8 characters')
-    .test('password-strength', 'Password must contain uppercase, lowercase, number, and special character', (value) => {
-      if (!value) return false
-      
-      const hasLowercase = /[a-z]/.test(value)
-      const hasUppercase = /[A-Z]/.test(value)
-      const hasNumber = /\d/.test(value)
-      const hasSpecialChar = /[^\w\s]/.test(value)
-      
-      return hasLowercase && hasUppercase && hasNumber && hasSpecialChar
-    }),
+    .test(
+      'password-strength',
+      'Password must contain uppercase, lowercase, number, and special character',
+      (value) => {
+        if (!value) return false
+
+        const hasLowercase = /[a-z]/.test(value)
+        const hasUppercase = /[A-Z]/.test(value)
+        const hasNumber = /\d/.test(value)
+        const hasSpecialChar = /[^\w\s]/.test(value)
+
+        return hasLowercase && hasUppercase && hasNumber && hasSpecialChar
+      }
+    ),
   confirmPassword: yup
     .string()
     .required('Please confirm your password')
@@ -66,13 +73,13 @@ export default function ResetPassword() {
   // Calculate password strength (0-4 scale)
   const calculatePasswordStrength = (password: string): number => {
     if (!password) return 0
-    
+
     let score = 0
     if (password.length >= 8) score++
     if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++
     if (/\d/.test(password)) score++
     if (/[^\w\s]/.test(password)) score++
-    
+
     return score
   }
 
@@ -81,7 +88,9 @@ export default function ResetPassword() {
   useEffect(() => {
     const tokenParam = searchParams.get('token')
     if (!tokenParam) {
-      setApiError('Invalid or missing reset token. Please request a new password reset.')
+      setApiError(
+        'Invalid or missing reset token. Please request a new password reset.'
+      )
     } else {
       setToken(tokenParam)
     }
@@ -89,12 +98,12 @@ export default function ResetPassword() {
 
   const onSubmit = form.handleSubmit(async (formData) => {
     setApiError(null)
-    
+
     if (!token) {
       setApiError('Invalid reset token. Please request a new password reset.')
       return
     }
-    
+
     if (!isValidCommerceLayerConfig(clientConfig)) {
       setApiError('Configuration error. Please try again later.')
       return
@@ -102,21 +111,22 @@ export default function ResetPassword() {
 
     try {
       const client = getCommerceLayer(clientConfig)
-      
+
       await client.customer_password_resets.update(token, {
         customer_password: formData.password,
         customer_password_confirmation: formData.confirmPassword,
       })
-      
+
       setIsSuccess(true)
-      
+
       // Redirect to login after 3 seconds
       setTimeout(() => {
         router.push('/')
       }, 3000)
-      
     } catch (error: any) {
-      const errorMessage = error?.errors?.[0]?.detail || 'Failed to reset password. The link may have expired.'
+      const errorMessage =
+        error?.errors?.[0]?.detail ||
+        'Failed to reset password. The link may have expired.'
       setApiError(errorMessage)
     }
   })
@@ -137,7 +147,8 @@ export default function ResetPassword() {
             Password reset successful!
           </Heading>
           <Text mb={6} color="gray.600">
-            Your password has been updated. You'll be redirected to the login page shortly.
+            Your password has been updated. You'll be redirected to the login
+            page shortly.
           </Text>
           <ChakraLink as={Link} href="/" color="blue.500">
             Go to login now
@@ -183,22 +194,18 @@ export default function ResetPassword() {
                 label="New password"
                 placeholder="Enter your new password"
               />
-              
+
               <Box w={'50%'}>
                 <PasswordStrengthMeter value={passwordStrength} py={1} />
               </Box>
-              
+
               <PasswordInput
                 name="confirmPassword"
                 label="Confirm new password"
                 placeholder="Confirm your new password"
               />
 
-              {apiError && (
-                <Alert status="error">
-                  {apiError}
-                </Alert>
-              )}
+              {apiError && <Alert status="error">{apiError}</Alert>}
 
               <Button
                 type="submit"

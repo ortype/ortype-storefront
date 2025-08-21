@@ -97,7 +97,6 @@ export function IdentityProvider({
     }
   }, [clientId, scope, customer.userMode])
 
-
   // get customer using client-side token (for authenticated users)
   const fetchCustomerHandle = async (customerId?: string) => {
     console.log('fetchCustomerHandle: ', customerId)

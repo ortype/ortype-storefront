@@ -162,7 +162,9 @@ export const BillingAddressForm: React.FC<Props> = ({
             type="text"
             value={billing.state_code || billingAddress?.state_code || ''}
             onChange={handleAddressInputChange}
-            countryCode={billing.country_code || billingAddress?.country_code || ''}
+            countryCode={
+              billing.country_code || billingAddress?.country_code || ''
+            }
             required
           />
         </Box>

@@ -12,7 +12,12 @@ import { useDevLogger } from '@/hooks/useDevLogger'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/chakra-button'
 import { PasswordInput } from '@/components/ui/password-input'
-import { Link as ChakraLink, Fieldset, Stack, useStepsContext } from '@chakra-ui/react'
+import {
+  Link as ChakraLink,
+  Fieldset,
+  Stack,
+  useStepsContext,
+} from '@chakra-ui/react'
 import type { LoginFormValues } from 'Forms'
 import Link from 'next/link'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'

@@ -6,7 +6,9 @@ import {
 } from 'CustomApp'
 import React, { useContext, useEffect, useState } from 'react'
 
-import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
+import getCommerceLayer, {
+  isValidCommerceLayerConfig,
+} from '@/commercelayer/utils/getCommerceLayer'
 import type { TypeAccepted } from '@/commercelayer/providers/checkout/utils'
 
 export const defaultSettings: UseCheckoutSettingsOrInvalid = {
@@ -56,7 +58,9 @@ export const isValidCheckout = async (
     if (!paymentReturn) {
       const _refresh = !paymentReturn
       try {
-        const cl = isValidCommerceLayerConfig(config) ? getCommerceLayer(config) : undefined
+        const cl = isValidCommerceLayerConfig(config)
+          ? getCommerceLayer(config)
+          : undefined
         if (!orderId || cl == null) {
           console.log('Invalid checkout: missing SDK not initalized')
           return invalidateCheckout()

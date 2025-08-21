@@ -15,7 +15,7 @@ interface GetOrganizationConfig {
  */
 
 export const getOrganization = async ({
-  client
+  client,
 }: GetOrganizationConfig): Promise<Organization> =>
   await getAsyncOrganization(client)
 
@@ -33,7 +33,7 @@ const getAsyncOrganization = async (
         'gtm_id',
         'gtm_id_test',
         'support_email',
-        'support_phone'
-      ]
-    }
+        'support_phone',
+      ],
+    },
   })

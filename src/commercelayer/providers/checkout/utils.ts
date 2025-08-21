@@ -405,22 +405,22 @@ export function isValidLicenseOwner(licenseOwner?: any): boolean {
   if (!licenseOwner) {
     return false
   }
-  
+
   // Check for required fields regardless of is_client value
   const hasRequiredFields = Boolean(
     licenseOwner.full_name &&
-    licenseOwner.line_1 &&
-    licenseOwner.city &&
-    licenseOwner.zip_code &&
-    licenseOwner.country_code &&
-    typeof licenseOwner.is_client === 'boolean'
+      licenseOwner.line_1 &&
+      licenseOwner.city &&
+      licenseOwner.zip_code &&
+      licenseOwner.country_code &&
+      typeof licenseOwner.is_client === 'boolean'
   )
-  
+
   // For client licenses, company is also required
   if (licenseOwner.is_client && !licenseOwner.company) {
     return false
   }
-  
+
   return hasRequiredFields
 }
 

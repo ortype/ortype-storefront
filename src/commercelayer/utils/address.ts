@@ -290,8 +290,15 @@ export const validateAddress = ({
   const errors: AddressError[] = []
 
   // Required field validation
-  const requiredFields = ['first_name', 'last_name', 'line_1', 'city', 'country_code', 'zip_code']
-  
+  const requiredFields = [
+    'first_name',
+    'last_name',
+    'line_1',
+    'city',
+    'country_code',
+    'zip_code',
+  ]
+
   requiredFields.forEach((field) => {
     const value = addressData[field as keyof typeof addressData]
     if (!value || (typeof value === 'string' && value.trim() === '')) {
@@ -374,9 +381,9 @@ export function isAddressApiError(error: any): error is AddressErrorResponse {
       'errors' in error &&
       Array.isArray(error.errors) &&
       error.errors.length > 0
-    const errorsHaveApiErrorShape = (error as AddressErrorResponse).errors.every(
-      (err) => 'title' in err && 'detail' in err
-    )
+    const errorsHaveApiErrorShape = (
+      error as AddressErrorResponse
+    ).errors.every((err) => 'title' in err && 'detail' in err)
     return hasErrorsArray && errorsHaveApiErrorShape
   } catch {
     return false
@@ -417,7 +424,7 @@ export function transformAddressErrors(error: any): {
 
   error.errors.forEach((err) => {
     const field = getFieldFromError(err)
-    
+
     if (err.code === 'VALIDATION_ERROR' && field) {
       fieldErrors.push({
         field,

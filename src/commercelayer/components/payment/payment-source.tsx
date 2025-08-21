@@ -25,7 +25,9 @@ interface PaymentSourceProps {
   readonly?: boolean
   templateCustomerCards?: CustomerCardsTemplateChildren
   onClickCustomerCards?: () => void
-  templateCustomerSaveToWallet?: (props: CustomerSaveToWalletProps) => JSX.Element
+  templateCustomerSaveToWallet?: (
+    props: CustomerSaveToWalletProps
+  ) => JSX.Element
   loader?: ReactNode
 }
 
@@ -64,11 +66,10 @@ export const PaymentSource: React.FC<PaymentSourceProps> = ({
     <PaymentSourceProvider value={paymentSource}>
       <div className={className} {...props}>
         {children}
-        {templateCustomerSaveToWallet && (
+        {templateCustomerSaveToWallet &&
           templateCustomerSaveToWallet({
-            name: 'save_payment_source_to_customer_wallet'
-          })
-        )}
+            name: 'save_payment_source_to_customer_wallet',
+          })}
       </div>
     </PaymentSourceProvider>
   )

@@ -60,13 +60,13 @@ export const StepPayment: React.FC = () => {
 
   return (
     <VStack gap={6} align="start" w="full">
-      <CheckoutSummary 
+      <CheckoutSummary
         showEmail={true}
         showBillingAddress={true}
         showLicenseOwner={true}
         heading={t('stepPayment.summaryHeading', 'Order Summary')}
       />
-      
+
       <Box w="full">
         {isPaymentRequired ? (
           <CheckoutCustomerPayment
@@ -75,9 +75,7 @@ export const StepPayment: React.FC = () => {
             hasTitle={hasTitle}
           />
         ) : (
-          <p className="text-sm text-gray-400">
-            {t('stepPayment.amountZero')}
-          </p>
+          <p className="text-sm text-gray-400">{t('stepPayment.amountZero')}</p>
         )}
       </Box>
     </VStack>

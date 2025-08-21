@@ -6,11 +6,9 @@ interface PaymentSourceEditButtonProps {
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
-export const PaymentSourceEditButton: React.FC<PaymentSourceEditButtonProps> = ({
-  className,
-  label,
-  onClick,
-}) => {
+export const PaymentSourceEditButton: React.FC<
+  PaymentSourceEditButtonProps
+> = ({ className, label, onClick }) => {
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     if (onClick) {
@@ -19,11 +17,7 @@ export const PaymentSourceEditButton: React.FC<PaymentSourceEditButtonProps> = (
   }
 
   return (
-    <button
-      type="button"
-      className={className}
-      onClick={handleClick}
-    >
+    <button type="button" className={className} onClick={handleClick}>
       {label}
     </button>
   )

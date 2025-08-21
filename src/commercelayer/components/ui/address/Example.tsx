@@ -30,16 +30,18 @@ export function AddressFormExample() {
     stateCode: '',
     zipCode: '',
     phone: '',
-    email: ''
+    email: '',
   })
 
-  const [errors, setErrors] = useState<Partial<Record<keyof AddressFormData, string>>>({})
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof AddressFormData, string>>
+  >({})
 
   const updateField = (field: keyof AddressFormData) => (value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }))
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }))
+      setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
   }
 
@@ -64,7 +66,7 @@ export function AddressFormExample() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (validateForm()) {
       console.log('Form submitted:', formData)
       alert('Address form submitted successfully! Check console for data.')

@@ -9,6 +9,7 @@ This directory contains atomic UI components for building address forms in the C
 A thin wrapper around the `<Input>` component with consistent error display.
 
 **Props:**
+
 - `label?: string` - Field label
 - `error?: string` - Error message to display
 - `value?: string` - Current value
@@ -16,10 +17,11 @@ A thin wrapper around the `<Input>` component with consistent error display.
 - All standard HTML input attributes
 
 **Usage:**
+
 ```tsx
 import { AddressField } from '@/commercelayer/components/ui/address'
 
-<AddressField
+;<AddressField
   label="First Name"
   value={firstName}
   onChange={setFirstName}
@@ -33,6 +35,7 @@ import { AddressField } from '@/commercelayer/components/ui/address'
 Synchronous country selector using predefined country list.
 
 **Props:**
+
 - `label?: string` - Field label (defaults to "Country")
 - `error?: string` - Error message to display
 - `value?: string` - Selected country code (ISO 2-letter)
@@ -42,16 +45,18 @@ Synchronous country selector using predefined country list.
 - `countries?: CountryOption[]` - Optional custom country list
 
 **Features:**
+
 - Uses predefined country list for fast loading
 - Automatically sorts countries alphabetically
 - No loading states or API calls required
 - Fully synchronous with no network dependencies
 
 **Usage:**
+
 ```tsx
 import { CountrySelect } from '@/commercelayer/components/ui/address'
 
-<CountrySelect
+;<CountrySelect
   label="Country"
   value={countryCode}
   onChange={setCountryCode}
@@ -65,6 +70,7 @@ import { CountrySelect } from '@/commercelayer/components/ui/address'
 State/province selector that adapts based on the selected country.
 
 **Props:**
+
 - `label?: string` - Field label (defaults to "State/Province")
 - `error?: string` - Error message to display
 - `value?: string` - Selected state/province code
@@ -74,16 +80,18 @@ State/province selector that adapts based on the selected country.
 - `countryCode?: string` - Currently selected country code
 
 **Features:**
+
 - Shows dropdown for countries with predefined states (US, CA, AU)
 - Falls back to text input for other countries
 - Updates automatically when country changes
 - Includes common states for supported countries
 
 **Usage:**
+
 ```tsx
 import { StateSelect } from '@/commercelayer/components/ui/address'
 
-<StateSelect
+;<StateSelect
   label="State"
   value={stateCode}
   onChange={setStateCode}
@@ -98,7 +106,11 @@ All components support React Hook Form integration through forwarded refs:
 
 ```tsx
 import { useForm } from 'react-hook-form'
-import { AddressField, CountrySelect, StateSelect } from '@/commercelayer/components/ui/address'
+import {
+  AddressField,
+  CountrySelect,
+  StateSelect,
+} from '@/commercelayer/components/ui/address'
 
 interface AddressFormData {
   firstName: string
@@ -108,7 +120,11 @@ interface AddressFormData {
 }
 
 function AddressForm() {
-  const { register, watch, formState: { errors } } = useForm<AddressFormData>()
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useForm<AddressFormData>()
   const countryCode = watch('countryCode')
 
   return (
@@ -118,13 +134,13 @@ function AddressForm() {
         label="First Name"
         error={errors.firstName?.message}
       />
-      
+
       <CountrySelect
         {...register('countryCode', { required: 'Country is required' })}
         label="Country"
         error={errors.countryCode?.message}
       />
-      
+
       <StateSelect
         {...register('stateCode')}
         label="State/Province"
@@ -139,6 +155,7 @@ function AddressForm() {
 ## Dependencies
 
 These components require:
+
 - Chakra UI components
 - React Hook Form (optional, for form integration)
 - Country utilities (`@/commercelayer/utils/country-utils`)
@@ -146,6 +163,7 @@ These components require:
 ## Performance
 
 The `CountrySelect` component is fully synchronous:
+
 - Uses predefined country list for instant loading
 - No network requests or loading states
 - Optimal performance with minimal dependencies

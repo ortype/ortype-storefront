@@ -5,11 +5,13 @@ This document captures the various error shapes that can be returned by the `aut
 ## Error Investigation Status
 
 ✅ **Console logging added to capture error shapes**
+
 - LoginForm.tsx: Added comprehensive error logging in catch block (line 66-88)
 - SignUpForm.tsx: Added comprehensive error logging in catch block (line 89-111)
 - oauthStorage.ts: Added comprehensive error logging in try/catch block (line 177-195)
 
 🔄 **Next Steps - Manual Testing Required**
+
 1. Test invalid password to capture Commerce Layer API error
 2. Test offline scenario to capture network error
 3. Document findings below
@@ -58,6 +60,7 @@ This document captures the various error shapes that can be returned by the `aut
 ### 3. Additional Error Scenarios
 
 **Other potential error cases to test**:
+
 - Invalid domain/endpoint configuration
 - Malformed client credentials
 - Rate limiting responses
@@ -66,6 +69,7 @@ This document captures the various error shapes that can be returned by the `aut
 ## Implementation Notes
 
 - The authenticate() function is used in three locations:
+
   1. `LoginForm.tsx` - User login with email/password
   2. `SignUpForm.tsx` - Post-signup automatic login
   3. `oauthStorage.ts` - Client credentials flow for sales channel tokens
@@ -75,11 +79,13 @@ This document captures the various error shapes that can be returned by the `aut
 ## Testing Instructions
 
 1. **Invalid Password Test**:
+
    - Navigate to login form
    - Enter valid email but incorrect password
    - Submit form and check browser console for "LoginForm authenticate() error:"
 
 2. **Network Error Test**:
+
    - Open browser developer tools
    - Navigate to Network tab and set to "Offline"
    - Attempt to login
@@ -93,7 +99,6 @@ This document captures the various error shapes that can be returned by the `aut
 ## Cleanup Checklist
 
 - [ ] Remove console.log from LoginForm.tsx
-- [ ] Remove console.log from SignUpForm.tsx  
+- [ ] Remove console.log from SignUpForm.tsx
 - [ ] Remove console.log from oauthStorage.ts
 - [ ] Complete error shape documentation above
-

@@ -101,7 +101,9 @@ const LicenseOwnerInput = () => {
             {errors.full_name.message}
           </Alert>
         )}
-        <Fieldset.ErrorText className="sr-only">{errors.full_name?.message}</Fieldset.ErrorText>
+        <Fieldset.ErrorText className="sr-only">
+          {errors.full_name?.message}
+        </Fieldset.ErrorText>
       </Fieldset.Root>
     </form>
   )

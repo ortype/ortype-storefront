@@ -7,10 +7,10 @@ export function getCardBrand(paymentSource: any): string {
   // Check various possible properties where brand might be stored
   const possibleBrandFields = [
     'brand',
-    'card_brand', 
+    'card_brand',
     'issuer_type',
     'payment_source_type',
-    'type'
+    'type',
   ]
 
   for (const field of possibleBrandFields) {
@@ -33,15 +33,15 @@ export function getCardBrand(paymentSource: any): string {
  */
 function normalizeBrandName(brand: string): string {
   const normalized = brand.toLowerCase().replace(/[_\s-]/g, '_')
-  
+
   const brandMap: Record<string, string> = {
-    'american_express': 'amex',
-    'americanexpress': 'amex',
-    'credit_cards': 'credit_card',
-    'credit_card': 'credit_card',
-    'stripe_payments': 'stripe',
-    'paypal_payments': 'paypal',
-    'wire_transfers': 'wire_transfer',
+    american_express: 'amex',
+    americanexpress: 'amex',
+    credit_cards: 'credit_card',
+    credit_card: 'credit_card',
+    stripe_payments: 'stripe',
+    paypal_payments: 'paypal',
+    wire_transfers: 'wire_transfer',
   }
 
   return brandMap[normalized] || normalized

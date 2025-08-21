@@ -14,6 +14,6 @@
 import client from 'part:@sanity/base/client'
 
 client
-  .delete({query: '*[_type == "fontVariant"][0...999]'})
+  .delete({ query: '*[_type == "fontVariant"][0...999]' })
   .then(console.log)
   .catch(console.error)

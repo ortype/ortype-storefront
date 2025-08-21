@@ -74,4 +74,3 @@ export interface SpreadStateProviderProps {
   initialItems: Item[]
   children: ReactNode
 }
-

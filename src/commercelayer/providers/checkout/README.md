@@ -19,16 +19,19 @@ The provider follows a reducer pattern with a centralized state and action-based
 The provider maintains an `AppStateData` interface that extends `FetchOrderByIdResponse` and includes:
 
 ### Raw Order Data
+
 - `order`: The Commerce Layer Order object
 - `isLoading`, `isFirstLoading`: Loading states
 
 ### Customer Information
+
 - `isGuest`: Whether the order is for a guest user
 - `hasCustomer`: Whether order has an associated customer
 - `hasEmailAddress`: Whether customer email is set
 - `emailAddress`: The customer's email address
 
 ### Address Management
+
 - `hasBillingAddress`, `hasShippingAddress`: Address presence flags
 - `billingAddress`, `shippingAddress`: Address objects
 - `isUsingNewBillingAddress`, `isUsingNewShippingAddress`: New address flags
@@ -38,6 +41,7 @@ The provider maintains an `AppStateData` interface that extends `FetchOrderByIdR
 - `requiresBillingInfo`: Whether billing info is required
 
 ### Shipping Information
+
 - `isShipmentRequired`: Whether order requires shipping
 - `hasShippingMethod`: Whether shipping method is selected
 - `shipments`: Array of prepared shipment data
@@ -45,6 +49,7 @@ The provider maintains an `AppStateData` interface that extends `FetchOrderByIdR
 - `shippingMethodName`: Selected shipping method name
 
 ### Payment Information
+
 - `hasPaymentMethod`: Whether payment method is configured
 - `isPaymentRequired`: Whether payment is required (non-zero total)
 - `paymentMethod`: Selected payment method object
@@ -52,11 +57,13 @@ The provider maintains an `AppStateData` interface that extends `FetchOrderByIdR
 - `paymentSource`: Payment source configuration
 
 ### License Information
+
 - `hasLicenseOwner`: Whether order has license owner metadata
 - `isLicenseForClient`: Whether license is for a client
 - `licenseOwner`: License owner details
 
 ### Order Settings
+
 - `isComplete`: Whether order is placed
 - `returnUrl`: URL to return to after completion
 - `cartUrl`: URL to return to cart
@@ -73,7 +80,7 @@ The `calculateSettings` utility function processes the raw order data and return
 - Customer status flags and email information
 - Address presence, usage patterns, and relationships
 - License metadata and ownership details
-- Shipping requirements and method selection status  
+- Shipping requirements and method selection status
 - Payment method configuration and requirements
 - Order configuration settings (URLs, tax inclusion, etc.)
 
@@ -90,9 +97,9 @@ const others = calculateSettings(
 
 dispatch({
   type: ActionType.SOME_ACTION,
-  payload: { 
-    order: currentOrder, 
-    others  // Contains all computed state
+  payload: {
+    order: currentOrder,
+    others, // Contains all computed state
   },
 })
 ```
@@ -108,51 +115,62 @@ This ensures that whenever the raw order changes, all derived UI state is recalc
 - `START_LOADING` / `STOP_LOADING`: Loading state management
 
 ### Customer Flow
+
 - `SET_CUSTOMER_EMAIL`: Set customer email address
 
 ### Address Flow
+
 - `SET_ADDRESSES`: Address selection and validation
 
 ### Shipping Flow
+
 - `SELECT_SHIPMENT`: Individual shipment method selection
 - `SAVE_SHIPMENTS`: Save all shipment configurations
 
 ### Payment Flow
+
 - `SET_PAYMENT`: Payment method selection
 - `CHANGE_COUPON_OR_GIFTCARD`: Apply/remove promotional codes
 
 ### Order Completion
+
 - `PLACE_ORDER`: Final order placement
 - `SET_LICENSE_OWNER`: License owner assignment
 
 ## Key Methods
 
 ### Order Management
+
 - `getOrderFromRef()`: Get current order from internal ref
 - `fetchInitialOrder()`: Initial order loading and setup
 - `updateOrder()`: Generic order update utility
 
 ### Customer Management
+
 - `saveCustomerUser()`: Set customer email
 - `setCustomerPassword()`: Set customer password
 
 ### Address Management
+
 - `setAddresses()`: Configure billing/shipping addresses
 - `createBillingAddress()`: Create new billing address
 - `updateBillingAddress()`: Update existing billing address
 - `attachBillingAddressToOrder()`: Attach address to order
 
 ### Shipping Management
+
 - `selectShipment()`: Select shipping method for shipment
 - `autoSelectShippingMethod()`: Auto-select shipping methods
 - `saveShipments()`: Save shipment configurations
 
 ### Payment Management
+
 - `setPayment()`: Configure payment method
 - `loadPaymentMethods()`: Load available payment methods
 - `setCouponOrGiftCard()`: Apply promotional codes
 
 ### Order Completion
+
 - `placeOrder()`: Complete the order
 - `setLicenseOwner()`: Set license ownership
 
@@ -171,13 +189,8 @@ This ensures payment methods are available when needed while maintaining state c
 
 ```typescript
 function CheckoutStep() {
-  const {
-    order,
-    hasPaymentMethod,
-    isLoading,
-    loadPaymentMethods,
-    setPayment
-  } = useCheckoutContext()
+  const { order, hasPaymentMethod, isLoading, loadPaymentMethods, setPayment } =
+    useCheckoutContext()
 
   useEffect(() => {
     // Load payment methods when component mounts
@@ -189,9 +202,9 @@ function CheckoutStep() {
   // Use order.available_payment_methods for UI rendering
   return (
     <div>
-      {order?.available_payment_methods?.map(method => (
-        <PaymentOption 
-          key={method.id} 
+      {order?.available_payment_methods?.map((method) => (
+        <PaymentOption
+          key={method.id}
           method={method}
           onSelect={() => setPayment({ payment: method })}
         />
@@ -204,25 +217,30 @@ function CheckoutStep() {
 ## Important Notes
 
 ### State Consistency
+
 - The `others` field is crucial for maintaining computed state consistency
 - Always recalculate `others` when the raw order data changes
 - The `UPDATE_ORDER` action properly merges `others` into provider state
 
 ### Order Reference Management
+
 - `orderRef.current` maintains a reference to the current order
 - This ref is updated by the `getOrder` callback from OrderContainer
 - Use `getOrderFromRef()` to access the most current order data
 
 ### Loading States
+
 - `isFirstLoading`: True during initial order fetch
 - `isLoading`: True during any async operations
 - Always dispatch `START_LOADING` before async operations
 
 ### Address Handling
+
 - Customer addresses are preserved in reducer state since they're not always included in order fetches
 - Address-related computed state is recalculated whenever addresses change
 
 ### Error Handling
+
 - Most async methods return `{ success: boolean, error?: unknown, order?: Order }`
 - Handle errors appropriately in consuming components
 - Provider methods include built-in error handling and fallbacks
@@ -230,6 +248,7 @@ function CheckoutStep() {
 ## Integration with Commerce Layer
 
 The provider integrates with Commerce Layer SDK through:
+
 - Order retrieval and updates
 - Address management
 - Payment method configuration

@@ -8,4 +8,3 @@ export * from './types'
 // Export from reducers
 export { spreadContainerReducer } from '../reducers/spreadReducer'
 export * from '../reducers/actions'
-

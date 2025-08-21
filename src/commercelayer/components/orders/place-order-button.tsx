@@ -1,4 +1,9 @@
-import React, { useContext, useState, type ReactNode, type MouseEvent } from 'react'
+import React, {
+  useContext,
+  useState,
+  type ReactNode,
+  type MouseEvent,
+} from 'react'
 import { Order } from '@commercelayer/sdk'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
@@ -31,28 +36,28 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
 
   const handleClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    
+
     if (!canPlaceOrder || !order) {
       return
     }
 
     try {
       setIsPlacing(true)
-      
+
       // Check if this is a Stripe payment that needs form submission first
       const isStripePayment = order?.payment_source?.type === 'stripe_payments'
-      
+
       if (isStripePayment) {
         console.log('Stripe payment detected - submitting payment form first')
-        
+
         // Get the Stripe payment form submission function
         // @ts-expect-error - Temporary access to global Stripe form method
         const submitStripePayment = (window as any).submitStripePayment
-        
+
         if (submitStripePayment) {
           console.log('Submitting Stripe payment form...')
           const paymentSuccess = await submitStripePayment()
-          
+
           if (!paymentSuccess) {
             console.error('Stripe payment failed')
             if (onClick) {
@@ -60,8 +65,10 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
             }
             return
           }
-          
-          console.log('Stripe payment confirmed, proceeding with order placement')
+
+          console.log(
+            'Stripe payment confirmed, proceeding with order placement'
+          )
         } else {
           console.error('Stripe payment form not available')
           if (onClick) {
@@ -70,17 +77,17 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
           return
         }
       }
-      
+
       // Call the checkout provider's placeOrder method
       await placeOrder(order)
-      
+
       // Notify parent component
       if (onClick) {
         onClick({ placed: true, order })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      
+
       // Notify parent component of failure
       if (onClick) {
         onClick({ placed: false, order })

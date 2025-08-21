@@ -20,9 +20,9 @@ export interface EcommerceProps {
 
 export interface DataLayerProps {
   eventName:
-    | "begin_checkout"
-    | "add_shipping_info"
-    | "add_payment_info"
-    | "purchase"
+    | 'begin_checkout'
+    | 'add_shipping_info'
+    | 'add_payment_info'
+    | 'purchase'
   dataLayer: EcommerceProps
 }

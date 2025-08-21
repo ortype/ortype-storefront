@@ -1,7 +1,7 @@
 import {
   authenticate,
   jwtDecode,
-  jwtIsSalesChannel
+  jwtIsSalesChannel,
 } from '@commercelayer/js-auth'
 
 export interface StoredOauthResponse {
@@ -26,7 +26,7 @@ interface GetStoredTokenKeyConfig {
 export const getStoredTokenKey = ({
   app,
   slug,
-  scope
+  scope,
 }: GetStoredTokenKeyConfig): string => {
   return `cLayer-${app}-${slug}-${scope}`
 }
@@ -36,7 +36,7 @@ interface GetStoredTokenDataConfig extends GetStoredTokenKeyConfig {}
 const getStoredTokenData = ({
   app,
   slug,
-  scope
+  scope,
 }: GetStoredTokenDataConfig): StoredOauthResponse | null => {
   const storageKey = getStoredTokenKey({ app, slug, scope })
   const storageContent = localStorage.getItem(storageKey) ?? ''
@@ -61,7 +61,7 @@ interface IsValidStoreTokenDataConfig {
 
 const isValidStoredTokenData = ({
   tokenData,
-  clientId
+  clientId,
 }: IsValidStoreTokenDataConfig): boolean => {
   return (
     tokenData != null &&
@@ -91,14 +91,14 @@ interface CustomerStoredTokenData {
 }
 
 export interface CustomerTokenData {
-accessToken: string
-tokenType: string
-refreshToken: string
-scope: string
-createdAt: number
-ownerId: string 
-ownerType: string
-expires: number
+  accessToken: string
+  tokenType: string
+  refreshToken: string
+  scope: string
+  createdAt: number
+  ownerId: string
+  ownerType: string
+  expires: number
 }
 
 interface SetStoredSalesChannelTokenConfig {
@@ -116,10 +116,9 @@ export const setStoredCustomerToken = ({
   domain,
   clientId,
   scope,
-  tokenData
+  tokenData,
 }: SetStoredSalesChannelTokenConfig): null => {
   if (tokenData?.accessToken != null && clientId) {
-
     const decodedJWT = jwtDecode(tokenData.accessToken)
     // @NOTE: this clientId check could match `isValidStoredTokenData` check if we grab the current
     // localStorage and compare (this is in case clientId could possibly change I believe)
@@ -131,8 +130,8 @@ export const setStoredCustomerToken = ({
       scope: scope,
       token_type: tokenData.tokenType,
       owner_type: tokenData.ownerType,
-      owner_id: tokenData.ownerId
-    }     
+      owner_id: tokenData.ownerId,
+    }
     const storageKey = getStoredTokenKey({ app, slug, scope })
     localStorage.setItem(storageKey, JSON.stringify(customerTokenData))
   }
@@ -145,7 +144,7 @@ export const getStoredSalesChannelToken = async ({
   slug,
   domain,
   clientId,
-  scope
+  scope,
 }: GetStoredSalesChannelTokenConfig): Promise<StoredOauthResponse | null> => {
   const tokenData = getStoredTokenData({ app, slug, scope })
   if (!isValidStoredTokenData({ tokenData, clientId })) {
@@ -153,7 +152,7 @@ export const getStoredSalesChannelToken = async ({
       const auth = await authenticate('client_credentials', {
         domain,
         clientId,
-        scope
+        scope,
       })
       if (auth.accessToken != null) {
         const decodedJWT = jwtDecode(auth.accessToken)
@@ -166,7 +165,7 @@ export const getStoredSalesChannelToken = async ({
           access_token: auth.accessToken,
           scope,
           token_type: auth.tokenType,
-          expires: decodedJWT.payload.exp
+          expires: decodedJWT.payload.exp,
         }
         const storageKey = getStoredTokenKey({ app, slug, scope })
         localStorage.setItem(storageKey, JSON.stringify(tokenData))

@@ -40,9 +40,9 @@ const genericError: ApiErrorResponse = {
   errors: [
     {
       title: 'Generic error',
-      detail: 'Could not process your request'
-    }
-  ]
+      detail: 'Could not process your request',
+    },
+  ],
 }
 
 function isApiError(error: any): error is ApiErrorResponse {
@@ -84,7 +84,7 @@ export function setApiFormErrors({
   apiError,
   setError,
   fieldMap,
-  formFields
+  formFields,
 }: {
   /**
    * Error response from API
@@ -110,7 +110,7 @@ export function setApiFormErrors({
       const guessedField = guessField(item)
       const field =
         guessedField != null
-          ? (fieldMap?.[guessedField] ?? guessedField)
+          ? fieldMap?.[guessedField] ?? guessedField
           : undefined
 
       // Once we have a field name we check if it's part of the form fields, otherwise we cannot
@@ -127,20 +127,20 @@ export function setApiFormErrors({
             ...allErrors.validation,
             {
               field,
-              message: item.title
-            }
-          ]
+              message: item.title,
+            },
+          ],
         }
       }
 
       return {
         ...allErrors,
-        others: [...allErrors.others, item.detail]
+        others: [...allErrors.others, item.detail],
       }
     },
     {
       validation: [] as Array<{ field: string; message: string }>,
-      others: [] as string[]
+      others: [] as string[],
     }
   )
 
@@ -149,10 +149,10 @@ export function setApiFormErrors({
       error.field,
       {
         type: 'serverValidation',
-        message: error.message
+        message: error.message,
       },
       {
-        shouldFocus: idx === 0
+        shouldFocus: idx === 0,
       }
     )
   })
@@ -160,7 +160,7 @@ export function setApiFormErrors({
   if (errorByTypes.others.length > 0) {
     setError(API_ERROR_FIELD_NAME, {
       type: 'server',
-      message: errorByTypes.others.join('. ')
+      message: errorByTypes.others.join('. '),
     })
   }
 }

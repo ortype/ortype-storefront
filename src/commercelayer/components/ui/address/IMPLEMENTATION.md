@@ -7,6 +7,7 @@ This implementation provides three atomic UI components for building address for
 ## Components Built
 
 ### 1. AddressField (`AddressField.tsx`)
+
 - **Purpose**: Thin wrapper around `<Input>` with consistent error display
 - **Features**:
   - Forwards refs for form library integration
@@ -15,6 +16,7 @@ This implementation provides three atomic UI components for building address for
   - TypeScript support with proper typing
 
 ### 2. CountrySelect (`CountrySelect.tsx`)
+
 - **Purpose**: Synchronous country selector using predefined country list
 - **Features**:
   - Uses predefined country list for instant loading
@@ -25,6 +27,7 @@ This implementation provides three atomic UI components for building address for
   - Supports custom country lists via props
 
 ### 3. StateSelect (`StateSelect.tsx`)
+
 - **Purpose**: State/province selector that depends on selected country
 - **Features**:
   - Adapts based on country selection
@@ -37,24 +40,28 @@ This implementation provides three atomic UI components for building address for
 ## Key Implementation Decisions
 
 ### 1. Data Strategy
+
 - Countries use predefined list from utility functions for instant loading
 - No API calls required for country selection
 - Fully synchronous operation with no network dependencies
 - Country list is maintained in `@/commercelayer/utils/country-utils`
 
 ### 2. State Management Approach
+
 - Countries with predefined states use dropdown
 - Other countries fall back to text input
 - State data is hardcoded for performance and reliability
 - Supports US (50 states + DC), Canada (provinces/territories), Australia (states/territories)
 
 ### 3. Form Integration
+
 - All components use `forwardRef` for React Hook Form compatibility
 - Consistent props interface: `value`, `onChange`, `error`
 - Error state handling built into each component
 - TypeScript interfaces for proper type safety
 
 ### 4. Dependency Management
+
 - Minimal external dependencies for CountrySelect
 - Uses utility functions for country data
 - No network dependencies or API integration
@@ -76,13 +83,17 @@ src/commercelayer/components/ui/address/
 ## Usage Example
 
 ```tsx
-import { AddressField, CountrySelect, StateSelect } from '@/commercelayer/components/ui/address'
+import {
+  AddressField,
+  CountrySelect,
+  StateSelect,
+} from '@/commercelayer/components/ui/address'
 
 function AddressForm() {
   const [formData, setFormData] = useState({
     firstName: '',
     countryCode: '',
-    stateCode: ''
+    stateCode: '',
   })
 
   return (
@@ -90,17 +101,23 @@ function AddressForm() {
       <AddressField
         label="First Name"
         value={formData.firstName}
-        onChange={(value) => setFormData(prev => ({ ...prev, firstName: value }))}
+        onChange={(value) =>
+          setFormData((prev) => ({ ...prev, firstName: value }))
+        }
       />
-      
+
       <CountrySelect
         value={formData.countryCode}
-        onChange={(countryCode) => setFormData(prev => ({ ...prev, countryCode }))}
+        onChange={(countryCode) =>
+          setFormData((prev) => ({ ...prev, countryCode }))
+        }
       />
-      
+
       <StateSelect
         value={formData.stateCode}
-        onChange={(stateCode) => setFormData(prev => ({ ...prev, stateCode }))}
+        onChange={(stateCode) =>
+          setFormData((prev) => ({ ...prev, stateCode }))
+        }
         countryCode={formData.countryCode}
       />
     </form>
@@ -111,18 +128,21 @@ function AddressForm() {
 ## Integration Notes
 
 ### Dependencies
+
 - Chakra UI components
 - Country utilities (`@/commercelayer/utils/country-utils`)
 - React Hook Form (optional, for form integration)
 - Native Select components (`@/components/ui/native-select`)
 
 ### Error Handling
+
 - Client-side validation follows Commerce Layer patterns
 - Error state handling built into each component
 - Form validation errors are displayed consistently
 - TypeScript ensures type safety at compile time
 
 ### Performance Considerations
+
 - CountrySelect uses predefined data for instant loading
 - State data is bundled (no API calls)
 - Components are optimized for re-renders

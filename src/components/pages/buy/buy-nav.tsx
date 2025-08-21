@@ -1,10 +1,5 @@
 'use client'
-import {
-  Box,
-  IconButton,
-  Link as ChakraLink,
-  For,
-} from '@chakra-ui/react'
+import { Box, IconButton, Link as ChakraLink, For } from '@chakra-ui/react'
 import { FiChevronDown } from 'react-icons/fi'
 import Link from 'next/link'
 import {
@@ -63,4 +58,3 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
 }
 
 export default BuyNav
-

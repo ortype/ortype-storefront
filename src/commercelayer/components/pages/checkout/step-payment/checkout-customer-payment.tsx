@@ -15,7 +15,10 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Field } from '@/components/ui/field'
 
 // Import the new payment source components
-import { StripePayment, WireTransferPayment } from '@/commercelayer/components/payment-sources'
+import {
+  StripePayment,
+  WireTransferPayment,
+} from '@/commercelayer/components/payment-sources'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { usePaymentMethodContext } from '@/commercelayer/components/payment/payment-method'
 
@@ -36,11 +39,11 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation()
   const checkoutCtx = useContext(CheckoutContext)
-  
+
   // State for selected payment method ID
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
   const [checked, setChecked] = useState(false)
-  
+
   // Reference to store the payment form for programmatic submission
   const paymentFormRef = useRef<HTMLFormElement | null>(null)
 
@@ -72,7 +75,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
 
   const handlePaymentMethodSelection = (methodId: string) => {
     console.log('Payment method selection:', methodId)
-    const method = paymentMethods.find(pm => pm.id === methodId)
+    const method = paymentMethods.find((pm) => pm.id === methodId)
     if (method) {
       console.log('Selected payment method:', method)
       setSelectedPaymentMethod(methodId)
@@ -84,9 +87,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
   }
 
   const getSelectedPaymentMethod = () => {
-    return paymentMethods.find(pm => pm.id === selectedPaymentMethod)
+    return paymentMethods.find((pm) => pm.id === selectedPaymentMethod)
   }
-  
+
   // Store payment form reference for potential programmatic submission
   const setPaymentRef = (ref: React.RefObject<HTMLFormElement>) => {
     console.log('setPaymentRef called with:', ref.current)
@@ -122,10 +125,15 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
   }
 
   // Component to render the appropriate payment form based on payment method type
-  const PaymentMethodForm: React.FC<{ paymentMethod: any }> = ({ paymentMethod }) => {
-    console.log('PaymentMethodForm rendering with paymentMethod:', paymentMethod)
+  const PaymentMethodForm: React.FC<{ paymentMethod: any }> = ({
+    paymentMethod,
+  }) => {
+    console.log(
+      'PaymentMethodForm rendering with paymentMethod:',
+      paymentMethod
+    )
     console.log('Current order payment_source:', order?.payment_source)
-    
+
     if (!paymentMethod) {
       console.log('PaymentMethodForm: No payment method provided')
       return null
@@ -136,28 +144,30 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
 
     switch (paymentSourceType) {
       case 'stripe_payments':
-        const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ''
+        const publishableKey =
+          process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ''
         // Get clientSecret from the order's payment_source, not from the payment method
         const clientSecret = order?.payment_source?.client_secret || ''
-        
+
         console.log('Stripe payment method details:', {
           publishableKey: publishableKey ? 'Present' : 'Missing',
           clientSecret: clientSecret ? 'Present' : 'Missing',
           orderPaymentSource: order?.payment_source,
-          paymentSourceType: order?.payment_source?.type
+          paymentSourceType: order?.payment_source?.type,
         })
-        
+
         // Only show the Stripe form if we have both publishableKey and clientSecret
         if (!publishableKey) {
           return (
             <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
               <p className="text-sm text-yellow-800">
-                Stripe publishable key is not configured. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable.
+                Stripe publishable key is not configured. Please set
+                NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable.
               </p>
             </div>
           )
         }
-        
+
         if (!clientSecret) {
           return (
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
@@ -167,7 +177,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
             </div>
           )
         }
-        
+
         return (
           <StripePayment
             publishableKey={publishableKey}
@@ -178,7 +188,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
             show={true}
           />
         )
-      
+
       case 'wire_transfers':
         console.log('Wire transfer payment method selected')
         return (
@@ -187,13 +197,14 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
             show={true}
             infoMessage={{
               text: t('stepPayment.wireTransferMessage', {
-                defaultValue: 'After placing the order, you will need to manually complete the payment with your bank'
+                defaultValue:
+                  'After placing the order, you will need to manually complete the payment with your bank',
               }),
-              className: 'text-sm text-blue-700'
+              className: 'text-sm text-blue-700',
             }}
           />
         )
-      
+
       default:
         console.log('Unknown payment method type:', paymentSourceType)
         return (
@@ -222,15 +233,14 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
           {t('stepPayment.title', 'Select Payment Method')}
         </Text>
       )}
-      
+
       {/* Always show payment methods as selectable radio buttons */}
       {paymentMethods.length > 0 && (
         <>
           <Text color="gray.600" fontSize="sm">
-            {paymentMethods.length === 1 
+            {paymentMethods.length === 1
               ? t('stepPayment.selectSingle', 'Select payment method:')
-              : t('stepPayment.selectMultiple', 'Choose a payment method:')
-            }
+              : t('stepPayment.selectMultiple', 'Choose a payment method:')}
           </Text>
           <RadioGroup
             value={selectedPaymentMethod}
@@ -246,7 +256,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
           </RadioGroup>
         </>
       )}
-      
+
       {/* Render existing PaymentSource for saved customer cards */}
       <PaymentSource
         className="flex flex-col w-full"
@@ -257,11 +267,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
           <PaymentDetails hasEditButton />
         </Box>
       </PaymentSource>
-      
+
       {/* Render the specific payment method form for selected method */}
-      {selectedMethod && (
-        <PaymentMethodForm paymentMethod={selectedMethod} />
-      )}
+      {selectedMethod && <PaymentMethodForm paymentMethod={selectedMethod} />}
     </VStack>
   )
 }

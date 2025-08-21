@@ -13,16 +13,16 @@ export const PaymentMethodPrice: React.FC<PaymentMethodPriceProps> = ({
 }) => {
   const paymentMethod = usePaymentMethodContext()
   const checkoutCtx = useContext(CheckoutContext)
-  
+
   if (!paymentMethod || !checkoutCtx) {
     return null
   }
 
   const { order } = checkoutCtx
-  
+
   // Get the price for this payment method
   const price = getPaymentMethodPrice(paymentMethod, order)
-  
+
   return (
     <span className={className}>
       {price === 0 ? labelFree : formatPrice(price, order?.currency_code)}
@@ -36,7 +36,7 @@ function getPaymentMethodPrice(paymentMethod: any, order: any): number {
   if (paymentMethod.price_amount_cents) {
     return paymentMethod.price_amount_cents / 100
   }
-  
+
   // For most payment methods, there's no additional cost
   return 0
 }

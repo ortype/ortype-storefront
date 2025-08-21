@@ -419,7 +419,9 @@ export const StepLicense: React.FC<Props> = () => {
   // Show checkout summary and either license summary or form
   return (
     <VStack gap={6} align="start" w="full">
-      <CheckoutSummary heading={t('stepLicense.summaryHeading', 'Your details')} />
+      <CheckoutSummary
+        heading={t('stepLicense.summaryHeading', 'Your details')}
+      />
       {hasLicenseOwner ? <LicenseSummary /> : <LicenseOwnerForm />}
     </VStack>
   )

@@ -6,7 +6,9 @@ import utils, {
   updateLineItemLicenseTypes,
   updateLineItemsLicenseSize,
 } from '@/commercelayer/providers/Order/utils'
-import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
+import getCommerceLayer, {
+  isValidCommerceLayerConfig,
+} from '@/commercelayer/utils/getCommerceLayer'
 import { getOrder } from '@/commercelayer/utils/getOrder'
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
 import {
@@ -249,7 +251,9 @@ export function OrderProvider({
       }
 
       dispatch({ type: ActionType.START_LOADING })
-      const cl = isValidCommerceLayerConfig(config) ? getCommerceLayer(config) : undefined
+      const cl = isValidCommerceLayerConfig(config)
+        ? getCommerceLayer(config)
+        : undefined
 
       try {
         if (cl == null) {
@@ -453,65 +457,74 @@ export function OrderProvider({
     [config, fetchOrder]
   )
 
-  const fetchSkuOptions = useCallback(async (existingTypes: string[] = []): Promise<{
-    success: boolean
-    error?: AddToCartError
-  }> => {
-    dispatch({ type: ActionType.START_LOADING })
-    const cl = config != null ? getCommerceLayer(config) : undefined
-    try {
-      if (!cl) {
-        throw new Error('Commerce Layer client not initialized')
-      }
+  const fetchSkuOptions = useCallback(
+    async (
+      existingTypes: string[] = []
+    ): Promise<{
+      success: boolean
+      error?: AddToCartError
+    }> => {
+      dispatch({ type: ActionType.START_LOADING })
+      const cl = config != null ? getCommerceLayer(config) : undefined
+      try {
+        if (!cl) {
+          throw new Error('Commerce Layer client not initialized')
+        }
 
-      const skuOptions = await cl.sku_options.list()
-      
-      // Use passed existingTypes parameter instead of accessing state directly
-      // This breaks the circular dependency
-      
-      // Find matching sku options for existing types
-      const existingSelectedOptions = skuOptions.filter(option => 
-        existingTypes.includes(option.reference)
-      )
+        const skuOptions = await cl.sku_options.list()
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('🎯 fetchSkuOptions: Processing types and options:', {
-          existingTypes,
-          matchingOptions: existingSelectedOptions.map(opt => ({ id: opt.id, name: opt.name, reference: opt.reference })),
-          allOptionsCount: skuOptions.length,
-          allOptionsReferences: skuOptions.map(opt => opt.reference)
-        })
-      }
+        // Use passed existingTypes parameter instead of accessing state directly
+        // This breaks the circular dependency
 
-      dispatch({
-        type: ActionType.SET_SKU_OPTIONS,
-        payload: {
-          skuOptions,
-          others: {
-            selectedSkuOptions: existingSelectedOptions,
-            hasValidLicenseType: existingSelectedOptions.length > 0
+        // Find matching sku options for existing types
+        const existingSelectedOptions = skuOptions.filter((option) =>
+          existingTypes.includes(option.reference)
+        )
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('🎯 fetchSkuOptions: Processing types and options:', {
+            existingTypes,
+            matchingOptions: existingSelectedOptions.map((opt) => ({
+              id: opt.id,
+              name: opt.name,
+              reference: opt.reference,
+            })),
+            allOptionsCount: skuOptions.length,
+            allOptionsReferences: skuOptions.map((opt) => opt.reference),
+          })
+        }
+
+        dispatch({
+          type: ActionType.SET_SKU_OPTIONS,
+          payload: {
+            skuOptions,
+            others: {
+              selectedSkuOptions: existingSelectedOptions,
+              hasValidLicenseType: existingSelectedOptions.length > 0,
+            },
           },
-        },
-      })
-      return { success: true }
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Error fetching SKU options:', error)
+        })
+        return { success: true }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Error fetching SKU options:', error)
+        }
+        return {
+          success: false,
+          error: {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to fetch SKU options',
+            originalError: error,
+          },
+        }
+      } finally {
+        dispatch({ type: ActionType.STOP_LOADING })
       }
-      return {
-        success: false,
-        error: {
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Failed to fetch SKU options',
-          originalError: error,
-        },
-      }
-    } finally {
-      dispatch({ type: ActionType.STOP_LOADING })
-    }
-  }, [config]) // Only depend on config, not on state
+    },
+    [config]
+  ) // Only depend on config, not on state
 
   const setLicenseOwner = useCallback(
     async (params: {
@@ -540,9 +553,9 @@ export function OrderProvider({
             'Missing license owner or Commerce Layer client not initialized'
           )
         }
-        
+
         // Track the operation for better error messages
-        const operationName = 'Set license owner';
+        const operationName = 'Set license owner'
 
         // Use createOrUpdateOrder for both new and existing orders
         const licenseOwnerMetadata = {
@@ -661,7 +674,8 @@ export function OrderProvider({
         }
 
         // Show error notification
-        const errorMessage = error instanceof Error ? error.message : 'Failed to set license owner';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to set license owner'
         toaster.create({
           title: 'Failed to update license owner',
           description: errorMessage,
@@ -769,7 +783,8 @@ export function OrderProvider({
           console.error('Error adding to cart:', error)
         }
 
-        const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to add item to cart'
         return {
           success: false,
           error: {
@@ -809,9 +824,9 @@ export function OrderProvider({
             'Commerce Layer client not initialized or license size not provided'
           )
         }
-        
+
         // Track the operation for better error messages
-        const operationName = 'Set license size';
+        const operationName = 'Set license size'
 
         if (process.env.NODE_ENV !== 'production') {
           console.log('OrderProvider.setLicenseSize: ', params.licenseSize)
@@ -869,7 +884,8 @@ export function OrderProvider({
         }
 
         // Show error notification
-        const errorMessage = error instanceof Error ? error.message : 'Failed to set license size';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to set license size'
         toaster.create({
           title: 'Failed to update license size',
           description: errorMessage,
@@ -922,9 +938,9 @@ export function OrderProvider({
             'Missing required parameters or Commerce Layer client not initialized'
           )
         }
-        
+
         // Track the operation for better error messages
-        const operationName = 'Set license types';
+        const operationName = 'Set license types'
         if (process.env.NODE_ENV !== 'production') {
           console.log('setLicenseTypes: Updating line item license types')
         }
@@ -986,7 +1002,8 @@ export function OrderProvider({
         }
 
         // Show error notification
-        const errorMessage = error instanceof Error ? error.message : 'Failed to set license types';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to set license types'
         toaster.create({
           title: 'Failed to update license types',
           description: errorMessage,
@@ -1082,28 +1099,31 @@ export function OrderProvider({
     }> => {
       dispatch({ type: ActionType.START_LOADING })
       const cl = config != null ? getCommerceLayer(config) : undefined
-      
+
       if (process.env.NODE_ENV !== 'production') {
         console.log('setSelectedSkuOptions: Starting with params:', {
           hasOrder: !!state.order,
           orderId: state.orderId,
           font: params.font?.shortName,
           selectedSkuOptions: params.selectedSkuOptions,
-          currentOrderMetadata: state.order?.metadata
+          currentOrderMetadata: state.order?.metadata,
         })
       }
-      
+
       try {
         // Improved validation with specific error messages
         if (config == null) {
           throw new Error('Commerce Layer client not initialized')
         }
-        
+
         if (!params.font) {
           throw new Error('Font information is required')
         }
-        
-        if (!params.selectedSkuOptions || params.selectedSkuOptions.length === 0) {
+
+        if (
+          !params.selectedSkuOptions ||
+          params.selectedSkuOptions.length === 0
+        ) {
           throw new Error('At least one license type must be selected')
         }
 
@@ -1118,7 +1138,9 @@ export function OrderProvider({
             '🔧 setSelectedSkuOptions: Using createOrUpdateOrder with metadata:',
             {
               licenseTypesMetadata,
-              selectedTypes: params.selectedSkuOptions.map(opt => opt.reference),
+              selectedTypes: params.selectedSkuOptions.map(
+                (opt) => opt.reference
+              ),
               existingLicenseMetadata: state.order?.metadata?.license,
               hasOrder: !!state.order,
               hasOrderId: !!state.orderId,
@@ -1177,7 +1199,7 @@ export function OrderProvider({
           console.log('setSelectedSkuOptions: fetchOrder result:', {
             success,
             hasOrder: !!order,
-            updatedMetadata: order?.metadata?.license
+            updatedMetadata: order?.metadata?.license,
           })
         }
 
@@ -1189,12 +1211,21 @@ export function OrderProvider({
 
         // Validate that license types were properly set in metadata
         const updatedTypes = order.metadata?.license?.types
-        if (!updatedTypes || !Array.isArray(updatedTypes) || updatedTypes.length === 0) {
+        if (
+          !updatedTypes ||
+          !Array.isArray(updatedTypes) ||
+          updatedTypes.length === 0
+        ) {
           if (process.env.NODE_ENV !== 'production') {
-            console.warn('License types may not have been properly persisted:', {
-              licenseMetadata: order.metadata?.license,
-              expectedTypes: params.selectedSkuOptions.map(option => option.reference)
-            })
+            console.warn(
+              'License types may not have been properly persisted:',
+              {
+                licenseMetadata: order.metadata?.license,
+                expectedTypes: params.selectedSkuOptions.map(
+                  (option) => option.reference
+                ),
+              }
+            )
           }
           // Don't throw here, just log the warning as the selection might still work
         }
@@ -1206,7 +1237,7 @@ export function OrderProvider({
             others: {
               selectedSkuOptions: params.selectedSkuOptions,
               // Ensure consistent state by using both the passed selection and metadata
-              hasValidLicenseType: params.selectedSkuOptions.length > 0
+              hasValidLicenseType: params.selectedSkuOptions.length > 0,
             },
           },
         })
@@ -1222,18 +1253,22 @@ export function OrderProvider({
       } catch (error) {
         if (process.env.NODE_ENV !== 'production') {
           console.error('Error in setSelectedSkuOptions:', {
-            errorMessage: error instanceof Error ? error.message : String(error),
+            errorMessage:
+              error instanceof Error ? error.message : String(error),
             stateInfo: {
               hasOrder: !!state.order,
               orderId: state.orderId,
-              hasLineItems: !!(state.order?.line_items && state.order.line_items.length > 0),
-              currentOrderMetadata: state.order?.metadata
+              hasLineItems: !!(
+                state.order?.line_items && state.order.line_items.length > 0
+              ),
+              currentOrderMetadata: state.order?.metadata,
             },
           })
         }
 
         // Show error notification
-        const errorMessage = error instanceof Error ? error.message : 'Failed to set license types';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to set license types'
         toaster.create({
           title: 'Failed to update license types',
           description: errorMessage,
@@ -1264,40 +1299,46 @@ export function OrderProvider({
 
   // Create a stable initialization function
   const initializeProvider = useCallback(async () => {
-    if (!config.accessToken) return;
-    
+    if (!config.accessToken) return
+
     dispatch({ type: ActionType.START_LOADING })
     try {
       // Sequential initialization
       const { order, success } = await fetchOrder()
-      
+
       // Always fetch SKU options, passing existing license types if order exists
       let existingTypes: string[] = []
-      
+
       if (success && order) {
         // If order is found, use its license types
         existingTypes = order.metadata?.license?.types || []
-        
+
         if (process.env.NODE_ENV !== 'production') {
-          console.log('🔄 initializeProvider: Found existing order with types:', {
-            orderId: order.id,
-            existingTypes,
-            fullMetadata: order.metadata,
-            licenseMetadata: order.metadata?.license
-          })
+          console.log(
+            '🔄 initializeProvider: Found existing order with types:',
+            {
+              orderId: order.id,
+              existingTypes,
+              fullMetadata: order.metadata,
+              licenseMetadata: order.metadata?.license,
+            }
+          )
         }
       } else {
         // If no order is found, use empty array
         if (process.env.NODE_ENV !== 'production') {
-          console.log('🔄 initializeProvider: No existing order found, using empty types array', {
-            success,
-            hasOrder: !!order
-          })
+          console.log(
+            '🔄 initializeProvider: No existing order found, using empty types array',
+            {
+              success,
+              hasOrder: !!order,
+            }
+          )
         }
       }
-      
+
       const result = await fetchSkuOptions(existingTypes)
-      
+
       if (!result.success) {
         console.warn('Failed to fetch SKU options during initialization')
       } else {
@@ -1321,9 +1362,17 @@ export function OrderProvider({
 
   // Compute additional state properties
   const hasValidLicenseSize = !!(state.licenseSize && state.licenseSize.value)
-  const hasValidLicenseType = !!(state.selectedSkuOptions && state.selectedSkuOptions.length > 0)
-  const allLicenseInfoSet = !!(state.hasLicenseOwner && hasValidLicenseType && hasValidLicenseSize)
-  const hasLineItems = !!(state.order?.line_items && state.order.line_items.length > 0)
+  const hasValidLicenseType = !!(
+    state.selectedSkuOptions && state.selectedSkuOptions.length > 0
+  )
+  const allLicenseInfoSet = !!(
+    state.hasLicenseOwner &&
+    hasValidLicenseType &&
+    hasValidLicenseSize
+  )
+  const hasLineItems = !!(
+    state.order?.line_items && state.order.line_items.length > 0
+  )
 
   const value = {
     ...state,

@@ -1,5 +1,8 @@
 import { Field } from '@/components/ui/field'
-import { NativeSelectField, NativeSelectRoot } from '@/components/ui/native-select'
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from '@/components/ui/native-select'
 import { getCountries } from '@/commercelayer/utils/country-utils'
 import type { CountryOption } from '@/commercelayer/utils/country-utils'
 // Note: Using a simple text fallback instead of ChevronDownIcon from @chakra-ui/icons
@@ -21,9 +24,20 @@ interface CountrySelectProps {
  * Component is fully synchronous with no loading states.
  */
 export const CountrySelect = forwardRef<HTMLSelectElement, CountrySelectProps>(
-  ({ label = 'Country', error, value, onChange, placeholder, disabled, countries: propCountries }, ref) => {
+  (
+    {
+      label = 'Country',
+      error,
+      value,
+      onChange,
+      placeholder,
+      disabled,
+      countries: propCountries,
+    },
+    ref
+  ) => {
     const availableCountries = getCountries(propCountries)
-    
+
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = event.target.value
       onChange?.(selectedValue)
@@ -31,8 +45,10 @@ export const CountrySelect = forwardRef<HTMLSelectElement, CountrySelectProps>(
 
     // Build items array (prepend placeholder if provided)
     const items: CountryOption[] = [
-      ...(placeholder ? [{ value: '', label: placeholder, disabled: false }] : []),
-      ...availableCountries
+      ...(placeholder
+        ? [{ value: '', label: placeholder, disabled: false }]
+        : []),
+      ...availableCountries,
     ]
 
     return (

@@ -63,7 +63,8 @@ const Checkout: React.FC<Props> = ({
 
   const params = useParams()
   // Track when initial load step advancement has been completed
-  const [initialStepAdvancementDone, setInitialStepAdvancementDone] = useState(false)
+  const [initialStepAdvancementDone, setInitialStepAdvancementDone] =
+    useState(false)
 
   // Filter steps based on checkout requirements
   const steps = BASE_STEPS.filter((step) => {
@@ -90,7 +91,9 @@ const Checkout: React.FC<Props> = ({
     // 3. We haven't already performed initial step advancement
     if (!ctx || ctx.isFirstLoading || initialStepAdvancementDone) return
 
-    console.log('🔍 Initial step advancement - determining current step based on state:')
+    console.log(
+      '🔍 Initial step advancement - determining current step based on state:'
+    )
     console.log('  customer.userMode:', customer.userMode)
     console.log('  ctx.hasEmailAddress:', ctx.hasEmailAddress)
     console.log('  ctx.hasBillingAddress:', ctx.hasBillingAddress)

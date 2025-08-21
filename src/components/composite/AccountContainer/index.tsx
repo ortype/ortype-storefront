@@ -5,6 +5,8 @@ import GuestHeader from '@/components/composite/Account/Header/Guest'
 import Navbar from '@/components/composite/Account/Navbar'
 import { CustomerContainerProvider } from '@/components/composite/CustomerContainerProvider'
 import { LayoutAccount } from '@/components/layouts/LayoutAccount'
+import { CommerceLayer } from '@commercelayer/react-components'
+
 import { Container } from '@chakra-ui/react'
 import type { Settings } from 'CustomApp'
 import { IconContext } from 'phosphor-react'
@@ -17,7 +19,12 @@ function MyAccountContainer({
   // settings,
   children,
 }: Props): JSX.Element {
-  const { isLoading, settings } = useIdentityContext()
+  const {
+    isLoading,
+    settings,
+    clientConfig: { accessToken },
+    config,
+  } = useIdentityContext()
   if (isLoading || !settings) return <div />
 
   return (
@@ -29,28 +36,26 @@ function MyAccountContainer({
           mirrored: false,
         }}
       >
-        <CustomerContainerProvider isGuest={settings.isGuest}>
-          <LayoutAccount
-            isGuest={settings.isGuest}
-            main={
-              <>
-                {settings.isGuest ? (
-                  <GuestHeader
-                    logoUrl={settings.logoUrl}
-                    companyName={settings.companyName}
-                  />
-                ) : (
+        <CommerceLayer
+          accessToken={accessToken || ''}
+          endpoint={config.endpoint}
+        >
+          <CustomerContainerProvider isGuest={settings.isGuest}>
+            <LayoutAccount
+              isGuest={settings.isGuest}
+              main={
+                <>
                   <CustomerHeader
                     logoUrl={settings.logoUrl}
                     companyName={settings.companyName}
                   />
-                )}
-                <Container>{children}</Container>
-              </>
-            }
-            aside={settings.isGuest ? null : <Navbar settings={settings} />}
-          />
-        </CustomerContainerProvider>
+                  <Container>{children}</Container>
+                </>
+              }
+              aside={<Navbar settings={settings} />}
+            />
+          </CustomerContainerProvider>
+        </CommerceLayer>
       </IconContext.Provider>
     </>
   )

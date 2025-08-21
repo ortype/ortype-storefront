@@ -1,6 +1,5 @@
 'use client'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
-import { CommerceLayer, OrderStorage } from '@commercelayer/react-components'
 import dynamic from 'next/dynamic'
 
 const DynamicCheckoutContainer: any = dynamic(

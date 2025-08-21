@@ -9,19 +9,19 @@
  */
 export function getStatusTranslations(value: string, t: (a: string) => string) {
   switch (value) {
-    case "on_hold":
-    case "upcoming":
-    case "draft":
-      return t("shipmentStatus.upcoming")
-    case "picking":
-    case "packing":
-    case "ready_to_ship":
-      return t("shipmentStatus.in_progress")
-    case "cancelled":
-      return t("shipmentStatus.cancelled")
-    case "shipped":
-      return t("shipmentStatus.shipped")
+    case 'on_hold':
+    case 'upcoming':
+    case 'draft':
+      return t('shipmentStatus.upcoming')
+    case 'picking':
+    case 'packing':
+    case 'ready_to_ship':
+      return t('shipmentStatus.in_progress')
+    case 'cancelled':
+      return t('shipmentStatus.cancelled')
+    case 'shipped':
+      return t('shipmentStatus.shipped')
     default:
-      return value || ""
+      return value || ''
   }
 }

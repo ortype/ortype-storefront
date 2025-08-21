@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 
 export default function useWindowSizeDetect() {
   const [viewportWidth, setViewportWidth] = useState(0)
@@ -7,11 +7,11 @@ export default function useWindowSizeDetect() {
   const [screenHeight, setScreenHeight] = useState(0)
 
   useEffect(() => {
-    if (window && typeof window !== "undefined") {
+    if (window && typeof window !== 'undefined') {
       const { innerWidth, innerHeight } = window
       setViewportWidth(innerWidth)
       setViewportHeight(innerHeight)
-      if (window.screen && typeof window.screen !== "undefined") {
+      if (window.screen && typeof window.screen !== 'undefined') {
         const { width, height } = window.screen
         setScreenWidth(width)
         setScreenHeight(height)

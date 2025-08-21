@@ -209,7 +209,7 @@ export const EUROPEAN_SUBDIVISIONS: States = {
     { value: 'NAQ', label: 'Nouvelle-Aquitaine' },
     { value: 'OCC', label: 'Occitania' },
     { value: 'PDL', label: 'Pays de la Loire' },
-    { value: 'PAC', label: 'Provence-Alpes-Côte d\'Azur' },
+    { value: 'PAC', label: "Provence-Alpes-Côte d'Azur" },
   ],
   GB: [
     { value: 'ENG', label: 'England' },

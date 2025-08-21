@@ -25,7 +25,9 @@ export interface StripeConfig {
 
 interface StripePaymentFormProps {
   options?: StripePaymentElementOptions
-  templateCustomerSaveToWallet?: (props: CustomerSaveToWalletProps) => JSX.Element
+  templateCustomerSaveToWallet?: (
+    props: CustomerSaveToWalletProps
+  ) => JSX.Element
   stripe?: Stripe | null
   onPaymentReady?: (ready: boolean) => void
   setPaymentRef?: (ref: React.RefObject<HTMLFormElement>) => void
@@ -115,11 +117,12 @@ function StripePaymentForm({
       // Check for save to wallet checkbox
       const savePaymentSourceToCustomerWallet: boolean =
         // @ts-expect-error no type available for form elements
-        event?.elements?.save_payment_source_to_customer_wallet?.checked ?? false
-      
+        event?.elements?.save_payment_source_to_customer_wallet?.checked ??
+        false
+
       const billingInfo = order.billing_address
       const email = order.customer_email ?? ''
-      
+
       const billingDetails = {
         name: billingInfo?.full_name ?? '',
         email,
@@ -135,8 +138,10 @@ function StripePaymentForm({
       }
 
       const url = new URL(window.location.href)
-      const cleanUrl = `${url.origin}${url.pathname}?accessToken=${url.searchParams.get('accessToken')}`
-      
+      const cleanUrl = `${url.origin}${
+        url.pathname
+      }?accessToken=${url.searchParams.get('accessToken')}`
+
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
@@ -155,7 +160,7 @@ function StripePaymentForm({
 
       console.log('Stripe payment confirmed successfully')
       console.log('Save to wallet:', savePaymentSourceToCustomerWallet)
-      
+
       return true
     } catch (error) {
       console.error('Payment submission error:', error)
@@ -182,7 +187,7 @@ function StripePaymentForm({
       {templateCustomerSaveToWallet && (
         <div className="mt-4">
           {templateCustomerSaveToWallet({
-            name: 'save_payment_source_to_customer_wallet'
+            name: 'save_payment_source_to_customer_wallet',
           })}
         </div>
       )}
@@ -198,7 +203,9 @@ export interface StripePaymentProps {
   options?: StripePaymentElementOptions
   appearance?: StripeElementsOptions['appearance']
   containerClassName?: string
-  templateCustomerSaveToWallet?: (props: CustomerSaveToWalletProps) => JSX.Element
+  templateCustomerSaveToWallet?: (
+    props: CustomerSaveToWalletProps
+  ) => JSX.Element
   connectedAccount?: string
   onPaymentReady?: (ready: boolean) => void
   setPaymentRef?: (ref: React.RefObject<HTMLFormElement>) => void
@@ -231,7 +238,7 @@ export function StripePayment({
             locale,
             ...(connectedAccount ? { stripeAccount: connectedAccount } : {}),
           } satisfies StripeConstructorOptions
-          
+
           const res = await loadStripe(publishableKey, options)
           if (res != null) {
             setStripe(res)
@@ -241,7 +248,7 @@ export function StripePayment({
         getStripe().catch(console.error)
       })
     }
-    
+
     return () => {
       setIsLoaded(false)
     }

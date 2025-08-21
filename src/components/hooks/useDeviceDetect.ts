@@ -1,11 +1,11 @@
-import React from "react"
+import React from 'react'
 
 export default function useDeviceDetect() {
   const [isMobile, setMobile] = React.useState(false)
 
   React.useEffect(() => {
     const userAgent =
-      typeof window.navigator === "undefined" ? "" : navigator.userAgent
+      typeof window.navigator === 'undefined' ? '' : navigator.userAgent
     console.log(window.navigator.userAgent)
     const mobile = Boolean(
       userAgent.match(

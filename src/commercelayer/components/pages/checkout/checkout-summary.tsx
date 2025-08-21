@@ -94,12 +94,12 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
   // Helper function to get license owner display value
   const getLicenseOwnerDisplayValue = () => {
     if (!checkoutCtx?.licenseOwner) return ''
-    
+
     // If it's a client license, show the company name
     if (checkoutCtx.isLicenseForClient && checkoutCtx.licenseOwner.company) {
       return checkoutCtx.licenseOwner.company
     }
-    
+
     // Otherwise show the full name
     return checkoutCtx.licenseOwner.full_name || ''
   }

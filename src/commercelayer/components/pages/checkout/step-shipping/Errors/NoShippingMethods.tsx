@@ -1,8 +1,8 @@
-import { Errors } from "@commercelayer/react-components/errors/Errors"
-import { Dispatch, SetStateAction, useEffect } from "react"
+import { Errors } from '@commercelayer/react-components/errors/Errors'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 
 interface Props {
-  messages: Parameters<typeof Errors>[0]["messages"]
+  messages: Parameters<typeof Errors>[0]['messages']
   setShippingMethodError: Dispatch<SetStateAction<boolean>>
   cartUrl?: string
 }

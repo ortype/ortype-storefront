@@ -58,7 +58,7 @@ export async function POST(
       // relationships: { line_items },
     },
     included,
-  } = await request.json() as CommerceLayerWebhookPayload
+  } = (await request.json()) as CommerceLayerWebhookPayload
 
   // const webhookPayload: CommerceLayerWebhookPayload = request.body
   console.log(

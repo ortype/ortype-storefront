@@ -1,6 +1,15 @@
 // Payment components
-export { PaymentMethod, PaymentMethodProvider, usePaymentMethodContext, usePaymentMethodContextRequired } from './payment/payment-method'
-export { PaymentSource, PaymentSourceProvider, usePaymentSourceContext } from './payment/payment-source'
+export {
+  PaymentMethod,
+  PaymentMethodProvider,
+  usePaymentMethodContext,
+  usePaymentMethodContextRequired,
+} from './payment/payment-method'
+export {
+  PaymentSource,
+  PaymentSourceProvider,
+  usePaymentSourceContext,
+} from './payment/payment-source'
 export { PaymentSourceBrandIcon } from './payment/payment-source-brand-icon'
 export { PaymentSourceBrandName } from './payment/payment-source-brand-name'
 export { PaymentSourceDetail } from './payment/payment-source-detail'
@@ -10,7 +19,12 @@ export { PaymentMethodPrice } from './payment/payment-method-price'
 
 // Payment source components
 export { StripePayment, WireTransferPayment } from './payment-sources'
-export type { StripePaymentProps, StripeConfig, WireTransferPaymentProps, WireTransferConfig } from './payment-sources'
+export type {
+  StripePaymentProps,
+  StripeConfig,
+  WireTransferPaymentProps,
+  WireTransferConfig,
+} from './payment-sources'
 
 // Order components
 export { PlaceOrderButton } from './orders/place-order-button'
@@ -20,4 +34,8 @@ export { Errors } from './errors/errors'
 
 // Types and utilities
 export type { PaymentMethodOnClickParams } from './payment/payment-method'
-export type { CustomerCardsProps, CustomerSaveToWalletProps, CustomerCardsTemplateChildren } from './payment/payment-source'
+export type {
+  CustomerCardsProps,
+  CustomerSaveToWalletProps,
+  CustomerCardsTemplateChildren,
+} from './payment/payment-source'

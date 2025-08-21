@@ -10,13 +10,13 @@ export const PaymentSourceBrandIcon: React.FC<PaymentSourceBrandIconProps> = ({
   className,
 }) => {
   const paymentSource = usePaymentSourceContext()
-  
+
   if (!paymentSource) {
     return null
   }
 
   const brand = getCardBrand(paymentSource)
-  
+
   // You can customize this to use actual brand icons
   // For now, using a simple text representation
   return (
@@ -29,18 +29,18 @@ export const PaymentSourceBrandIcon: React.FC<PaymentSourceBrandIconProps> = ({
 // Helper function to get brand icon (you can replace with actual icons)
 function getBrandIcon(brand: string): string {
   const iconMap: Record<string, string> = {
-    'visa': '💳',
-    'mastercard': '💳',
-    'american_express': '💳',
-    'amex': '💳',
-    'discover': '💳',
-    'paypal': '🅿️',
-    'stripe': '💳',
-    'credit_card': '💳',
+    visa: '💳',
+    mastercard: '💳',
+    american_express: '💳',
+    amex: '💳',
+    discover: '💳',
+    paypal: '🅿️',
+    stripe: '💳',
+    credit_card: '💳',
     'credit-card': '💳',
-    'default': '💳'
+    default: '💳',
   }
-  
+
   return iconMap[brand?.toLowerCase()] || iconMap.default
 }
 

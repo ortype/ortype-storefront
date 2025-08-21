@@ -2,7 +2,11 @@ import type { Address } from '@commercelayer/sdk'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { AddressField, CountrySelect, StateSelect } from '@/commercelayer/components/ui/address'
+import {
+  AddressField,
+  CountrySelect,
+  StateSelect,
+} from '@/commercelayer/components/ui/address'
 import type { AddressFormFields } from '@/types/Account'
 
 interface Props {
@@ -52,9 +56,11 @@ export function AddressInputGroup({
             // Handle country change - this would typically update parent form state
             console.log('Country changed:', countryCode)
           }}
-          placeholder={t(
-            'addresses.addressForm.billing_address_country_code_placeholder'
-          ) || 'Select Country'}
+          placeholder={
+            t(
+              'addresses.addressForm.billing_address_country_code_placeholder'
+            ) || 'Select Country'
+          }
           disabled={Boolean(
             shippingCountryCodeLock &&
               fieldName === 'billing_address_country_code'

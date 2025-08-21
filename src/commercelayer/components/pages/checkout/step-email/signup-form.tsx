@@ -129,10 +129,14 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
                 console.log('✅ Sign up successful - advancing to next step')
                 // Advance to next step using Chakra UI Steps context
                 if (stepsContext && stepsContext.goToNextStep) {
-                  console.log('🚀 Advancing to next step after successful signup')
+                  console.log(
+                    '🚀 Advancing to next step after successful signup'
+                  )
                   stepsContext.goToNextStep()
                 } else {
-                  console.warn('⚠️ Steps context not available for step advancement')
+                  console.warn(
+                    '⚠️ Steps context not available for step advancement'
+                  )
                 }
               }
             })
@@ -184,10 +188,14 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
             console.log('✅ Regular signup successful - advancing to next step')
             // Advance to next step using Chakra UI Steps context
             if (stepsContext && stepsContext.goToNextStep) {
-              console.log('🚀 Advancing to next step after successful customer creation')
+              console.log(
+                '🚀 Advancing to next step after successful customer creation'
+              )
               stepsContext.goToNextStep()
             } else {
-              console.warn('⚠️ Steps context not available for step advancement')
+              console.warn(
+                '⚠️ Steps context not available for step advancement'
+              )
             }
           }
         })

@@ -14,18 +14,18 @@ export const reducer = (
     case 'identity/onLoad':
       return {
         ...state,
-        isLoading: true
+        isLoading: true,
       }
     case 'identity/onError':
       return {
         ...state,
-        isLoading: false
+        isLoading: false,
       }
     case 'identity/loaded':
       return {
         ...state,
         settings: action.payload,
-        isLoading: false
+        isLoading: false,
       }
     default:
       return state

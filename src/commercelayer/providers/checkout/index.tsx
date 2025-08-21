@@ -153,22 +153,36 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     licenseOwner?: LicenseOwner
   }) => void
   // New address helper methods
-  createBillingAddress: (addressData: AddressCreate) => Promise<AddressOperationResult<Address>>
-  updateBillingAddress: (addressId: string, addressData: AddressUpdate) => Promise<AddressOperationResult<Address>>
-  attachBillingAddressToOrder: (addressId: string, useAsShipping?: boolean) => Promise<AddressOperationResult<Order>>
+  createBillingAddress: (
+    addressData: AddressCreate
+  ) => Promise<AddressOperationResult<Address>>
+  updateBillingAddress: (
+    addressId: string,
+    addressData: AddressUpdate
+  ) => Promise<AddressOperationResult<Address>>
+  attachBillingAddressToOrder: (
+    addressId: string,
+    useAsShipping?: boolean
+  ) => Promise<AddressOperationResult<Order>>
   // Payment methods helper
   loadPaymentMethods: () => Promise<{
     success: boolean
     error?: unknown
     order?: Order
   }>
-  
+
   // Enhanced save method for address (orchestrates multiple steps)
-  saveAddress: (addressData: AddressInput, useAsShipping?: boolean) => Promise<{ success: boolean; error?: string; order?: Order }>
-  
+  saveAddress: (
+    addressData: AddressInput,
+    useAsShipping?: boolean
+  ) => Promise<{ success: boolean; error?: string; order?: Order }>
+
   // Enhanced save method for license owner (orchestrates multiple steps)
-  saveLicenseOwner: (formData: LicenseOwnerInput, isForClient: boolean) => Promise<{ success: boolean; error?: string; order?: Order }>
-  
+  saveLicenseOwner: (
+    formData: LicenseOwnerInput,
+    isForClient: boolean
+  ) => Promise<{ success: boolean; error?: string; order?: Order }>
+
   licenseOwner: LicenseOwner
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
@@ -291,10 +305,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     dispatch({ type: ActionType.START_LOADING })
     const currentOrder = order ?? (await getOrderFromRef())
     console.log('setAddresses: currentOrder: ', currentOrder)
-    
+
     // Update the order ref with the current order to keep cache fresh
     orderRef.current = currentOrder
-    
+
     const isShipmentRequired = await checkIfShipmentRequired(cl, orderId)
 
     const others = calculateSettings(
@@ -410,8 +424,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     // If we have a payment method selected, set it on the order and create payment source
     if (params.payment && cl) {
       try {
-        console.log('Setting payment method on order:', params.payment.payment_source_type)
-        
+        console.log(
+          'Setting payment method on order:',
+          params.payment.payment_source_type
+        )
+
         // Step 1: Set the payment method on the order
         updatedOrder = await cl.orders.update(
           {
@@ -419,45 +436,52 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
             payment_method: cl.payment_methods.relationship(params.payment.id),
           },
           {
-            include: ['payment_source', 'payment_method', 'available_payment_methods'],
+            include: [
+              'payment_source',
+              'payment_method',
+              'available_payment_methods',
+            ],
           }
         )
-        
+
         console.log('Updated order with payment method:', updatedOrder)
-        
+
         // Step 2: Create payment source (following Commerce Layer pattern)
         const paymentResource = params.payment.payment_source_type
         let paymentSource: any
-        
+
         // Prepare attributes based on payment type (following their pattern)
         let attributes: Record<string, unknown> = {}
-        
+
         if (paymentResource === 'stripe_payments') {
           // Add return_url for Stripe (as in their StripeGateway)
           attributes = {
-            return_url: window.location.href
+            return_url: window.location.href,
           }
         }
-        
+
         console.log('Creating payment source with attributes:', attributes)
-        
+
         // Create payment source with order relationship
         paymentSource = await cl[paymentResource].create({
           ...attributes,
           order: cl.orders.relationship(orderId),
         })
-        
+
         console.log('Created payment source:', paymentSource)
-        
+
         // Step 3: Refresh order to get the updated payment source
         updatedOrder = await fetchOrder(cl, orderId)
-        
+
         console.log('Final updated order with payment source:', updatedOrder)
-        
+
         // Update the order ref
         orderRef.current = updatedOrder
       } catch (error) {
-        console.error('Error setting payment method or creating payment source:', error)
+        console.error(
+          'Error setting payment method or creating payment source:',
+          error
+        )
         // Continue with the original order if payment setup fails
       }
     }
@@ -468,7 +492,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       state.customerAddresses
     )
 
-    console.log('Dispatching SET_PAYMENT action with:', { payment: params.payment, order: updatedOrder, others })
+    console.log('Dispatching SET_PAYMENT action with:', {
+      payment: params.payment,
+      order: updatedOrder,
+      others,
+    })
     dispatch({
       type: ActionType.SET_PAYMENT,
       payload: { payment: params.payment, order: updatedOrder, others },
@@ -487,9 +515,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
       // Check if order is already placed
       const orderStatus = await cl.orders.retrieve(currentOrder.id, {
-        fields: ['status']
+        fields: ['status'],
       })
-      
+
       if (orderStatus.status === 'placed') {
         console.log('Order already placed')
         dispatch({
@@ -498,7 +526,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         })
         return currentOrder
       }
-      
+
       if (orderStatus.status === 'draft') {
         console.error('Draft order cannot be placed')
         dispatch({ type: ActionType.STOP_LOADING })
@@ -506,29 +534,37 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       }
 
       // Check if this is a Stripe payment that needs confirmation first
-      const isStripePayment = currentOrder?.payment_source?.type === 'stripe_payments'
-      
+      const isStripePayment =
+        currentOrder?.payment_source?.type === 'stripe_payments'
+
       if (isStripePayment) {
-        console.log('Stripe payment detected - payment confirmation should have happened in form submission')
+        console.log(
+          'Stripe payment detected - payment confirmation should have happened in form submission'
+        )
         // For Stripe, the payment confirmation should have already happened
         // when the user submitted the payment form before clicking Place Order
       }
 
       // Place the order via Commerce Layer API (following official pattern)
       console.log('Placing order via API...', currentOrder.id)
-      
+
       const placedOrder = await cl.orders.update(
         {
           id: currentOrder.id,
           _place: true, // Official Commerce Layer parameter to place the order
         },
         {
-          include: ['line_items', 'shipments', 'payment_source', 'payment_method'],
+          include: [
+            'line_items',
+            'shipments',
+            'payment_source',
+            'payment_method',
+          ],
         }
       )
 
       console.log('Order placed successfully:', placedOrder)
-      
+
       // Update the order ref with the placed order
       orderRef.current = placedOrder
 
@@ -536,9 +572,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         type: ActionType.PLACE_ORDER,
         payload: { order: placedOrder },
       })
-      
+
       return placedOrder
-      
     } catch (error) {
       console.error('Error placing order:', error)
       dispatch({ type: ActionType.STOP_LOADING })
@@ -564,7 +599,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         const resource = { ...attributes, id }
         const updatedOrder = await cl.orders.update(resource, { include })
         console.log('updateOrder util: ', updatedOrder)
-        
+
         // Update the order ref with the fresh data from API
         orderRef.current = updatedOrder
 
@@ -665,14 +700,20 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   // Enhanced license owner save method that orchestrates the full flow
   const saveLicenseOwner = useCallback(
-    async (formData: LicenseOwnerInput, isForClient: boolean): Promise<{
+    async (
+      formData: LicenseOwnerInput,
+      isForClient: boolean
+    ): Promise<{
       success: boolean
       error?: string
       order?: Order
     }> => {
       try {
         if (!cl) {
-          return { success: false, error: 'Commerce Layer client not available' }
+          return {
+            success: false,
+            error: 'Commerce Layer client not available',
+          }
         }
 
         if (!state.billingAddress) {
@@ -713,11 +754,15 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         })
 
         if (!result.success || !result.order) {
-          const errorMessage = result.error?.toString() || 'Failed to save license owner'
+          const errorMessage =
+            result.error?.toString() || 'Failed to save license owner'
           return { success: false, error: errorMessage }
         }
 
-        console.log('saveLicenseOwner: License owner saved successfully:', result.order)
+        console.log(
+          'saveLicenseOwner: License owner saved successfully:',
+          result.order
+        )
 
         // Update the license owner state using the existing method
         await setLicenseOwner({
@@ -732,7 +777,14 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         return { success: false, error: errorMessage }
       }
     },
-    [cl, orderId, updateOrder, setLicenseOwner, state.billingAddress, state.order]
+    [
+      cl,
+      orderId,
+      updateOrder,
+      setLicenseOwner,
+      state.billingAddress,
+      state.order,
+    ]
   )
 
   const getOrderFromRef = async () => {
@@ -741,7 +793,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   // New address helper methods that call utils layer
   const createBillingAddress = useCallback(
-    async (addressData: AddressCreate): Promise<AddressOperationResult<Address>> => {
+    async (
+      addressData: AddressCreate
+    ): Promise<AddressOperationResult<Address>> => {
       if (!cl) {
         return {
           success: false,
@@ -756,7 +810,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           },
         }
       }
-      
+
       return await createBillingAddressUtil({ cl, addressData })
     },
     [cl]
@@ -781,7 +835,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           },
         }
       }
-      
+
       return await updateBillingAddressUtil({ cl, addressId, addressData })
     },
     [cl]
@@ -806,79 +860,79 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           },
         }
       }
-      
+
       const result = await attachBillingAddressToOrderUtil({
         cl,
         orderId,
         addressId,
         useAsShipping,
       })
-      
+
       // If successful, refresh the order state using setAddresses
       if (result.success && result.data) {
         await setAddresses(result.data)
       }
-      
+
       return result
     },
     [cl, orderId]
   )
 
   // Payment methods helper method
-  const loadPaymentMethods = useCallback(
-    async (): Promise<{
-      success: boolean
-      error?: unknown
-      order?: Order
-    }> => {
-      try {
-        if (!cl) {
-          return { success: false, error: 'CommerceLayer client not available' }
+  const loadPaymentMethods = useCallback(async (): Promise<{
+    success: boolean
+    error?: unknown
+    order?: Order
+  }> => {
+    try {
+      if (!cl) {
+        return { success: false, error: 'CommerceLayer client not available' }
+      }
+
+      const result = await fetchPaymentMethods({ cl, orderId })
+
+      if (result.success && result.order) {
+        // Merge payment methods data with existing order data
+        const currentOrder = await getOrderFromRef()
+        const mergedOrder = {
+          ...currentOrder, // Keep existing order data
+          ...result.order, // Overlay payment methods data
+          // Ensure we preserve specific fields that might be newer in currentOrder
+          id: currentOrder.id,
+          status: result.order.status || currentOrder.status,
         }
 
-        const result = await fetchPaymentMethods({ cl, orderId })
-        
-        if (result.success && result.order) {
-          // Merge payment methods data with existing order data
-          const currentOrder = await getOrderFromRef()
-          const mergedOrder = {
-            ...currentOrder, // Keep existing order data
-            ...result.order, // Overlay payment methods data
-            // Ensure we preserve specific fields that might be newer in currentOrder
-            id: currentOrder.id,
-            status: result.order.status || currentOrder.status,
-          }
-          
-          // Update the order ref with merged data
-          orderRef.current = mergedOrder
-          
-          // Update the provider state with the merged order data
-          const others = calculateSettings(
-            mergedOrder,
-            state.isShipmentRequired,
-            state.customerAddresses
-          )
-          
-          dispatch({
-            type: ActionType.UPDATE_ORDER,
-            payload: {
-              order: mergedOrder,
-              others,
-            },
-          })
-        }
-        
-        return result
-      } catch (error) {
-        return { success: false, error }
+        // Update the order ref with merged data
+        orderRef.current = mergedOrder
+
+        // Update the provider state with the merged order data
+        const others = calculateSettings(
+          mergedOrder,
+          state.isShipmentRequired,
+          state.customerAddresses
+        )
+
+        dispatch({
+          type: ActionType.UPDATE_ORDER,
+          payload: {
+            order: mergedOrder,
+            others,
+          },
+        })
       }
-    },
-    [cl, orderId, state.isShipmentRequired, state.customerAddresses]
-  )
+
+      return result
+    } catch (error) {
+      return { success: false, error }
+    }
+  }, [cl, orderId, state.isShipmentRequired, state.customerAddresses])
 
   // New enhanced save methods
   const saveAddress = useCallback(
-    async (addressData: AddressInput, useAsShipping: boolean = false): Promise<{ success: boolean; error?: string; order?: Order }> => {
+    async (
+      addressData: AddressInput,
+      useAsShipping: boolean = false
+    ): Promise<{ success: boolean; error?: string; order?: Order }> => {
       try {
         if (!cl) {
           throw new Error('Commerce Layer client not available')
@@ -887,7 +941,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         // Step 1: Validate the address data locally
         const validationResult = validateAddress({ addressData })
         if (!validationResult.success) {
-          const errorMessage = validationResult.error?.errors?.[0]?.detail || 'Invalid address data'
+          const errorMessage =
+            validationResult.error?.errors?.[0]?.detail ||
+            'Invalid address data'
           return { success: false, error: errorMessage }
         }
 
@@ -898,7 +954,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         })
 
         if (!createResult.success || !createResult.data) {
-          const errorMessage = createResult.error?.errors?.[0]?.detail || 'Failed to create address'
+          const errorMessage =
+            createResult.error?.errors?.[0]?.detail ||
+            'Failed to create address'
           return { success: false, error: errorMessage }
         }
 
@@ -911,14 +969,15 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         })
 
         if (!attachResult.success || !attachResult.data) {
-          const errorMessage = attachResult.error?.errors?.[0]?.detail || 'Failed to attach address to order'
+          const errorMessage =
+            attachResult.error?.errors?.[0]?.detail ||
+            'Failed to attach address to order'
           return { success: false, error: errorMessage }
         }
 
         // Step 4: Update the checkout provider state with the updated order
         await setAddresses(attachResult.data)
         return { success: true, order: attachResult.data }
-        
       } catch (error: any) {
         const errorMessage = error?.message || 'Failed to save address'
         return { success: false, error: errorMessage }
@@ -926,7 +985,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     },
     [cl, orderId, setAddresses]
   )
-
 
   useEffect(() => {
     fetchInitialOrder(orderId, accessToken)

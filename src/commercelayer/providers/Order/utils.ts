@@ -203,7 +203,9 @@ export async function createOrder(
   params: CreateOrderParams
 ): Promise<CreateOrderResult> {
   const { config, metadata, attributes = {} } = params
-  const cl = isValidCommerceLayerConfig(config) ? getCommerceLayer(config) : undefined
+  const cl = isValidCommerceLayerConfig(config)
+    ? getCommerceLayer(config)
+    : undefined
 
   try {
     if (cl == null) {
@@ -238,8 +240,9 @@ export function calculateSettings(order: Order) {
     licenseOwner: order.metadata?.license?.owner || {},
     licenseSize: order.metadata?.license?.size,
     types: order.metadata?.license?.types || [], // Add types to settings
-    hasValidLicenseType: Array.isArray(order.metadata?.license?.types) && 
-                        order.metadata?.license?.types.length > 0
+    hasValidLicenseType:
+      Array.isArray(order.metadata?.license?.types) &&
+      order.metadata?.license?.types.length > 0,
   }
 }
 
@@ -313,7 +316,7 @@ export async function createOrUpdateOrder({
         resultTypes: metadata.license.types,
         resultSize: metadata.license.size,
         hasTypes: !!metadata.license.types,
-        typesLength: metadata.license.types?.length || 0
+        typesLength: metadata.license.types?.length || 0,
       })
     }
 

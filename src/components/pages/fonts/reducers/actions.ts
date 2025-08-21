@@ -19,20 +19,25 @@ export interface UpdateItemAction {
 export type SpreadAction = UpdateItemsAction | UpdateItemAction
 
 // Action creators
-export const createUpdateItemsAction = (payload: UpdateItemsPayload): UpdateItemsAction => ({
+export const createUpdateItemsAction = (
+  payload: UpdateItemsPayload
+): UpdateItemsAction => ({
   type: UPDATE_ITEMS,
-  payload
+  payload,
 })
 
-export const createUpdateItemAction = (payload: UpdateItemPayload): UpdateItemAction => ({
+export const createUpdateItemAction = (
+  payload: UpdateItemPayload
+): UpdateItemAction => ({
   type: UPDATE_ITEM,
-  payload
+  payload,
 })
 
 // Type guards
-export const isUpdateItemsAction = (action: SpreadAction): action is UpdateItemsAction => 
-  action.type === UPDATE_ITEMS
+export const isUpdateItemsAction = (
+  action: SpreadAction
+): action is UpdateItemsAction => action.type === UPDATE_ITEMS
 
-export const isUpdateItemAction = (action: SpreadAction): action is UpdateItemAction => 
-  action.type === UPDATE_ITEM
-
+export const isUpdateItemAction = (
+  action: SpreadAction
+): action is UpdateItemAction => action.type === UPDATE_ITEM

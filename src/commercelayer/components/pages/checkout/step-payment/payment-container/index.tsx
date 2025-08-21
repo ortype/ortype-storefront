@@ -7,9 +7,5 @@ interface Props {
 
 export const PaymentContainer = ({ children }: Props) => {
   // Simple wrapper component - configuration is handled by CheckoutProvider
-  return (
-    <div className="payment-container">
-      {children}
-    </div>
-  )
+  return <div className="payment-container">{children}</div>
 }

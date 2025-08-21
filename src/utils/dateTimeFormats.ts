@@ -1,12 +1,12 @@
-import { format } from "date-fns"
+import { format } from 'date-fns'
 
-export const dbDate = "yy-MM-dd"
+export const dbDate = 'yy-MM-dd'
 
-export const shortDate = "dd/MM/yy"
+export const shortDate = 'dd/MM/yy'
 
-export const longDate = "MMM dd, yyyy"
+export const longDate = 'MMM dd, yyyy'
 
-export const amPmTime = "hh:mm aa"
+export const amPmTime = 'hh:mm aa'
 
 /**
  * Calculate the formatted string of a starting datetime string in a requested datetime format pattern.
