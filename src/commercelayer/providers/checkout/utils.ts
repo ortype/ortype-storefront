@@ -397,6 +397,32 @@ export function isPaymentRequired(order: Order) {
   return !(order.total_amount_with_taxes_float === 0)
 }
 
+/**
+ * Validates that a license owner object has all required fields for a complete license
+ */
+export function isValidLicenseOwner(licenseOwner?: any): boolean {
+  if (!licenseOwner) {
+    return false
+  }
+  
+  // Check for required fields regardless of is_client value
+  const hasRequiredFields = Boolean(
+    licenseOwner.full_name &&
+    licenseOwner.line_1 &&
+    licenseOwner.city &&
+    licenseOwner.zip_code &&
+    licenseOwner.country_code &&
+    typeof licenseOwner.is_client === 'boolean'
+  )
+  
+  // For client licenses, company is also required
+  if (licenseOwner.is_client && !licenseOwner.company) {
+    return false
+  }
+  
+  return hasRequiredFields
+}
+
 export function calculateAddresses(
   order: Order,
   addresses?: CustomerAddress[]
@@ -445,7 +471,7 @@ export function calculateSettings(
     isGuest: Boolean(order.guest),
     shippingCountryCodeLock: order.shipping_country_code_lock,
     hasEmailAddress: Boolean(order.customer_email),
-    hasLicenseOwner: Boolean(order.metadata?.license?.owner),
+    hasLicenseOwner: isValidLicenseOwner(order.metadata?.license?.owner),
     isLicenseForClient: order.metadata?.license?.owner?.is_client || false,
     licenseOwner: order.metadata?.license?.owner || {},
     licenseSize: order.metadata?.license?.size,

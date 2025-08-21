@@ -63,13 +63,12 @@ export const StepLicense: React.FC<Props> = () => {
   const { t } = useTranslation()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const {
-    orderId,
-    order,
-    updateOrder,
-    setLicenseOwner,
-    billingAddress,
+    saveLicenseOwner,
+    licenseOwner,
+    hasLicenseOwner,
     isLicenseForClient,
   } = checkoutCtx
 
@@ -97,14 +96,14 @@ export const StepLicense: React.FC<Props> = () => {
   const form = useForm<LicenseOwnerFormData>({
     resolver: zodResolver(licenseOwnerSchema),
     defaultValues: {
-      company: order?.metadata?.license?.owner?.company || '',
-      full_name: order?.metadata?.license?.owner?.full_name || '',
-      line_1: order?.metadata?.license?.owner?.line_1 || '',
-      line_2: order?.metadata?.license?.owner?.line_2 || '',
-      city: order?.metadata?.license?.owner?.city || '',
-      zip_code: order?.metadata?.license?.owner?.zip_code || '',
-      country_code: order?.metadata?.license?.owner?.country_code || '',
-      state_code: order?.metadata?.license?.owner?.state_code || '',
+      company: licenseOwner?.company || '',
+      full_name: licenseOwner?.full_name || '',
+      line_1: licenseOwner?.line_1 || '',
+      line_2: licenseOwner?.line_2 || '',
+      city: licenseOwner?.city || '',
+      zip_code: licenseOwner?.zip_code || '',
+      country_code: licenseOwner?.country_code || '',
+      state_code: licenseOwner?.state_code || '',
     },
   })
 
@@ -115,55 +114,81 @@ export const StepLicense: React.FC<Props> = () => {
 
   const onSubmit = async (data: LicenseOwnerFormData) => {
     setIsLocalLoader(true)
-
-    const owner: LicenseOwner =
-      projectType === 'client'
-        ? {
-            is_client: true,
-            ...data,
-          }
-        : {
-            is_client: false,
-            company: billingAddress.company,
-            full_name: billingAddress.full_name,
-            line_1: billingAddress.line_1,
-            line_2: billingAddress.line_2,
-            city: billingAddress.city,
-            zip_code: billingAddress.zip_code,
-            state_code: billingAddress.state_code,
-            country_code: billingAddress.country_code,
-          }
-
-    console.log('Submit license: ', { owner })
+    setError(null)
 
     try {
-      const { order: updatedOrder } = await updateOrder({
-        id: orderId,
-        attributes: {
-          metadata: {
-            license: {
-              ...order.metadata?.license,
-              owner,
-            },
-          },
-        },
-        // there is an `include` param
-      })
-      console.log('Submit license: ', { updatedOrder })
-
-      setLicenseOwner({
-        order: updatedOrder,
-        licenseOwner: updatedOrder?.metadata?.license?.owner,
-      })
+      const result = await saveLicenseOwner(data, projectType === 'client')
+      
+      if (!result.success) {
+        setError(result.error || 'Failed to save license owner')
+        return
+      }
+      
+      console.log('License owner saved successfully:', result.order)
     } catch (e) {
-      console.log('License updateOrder error: ', e)
+      console.log('License save error: ', e)
+      setError('An unexpected error occurred')
     } finally {
       setIsLocalLoader(false)
     }
   }
 
+  // License summary component for when license is already completed
+  const LicenseSummary = () => (
+    <VStack gap={4} align="start">
+      <Heading size="md">
+        {t('stepLicense.summaryTitle', 'License Owner Information')}
+      </Heading>
+      
+      <Box bg="gray.50" p={4} borderRadius="md" w="full">
+        <VStack align="start" gap={2}>
+          <Text fontWeight="semibold">
+            {isLicenseForClient 
+              ? t('stepLicense.summaryClientTitle', 'License for Client')
+              : t('stepLicense.summaryYourselfTitle', 'License for Yourself')
+            }
+          </Text>
+          
+          {licenseOwner?.company && (
+            <Text>
+              <Text as="span" fontWeight="medium">Company:</Text> {licenseOwner.company}
+            </Text>
+          )}
+          
+          <Text>
+            <Text as="span" fontWeight="medium">Name:</Text> {licenseOwner.full_name}
+          </Text>
+          
+          <Text>
+            <Text as="span" fontWeight="medium">Address:</Text>{' '}
+            {licenseOwner.line_1}
+            {licenseOwner.line_2 && `, ${licenseOwner.line_2}`}
+          </Text>
+          
+          <Text>
+            <Text as="span" fontWeight="medium">Location:</Text>{' '}
+            {licenseOwner.city}, {licenseOwner.state_code} {licenseOwner.zip_code}
+          </Text>
+          
+          <Text>
+            <Text as="span" fontWeight="medium">Country:</Text> {licenseOwner.country_code}
+          </Text>
+        </VStack>
+      </Box>
+      
+      <Button variant="outline" size="sm">
+        {t('stepLicense.editButton', 'Edit License Information')}
+      </Button>
+    </VStack>
+  )
+
   if (!checkoutCtx) {
     return null
+  }
+
+  // Show summary if license owner is already completed
+  if (hasLicenseOwner) {
+    return <LicenseSummary />
   }
 
   return (
@@ -181,28 +206,7 @@ export const StepLicense: React.FC<Props> = () => {
             ))}
           </HStack>
         </RadioGroup>
-        {/*
-            // @NOTE: cool, but no clear path for usuage as a controlled component in the docs
-            <RadioCardRoot defaultValue={defaultProjectType} gap="4" maxW="sm">
-              <RadioCardLabel>
-                The typeface is being used in a project for
-              </RadioCardLabel>
-              <Group attached orientation="horizontal">
-                {projectTypes.map((type) => (
-                  <RadioCardItem
-                    onChange={(e) =>
-                      e.target.value && setProjectType(e.target.value)
-                    }
-                    width="full"
-                    indicatorPlacement="start"
-                    label={type.title}
-                    description={type.description}
-                    key={type.value}
-                    value={type.value}
-                  />
-                ))}
-              </Group>
-            </RadioCardRoot>*/}
+        
         <FormProvider {...form}>
           <form
             data-step="license"
@@ -298,6 +302,19 @@ export const StepLicense: React.FC<Props> = () => {
                     />
 
                     <Controller
+                      name="state_code"
+                      render={({ field, fieldState: { error } }) => (
+                        <AddressField
+                          label={t('stepLicense.stateLabel', 'State/Province')}
+                          type="text"
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          error={error?.message}
+                        />
+                      )}
+                    />
+
+                    <Controller
                       name="country_code"
                       render={({ field, fieldState: { error } }) => (
                         <CountrySelect
@@ -316,6 +333,13 @@ export const StepLicense: React.FC<Props> = () => {
                       'Billing address will be used for license owner information.'
                     )}
                   </Text>
+                )}
+
+                {/* Display save errors */}
+                {error && (
+                  <Box color="red.500" fontSize="sm" mt={2}>
+                    {error}
+                  </Box>
                 )}
 
                 {/* Display form errors */}

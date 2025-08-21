@@ -165,6 +165,9 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   // Enhanced save method for address (orchestrates multiple steps)
   saveAddress: (addressData: AddressInput, useAsShipping?: boolean) => Promise<{ success: boolean; error?: string; order?: Order }>
   
+  // Enhanced save method for license owner (orchestrates multiple steps)
+  saveLicenseOwner: (formData: LicenseOwnerInput, isForClient: boolean) => Promise<{ success: boolean; error?: string; order?: Order }>
+  
   licenseOwner: LicenseOwner
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
@@ -657,6 +660,78 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
   }
 
+  // Enhanced license owner save method that orchestrates the full flow
+  const saveLicenseOwner = useCallback(
+    async (formData: LicenseOwnerInput, isForClient: boolean): Promise<{
+      success: boolean
+      error?: string
+      order?: Order
+    }> => {
+      try {
+        if (!cl) {
+          return { success: false, error: 'Commerce Layer client not available' }
+        }
+
+        if (!state.billingAddress) {
+          return { success: false, error: 'Billing address is required' }
+        }
+
+        // Prepare the license owner data based on project type
+        const owner: LicenseOwner = isForClient
+          ? {
+              is_client: true,
+              ...formData,
+            }
+          : {
+              is_client: false,
+              company: state.billingAddress.company,
+              full_name: state.billingAddress.full_name,
+              line_1: state.billingAddress.line_1,
+              line_2: state.billingAddress.line_2,
+              city: state.billingAddress.city,
+              zip_code: state.billingAddress.zip_code,
+              state_code: state.billingAddress.state_code,
+              country_code: state.billingAddress.country_code,
+            }
+
+        console.log('saveLicenseOwner: Saving license owner:', { owner })
+
+        // Update the order with license metadata
+        const result = await updateOrder({
+          id: orderId,
+          attributes: {
+            metadata: {
+              license: {
+                ...state.order?.metadata?.license,
+                owner,
+              },
+            },
+          },
+        })
+
+        if (!result.success || !result.order) {
+          const errorMessage = result.error?.toString() || 'Failed to save license owner'
+          return { success: false, error: errorMessage }
+        }
+
+        console.log('saveLicenseOwner: License owner saved successfully:', result.order)
+
+        // Update the license owner state using the existing method
+        await setLicenseOwner({
+          order: result.order,
+          licenseOwner: result.order?.metadata?.license?.owner,
+        })
+
+        return { success: true, order: result.order }
+      } catch (error: any) {
+        const errorMessage = error?.message || 'Failed to save license owner'
+        console.error('saveLicenseOwner error:', error)
+        return { success: false, error: errorMessage }
+      }
+    },
+    [cl, orderId, updateOrder, setLicenseOwner, state.billingAddress, state.order]
+  )
+
   const getOrderFromRef = async () => {
     return orderRef.current || (await fetchOrder(cl, orderId))
   }
@@ -881,6 +956,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         loadPaymentMethods,
         // Enhanced save method for address (orchestrates multiple steps)
         saveAddress,
+        // Enhanced save method for license owner (orchestrates multiple steps)
+        saveLicenseOwner,
       }}
     >
       {children}
