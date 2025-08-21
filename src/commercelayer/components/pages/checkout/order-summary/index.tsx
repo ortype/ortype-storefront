@@ -1,124 +1,185 @@
-import LineItemsContainer from '@commercelayer/react-components/line_items/LineItemsContainer'
-import LineItemsCount from '@commercelayer/react-components/line_items/LineItemsCount'
-import AdjustmentAmount from '@commercelayer/react-components/orders/AdjustmentAmount'
-import DiscountAmount from '@commercelayer/react-components/orders/DiscountAmount'
-import GiftCardAmount from '@commercelayer/react-components/orders/GiftCardAmount'
-import PaymentMethodAmount from '@commercelayer/react-components/orders/PaymentMethodAmount'
-import ShippingAmount from '@commercelayer/react-components/orders/ShippingAmount'
-import SubTotalAmount from '@commercelayer/react-components/orders/SubTotalAmount'
-import TaxesAmount from '@commercelayer/react-components/orders/TaxesAmount'
-import TotalAmount from '@commercelayer/react-components/orders/TotalAmount'
-import { Trans, useTranslation } from 'react-i18next'
+import { useCheckoutContext } from '@/commercelayer/providers/checkout'
+import { sizes } from '@/lib/settings'
+import { Box, Heading, Show, SimpleGrid } from '@chakra-ui/react'
+import { useMemo } from 'react'
 
-import { CheckoutProviderData } from '@/commercelayer/providers/checkout'
-import { LINE_ITEMS_SHOPPABLE } from '@/components/utils/constants'
+/**
+ * OrderSummary Component - Data Dependencies
+ *
+ * This component requires the following fields from CheckoutContext:
+ * - order: Order object containing:
+ *   - line_items: array of line items
+ *   - line_items[].item.reference_origin: for font reference counting
+ *   - line_items[].item.name: item display name
+ *   - line_items[].line_item_options[].name: option names
+ *   - line_items[].unit_amount_float: item pricing
+ *   - metadata.license.size.value: license size for lookup in sizes map
+ *   - total_amount_with_taxes_float: total order amount
+ * - hasLineItems: boolean for conditional rendering
+ * - isLoading: boolean for loading states (fallback UI)
+ */
 
-import { Size, sizes, Type, types } from '@/lib/settings'
-import { Box, Heading, SimpleGrid } from '@chakra-ui/react'
+interface LineItemType {
+  item: {
+    reference_origin?: string
+    [key: string]: any
+  }
+  [key: string]: any
+}
 
-import {
-  LineItem,
-  LineItemAmount,
-  LineItemName,
-  LineItemOption,
-  LineItemOptions,
-  LineItemRemoveLink,
-} from '@commercelayer/react-components'
+interface FontRefCounts {
+  [fontRef: string]: number
+}
+
+/**
+ * Count unique reference_origin values from line items
+ * @param lineItems Array of line items containing item.reference_origin
+ * @returns Object with reference_origin values as keys and counts as values
+ */
+export const getFontReferenceCounts = (
+  lineItems: LineItemType[] = []
+): FontRefCounts => {
+  // Handle case when lineItems is undefined or not an array
+  if (!Array.isArray(lineItems) || lineItems.length === 0) {
+    return {}
+  }
+
+  const references = lineItems
+    .filter((lineItem) => lineItem?.item?.reference_origin) // Safely check item exists
+    .map((lineItem) => lineItem.item.reference_origin)
+    .filter(Boolean) // Remove any undefined or null values
+
+  return references.reduce<FontRefCounts>((acc, ref) => {
+    if (typeof ref === 'string') {
+      acc[ref] = (acc[ref] || 0) + 1
+    }
+    return acc
+  }, {})
+}
 
 interface Props {
-  checkoutCtx: CheckoutProviderData
   readonly?: boolean
 }
 
-export const OrderSummary: React.FC<Props> = ({ checkoutCtx, readonly }) => {
-  const { t } = useTranslation()
+export const OrderSummary: React.FC<Props> = ({ readonly }) => {
+  const { order, isLoading, hasLineItems } = useCheckoutContext()
 
-  const { order } = checkoutCtx
+  // Temporary validation logging - TODO: Remove after verification
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('OrderSummary validation - CheckoutContext data:', {
+      hasOrder: !!order,
+      isLoading,
+      hasLineItems,
+      lineItemsCount: order?.line_items?.length || 0,
+      hasMetadata: !!order?.metadata,
+      hasLicenseSize: !!order?.metadata?.license?.size?.value,
+      totalAmount: order?.total_amount_with_taxes_float,
+      sampleLineItem: order?.line_items?.[0]
+        ? {
+            id: order.line_items[0].id,
+            name: order.line_items[0].item?.name,
+            hasReferenceOrigin: !!order.line_items[0].item?.reference_origin,
+            hasOptions: !!order.line_items[0].line_item_options?.length,
+            unitAmount: order.line_items[0].unit_amount_float,
+          }
+        : null,
+    })
+  }
 
-  const isTaxCalculated = checkoutCtx.isShipmentRequired
-    ? checkoutCtx.hasBillingAddress &&
-      checkoutCtx.hasShippingAddress &&
-      checkoutCtx.hasShippingMethod
-    : checkoutCtx.hasBillingAddress
+  // Memoize font reference calculations to prevent unnecessary recalculations
+  const { fontRefCounts, fontCount, parentFontString } = useMemo(() => {
+    if (!order?.line_items) {
+      return { fontRefCounts: {}, fontCount: 0, parentFontString: '0 fonts' }
+    }
 
-  const lineItems = !readonly ? (
-    <div>
-      <div data-testid="test-summary">{t('orderRecap.order_summary')}</div>
-      <div>
-        <LineItemsCount
-          data-testid="items-count"
-          typeAccepted={LINE_ITEMS_SHOPPABLE}
-        >
-          {(props): JSX.Element => (
-            <span data-testid="items-count">
-              {t('orderRecap.cartContains', { count: props.quantity })}
-            </span>
-          )}
-        </LineItemsCount>
-      </div>
-    </div>
-  ) : null
+    const counts = getFontReferenceCounts(order.line_items)
+    const count = Object.keys(counts).length
+    const fontString = count + ' ' + (count === 1 ? 'font' : 'fonts')
+
+    return {
+      fontRefCounts: counts,
+      fontCount: count,
+      parentFontString: fontString,
+    }
+  }, [order?.line_items])
+
   return (
-    <>
-      <Box bg={'#FFF8D3'} my={4} p={4} borderRadius={20}>
-        <Heading
-          as={'h5'}
-          fontSize={20}
-          textTransform={'uppercase'}
-          fontWeight={'normal'}
-        >
-          {'Summary'}
-        </Heading>
-        <LineItemsContainer>
-          <SimpleGrid
-            columns={3}
-            gap={4}
-            borderTop={'1px solid #EEE'}
-            borderBottom={'1px solid #EEE'}
-          >
-            <Box></Box>
-            <Box>
-              {
-                sizes.find(
-                  ({ value }) => value === order?.metadata?.license?.size?.value
-                )?.label
-              }
-            </Box>
-            <Box></Box>
-          </SimpleGrid>
-          <LineItem>
-            <SimpleGrid columns={3} gap={4} borderBottom={'1px solid #EEE'}>
-              {/*<LineItemImage width={50} />*/}
-              <LineItemName />
-              <Box>
-                <LineItemOptions showName showAll>
-                  <LineItemOption />
-                </LineItemOptions>
-              </Box>
-              <Box textAlign={'right'}>
-                <LineItemAmount />
-              </Box>
-              {/*<LineItemQuantity max={10} />*/}
-              {/*<Errors resource="line_items" field="quantity" />*/}
-            </SimpleGrid>
-          </LineItem>
-        </LineItemsContainer>
-
-        <SimpleGrid columns={3} gap={4}>
-          <Box
-            fontSize={20}
+    <Show
+      when={hasLineItems}
+      fallback={
+        <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
+          <Heading
+            as={'h5'}
+            fontSize={'xl'}
             textTransform={'uppercase'}
             fontWeight={'normal'}
-            textDecoration={'underline'}
+            mb={1}
+          >
+            {'Your cart is empty'}
+          </Heading>
+        </Box>
+      }
+    >
+      <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
+        <Heading
+          as={'h5'}
+          fontSize={'xl'}
+          textTransform={'uppercase'}
+          fontWeight={'normal'}
+          mb={1}
+        >
+          {'Order Overview'}
+        </Heading>
+        <SimpleGrid columns={3} py={3} borderTop={'1px solid #E7E0BF'} mb={1.5}>
+          <Box>{parentFontString}</Box>
+          <Box>
+            {sizes.find(
+              ({ value }) => value === order?.metadata?.license?.size?.value
+            )?.label || ''}
+          </Box>
+          <Box></Box>
+        </SimpleGrid>
+        {order?.line_items?.map((lineItem) => (
+          <SimpleGrid
+            key={lineItem.id}
+            columns={3}
+            py={1.5}
+            borderTop={'1px solid #E7E0BF'}
+          >
+            <Box>{lineItem.item?.name}</Box>
+            <Box>
+              {
+                // @TODO: these should be sorted in the same order as the 'license types' data source
+                lineItem?.line_item_options
+                  ?.map((option) => option.name)
+                  .filter(Boolean)
+                  .join(', ')
+              }
+            </Box>
+            <Box
+              textAlign={'right'}
+              fontVariantNumeric={'tabular-nums'}
+            >{`EUR ${lineItem.unit_amount_float}`}</Box>
+          </SimpleGrid>
+        ))}
+        <SimpleGrid columns={3} py={3} mt={1.5} borderTop={'1px solid #E7E0BF'}>
+          <Box
+            fontSize={'xl'}
+            textTransform={'uppercase'}
+            fontWeight={'normal'}
           >
             {'Total'}
           </Box>
           <Box></Box>
-          <Box textAlign={'right'}>
-            <TotalAmount />
+          <Box
+            fontSize={'xl'}
+            textAlign={'right'}
+            fontVariantNumeric={'tabular-nums'}
+          >
+            {`EUR ${order?.total_amount_with_taxes_float}`}
           </Box>
         </SimpleGrid>
       </Box>
-    </>
+    </Show>
   )
 }

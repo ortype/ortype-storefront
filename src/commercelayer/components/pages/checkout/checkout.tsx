@@ -191,7 +191,7 @@ const Checkout: React.FC<Props> = ({
           />
         </Steps.CompletedContent>
       </Steps.RootProvider>
-      <OrderSummary checkoutCtx={ctx} />
+      <OrderSummary />
     </Container>
   )
 }

@@ -91,6 +91,7 @@ export interface FetchOrderByIdResponse {
   hasLicenseOwner?: boolean
   isLicenseForClient?: boolean
   licenseSize: LicenseSize
+  hasLineItems: boolean
 }
 
 function isNewAddress({
@@ -477,6 +478,7 @@ export function calculateSettings(
     licenseSize: order.metadata?.license?.size,
     emailAddress: order.customer_email,
     hasCustomer: Boolean(order.customer?.id),
+    hasLineItems: Boolean(order.line_items && order.line_items.length > 0),
     ...calculatedAddresses,
     ...(isShipmentRequired
       ? calculateSelectedShipments(prepareShipments(order.shipments))

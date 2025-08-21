@@ -117,6 +117,7 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   slug: string
   domain: string
   isFirstLoading: boolean
+  hasLineItems: boolean
   getOrder: (order: Order) => void
   getOrderFromRef: () => Promise<Order>
   updateOrder: (params: UpdateOrderArgs) => Promise<{
@@ -179,6 +180,7 @@ export interface AppStateData extends FetchOrderByIdResponse {
   order?: Order
   isLoading: boolean
   isFirstLoading: boolean
+  hasLineItems: boolean
 }
 
 const initialState: AppStateData = {
@@ -215,6 +217,7 @@ const initialState: AppStateData = {
   cartUrl: undefined,
   taxIncluded: false,
   shippingMethodName: undefined,
+  hasLineItems: false,
 }
 
 export const CheckoutContext = createContext<CheckoutProviderData | null>(null)
