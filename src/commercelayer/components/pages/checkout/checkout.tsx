@@ -91,6 +91,14 @@ const Checkout: React.FC<Props> = ({
     // 3. We haven't already performed initial step advancement
     if (!ctx || ctx.isFirstLoading || initialStepAdvancementDone) return
 
+    // If the order is already complete (placed), jump directly to the completed view
+    if (ctx.isComplete) {
+      console.log('🎉 Order is already complete, jumping to completed step')
+      stepperHook.setStep(steps.length) // Set to a step beyond the last step
+      setInitialStepAdvancementDone(true)
+      return
+    }
+
     console.log(
       '🔍 Initial step advancement - determining current step based on state:'
     )
@@ -132,6 +140,7 @@ const Checkout: React.FC<Props> = ({
     ctx?.hasEmailAddress,
     ctx?.hasBillingAddress,
     ctx?.hasLicenseOwner,
+    ctx?.isComplete,
     customer.userMode,
     ctx?.isShipmentRequired,
     steps,

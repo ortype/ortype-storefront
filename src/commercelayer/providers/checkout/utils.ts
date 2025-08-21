@@ -510,7 +510,7 @@ export function checkPaymentMethod(order: Order) {
     hasPaymentMethod = true
   }
 
-  const isComplete = order.status === 'placed' || order.status === 'pending'
+  const isComplete = order.status === 'placed'
 
   return {
     hasPaymentMethod,

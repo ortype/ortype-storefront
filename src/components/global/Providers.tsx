@@ -38,7 +38,7 @@ function Providers({
               {(ctx) => (
                 <OrderStorage
                   persistKey={config.persistKey}
-                  clearWhenPlaced={false}
+                  // clearWhenPlaced={false}
                 >
                   <OrderProvider config={ctx.clientConfig}>
                     <div>{children}</div>
