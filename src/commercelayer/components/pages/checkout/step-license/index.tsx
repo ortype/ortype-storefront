@@ -123,6 +123,32 @@ export const StepLicense: React.FC<Props> = () => {
     formState: { errors },
   } = form
 
+  const handleProceed = async () => {
+    // Bypasses form validation when projectType is not 'client'
+    setIsLocalLoader(true)
+    setError(null)
+
+    try {
+      const result = await saveLicenseOwner(
+        form.getValues(),
+        projectType === 'client'
+      )
+
+      if (!result.success) {
+        setError(result.error || 'Failed to save license owner')
+        return
+      }
+
+      if (editing) {
+        setEditing(false)
+      }
+    } catch (e) {
+      setError('An unexpected error occurred')
+    } finally {
+      setIsLocalLoader(false)
+    }
+  }
+
   const onSubmit = async (data: LicenseOwnerFormData) => {
     setIsLocalLoader(true)
     setError(null)
@@ -334,7 +360,12 @@ export const StepLicense: React.FC<Props> = () => {
                   </Button>
                 )}
                 <Button
-                  type="submit"
+                  type={projectType === 'client' ? 'submit' : 'button'}
+                  onClick={
+                    projectType === 'client'
+                      ? handleSubmit(onSubmit)
+                      : handleProceed
+                  }
                   loading={isLocalLoader}
                   disabled={isLocalLoader}
                   flex={onCancel ? 'none' : '1'}
