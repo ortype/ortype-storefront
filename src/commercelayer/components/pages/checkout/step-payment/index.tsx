@@ -1,10 +1,11 @@
 import '@adyen/adyen-web/dist/adyen.css'
-import { Box } from '@chakra-ui/react'
+import { Box, VStack } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import { useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { CheckoutSummary } from '../checkout-summary'
 import { CheckoutCustomerPayment } from './checkout-customer-payment'
 
 export type THandleClick = (params: {
@@ -58,22 +59,27 @@ export const StepPayment: React.FC = () => {
   }
 
   return (
-    <Box>
-      <>
-        <div>
-          {isPaymentRequired ? (
-            <CheckoutCustomerPayment
-              selectPayment={selectPayment}
-              autoSelectCallback={autoSelectCallback}
-              hasTitle={hasTitle}
-            />
-          ) : (
-            <p className="text-sm text-gray-400">
-              {t('stepPayment.amountZero')}
-            </p>
-          )}
-        </div>
-      </>
-    </Box>
+    <VStack gap={6} align="start" w="full">
+      <CheckoutSummary 
+        showEmail={true}
+        showBillingAddress={true}
+        showLicenseOwner={true}
+        heading={t('stepPayment.summaryHeading', 'Order Summary')}
+      />
+      
+      <Box w="full">
+        {isPaymentRequired ? (
+          <CheckoutCustomerPayment
+            selectPayment={selectPayment}
+            autoSelectCallback={autoSelectCallback}
+            hasTitle={hasTitle}
+          />
+        ) : (
+          <p className="text-sm text-gray-400">
+            {t('stepPayment.amountZero')}
+          </p>
+        )}
+      </Box>
+    </VStack>
   )
 }

@@ -1,4 +1,16 @@
 import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Radio, RadioGroup } from '@/components/ui/radio'
+import {
   Box,
   Button,
   Fieldset,
@@ -6,13 +18,15 @@ import {
   Heading,
   HStack,
   Input,
+  SimpleGrid,
   Stack,
   Switch,
   Text,
+  useStepsContext,
   VStack,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react'
-
-import { Radio, RadioGroup } from '@/components/ui/radio'
 /*import {
   RadioCardItem,
   RadioCardLabel,
@@ -25,6 +39,7 @@ import {
   CheckoutContext,
   LicenseOwner,
 } from '@/commercelayer/providers/checkout'
+import { CheckoutSummary } from '../checkout-summary'
 import { Field } from '@/components/ui/field'
 import type { Order } from '@commercelayer/sdk'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -53,17 +68,13 @@ interface Props {
   step: number
 }
 
-export interface ShippingToggleProps {
-  forceShipping?: boolean
-  disableToggle: boolean
-}
-
 export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const { t } = useTranslation()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editing, setEditing] = useState(false)
 
   const {
     saveLicenseOwner,
@@ -118,13 +129,17 @@ export const StepLicense: React.FC<Props> = () => {
 
     try {
       const result = await saveLicenseOwner(data, projectType === 'client')
-      
+
       if (!result.success) {
         setError(result.error || 'Failed to save license owner')
         return
       }
-      
+
       console.log('License owner saved successfully:', result.order)
+      // Close dialog if editing
+      if (editing) {
+        setEditing(false)
+      }
     } catch (e) {
       console.log('License save error: ', e)
       setError('An unexpected error occurred')
@@ -133,67 +148,22 @@ export const StepLicense: React.FC<Props> = () => {
     }
   }
 
-  // License summary component for when license is already completed
-  const LicenseSummary = () => (
-    <VStack gap={4} align="start">
-      <Heading size="md">
-        {t('stepLicense.summaryTitle', 'License Owner Information')}
-      </Heading>
-      
-      <Box bg="gray.50" p={4} borderRadius="md" w="full">
-        <VStack align="start" gap={2}>
-          <Text fontWeight="semibold">
-            {isLicenseForClient 
-              ? t('stepLicense.summaryClientTitle', 'License for Client')
-              : t('stepLicense.summaryYourselfTitle', 'License for Yourself')
-            }
-          </Text>
-          
-          {licenseOwner?.company && (
-            <Text>
-              <Text as="span" fontWeight="medium">Company:</Text> {licenseOwner.company}
-            </Text>
-          )}
-          
-          <Text>
-            <Text as="span" fontWeight="medium">Name:</Text> {licenseOwner.full_name}
-          </Text>
-          
-          <Text>
-            <Text as="span" fontWeight="medium">Address:</Text>{' '}
-            {licenseOwner.line_1}
-            {licenseOwner.line_2 && `, ${licenseOwner.line_2}`}
-          </Text>
-          
-          <Text>
-            <Text as="span" fontWeight="medium">Location:</Text>{' '}
-            {licenseOwner.city}, {licenseOwner.state_code} {licenseOwner.zip_code}
-          </Text>
-          
-          <Text>
-            <Text as="span" fontWeight="medium">Country:</Text> {licenseOwner.country_code}
-          </Text>
-        </VStack>
-      </Box>
-      
-      <Button variant="outline" size="sm">
-        {t('stepLicense.editButton', 'Edit License Information')}
-      </Button>
-    </VStack>
-  )
-
-  if (!checkoutCtx) {
-    return null
+  // Extracted form component for DRY reuse
+  interface LicenseOwnerFormProps {
+    showProjectTypeSelection?: boolean
+    showSubmitButton?: boolean
+    submitButtonText?: string
+    onCancel?: () => void
   }
 
-  // Show summary if license owner is already completed
-  if (hasLicenseOwner) {
-    return <LicenseSummary />
-  }
-
-  return (
-    <>
-      <VStack gap={'4'}>
+  const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
+    showProjectTypeSelection = true,
+    showSubmitButton = true,
+    submitButtonText,
+    onCancel,
+  }) => (
+    <VStack gap={4}>
+      {showProjectTypeSelection && (
         <RadioGroup
           value={projectType}
           onValueChange={(e) => setProjectType(e.value)}
@@ -206,166 +176,251 @@ export const StepLicense: React.FC<Props> = () => {
             ))}
           </HStack>
         </RadioGroup>
-        
-        <FormProvider {...form}>
-          <form
-            data-step="license"
-            autoComplete="off"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <Fieldset.Root size="lg" minW="sm">
-              <Fieldset.Content>
-                {projectType === 'client' ? (
-                  <>
-                    <Controller
-                      name="company"
-                      render={({ field, fieldState: { error } }) => (
-                        <AddressField
-                          label={t(
-                            'stepLicense.companyLabel',
-                            'License Owner/Company*'
-                          )}
-                          type="text"
-                          value={field.value}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
-                      )}
-                    />
+      )}
 
-                    <Controller
-                      name="full_name"
-                      render={({ field, fieldState: { error } }) => (
-                        <AddressField
-                          label={t('stepLicense.fullNameLabel', 'Full Name*')}
-                          type="text"
-                          value={field.value}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
+      <FormProvider {...form}>
+        <Box as="form" w="full" onSubmit={handleSubmit(onSubmit)}>
+          <VStack gap={4}>
+            {projectType === 'client' ? (
+              <>
+                <Controller
+                  name="company"
+                  render={({ field, fieldState: { error } }) => (
+                    <AddressField
+                      label={t(
+                        'stepLicense.companyLabel',
+                        'License Owner/Company*'
                       )}
+                      type="text"
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={error?.message}
                     />
+                  )}
+                />
 
-                    <Controller
-                      name="line_1"
-                      render={({ field, fieldState: { error } }) => (
-                        <AddressField
-                          label={t('stepLicense.addressLabel', 'Address*')}
-                          type="text"
-                          value={field.value}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
-                      )}
+                <Controller
+                  name="full_name"
+                  render={({ field, fieldState: { error } }) => (
+                    <AddressField
+                      label={t('stepLicense.fullNameLabel', 'Full Name*')}
+                      type="text"
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={error?.message}
                     />
+                  )}
+                />
 
-                    <Controller
-                      name="line_2"
-                      render={({ field, fieldState: { error } }) => (
-                        <AddressField
-                          label={t(
-                            'stepLicense.apartmentLabel',
-                            'Apartment, suite, etc.'
-                          )}
-                          type="text"
-                          value={field.value || ''}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
-                      )}
+                <Controller
+                  name="line_1"
+                  render={({ field, fieldState: { error } }) => (
+                    <AddressField
+                      label={t('stepLicense.addressLabel', 'Address*')}
+                      type="text"
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={error?.message}
                     />
+                  )}
+                />
 
-                    <Controller
-                      name="city"
-                      render={({ field, fieldState: { error } }) => (
-                        <AddressField
-                          label={t('stepLicense.cityLabel', 'City*')}
-                          type="text"
-                          value={field.value}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
+                <Controller
+                  name="line_2"
+                  render={({ field, fieldState: { error } }) => (
+                    <AddressField
+                      label={t(
+                        'stepLicense.apartmentLabel',
+                        'Apartment, suite, etc.'
                       )}
+                      type="text"
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      error={error?.message}
                     />
+                  )}
+                />
 
-                    <Controller
-                      name="zip_code"
-                      render={({ field, fieldState: { error } }) => (
-                        <AddressField
-                          label={t('stepLicense.zipCodeLabel', 'Zip Code*')}
-                          type="text"
-                          value={field.value}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
-                      )}
+                <Controller
+                  name="city"
+                  render={({ field, fieldState: { error } }) => (
+                    <AddressField
+                      label={t('stepLicense.cityLabel', 'City*')}
+                      type="text"
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={error?.message}
                     />
+                  )}
+                />
 
-                    <Controller
-                      name="state_code"
-                      render={({ field, fieldState: { error } }) => (
-                        <AddressField
-                          label={t('stepLicense.stateLabel', 'State/Province')}
-                          type="text"
-                          value={field.value || ''}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
-                      )}
+                <Controller
+                  name="zip_code"
+                  render={({ field, fieldState: { error } }) => (
+                    <AddressField
+                      label={t('stepLicense.zipCodeLabel', 'Zip Code*')}
+                      type="text"
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={error?.message}
                     />
+                  )}
+                />
 
-                    <Controller
-                      name="country_code"
-                      render={({ field, fieldState: { error } }) => (
-                        <CountrySelect
-                          label={t('stepLicense.countryLabel', 'Country*')}
-                          value={field.value}
-                          onChange={field.onChange}
-                          error={error?.message}
-                        />
-                      )}
+                <Controller
+                  name="state_code"
+                  render={({ field, fieldState: { error } }) => (
+                    <AddressField
+                      label={t('stepLicense.stateLabel', 'State/Province')}
+                      type="text"
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      error={error?.message}
                     />
-                  </>
-                ) : (
-                  <Text>
-                    {t(
-                      'stepLicense.billingAddressUsed',
-                      'Billing address will be used for license owner information.'
-                    )}
-                  </Text>
+                  )}
+                />
+
+                <Controller
+                  name="country_code"
+                  render={({ field, fieldState: { error } }) => (
+                    <CountrySelect
+                      label={t('stepLicense.countryLabel', 'Country*')}
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={error?.message}
+                    />
+                  )}
+                />
+              </>
+            ) : (
+              <Text>
+                {t(
+                  'stepLicense.billingAddressUsed',
+                  'Billing address will be used for license owner information.'
                 )}
+              </Text>
+            )}
 
-                {/* Display save errors */}
-                {error && (
-                  <Box color="red.500" fontSize="sm" mt={2}>
-                    {error}
-                  </Box>
+            {/* Display save errors */}
+            {error && (
+              <Box color="red.500" fontSize="sm" w="full" textAlign="left">
+                {error}
+              </Box>
+            )}
+
+            {/* Display form errors */}
+            {Object.keys(errors).length > 0 && (
+              <Box color="red.500" fontSize="sm" w="full" textAlign="left">
+                {t(
+                  'stepLicense.formErrors',
+                  'Please correct the errors above.'
                 )}
+              </Box>
+            )}
 
-                {/* Display form errors */}
-                {Object.keys(errors).length > 0 && (
-                  <Box color="red.500" fontSize="sm" mt={2}>
-                    {t(
-                      'stepLicense.formErrors',
-                      'Please correct the errors above.'
-                    )}
-                  </Box>
+            {showSubmitButton && (
+              <HStack
+                gap={3}
+                w="full"
+                justify={onCancel ? 'flex-end' : 'stretch'}
+              >
+                {onCancel && (
+                  <Button
+                    variant="outline"
+                    onClick={onCancel}
+                    disabled={isLocalLoader}
+                  >
+                    {t('common.cancel', 'Cancel')}
+                  </Button>
                 )}
-
                 <Button
                   type="submit"
                   loading={isLocalLoader}
                   disabled={isLocalLoader}
+                  flex={onCancel ? 'none' : '1'}
                 >
                   {isLocalLoader
                     ? t('stepLicense.saving', 'Saving...')
-                    : t('stepLicense.saveAndProceed', 'Save & proceed')}
+                    : submitButtonText ||
+                      t('stepLicense.saveAndProceed', 'Save & proceed')}
                 </Button>
-              </Fieldset.Content>
-            </Fieldset.Root>
-          </form>
-        </FormProvider>
-      </VStack>
-    </>
+              </HStack>
+            )}
+          </VStack>
+        </Box>
+      </FormProvider>
+    </VStack>
+  )
+
+  const LicenseSummary = () => (
+    <VStack gap={4} align="start">
+      <Heading size="md">
+        {t('stepLicense.summaryTitle', 'License Owner')}
+      </Heading>
+
+      <Box bg="gray.50" p={4} borderRadius="md" w="full">
+        <VStack align="start" gap={2}>
+          {/*<Text>
+            {isLicenseForClient
+              ? t('stepLicense.summaryClientTitle', 'License for Client')
+              : t('stepLicense.summaryYourselfTitle', 'License for Yourself')}
+          </Text>*/}
+
+          {licenseOwner?.company && <Text>{licenseOwner.company}</Text>}
+
+          <Text>{licenseOwner.full_name}</Text>
+
+          <Text>
+            {licenseOwner.line_1}
+            {licenseOwner.line_2 && `, ${licenseOwner.line_2}`}
+          </Text>
+
+          <Text>
+            {licenseOwner.city}, {licenseOwner.state_code}{' '}
+            {licenseOwner.zip_code}
+          </Text>
+
+          <Text>{licenseOwner.country_code}</Text>
+          <DialogRoot
+            lazyMount
+            open={editing}
+            onOpenChange={(e) => setEditing(e.open)}
+          >
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                {t('stepLicense.editButton', 'Edit address')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{'Edit license owner'}</DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                <LicenseOwnerForm
+                  showProjectTypeSelection={false}
+                  submitButtonText={t(
+                    'stepLicense.saveChanges',
+                    'Save Changes'
+                  )}
+                  onCancel={() => setEditing(false)}
+                />
+              </DialogBody>
+            </DialogContent>
+          </DialogRoot>
+        </VStack>
+      </Box>
+    </VStack>
+  )
+
+  if (!checkoutCtx) {
+    return null
+  }
+
+  // Show checkout summary and either license summary or form
+  return (
+    <VStack gap={6} align="start" w="full">
+      <CheckoutSummary heading={t('stepLicense.summaryHeading', 'Your details')} />
+      {hasLicenseOwner ? <LicenseSummary /> : <LicenseOwnerForm />}
+    </VStack>
   )
 }
