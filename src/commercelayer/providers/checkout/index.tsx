@@ -558,18 +558,19 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         const resource = { ...attributes, id }
         const updatedOrder = await cl.orders.update(resource, { include })
         console.log('updateOrder util: ', updatedOrder)
-        const currentOrder = await getOrderFromRef()
-        // @WARNING: is this `order` object getting updated by the `getOrder` callback?
+        
+        // Update the order ref with the fresh data from API
+        orderRef.current = updatedOrder
 
-        currentOrder &&
-          dispatch({
-            type: ActionType.UPDATE_ORDER,
-            payload: {
-              order: currentOrder,
-            },
-          })
+        // Dispatch the updated order to update the state
+        dispatch({
+          type: ActionType.UPDATE_ORDER,
+          payload: {
+            order: updatedOrder,
+          },
+        })
 
-        return { success: true, order: currentOrder }
+        return { success: true, order: updatedOrder }
       } catch (error: any) {
         return { success: false, error }
       }
