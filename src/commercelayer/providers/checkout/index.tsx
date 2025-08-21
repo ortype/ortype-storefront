@@ -183,6 +183,10 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
     isForClient: boolean
   ) => Promise<{ success: boolean; error?: string; order?: Order }>
 
+  // Payment submission registry
+  registerPaymentSubmitter: (submitter: () => Promise<boolean>) => void
+  submitRegisteredPayment: () => Promise<boolean>
+
   licenseOwner: LicenseOwner
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
@@ -257,6 +261,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 }) => {
   const orderRef = useRef<Order>()
   const [state, dispatch] = useReducer(reducer, initialState)
+  
+  // Payment submission registry
+  const paymentSubmitterRef = useRef<(() => Promise<boolean>) | null>(null)
 
   const { accessToken } = config
 
@@ -986,6 +993,32 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     [cl, orderId, setAddresses]
   )
 
+  // Payment submission registry methods
+  const registerPaymentSubmitter = useCallback(
+    (submitter: () => Promise<boolean>) => {
+      console.log('Registering payment submitter')
+      paymentSubmitterRef.current = submitter
+    },
+    []
+  )
+
+  const submitRegisteredPayment = useCallback(async (): Promise<boolean> => {
+    console.log('Attempting to submit registered payment')
+    if (!paymentSubmitterRef.current) {
+      console.log('No payment submitter registered')
+      return true // No payment form to submit, continue with order placement
+    }
+
+    try {
+      const result = await paymentSubmitterRef.current()
+      console.log('Payment submission result:', result)
+      return result
+    } catch (error) {
+      console.error('Error during payment submission:', error)
+      return false
+    }
+  }, [])
+
   useEffect(() => {
     fetchInitialOrder(orderId, accessToken)
   }, [orderId, accessToken])
@@ -1019,6 +1052,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         saveAddress,
         // Enhanced save method for license owner (orchestrates multiple steps)
         saveLicenseOwner,
+        // Payment submission registry
+        registerPaymentSubmitter,
+        submitRegisteredPayment,
       }}
     >
       {children}

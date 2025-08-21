@@ -30,7 +30,7 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
     return null
   }
 
-  const { order, isLoading, placeOrder } = checkoutCtx
+  const { order, isLoading, placeOrder, submitRegisteredPayment } = checkoutCtx
 
   const canPlaceOrder = order && !isLoading && !isPlacing && !disabled
 
@@ -44,39 +44,19 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
     try {
       setIsPlacing(true)
 
-      // Check if this is a Stripe payment that needs form submission first
-      const isStripePayment = order?.payment_source?.type === 'stripe_payments'
+      // Submit any registered payment form (e.g., Stripe) before placing order
+      console.log('Submitting registered payment form...')
+      const paymentSuccess = await submitRegisteredPayment()
 
-      if (isStripePayment) {
-        console.log('Stripe payment detected - submitting payment form first')
-
-        // Get the Stripe payment form submission function
-        // @ts-expect-error - Temporary access to global Stripe form method
-        const submitStripePayment = (window as any).submitStripePayment
-
-        if (submitStripePayment) {
-          console.log('Submitting Stripe payment form...')
-          const paymentSuccess = await submitStripePayment()
-
-          if (!paymentSuccess) {
-            console.error('Stripe payment failed')
-            if (onClick) {
-              onClick({ placed: false, order })
-            }
-            return
-          }
-
-          console.log(
-            'Stripe payment confirmed, proceeding with order placement'
-          )
-        } else {
-          console.error('Stripe payment form not available')
-          if (onClick) {
-            onClick({ placed: false, order })
-          }
-          return
+      if (!paymentSuccess) {
+        console.error('Payment submission failed')
+        if (onClick) {
+          onClick({ placed: false, order })
         }
+        return
       }
+
+      console.log('Payment confirmed, proceeding with order placement')
 
       // Call the checkout provider's placeOrder method
       await placeOrder(order)

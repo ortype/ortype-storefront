@@ -74,30 +74,45 @@ function StripePaymentForm({
     throw new Error('StripePaymentForm must be used within CheckoutProvider')
   }
 
-  const { order, setPayment } = checkoutCtx
+  const { order, setPayment, registerPaymentSubmitter } = checkoutCtx
 
-  // Set up form submission handler - avoid re-rendering the form
+  // Set up form submission handler and register with checkout context
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (formRef.current && stripe && elements) {
-      formRef.current.onsubmit = async () => {
+      // Create the submission function
+      const submitPayment = async (): Promise<boolean> => {
         return await onSubmit({
           event: formRef.current,
           stripe,
           elements,
         })
       }
+
+      // Set up form submission handler
+      formRef.current.onsubmit = async (e) => {
+        e.preventDefault()
+        return await submitPayment()
+      }
+
+      // Register the payment submitter with checkout context
+      registerPaymentSubmitter(submitPayment)
+
       // Store the form reference for external access
       if (setPaymentRef) {
         setPaymentRef(formRef)
       }
+
+      console.log('Stripe payment form registered with checkout context')
     }
     return () => {
       if (setPaymentRef) {
         setPaymentRef({ current: null })
       }
+      // Clear the payment submitter when component unmounts
+      registerPaymentSubmitter(async () => true)
     }
-  }, [formRef, stripe, elements]) // Deliberately limited dependencies
+  }, [formRef, stripe, elements, registerPaymentSubmitter]) // Deliberately limited dependencies
 
   // Notify parent when payment is ready
   useEffect(() => {
