@@ -39,22 +39,32 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
 
   // Fetch order directly from Commerce Layer API based on URL parameter
   const fetchOrderById = useCallback(async (orderIdParam: string) => {
-    if (!orderIdParam || !clientConfig) {
+    // Early return if no orderId
+    if (!orderIdParam) {
       setLocalLoading(false)
-      setLocalError('Missing order ID or client configuration')
+      setLocalError('Order ID is required')
+      return
+    }
+
+    // Early return if clientConfig is not available yet
+    if (!clientConfig) {
+      console.log('Client config not available yet, waiting...')
+      return // Don't set error, just wait for clientConfig
+    }
+
+    // Validate client config before proceeding
+    if (!isValidCommerceLayerConfig(clientConfig)) {
+      setLocalLoading(false)
+      setLocalError('Invalid Commerce Layer configuration')
       return
     }
 
     try {
       setLocalLoading(true)
       setLocalError(null)
+      console.log('Fetching order:', orderIdParam)
 
-      const cl = isValidCommerceLayerConfig(clientConfig) ? getCommerceLayer(clientConfig) : undefined
-      
-      if (!cl) {
-        throw new Error('Commerce Layer client not initialized')
-      }
-
+      const cl = getCommerceLayer(clientConfig)
       const orderResponse = await getOrder({ client: cl, orderId: orderIdParam })
       const fetchedOrder = orderResponse?.object
 
@@ -62,6 +72,7 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
         throw new Error('Order not found')
       }
 
+      console.log('Order fetched successfully:', fetchedOrder.id)
       setLocalOrder(fetchedOrder)
     } catch (error) {
       console.error('Error fetching order:', error)
@@ -71,12 +82,12 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
     }
   }, [clientConfig])
 
-  // Fetch order when orderId changes
+  // Fetch order when orderId OR clientConfig changes
   useEffect(() => {
-    if (orderId) {
+    if (orderId && clientConfig) {
       fetchOrderById(orderId)
     }
-  }, [orderId, fetchOrderById])
+  }, [orderId, clientConfig, fetchOrderById])
 
   useEffect(() => {
     if (!localLoading && localOrder) {
