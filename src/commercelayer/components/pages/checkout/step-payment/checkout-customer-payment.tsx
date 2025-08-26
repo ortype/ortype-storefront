@@ -3,10 +3,10 @@ import {
   PaymentSource,
   type CustomerSaveToWalletProps,
 } from '@/commercelayer/components'
-import { MouseEvent, useState, useContext, useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
-import { RadioGroup, Radio } from '@/components/ui/radio'
+import { Radio, RadioGroup } from '@/components/ui/radio'
 import { Box, Container, HStack, Text, VStack } from '@chakra-ui/react'
+import { MouseEvent, useContext, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { PaymentDetails } from './payment-details'
 import { PaymentSummaryList } from './payment-summary-list'
@@ -14,13 +14,13 @@ import { PaymentSummaryList } from './payment-summary-list'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field } from '@/components/ui/field'
 
-// Import the new payment source components
+// Import the payment source components
 import {
-  StripePayment,
   WireTransferPayment,
 } from '@/commercelayer/components/payment-sources'
-import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { CustomStripePayment } from '@/commercelayer/components/payment-sources/custom-credit-card'
 import { usePaymentMethodContext } from '@/commercelayer/components/payment/payment-method'
+import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
 interface Props {
   selectPayment: any
@@ -42,7 +42,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
 
   // State for selected payment method ID
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
-  const [checked, setChecked] = useState(false)
+  // Remove checkbox state to prevent re-renders
 
   // Reference to store the payment form for programmatic submission
   const paymentFormRef = useRef<HTMLFormElement | null>(null)
@@ -102,10 +102,8 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
     const handleClick = (
       e: MouseEvent<HTMLInputElement, globalThis.MouseEvent>
     ) => e?.stopPropagation()
-    const handleChange = () => {
-      setChecked(!checked)
-    }
 
+    // Use uncontrolled checkbox to prevent parent re-renders
     return (
       <div className="flex items-center mt-4">
         <Field label={t('stepPayment.saveToWallet')}>
@@ -115,9 +113,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
             data-testid="save-to-wallet"
             type="checkbox"
             className="form-checkbox"
-            checked={checked}
+            defaultChecked={false}
             onClick={handleClick}
-            onChange={handleChange}
+            // Remove onChange handler to prevent state updates
           />
         </Field>
       </div>
@@ -179,7 +177,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
         }
 
         return (
-          <StripePayment
+          <CustomStripePayment
             publishableKey={publishableKey}
             clientSecret={clientSecret}
             containerClassName="mt-4"

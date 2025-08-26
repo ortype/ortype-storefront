@@ -224,6 +224,9 @@ importers:
       react-masonry-css:
         specifier: ^1.0.16
         version: 1.0.16(react@18.3.1)
+      react-payment-inputs:
+        specifier: ^1.2.0
+        version: 1.2.0(react@18.3.1)(styled-components@6.1.15(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react-player:
         specifier: ^2.16.0
         version: 2.16.0(react@18.3.1)
@@ -5968,6 +5971,12 @@ packages:
     resolution: {integrity: sha512-KSW0hR2VQmltt/qAa3eXOctQDyOu7+ZBevtKgpNDSzT7k5LA/0XntNa9z9HKCdz3QlxmJHglTZ18e4sX4V8zZQ==}
     peerDependencies:
       react: '>=16.0.0'
+
+  react-payment-inputs@1.2.0:
+    resolution: {integrity: sha512-mo69K9W8c8uj+VnqM+pVBYTo8uRav+QEtGX82P7VxLLU8YQJ37gb863zEKP2977XwRcv4ZCRFKpPwPasFvBAeA==}
+    peerDependencies:
+      react: '>=16.8.0'
+      styled-components: '>=4.0.0'
 
   react-player@2.16.0:
     resolution: {integrity: sha512-mAIPHfioD7yxO0GNYVFD1303QFtI3lyyQZLY229UEAp/a10cSW+hPcakg0Keq8uWJxT2OiT/4Gt+Lc9bD6bJmQ==}
@@ -11873,7 +11882,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.8.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.0)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.57.1)
@@ -11903,7 +11912,7 @@ snapshots:
       stable-hash: 0.0.4
       tinyglobby: 0.2.10
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -11918,7 +11927,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.0)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -14041,6 +14050,11 @@ snapshots:
   react-masonry-css@1.0.16(react@18.3.1):
     dependencies:
       react: 18.3.1
+
+  react-payment-inputs@1.2.0(react@18.3.1)(styled-components@6.1.15(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+    dependencies:
+      react: 18.3.1
+      styled-components: 6.1.15(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   react-player@2.16.0(react@18.3.1):
     dependencies:

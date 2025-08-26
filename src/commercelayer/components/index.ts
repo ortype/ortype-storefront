@@ -18,10 +18,8 @@ export { PaymentMethodName } from './payment/payment-method-name'
 export { PaymentMethodPrice } from './payment/payment-method-price'
 
 // Payment source components
-export { StripePayment, WireTransferPayment } from './payment-sources'
+export { WireTransferPayment } from './payment-sources'
 export type {
-  StripePaymentProps,
-  StripeConfig,
   WireTransferPaymentProps,
   WireTransferConfig,
 } from './payment-sources'
