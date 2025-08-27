@@ -54,16 +54,19 @@ export const StepNav: React.FC<Props> = ({
       {steps.map((step, index) => {
         const stepComplete = isStepComplete(step.key, ctx)
         // Allow navigation to:
-        // 1. Any completed step (backward navigation)
-        // 2. The first step (always accessible)
+        // 1. Any completed step (backward navigation) - UNLESS order is complete
+        // 2. The first step (always accessible) - UNLESS order is complete
         // 3. The next incomplete step if all previous steps are complete (forward navigation)
         const allPreviousStepsComplete = steps
           .slice(0, index)
           .every((prevStep) => isStepComplete(prevStep.key, ctx))
         const canNavigateToStep =
-          stepComplete || // Can always navigate to completed steps
-          index === 0 || // First step always accessible
-          (!stepComplete && allPreviousStepsComplete) // Next incomplete step if prerequisites met
+          !ctx.isComplete && // Prevent all navigation if order is complete
+          (
+            stepComplete || // Can navigate to completed steps
+            index === 0 || // First step always accessible
+            (!stepComplete && allPreviousStepsComplete) // Next incomplete step if prerequisites met
+          )
 
         return (
           <Steps.Item
