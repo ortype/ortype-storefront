@@ -33,13 +33,13 @@ interface Props {
   steps: Array<{
     key: SingleStepEnum
     title: string
+    label: string
     description?: string
   }>
 }
 
 export const StepNav: React.FC<Props> = ({
   variant = 'line',
-  size = 'md',
   showDescription = false,
   steps,
 }) => {
@@ -50,7 +50,7 @@ export const StepNav: React.FC<Props> = ({
     return null
   }
   return (
-    <Steps.List size={size}>
+    <Steps.List>
       {steps.map((step, index) => {
         const stepComplete = isStepComplete(step.key, ctx)
         // Allow navigation to:
@@ -62,23 +62,21 @@ export const StepNav: React.FC<Props> = ({
           .every((prevStep) => isStepComplete(prevStep.key, ctx))
         const canNavigateToStep =
           !ctx.isComplete && // Prevent all navigation if order is complete
-          (
-            stepComplete || // Can navigate to completed steps
+          (stepComplete || // Can navigate to completed steps
             index === 0 || // First step always accessible
-            (!stepComplete && allPreviousStepsComplete) // Next incomplete step if prerequisites met
-          )
+            (!stepComplete && allPreviousStepsComplete)) // Next incomplete step if prerequisites met
 
         return (
           <Steps.Item
             key={step.key}
             index={index}
-            title={t(`step${step.key}.title`) || step.title}
+            title={t(`step${step.key}.label`) || step.label}
           >
             {canNavigateToStep ? (
               <Steps.Trigger>
                 <Steps.Indicator />
                 <Steps.Title>
-                  {t(`step${step.key}.title`) || step.title}
+                  {t(`step${step.key}.label`) || step.label}
                 </Steps.Title>
                 {showDescription && step.description && (
                   <Steps.Description>
@@ -91,7 +89,7 @@ export const StepNav: React.FC<Props> = ({
               <>
                 <Steps.Indicator />
                 <Steps.Title>
-                  {t(`step${step.key}.title`) || step.title}
+                  {t(`step${step.key}.label`) || step.label}
                 </Steps.Title>
                 {showDescription && step.description && (
                   <Steps.Description>

@@ -53,7 +53,8 @@
     "returnToCart": "Return to cart"
   },
   "stepEmail": {
-    "title": "Email",
+    "title": "You or me or we or they are buying fonts",
+    "label": "Email",
     "notSet": "Welcome!"
   },
   "stepCustomer": {
@@ -65,7 +66,8 @@
     "closeForm": "Choose address"
   },
   "stepAddress": {
-    "title": "Address",
+    "title": "Profile or account",
+    "label": "Address",
     "addNewAddress": "Add new address",
     "saveAddressBook": "Save this address in your account",
     "continueToDelivery": "Continue to delivery",
@@ -77,10 +79,12 @@
     "title": "Cart"
   },
   "stepLicense": {
-    "title": "License"
+    "title": "For you or for them",
+    "label": "License"
   },
   "stepShipping": {
-    "title": "Delivery",
+    "title": "Shipping",
+    "label": "Shipping",
     "shipment": "Shipment <Wrap>{{current}} of {{total}}</Wrap>",
     "notAvailable": "The entered destination is outside our shipping zone. Please change your shipping address or contact us for help",
     "outOfStock": "An item in your order is no longer available.",
@@ -96,7 +100,8 @@
   },
 
   "stepPayment": {
-    "title": "Payment",
+    "title": "Dreams can't be bought – but fonts can",
+    "label": "Payment",
     "methodUnselected": "Select a payment method",
     "creditCard": "Credit card",
     "wireTransfer": "Wire transfer",

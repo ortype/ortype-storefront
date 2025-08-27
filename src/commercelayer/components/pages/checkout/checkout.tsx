@@ -35,18 +35,40 @@ interface Props {
 
 const BASE_STEPS: Array<{
   key: SingleStepEnum
+  label: string
   title: string
   description?: string
 }> = [
-  { key: 'Email', title: 'Email', description: 'Enter your email address' },
+  {
+    key: 'Email',
+    label: 'Email',
+    title: 'You or me or we or they are buying fonts',
+    description: 'Enter your email address',
+  },
   {
     key: 'Address',
-    title: 'Address',
+    label: 'Address',
+    title: 'Profile or account',
     description: 'Enter billing and shipping addresses',
   },
-  { key: 'License', title: 'License', description: 'License information' },
-  { key: 'Shipping', title: 'Shipping', description: 'Select shipping method' },
-  { key: 'Payment', title: 'Payment', description: 'Payment and place order' },
+  {
+    key: 'License',
+    label: 'License',
+    title: 'For you or for them',
+    description: 'License information',
+  },
+  {
+    key: 'Shipping',
+    label: 'Shipping',
+    title: 'Shipping',
+    description: 'Select shipping method',
+  },
+  {
+    key: 'Payment',
+    label: 'Payment',
+    title: 'Dreams can’t be bought – but fonts can',
+    description: 'Payment and place order',
+  },
 ]
 
 const Checkout: React.FC<Props> = ({
@@ -173,8 +195,8 @@ const Checkout: React.FC<Props> = ({
   // NOTE: at the moment isComplete is true when I guess it should not be
   return (
     <Container my={24} maxW="50rem" centerContent>
-      <MainHeader orderNumber={orderNumber} />
       <Steps.RootProvider value={stepperHook}>
+        <MainHeader orderNumber={orderNumber} steps={steps} />
         <StepNav steps={steps} />
         {steps.map((step, index) => {
           const stepNumber = index + 1
