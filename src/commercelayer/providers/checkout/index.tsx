@@ -13,6 +13,7 @@ import CommerceLayer, {
 import React, {
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useReducer,
   useRef,
@@ -30,6 +31,7 @@ import {
   type AddressOperationResult,
 } from '@/commercelayer/utils/address'
 import { type AddressInput } from '@/commercelayer/providers/address'
+import { OrderStorageContext } from '@/commercelayer/providers/Order/Storage'
 import { ActionType, reducer } from './reducer'
 import {
   calculateSettings,
@@ -265,6 +267,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   // Payment submission registry
   const paymentSubmitterRef = useRef<(() => Promise<boolean>) | null>(null)
 
+  // Get OrderStorage context for localStorage clearing functionality
+  const orderStorageContext = useContext(OrderStorageContext)
+
   const { accessToken } = config
 
   const cl = isValidCommerceLayerConfig(config)
@@ -363,7 +368,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }) => {
     // dispatch({ type: ActionType.START_LOADING })
     // TODO Remove after fixing components
-    const currentOrder = params.order ?? (await fetchOrder(cl, orderId))
+    const currentOrder = params.order ?? (await fetchOrder(cl, orderId, {
+      clearWhenPlaced: orderStorageContext.clearWhenPlaced,
+      persistKey: orderStorageContext.persistKey,
+      deleteLocalOrder: orderStorageContext.deleteLocalOrder,
+    }))
 
     const others = calculateSettings(
       currentOrder,
@@ -386,7 +395,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   const autoSelectShippingMethod = async (order?: Order) => {
     dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = order ?? (await fetchOrder(cl, orderId))
+    const currentOrder = order ?? (await fetchOrder(cl, orderId, {
+      clearWhenPlaced: orderStorageContext.clearWhenPlaced,
+      persistKey: orderStorageContext.persistKey,
+      deleteLocalOrder: orderStorageContext.deleteLocalOrder,
+    }))
 
     const others = calculateSettings(
       currentOrder,
@@ -478,7 +491,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         console.log('Created payment source:', paymentSource)
 
         // Step 3: Refresh order to get the updated payment source
-        updatedOrder = await fetchOrder(cl, orderId)
+        updatedOrder = await fetchOrder(cl, orderId, {
+          clearWhenPlaced: orderStorageContext.clearWhenPlaced,
+          persistKey: orderStorageContext.persistKey,
+          deleteLocalOrder: orderStorageContext.deleteLocalOrder,
+        })
 
         console.log('Final updated order with payment source:', updatedOrder)
 
@@ -795,7 +812,16 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   )
 
   const getOrderFromRef = async () => {
-    return orderRef.current || (await fetchOrder(cl, orderId))
+    if (orderRef.current) {
+      return orderRef.current
+    }
+    
+    // Pass localStorage clearing parameters to fetchOrder
+    return await fetchOrder(cl, orderId, {
+      clearWhenPlaced: orderStorageContext.clearWhenPlaced,
+      persistKey: orderStorageContext.persistKey,
+      deleteLocalOrder: orderStorageContext.deleteLocalOrder,
+    })
   }
 
   // New address helper methods that call utils layer

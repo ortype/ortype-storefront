@@ -240,8 +240,16 @@ function isBillingAddressSameAsShippingAddress({
   return true
 }
 
-export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
-  return cl.orders.retrieve(orderId, {
+export const fetchOrder = async (
+  cl: CommerceLayerClient, 
+  orderId: string,
+  options?: {
+    clearWhenPlaced?: boolean
+    persistKey?: string
+    deleteLocalOrder?: (key: string) => void
+  }
+) => {
+  const order = await cl.orders.retrieve(orderId, {
     fields: {
       orders: [
         'id',
@@ -270,6 +278,7 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
         'payment_source',
         'customer',
         'metadata',
+        'editable', // Add editable field to check if order is placed
       ],
       shipments: ['shipping_method', 'available_shipping_methods'],
       customer: ['customer_addresses'],
@@ -291,6 +300,16 @@ export const fetchOrder = async (cl: CommerceLayerClient, orderId: string) => {
       'customer.customer_addresses.address',
     ],
   })
+
+  // Clear localStorage if order is placed (non-editable) and clearWhenPlaced is true
+  // This follows the same pattern as Commerce Layer React Components
+  if (options?.clearWhenPlaced && order.editable === false) {
+    if (options.persistKey && options.deleteLocalOrder) {
+      options.deleteLocalOrder(options.persistKey)
+    }
+  }
+
+  return order
 }
 
 /**
