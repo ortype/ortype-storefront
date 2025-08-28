@@ -241,7 +241,7 @@ function isBillingAddressSameAsShippingAddress({
 }
 
 export const fetchOrder = async (
-  cl: CommerceLayerClient, 
+  cl: CommerceLayerClient,
   orderId: string,
   options?: {
     clearWhenPlaced?: boolean
@@ -281,7 +281,6 @@ export const fetchOrder = async (
         'editable', // Add editable field to check if order is placed
       ],
       shipments: ['shipping_method', 'available_shipping_methods'],
-      customer: ['customer_addresses'],
       customer_addresses: ['address'],
     },
     include: [
@@ -303,8 +302,25 @@ export const fetchOrder = async (
 
   // Clear localStorage if order is placed (non-editable) and clearWhenPlaced is true
   // This follows the same pattern as Commerce Layer React Components
-  if (options?.clearWhenPlaced && order.editable === false) {
+  // Check both editable field and status to ensure order is actually placed
+  const isOrderPlaced = order.status === 'placed' || order.editable === false
+  
+  // Debug logging for development to track localStorage clearing
+  if (process.env.NODE_ENV === 'development') {
+    console.log('fetchOrder - localStorage clearing check:', {
+      orderId: order.id,
+      status: order.status,
+      editable: order.editable,
+      isOrderPlaced,
+      clearWhenPlaced: options?.clearWhenPlaced,
+      willClear: options?.clearWhenPlaced && isOrderPlaced,
+      persistKey: options?.persistKey,
+    })
+  }
+  
+  if (options?.clearWhenPlaced && isOrderPlaced) {
     if (options.persistKey && options.deleteLocalOrder) {
+      console.log('fetchOrder: Clearing localStorage for placed order:', options.persistKey)
       options.deleteLocalOrder(options.persistKey)
     }
   }
@@ -381,6 +397,8 @@ export const saveCustomerUser = async ({
       customer_email: customerEmail,
     })
 
+    console.log('saveCustomerUser: order update return: ', updatedOrder)
+
     return { success: true, order: updatedOrder }
   } catch (error) {
     return { success: false, error }
@@ -389,16 +407,21 @@ export const saveCustomerUser = async ({
 
 export async function checkIfShipmentRequired(
   cl: CommerceLayerClient,
-  orderId: string
+  orderId: string,
+  cachedOrder?: Order
 ): Promise<boolean> {
-  const lineItems = (
-    await cl.orders.retrieve(orderId, {
+  // Use cached order if available and includes line_items
+  let order = cachedOrder
+  if (!order || !order.line_items) {
+    order = await cl.orders.retrieve(orderId, {
       fields: {
         line_items: ['item_type', 'item'],
       },
       include: ['line_items', 'line_items.item'],
     })
-  ).line_items?.filter(
+  }
+
+  const lineItems = order.line_items?.filter(
     (line_item) =>
       LINE_ITEMS_SHIPPABLE.includes(line_item.item_type as TypeAccepted) &&
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -487,6 +510,26 @@ export function calculateSettings(
     order.customer?.customer_addresses || customerAddress
   )
 
+  // Improved hasLineItems calculation with better null/undefined handling
+  // and fallback for hot reload scenarios
+  const hasLineItems = Boolean(
+    order?.line_items &&
+      Array.isArray(order.line_items) &&
+      order.line_items.length > 0
+  )
+
+  // Debug logging for development to track hasLineItems state
+  if (process.env.NODE_ENV === 'development') {
+    console.log('calculateSettings - hasLineItems calculation:', {
+      hasOrder: !!order,
+      hasLineItemsArray: !!order?.line_items,
+      isArray: Array.isArray(order?.line_items),
+      lineItemsLength: order?.line_items?.length || 0,
+      finalHasLineItems: hasLineItems,
+      orderId: order?.id,
+    })
+  }
+
   return {
     isGuest: Boolean(order.guest),
     shippingCountryCodeLock: order.shipping_country_code_lock,
@@ -497,7 +540,7 @@ export function calculateSettings(
     licenseSize: order.metadata?.license?.size,
     emailAddress: order.customer_email,
     hasCustomer: Boolean(order.customer?.id),
-    hasLineItems: Boolean(order.line_items && order.line_items.length > 0),
+    hasLineItems,
     ...calculatedAddresses,
     ...(isShipmentRequired
       ? calculateSelectedShipments(prepareShipments(order.shipments))

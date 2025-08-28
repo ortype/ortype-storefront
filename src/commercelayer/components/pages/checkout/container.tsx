@@ -5,7 +5,7 @@ import { getOrder } from '@/commercelayer/utils/getOrder'
 import getCommerceLayer, { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
 import { Text } from '@chakra-ui/react'
 import { useParams } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import type { Order } from '@commercelayer/sdk'
 
 interface Props {
@@ -36,6 +36,12 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
 
   const [fetching, setFetching] = useState(true)
   const [valid, setValid] = useState(true)
+  
+  // Ref to prevent duplicate isValidCheckout calls for the same order
+  const validatedOrderRef = useRef<string | null>(null)
+  
+  // Ref to prevent duplicate order fetches for the same orderId
+  const fetchedOrderRef = useRef<string | null>(null)
 
   // Fetch order directly from Commerce Layer API based on URL parameter
   const fetchOrderById = useCallback(async (orderIdParam: string) => {
@@ -77,22 +83,37 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
     } catch (error) {
       console.error('Error fetching order:', error)
       setLocalError(error instanceof Error ? error.message : 'Failed to fetch order')
+      // Reset fetch ref on error so we can retry if needed
+      fetchedOrderRef.current = null
     } finally {
       setLocalLoading(false)
     }
   }, [clientConfig])
 
-  // Fetch order when orderId OR clientConfig changes
+  // Fetch order when orderId OR clientConfig changes (but only once per orderId)
+  // This prevents duplicate fetches when clientConfig updates but orderId remains the same
   useEffect(() => {
-    if (orderId && clientConfig) {
+    if (orderId && clientConfig && isValidCommerceLayerConfig(clientConfig) && fetchedOrderRef.current !== orderId) {
+      console.log('Fetching order for the first time:', orderId)
+      fetchedOrderRef.current = orderId
       fetchOrderById(orderId)
     }
   }, [orderId, clientConfig, fetchOrderById])
 
+  // Validate and refresh the order once per checkout session
+  // This useEffect runs isValidCheckout which:
+  // 1. Refreshes the order (recalculates prices, taxes, inventory)
+  // 2. Clears existing payment methods for a clean checkout start
+  // 3. Validates the order has shoppable line items
+  // 4. Sets autorefresh=true for real-time updates during checkout
   useEffect(() => {
-    if (!localLoading && localOrder) {
-      console.log('isValidCheckout running with local order:')
+    if (!localLoading && localOrder && validatedOrderRef.current !== localOrder.id) {
+      console.log('isValidCheckout running with local order:', localOrder.id)
       setFetching(true)
+      
+      // Mark this order as being validated to prevent duplicate calls
+      validatedOrderRef.current = localOrder.id
+      
       isValidCheckout(
         orderId,
         localOrder,
@@ -104,11 +125,18 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
         setFetching(false)
         setValid(validCheckout)
         console.log('validCheckout: then() ', validCheckout)
+      }).catch((error) => {
+        console.error('isValidCheckout error:', error)
+        setFetching(false)
+        setValid(false)
+        // Reset validation ref on error so we can retry if needed
+        validatedOrderRef.current = null
       })
     } else if (!localLoading && localError) {
       // If there's an error loading the order, mark as invalid
       setFetching(false)
       setValid(false)
+      validatedOrderRef.current = null
     }
   }, [orderId, localLoading, localOrder, localError, paymentReturn, redirectResult, clientConfig])
 
@@ -149,7 +177,7 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
   }
 
   return (
-    <CheckoutProvider config={clientConfig} orderId={orderId}>
+    <CheckoutProvider config={clientConfig} orderId={orderId} initialOrder={localOrder}>
       {children}
     </CheckoutProvider>
   )

@@ -15,6 +15,25 @@ export const defaultSettings: UseCheckoutSettingsOrInvalid = {
   isValid: false,
 }
 
+/**
+ * Validates and prepares an order for checkout by:
+ * 1. Refreshing order data (recalculates prices, taxes, inventory, discounts)
+ * 2. Clearing existing payment methods for a clean checkout start
+ * 3. Validating the order contains shoppable line items
+ * 4. Enabling autorefresh for real-time updates during checkout
+ * 
+ * @param orderId - The Commerce Layer order ID
+ * @param order - The order object from Commerce Layer
+ * @param isLoading - Whether the order is still being fetched
+ * @param paymentReturn - Whether user is returning from external payment (PayPal, etc.)
+ * @param redirectResult - Result from external payment redirect
+ * @param config - Commerce Layer client configuration
+ * 
+ * @returns Promise resolving to validation result
+ * 
+ * IMPORTANT: This function makes an API call to Commerce Layer to refresh the order.
+ * It should only be called once per checkout session to avoid rate limiting.
+ */
 export const isValidCheckout = async (
   orderId: string | undefined,
   order: Order,
@@ -65,11 +84,16 @@ export const isValidCheckout = async (
           console.log('Invalid checkout: missing SDK not initalized')
           return invalidateCheckout()
         }
+        // CRITICAL API CALL: Refresh and prepare order for checkout
+        // This single API call:
+        // - _refresh: true → Recalculates prices, taxes, shipping, inventory
+        // - payment_method: null → Clears existing payment methods
+        // - autorefresh: true → Enables real-time updates during checkout
         await cl.orders.update({
           id: orderId,
-          _refresh,
-          payment_method: cl.payment_methods.relationship(null),
-          ...(!order.autorefresh && { autorefresh: true }),
+          _refresh,                                       // Triggers Commerce Layer recalculation
+          payment_method: cl.payment_methods.relationship(null), // Reset payment for clean start
+          ...(!order.autorefresh && { autorefresh: true }), // Enable live updates
         })
       } catch {
         console.log('error refreshing order')

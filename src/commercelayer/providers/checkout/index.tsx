@@ -253,6 +253,7 @@ export const useCheckoutContext = () => {
 interface CheckoutProviderProps {
   config: CLayerClientConfig
   orderId: string
+  initialOrder?: Order
   children?: JSX.Element[] | JSX.Element | null
 }
 
@@ -260,8 +261,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   children,
   orderId,
   config,
+  initialOrder,
 }) => {
-  const orderRef = useRef<Order>()
+  const orderRef = useRef<Order>(initialOrder)
   const [state, dispatch] = useReducer(reducer, initialState)
   
   // Payment submission registry
@@ -283,13 +285,21 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     orderRef.current = order
   }
 
-  const fetchInitialOrder = async (orderId?: string, accessToken?: string) => {
+  const fetchInitialOrder = async ({
+    orderId,
+    accessToken,
+    preloadedOrder,
+  }: {
+    orderId?: string
+    accessToken?: string
+    preloadedOrder?: Order
+  }) => {
     if (!orderId || !accessToken) {
       return
     }
     dispatch({ type: ActionType.START_LOADING })
-    const order = await getOrderFromRef()
-    const isShipmentRequired = await checkIfShipmentRequired(cl, orderId)
+    const order = preloadedOrder ?? (await getOrderFromRef())
+    const isShipmentRequired = await checkIfShipmentRequired(cl, orderId, order)
 
     const addressInfos = await checkAndSetDefaultAddressForOrder({
       cl,
@@ -297,6 +307,17 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
 
     const others = calculateSettings(order, isShipmentRequired)
+
+    // Debug logging for development to track order initialization
+    if (process.env.NODE_ENV === 'development') {
+      console.log('CheckoutProvider - fetchInitialOrder:', {
+        orderId: order?.id,
+        hasLineItems: others.hasLineItems,
+        lineItemsCount: order?.line_items?.length || 0,
+        isShipmentRequired,
+        orderStatus: order?.status,
+      })
+    }
 
     dispatch({
       type: ActionType.SET_ORDER,
@@ -321,7 +342,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     // Update the order ref with the current order to keep cache fresh
     orderRef.current = currentOrder
 
-    const isShipmentRequired = await checkIfShipmentRequired(cl, orderId)
+    const isShipmentRequired = await checkIfShipmentRequired(cl, orderId, currentOrder)
 
     const others = calculateSettings(
       currentOrder,
@@ -1046,8 +1067,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }, [])
 
   useEffect(() => {
-    fetchInitialOrder(orderId, accessToken)
-  }, [orderId, accessToken])
+    fetchInitialOrder({ orderId, accessToken, preloadedOrder: initialOrder })
+  }, [orderId, accessToken, initialOrder])
 
   return (
     <CheckoutContext.Provider
