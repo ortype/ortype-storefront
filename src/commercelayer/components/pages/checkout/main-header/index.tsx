@@ -1,4 +1,4 @@
-import { Heading, useSteps } from '@chakra-ui/react'
+import { Heading, useSteps, useStepsContext } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import type { SingleStepEnum } from '../types'
 
@@ -14,12 +14,11 @@ interface Props {
 
 export const MainHeader: React.FC<Props> = ({ orderNumber, steps }) => {
   const { t } = useTranslation()
-  const stepperHook = useSteps()
-  
+  const stepsContext = useStepsContext()
   // Get the current active step
-  const currentStep = steps[stepperHook.value] || steps[0]
+  const currentStep = steps[stepsContext.value] || steps[0]
   const displayTitle = currentStep?.title || t('general.checkoutTitle')
-  
+
   return (
     <>
       <Heading

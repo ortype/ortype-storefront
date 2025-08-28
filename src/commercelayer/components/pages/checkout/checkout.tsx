@@ -42,13 +42,13 @@ const BASE_STEPS: Array<{
   {
     key: 'Email',
     label: 'Email',
-    title: 'You or me or we or they are buying fonts',
+    title: 'Profile or account',
     description: 'Enter your email address',
   },
   {
     key: 'Address',
     label: 'Address',
-    title: 'Profile or account',
+    title: 'Billing or invoicing details',
     description: 'Enter billing and shipping addresses',
   },
   {
@@ -157,6 +157,7 @@ const Checkout: React.FC<Props> = ({
       // Even if we don't change step, mark advancement as done to prevent retriggering
       setInitialStepAdvancementDone(true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     ctx?.isFirstLoading,
     ctx?.hasEmailAddress,
@@ -186,13 +187,10 @@ const Checkout: React.FC<Props> = ({
     checkoutComSession = params['cko-session-id'] as string
   }
 
-  console.log({ checkoutCtx: ctx, isFirstLoading: ctx?.isFirstLoading })
-
   if (!ctx || ctx.isFirstLoading) {
     return <div>{'Loading...'}</div>
   }
 
-  // NOTE: at the moment isComplete is true when I guess it should not be
   return (
     <Container my={24} maxW="50rem" centerContent>
       <Steps.RootProvider value={stepperHook}>
