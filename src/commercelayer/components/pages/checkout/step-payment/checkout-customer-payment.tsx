@@ -15,16 +15,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Field } from '@/components/ui/field'
 
 // Import the payment source components
-import {
-  WireTransferPayment,
-} from '@/commercelayer/components/payment-sources'
+import { WireTransferPayment } from '@/commercelayer/components/payment-sources'
 import { CustomStripePayment } from '@/commercelayer/components/payment-sources/custom-credit-card'
 import { usePaymentMethodContext } from '@/commercelayer/components/payment/payment-method'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
 interface Props {
   selectPayment: any
-  hasTitle: boolean
   autoSelectCallback: () => void
 }
 
@@ -34,7 +31,6 @@ type TTemplateCustomerCards = Parameters<
 
 export const CheckoutCustomerPayment: React.FC<Props> = ({
   selectPayment,
-  hasTitle,
   autoSelectCallback,
 }) => {
   const { t } = useTranslation()
@@ -226,12 +222,6 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
 
   return (
     <VStack gap={'4'}>
-      {hasTitle && (
-        <Text fontSize="lg" fontWeight="semibold">
-          {t('stepPayment.title', 'Select Payment Method')}
-        </Text>
-      )}
-
       {/* Always show payment methods as selectable radio buttons */}
       {paymentMethods.length > 0 && (
         <>

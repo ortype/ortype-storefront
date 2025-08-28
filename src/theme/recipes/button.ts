@@ -154,6 +154,18 @@ export const buttonRecipe = defineRecipe({
           bg: 'colorPalette.subtle',
         },
       },
+      text: {
+        px: 0,
+        textDecoration: 'underline',
+        textUnderlineOffset: '3px',
+        textDecorationThickness: '2px',
+        textDecorationColor: 'black',
+        _hover: {
+          textDecoration: 'underline',
+          textUnderlineOffset: '3px',
+          textDecorationColor: 'transparent',
+        },
+      },
       ghost: {
         color: 'colorPalette.fg',
         _hover: {

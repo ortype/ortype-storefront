@@ -4,7 +4,7 @@ export const colors = defineTokens.colors({
   brand: {
     50: { value: '#eeeeee' }, // Lighter white
     100: { value: '#ededed' },
-    200: { value: '#cccccc' },
+    200: { value: '#C6C6C6' }, // #cccccc
     300: { value: '#b3b3b3' },
     400: { value: '#999999' },
     500: { value: '#808080' },

@@ -24,11 +24,11 @@ import { SingleStyles } from './single-styles'
 export const CheckoutButton = ({ isDisabled, order }) => {
   return (
     <Button
+      asChild
+      disabled={isDisabled}
       variant={'solid'}
       bg={'red'}
       borderRadius={'5rem'}
-      disabled={isDisabled}
-      asChild
       size={'sm'}
       fontSize={'md'}
       alignSelf={'center'}

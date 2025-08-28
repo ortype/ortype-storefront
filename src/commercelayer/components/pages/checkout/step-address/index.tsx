@@ -107,14 +107,17 @@ const StepAddressContainer: React.FC<{
               onClick={handleProceed}
               loading={isLoading}
               disabled={!canProceed || isLoading}
-              colorScheme="blue"
-              variant="solid"
+              variant={'outline'}
+              bg={'white'}
+              borderRadius={'5rem'}
+              size={'sm'}
+              fontSize={'md'}
             >
               {isLoading
                 ? 'Saving Address...'
                 : isShipmentRequired
-                ? t('stepAddress.continueToShipping', 'Continue to Shipping')
-                : t('stepAddress.continueToLicense', 'Continue to License')}
+                ? t('stepAddress.continueToShipping', 'Proceed')
+                : t('stepAddress.continueToLicense', 'Proceed')}
             </Button>
           </Box>
         </>

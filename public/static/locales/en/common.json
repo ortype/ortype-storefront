@@ -73,7 +73,7 @@
     "continueToDelivery": "Continue to delivery",
     "notSet": "Fill in your Billing/Shipping Address",
     "closeForm": "Choose address",
-    "continueToLicense": "Continue to license"
+    "continueToLicense": "Save & Proceed"
   },
   "stepCart": {
     "title": "Cart"

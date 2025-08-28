@@ -120,7 +120,7 @@ export const OrderSummary: React.FC<Props> = ({ readonly }) => {
         </Box>
       }
     >
-      <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
+      <Box bg={'#FFF8D3'} mt={4} px={4} py={3} borderRadius={20} w={'full'}>
         <Heading
           as={'h5'}
           fontSize={'xl'}

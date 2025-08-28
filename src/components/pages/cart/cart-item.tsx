@@ -1,8 +1,4 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { Box, Flex, Link, SimpleGrid, Stack, Text } from '@chakra-ui/react'
-import { type LineItem, type SkuOption } from '@commercelayer/sdk'
-import { Size, sizes, Type, types } from '@/lib/settings'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
 import {
   SelectContent,
   SelectItem,
@@ -10,7 +6,18 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui/license-type-select'
-import { createListCollection } from '@chakra-ui/react'
+import { Size, sizes, Type, types } from '@/lib/settings'
+import {
+  Box,
+  createListCollection,
+  Flex,
+  Link,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { type LineItem, type SkuOption } from '@commercelayer/sdk'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 
 interface Props {
   types: Type[]
@@ -103,8 +110,8 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
 
   return (
     <>
-      <SimpleGrid columns={2} spacing={3} bg={'brand.50'} p={3}>
-        <Stack direction={'row'} spacing={2} alignItems={'center'}>
+      <SimpleGrid columns={2} gap={3} bg={'brand.50'} p={3}>
+        <Stack direction={'row'} gap={2} alignItems={'center'}>
           <Text fontSize={'2xl'} as={'span'} className={lineItem.sku_code}>
             {lineItem.name}
           </Text>

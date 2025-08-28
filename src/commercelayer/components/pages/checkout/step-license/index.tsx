@@ -14,6 +14,7 @@ import {
   Box,
   Button,
   Fieldset,
+  Flex,
   Group,
   Heading,
   HStack,
@@ -39,7 +40,6 @@ import {
   CheckoutContext,
   LicenseOwner,
 } from '@/commercelayer/providers/checkout'
-import { CheckoutSummary } from '../checkout-summary'
 import { Field } from '@/components/ui/field'
 import type { Order } from '@commercelayer/sdk'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -48,6 +48,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
+import { CheckoutSummary } from '../checkout-summary'
 
 // License owner form schema
 const licenseOwnerSchema = z.object({
@@ -72,6 +73,7 @@ export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const { t } = useTranslation()
 
+  const stepsContext = useStepsContext()
   const [isLocalLoader, setIsLocalLoader] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editing, setEditing] = useState(false)
@@ -187,6 +189,7 @@ export const StepLicense: React.FC<Props> = () => {
     showSubmitButton = true,
     submitButtonText,
     onCancel,
+    isDialog,
   }) => (
     <VStack gap={4}>
       {showProjectTypeSelection && (
@@ -207,7 +210,7 @@ export const StepLicense: React.FC<Props> = () => {
       <FormProvider {...form}>
         <Box as="form" w="full" onSubmit={handleSubmit(onSubmit)}>
           <VStack gap={4}>
-            {projectType === 'client' ? (
+            {projectType === 'client' || isDialog ? (
               <>
                 <Controller
                   name="company"
@@ -384,12 +387,19 @@ export const StepLicense: React.FC<Props> = () => {
   )
 
   const LicenseSummary = () => (
-    <VStack gap={4} align="start">
-      <Heading size="md">
-        {t('stepLicense.summaryTitle', 'License Owner')}
-      </Heading>
-
-      <Box bg="gray.50" p={4} borderRadius="md" w="full">
+    <VStack gap={2} mb={4} align="start">
+      <Box
+        px={3}
+        fontSize={'xs'}
+        textTransform={'uppercase'}
+        color={'#737373'}
+        asChild
+      >
+        <Flex gap={1} alignItems={'center'}>
+          {t('stepLicense.summaryTitle', 'License Owner')}
+        </Flex>
+      </Box>
+      <Box bg={'brand.50'} p={4} w="full">
         <VStack align="start" gap={2}>
           {/*<Text>
             {isLicenseForClient
@@ -418,7 +428,7 @@ export const StepLicense: React.FC<Props> = () => {
             onOpenChange={(e) => setEditing(e.open)}
           >
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="text" size="sm">
                 {t('stepLicense.editButton', 'Edit address')}
               </Button>
             </DialogTrigger>
@@ -428,6 +438,7 @@ export const StepLicense: React.FC<Props> = () => {
               </DialogHeader>
               <DialogBody>
                 <LicenseOwnerForm
+                  isDialog={true}
                   showProjectTypeSelection={false}
                   submitButtonText={t(
                     'stepLicense.saveChanges',
@@ -440,6 +451,17 @@ export const StepLicense: React.FC<Props> = () => {
           </DialogRoot>
         </VStack>
       </Box>
+      <Button
+        type={'button'}
+        variant={'outline'}
+        bg={'white'}
+        borderRadius={'5rem'}
+        size={'sm'}
+        fontSize={'md'}
+        onClick={() => stepsContext.setStep(3)}
+      >
+        {'Proceed'}
+      </Button>
     </VStack>
   )
 
@@ -449,7 +471,7 @@ export const StepLicense: React.FC<Props> = () => {
 
   // Show checkout summary and either license summary or form
   return (
-    <VStack gap={6} align="start" w="full">
+    <VStack gap={2} align="start" w="full">
       <CheckoutSummary
         heading={t('stepLicense.summaryHeading', 'Your details')}
       />

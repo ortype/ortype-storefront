@@ -1,12 +1,12 @@
+import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { Button, useStepsContext } from '@chakra-ui/react'
+import { Order } from '@commercelayer/sdk'
 import React, {
   useContext,
   useState,
-  type ReactNode,
   type MouseEvent,
+  type ReactNode,
 } from 'react'
-import { Order } from '@commercelayer/sdk'
-import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { useStepsContext } from '@chakra-ui/react'
 
 interface PlaceOrderButtonProps {
   className?: string
@@ -64,7 +64,7 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
       await placeOrder(order)
 
       console.log('Order placed successfully, advancing to completed step')
-      
+
       // Advance to the completed step using the Steps context
       if (stepsContext) {
         // Set to a step index beyond the last step to trigger completed content
@@ -89,15 +89,19 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
   }
 
   return (
-    <button
+    <Button
       type="submit"
-      className={className}
+      variant={'solid'}
+      bg={'red'}
+      borderRadius={'5rem'}
+      size={'sm'}
+      fontSize={'md'}
       onClick={handleClick}
       disabled={!canPlaceOrder}
       {...props}
     >
       {children || (isPlacing ? 'Placing Order...' : label)}
-    </button>
+    </Button>
   )
 }
 

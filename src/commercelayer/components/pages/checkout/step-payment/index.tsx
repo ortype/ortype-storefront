@@ -24,7 +24,6 @@ export const StepPayment: React.FC = () => {
   const [hasMultiplePaymentMethods, setHasMultiplePaymentMethods] =
     useState(false)
   const [autoSelected, setAutoselected] = useState(false)
-  const [hasTitle, setHasTitle] = useState(true)
 
   const { isPaymentRequired, setPayment } = checkoutCtx
 
@@ -33,7 +32,6 @@ export const StepPayment: React.FC = () => {
   useEffect(() => {
     // If single payment methods and has multiple payment methods, we hide the label of the box
     if (autoSelected && hasMultiplePaymentMethods) {
-      setHasTitle(false)
     }
   }, [autoSelected, hasMultiplePaymentMethods])
 
@@ -64,7 +62,7 @@ export const StepPayment: React.FC = () => {
         showEmail={true}
         showBillingAddress={true}
         showLicenseOwner={true}
-        heading={t('stepPayment.summaryHeading', 'Order Summary')}
+        heading={t('stepPayment.summaryHeading', 'Order Details')}
       />
 
       <Box w="full">
@@ -72,7 +70,6 @@ export const StepPayment: React.FC = () => {
           <CheckoutCustomerPayment
             selectPayment={selectPayment}
             autoSelectCallback={autoSelectCallback}
-            hasTitle={hasTitle}
           />
         ) : (
           <p className="text-sm text-gray-400">{t('stepPayment.amountZero')}</p>

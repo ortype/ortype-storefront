@@ -222,8 +222,8 @@ const Checkout: React.FC<Props> = ({
             orderNumber={orderNumber}
           />
         </Steps.CompletedContent>
+        <OrderSummary />
       </Steps.RootProvider>
-      <OrderSummary />
     </Container>
   )
 }

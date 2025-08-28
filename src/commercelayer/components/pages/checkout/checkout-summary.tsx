@@ -1,16 +1,18 @@
+import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import {
+  Box,
   Button,
+  Flex,
   Heading,
   HStack,
   Text,
-  VStack,
   useStepsContext,
+  VStack,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
 interface CheckoutSummaryProps {
   /**
@@ -40,7 +42,7 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
   showBillingAddress = true,
   showLicenseOwner = false,
   heading,
-  mb = 6,
+  mb = 2,
 }) => {
   const checkoutCtx = useContext(CheckoutContext)
   const stepsContext = useStepsContext()
@@ -81,7 +83,7 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
     if (country_code) addressParts.push(country_code)
 
     return (
-      <Wrap gap={3}>
+      <Wrap gap={2}>
         {addressParts.map((part, index) => (
           <WrapItem key={index}>
             <Text>{part}</Text>
@@ -105,26 +107,69 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
   }
 
   return (
-    <VStack gap={4} align="start" w="full" mb={mb}>
-      <Heading size="sm" color="gray.600">
-        {heading || t('checkoutSummary.heading', 'Checkout Summary')}
-      </Heading>
-
+    <VStack gap={2} align="start" w="full" mb={mb}>
       <VStack gap={2} align="start" w="full">
+        <Box
+          px={3}
+          fontSize={'xs'}
+          textTransform={'uppercase'}
+          color={'#737373'}
+          asChild
+        >
+          <Flex gap={1} alignItems={'center'}>
+            {heading || t('checkoutSummary.heading', 'Checkout Summary')}
+          </Flex>
+        </Box>
         {/* Email Address */}
         {showEmail && checkoutCtx?.emailAddress && (
-          <HStack justify="space-between" w="full">
-            <Text fontSize="sm" color="gray.700">
-              <Text as="span" fontWeight="medium">
-                {t('checkoutSummary.emailLabel', 'Email:')}
-              </Text>{' '}
+          <HStack
+            justify="space-between"
+            w="full"
+            bg={'brand.50'}
+            py={2}
+            px={3}
+            h={8}
+          >
+            <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
+              {t('checkoutSummary.emailLabel', 'Email')}
+            </Text>{' '}
+            <Box flexGrow={1} pl={4}>
               {checkoutCtx.emailAddress}
-            </Text>
-            <Button
-              variant="ghost"
-              size="sm"
-              colorScheme="blue"
+            </Box>
+            {/*<Button
+              variant="text"
+              size="xs"
               onClick={goToEmailStep}
+              fontSize="xs"
+              px={2}
+              py={1}
+              h="auto"
+              minH="auto"
+            >
+              {t('checkoutSummary.editButton', 'edit')}
+            </Button>*/}
+          </HStack>
+        )}
+
+        {/* Billing Address */}
+        {showBillingAddress && checkoutCtx?.billingAddress && (
+          <HStack
+            justify="space-between"
+            w="full"
+            bg={'brand.50'}
+            py={1}
+            px={3}
+          >
+            <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
+              {t('checkoutSummary.billingAddressLabel', 'Billing Address')}
+            </Text>
+            <Box flexGrow={1} pl={4}>
+              {renderBillingAddress()}
+            </Box>
+            <Button
+              variant="text"
+              size="xs"
+              onClick={goToAddressStep}
               fontSize="xs"
               px={2}
               py={1}
@@ -136,44 +181,24 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
           </HStack>
         )}
 
-        {/* Billing Address */}
-        {showBillingAddress && checkoutCtx?.billingAddress && (
-          <VStack align="start" w="full" gap={2}>
-            <HStack justify="space-between" w="full">
-              <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                {t('checkoutSummary.billingAddressLabel', 'Billing Address:')}
-              </Text>
-              <Button
-                variant="ghost"
-                size="sm"
-                colorScheme="blue"
-                onClick={goToAddressStep}
-                fontSize="xs"
-                px={2}
-                py={1}
-                h="auto"
-                minH="auto"
-              >
-                {t('checkoutSummary.editButton', 'edit')}
-              </Button>
-            </HStack>
-            {renderBillingAddress()}
-          </VStack>
-        )}
-
         {/* License Owner */}
         {showLicenseOwner && checkoutCtx?.hasLicenseOwner && (
-          <HStack justify="space-between" w="full">
-            <Text fontSize="sm" color="gray.700">
-              <Text as="span" fontWeight="medium">
-                {t('checkoutSummary.licenseOwnerLabel', 'License Owner:')}
-              </Text>{' '}
+          <HStack
+            justify="space-between"
+            w="full"
+            bg={'brand.50'}
+            py={1}
+            px={3}
+          >
+            <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
+              {t('checkoutSummary.licenseOwnerLabel', 'License Owner')}
+            </Text>{' '}
+            <Box flexGrow={1} pl={4}>
               {getLicenseOwnerDisplayValue()}
-            </Text>
+            </Box>
             <Button
-              variant="ghost"
-              size="sm"
-              colorScheme="blue"
+              variant="text"
+              size="xs"
               onClick={goToLicenseStep}
               fontSize="xs"
               px={2}
