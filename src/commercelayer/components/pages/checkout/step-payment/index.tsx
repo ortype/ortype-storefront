@@ -1,5 +1,5 @@
 import '@adyen/adyen-web/dist/adyen.css'
-import { Box, VStack } from '@chakra-ui/react'
+import { Box, Heading, VStack } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import { useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
@@ -57,7 +57,7 @@ export const StepPayment: React.FC = () => {
   }
 
   return (
-    <VStack gap={6} align="start" w="full">
+    <VStack gap={4} mb={4} align="start" w="full">
       <CheckoutSummary
         showEmail={true}
         showBillingAddress={true}
@@ -66,6 +66,15 @@ export const StepPayment: React.FC = () => {
       />
 
       <Box w="full">
+        <Heading
+          as={'h5'}
+          fontSize={'xl'}
+          textTransform={'uppercase'}
+          fontWeight={'normal'}
+          mb={1}
+        >
+          {'Payment methods'}
+        </Heading>
         {isPaymentRequired ? (
           <CheckoutCustomerPayment
             selectPayment={selectPayment}

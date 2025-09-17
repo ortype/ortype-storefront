@@ -17,7 +17,6 @@ import { StepEmail } from '@/commercelayer/components/pages/checkout/step-email'
 import { StepLicense } from '@/commercelayer/components/pages/checkout/step-license'
 import { StepNav } from '@/commercelayer/components/pages/checkout/step-nav'
 import { StepPayment } from '@/commercelayer/components/pages/checkout/step-payment'
-import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/payment-container'
 import StepPlaceOrder from '@/commercelayer/components/pages/checkout/step-place-order'
 import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shipping'
 import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
@@ -205,10 +204,10 @@ const Checkout: React.FC<Props> = ({
               {step.key === 'License' && <StepLicense />}
               {step.key === 'Shipping' && <StepShipping />}
               {step.key === 'Payment' && (
-                <PaymentContainer>
+                <>
                   <StepPayment />
                   <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
-                </PaymentContainer>
+                </>
               )}
             </Steps.Content>
           )

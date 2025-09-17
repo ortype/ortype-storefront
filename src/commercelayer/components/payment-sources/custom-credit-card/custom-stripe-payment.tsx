@@ -1,12 +1,23 @@
 'use client'
 
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import type { Stripe, StripeConstructorOptions, StripeElementLocale } from '@stripe/stripe-js'
-import { Box, Text } from '@chakra-ui/react'
-import { Alert } from '@/components/ui/alert'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Elements, CardNumberElement, CardExpiryElement, CardCvcElement, useElements, useStripe } from '@stripe/react-stripe-js'
-import type { StripeElementsOptions } from '@stripe/stripe-js'
+import { Alert } from '@/components/ui/alert'
+import { Box, Text } from '@chakra-ui/react'
+import {
+  CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
+  Elements,
+  useElements,
+  useStripe,
+} from '@stripe/react-stripe-js'
+import type {
+  Stripe,
+  StripeConstructorOptions,
+  StripeElementLocale,
+  StripeElementsOptions,
+} from '@stripe/stripe-js'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { CustomStripePaymentProps } from './types'
 
 interface CustomStripePaymentFormProps {
@@ -18,7 +29,9 @@ interface CustomStripePaymentFormProps {
 }
 
 // Stable element options
-const ELEMENT_OPTIONS = {} as const
+const ELEMENT_OPTIONS = {
+  base: {},
+} as const
 
 /**
  * PCI-Compliant Custom Stripe payment form using Elements
@@ -32,7 +45,7 @@ const CustomStripeElementsForm: React.FC<{
   const stripe = useStripe()
   const elements = useElements()
   const checkoutCtx = useContext(CheckoutContext)
-  
+
   const [isComplete, setIsComplete] = useState({
     cardNumber: false,
     cardExpiry: false,
@@ -42,20 +55,26 @@ const CustomStripeElementsForm: React.FC<{
   const [error, setError] = useState<string | null>(null)
 
   if (!checkoutCtx) {
-    throw new Error('CustomStripeElementsForm must be used within CheckoutProvider')
+    throw new Error(
+      'CustomStripeElementsForm must be used within CheckoutProvider'
+    )
   }
 
   const { order, registerPaymentSubmitter } = checkoutCtx
 
   // Check if all elements are complete
-  const allComplete = isComplete.cardNumber && isComplete.cardExpiry && isComplete.cardCvc && cardholderName.trim()
+  const allComplete =
+    isComplete.cardNumber &&
+    isComplete.cardExpiry &&
+    isComplete.cardCvc &&
+    cardholderName.trim()
 
   /**
    * Payment Handler Registration Logic
-   * 
+   *
    * This useEffect implements a "Handler Registration Pattern" that allows the parent
    * CheckoutProvider to programmatically trigger payment submission from this form.
-   * 
+   *
    * WHY THIS PATTERN EXISTS:
    * 1. **Separation of Concerns**: The "Place Order" button lives outside this component
    *    (in the checkout flow), but needs to trigger payment submission from THIS form
@@ -63,13 +82,13 @@ const CustomStripeElementsForm: React.FC<{
    *    works, just that it can call a registered handler
    * 3. **Multiple Payment Methods**: Different payment forms (Stripe, PayPal, etc.) can
    *    all register their own handlers using the same pattern
-   * 
+   *
    * HOW IT WORKS:
    * 1. This component creates a `submitPayment` function with all the Stripe logic
    * 2. It registers this function with the CheckoutProvider via `registerPaymentSubmitter`
    * 3. When user clicks "Place Order", CheckoutProvider calls the registered handler
    * 4. The handler executes and returns success/failure status
-   * 
+   *
    * LIFECYCLE:
    * - Setup: Register the handler when Stripe is ready and form is complete
    * - Cleanup: Unregister on unmount to prevent memory leaks and stale handlers
@@ -99,7 +118,9 @@ const CustomStripeElementsForm: React.FC<{
         // Read checkbox value directly from DOM at payment time
         let shouldSaveToWallet = false
         if (formRef.current) {
-          const checkbox = formRef.current.elements.namedItem('save_payment_source_to_customer_wallet') as HTMLInputElement
+          const checkbox = formRef.current.elements.namedItem(
+            'save_payment_source_to_customer_wallet'
+          ) as HTMLInputElement
           shouldSaveToWallet = checkbox?.checked ?? false
         }
 
@@ -120,18 +141,23 @@ const CustomStripeElementsForm: React.FC<{
 
         // Prepare return URL
         const url = new URL(window.location.href)
-        const returnUrl = `${url.origin}${url.pathname}?accessToken=${url.searchParams.get('accessToken')}`
+        const returnUrl = `${url.origin}${
+          url.pathname
+        }?accessToken=${url.searchParams.get('accessToken')}`
 
         // Confirm payment using Elements
-        const { error } = await stripe.confirmCardPayment(order?.payment_source?.client_secret || '', {
-          payment_method: {
-            card: cardElement,
-            billing_details: billingDetails,
-          },
-          return_url: returnUrl,
-          setup_future_usage: shouldSaveToWallet ? 'off_session' : undefined,
-        })
-        
+        const { error } = await stripe.confirmCardPayment(
+          order?.payment_source?.client_secret || '',
+          {
+            payment_method: {
+              card: cardElement,
+              billing_details: billingDetails,
+            },
+            return_url: returnUrl,
+            setup_future_usage: shouldSaveToWallet ? 'off_session' : undefined,
+          }
+        )
+
         console.log('Payment attempt with save to wallet:', shouldSaveToWallet)
 
         if (error) {
@@ -161,7 +187,7 @@ const CustomStripeElementsForm: React.FC<{
     return () => {
       // Replace with no-op function to prevent calling stale handler
       registerPaymentSubmitter(async () => true)
-      
+
       // Clear form reference
       if (setPaymentRef) {
         setPaymentRef({ current: null })
@@ -169,13 +195,13 @@ const CustomStripeElementsForm: React.FC<{
     }
   }, [
     // Re-register when any of these change:
-    stripe,              // Stripe instance becomes available
-    elements,            // Elements context becomes available  
-    allComplete,         // Form completion status changes
-    cardholderName,      // User enters/changes name
-    order,               // Order data changes (billing info, etc.)
+    stripe, // Stripe instance becomes available
+    elements, // Elements context becomes available
+    allComplete, // Form completion status changes
+    cardholderName, // User enters/changes name
+    order, // Order data changes (billing info, etc.)
     registerPaymentSubmitter, // CheckoutProvider function (stable)
-    setPaymentRef        // Parent callback (stable)
+    setPaymentRef, // Parent callback (stable)
   ])
 
   // Notify parent when payment is ready
@@ -198,11 +224,17 @@ const CustomStripeElementsForm: React.FC<{
           {/* Card Number */}
           <div>
             <label>Card Number</label>
-            <div style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
+            <div
+              style={{
+                border: '1px solid #ccc',
+                padding: '10px',
+                borderRadius: '4px',
+              }}
+            >
               <CardNumberElement
                 options={ELEMENT_OPTIONS}
                 onChange={(e) => {
-                  setIsComplete(prev => ({
+                  setIsComplete((prev) => ({
                     ...prev,
                     cardNumber: e.complete,
                   }))
@@ -216,11 +248,17 @@ const CustomStripeElementsForm: React.FC<{
           <div style={{ display: 'flex', gap: '16px' }}>
             <div style={{ flex: 1 }}>
               <label>Expiry Date</label>
-              <div style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
+              <div
+                style={{
+                  border: '1px solid #ccc',
+                  padding: '10px',
+                  borderRadius: '4px',
+                }}
+              >
                 <CardExpiryElement
                   options={ELEMENT_OPTIONS}
                   onChange={(e) => {
-                    setIsComplete(prev => ({
+                    setIsComplete((prev) => ({
                       ...prev,
                       cardExpiry: e.complete,
                     }))
@@ -229,14 +267,20 @@ const CustomStripeElementsForm: React.FC<{
                 />
               </div>
             </div>
-            
+
             <div style={{ flex: 1 }}>
               <label>CVC</label>
-              <div style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
+              <div
+                style={{
+                  border: '1px solid #ccc',
+                  padding: '10px',
+                  borderRadius: '4px',
+                }}
+              >
                 <CardCvcElement
                   options={ELEMENT_OPTIONS}
                   onChange={(e) => {
-                    setIsComplete(prev => ({
+                    setIsComplete((prev) => ({
                       ...prev,
                       cardCvc: e.complete,
                     }))
@@ -255,12 +299,12 @@ const CustomStripeElementsForm: React.FC<{
               value={cardholderName}
               onChange={(e) => setCardholderName(e.target.value)}
               placeholder="John Doe"
-              style={{ 
-                border: '1px solid #ccc', 
-                padding: '10px', 
+              style={{
+                border: '1px solid #ccc',
+                padding: '10px',
                 borderRadius: '4px',
                 width: '100%',
-                fontSize: '16px'
+                fontSize: '16px',
               }}
             />
           </div>
@@ -348,7 +392,9 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
   // Basic validation for required environment variables
   useEffect(() => {
     if (!publishableKey) {
-      setError('Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable')
+      setError(
+        'Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable'
+      )
     }
   }, [publishableKey])
 
@@ -356,38 +402,39 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
   useEffect(() => {
     if (!show || !publishableKey || error) return
 
-    import('@stripe/stripe-js').then(({ loadStripe }) => {
-      const getStripe = async (): Promise<void> => {
-        try {
-          const options = {
-            locale,
-            ...(connectedAccount ? { stripeAccount: connectedAccount } : {}),
-          } satisfies StripeConstructorOptions
+    import('@stripe/stripe-js')
+      .then(({ loadStripe }) => {
+        const getStripe = async (): Promise<void> => {
+          try {
+            const options = {
+              locale,
+              ...(connectedAccount ? { stripeAccount: connectedAccount } : {}),
+            } satisfies StripeConstructorOptions
 
-          const res = await loadStripe(publishableKey, options)
-          if (res != null) {
-            setStripe(res)
-            setIsLoaded(true)
-          } else {
-            setError('Failed to initialize Stripe')
+            const res = await loadStripe(publishableKey, options)
+            if (res != null) {
+              setStripe(res)
+              setIsLoaded(true)
+            } else {
+              setError('Failed to initialize Stripe')
+            }
+          } catch (err) {
+            console.error('Error loading Stripe:', err)
+            setError('Failed to load Stripe')
           }
-        } catch (err) {
-          console.error('Error loading Stripe:', err)
-          setError('Failed to load Stripe')
         }
-      }
-      getStripe()
-    }).catch((err) => {
-      console.error('Error importing Stripe:', err)
-      setError('Failed to import Stripe')
-    })
+        getStripe()
+      })
+      .catch((err) => {
+        console.error('Error importing Stripe:', err)
+        setError('Failed to import Stripe')
+      })
 
     return () => {
       setIsLoaded(false)
       setStripe(null)
     }
   }, [show, publishableKey, connectedAccount, locale, error])
-
 
   if (!show) {
     return null

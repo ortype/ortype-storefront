@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
-import { PaymentContainer } from '@/commercelayer/components/pages/checkout/step-payment/payment-container'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { CustomAddress } from '@/components/ui/CustomerAddressCard'
 import { getTranslations } from '@/components/utils/payments'
@@ -119,27 +118,25 @@ export const StepComplete: React.FC<Props> = ({
               {ctx.isPaymentRequired ? (
                 <Box>
                   <Flex className="font-bold text-base">
-                    <PaymentContainer>
-                      <PaymentSource readonly>
-                        <PaymentSourceBrandIcon className="mr-2" />
-                        <PaymentSourceBrandName className="mr-1">
-                          {({ brand }) => {
-                            if (ctx.isCreditCard) {
-                              return (
-                                <Trans i18nKey="stepPayment.endingIn">
-                                  {brand}
-                                  <PaymentSourceDetail
-                                    className="ml-1 font-normal"
-                                    type="last4"
-                                  />
-                                </Trans>
-                              )
-                            }
-                            return <>{getTranslations(brand, t)}</>
-                          }}
-                        </PaymentSourceBrandName>
-                      </PaymentSource>
-                    </PaymentContainer>
+                    <PaymentSource readonly>
+                      <PaymentSourceBrandIcon className="mr-2" />
+                      <PaymentSourceBrandName className="mr-1">
+                        {({ brand }) => {
+                          if (ctx.isCreditCard) {
+                            return (
+                              <Trans i18nKey="stepPayment.endingIn">
+                                {brand}
+                                <PaymentSourceDetail
+                                  className="ml-1 font-normal"
+                                  type="last4"
+                                />
+                              </Trans>
+                            )
+                          }
+                          return <>{getTranslations(brand, t)}</>
+                        }}
+                      </PaymentSourceBrandName>
+                    </PaymentSource>
                   </Flex>
                 </Box>
               ) : (

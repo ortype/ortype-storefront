@@ -134,6 +134,17 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         isLoading: false,
       }
     case ActionType.UPDATE_ORDER:
+      // Debug logging for development to track UPDATE_ORDER action
+      if (process.env.NODE_ENV === 'development') {
+        console.log('reducer - UPDATE_ORDER action:', {
+          hasOrder: !!action.payload.order,
+          hasOthers: !!action.payload.others,
+          hasLineItemsInOthers: action.payload.others?.hasLineItems,
+          currentHasLineItems: state.hasLineItems,
+          orderId: action.payload.order?.id,
+        })
+      }
+      
       return {
         ...state,
         order: action.payload.order,

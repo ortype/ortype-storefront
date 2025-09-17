@@ -1,8 +1,8 @@
+import { Radio, RadioGroup } from '@/components/ui/radio'
+import { HStack, Text } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import classNames from 'classnames'
 import React, { useContext, useEffect, useState, type ReactNode } from 'react'
-import { RadioGroup, Radio } from '@/components/ui/radio'
-import { HStack, Text } from '@chakra-ui/react'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
@@ -14,7 +14,6 @@ export interface PaymentMethodOnClickParams {
 interface PaymentMethodProps {
   children: ReactNode
   className?: string
-  activeClass?: string
   loader?: ReactNode
   autoSelectSinglePaymentMethod?: boolean | (() => void)
   clickableContainer?: boolean
@@ -26,7 +25,6 @@ interface PaymentMethodProps {
 export const PaymentMethod: React.FC<PaymentMethodProps> = ({
   children,
   className,
-  activeClass,
   loader = 'Loading...',
   autoSelectSinglePaymentMethod,
   clickableContainer,
@@ -35,8 +33,9 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
   sortBy,
   ...props
 }) => {
-  const [loading, setLoading] = useState(true)
   const [paymentSelected, setPaymentSelected] = useState('')
+  // Preserve payment methods during loading to prevent disappear/reappear
+  const [cachedPaymentMethods, setCachedPaymentMethods] = useState<PaymentMethodType[]>([])
 
   const checkoutCtx = useContext(CheckoutContext)
 
@@ -49,15 +48,25 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
   // Get payment methods from order
   const paymentMethods = order?.available_payment_methods || []
 
+  // Cache payment methods when they become available, preserve during loading
+  useEffect(() => {
+    if (paymentMethods.length > 0) {
+      setCachedPaymentMethods(paymentMethods)
+    }
+  }, [paymentMethods])
+
+  // Use cached payment methods during loading to prevent disappear/reappear
+  const effectivePaymentMethods = paymentMethods.length > 0 ? paymentMethods : (isLoading ? cachedPaymentMethods : [])
+
   // Load payment methods if not available
   useEffect(() => {
-    if (!paymentMethods.length && !isLoading && loadPaymentMethods) {
+    if (!effectivePaymentMethods.length && !isLoading && loadPaymentMethods) {
       loadPaymentMethods().catch(console.error)
     }
-  }, [paymentMethods.length, isLoading, loadPaymentMethods])
+  }, [effectivePaymentMethods.length, isLoading, loadPaymentMethods])
 
   // Filter out hidden payment methods
-  const filteredPaymentMethods = paymentMethods.filter((pm) => {
+  const filteredPaymentMethods = effectivePaymentMethods.filter((pm) => {
     if (typeof hide === 'function') {
       return !hide(pm)
     }
@@ -74,6 +83,9 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
         return aIndex - bIndex
       })
     : filteredPaymentMethods
+
+  // Use CheckoutContext loading state instead of local loading state
+  const loading = isLoading || sortedPaymentMethods.length === 0
 
   useEffect(() => {
     if (sortedPaymentMethods.length > 0) {
@@ -97,10 +109,6 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
           autoSelectSinglePaymentMethod()
         }
       }
-
-      setTimeout(() => {
-        setLoading(false)
-      }, 200)
     }
   }, [
     sortedPaymentMethods,
@@ -128,29 +136,32 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = ({
     }
   }
 
-  if (loading || isLoading) {
-    return <div>{loader}</div>
-  }
-
   return (
-    <div
-      className={classNames(className, {
-        [activeClass || 'active']: paymentSelected,
-      })}
-      onClick={handleContainerClick}
-      {...props}
-    >
-      {sortedPaymentMethods.map((paymentMethod) => (
-        <PaymentMethodProvider key={paymentMethod.id} value={paymentMethod}>
-          {children}
-        </PaymentMethodProvider>
-      ))}
-    </div>
+    <PaymentMethodLoadingContext.Provider value={loading}>
+      <div onClick={handleContainerClick} {...props}>
+        {/* Always render children to prevent disappear/reappear */}
+        {sortedPaymentMethods.length > 0 ? (
+          sortedPaymentMethods.map((paymentMethod) => (
+            <PaymentMethodProvider key={paymentMethod.id} value={paymentMethod}>
+              {children}
+            </PaymentMethodProvider>
+          ))
+        ) : (
+          // Render children with null context when loading - let components handle loading state
+          <PaymentMethodProvider key="loading" value={null as any}>
+            {children}
+          </PaymentMethodProvider>
+        )}
+      </div>
+    </PaymentMethodLoadingContext.Provider>
   )
 }
 
 // Context provider for payment method data
 const PaymentMethodContext = React.createContext<PaymentMethodType | null>(null)
+
+// Context for PaymentMethod loading state
+const PaymentMethodLoadingContext = React.createContext<boolean>(false)
 
 interface PaymentMethodProviderProps {
   value: PaymentMethodType
@@ -181,4 +192,9 @@ export const usePaymentMethodContextRequired = () => {
     )
   }
   return context
+}
+
+export const usePaymentMethodLoading = () => {
+  const loading = useContext(PaymentMethodLoadingContext)
+  return loading
 }
