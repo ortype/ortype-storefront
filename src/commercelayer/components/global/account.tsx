@@ -70,7 +70,10 @@ export const Account = ({ openLogin, setLoginOpen }) => {
           <DialogHeader>Login</DialogHeader>
           <DialogCloseTrigger onClick={() => setLoginOpen(false)} />
           <DialogBody>
-            <LoginForm emailAddress={customer.email} />
+            <LoginForm 
+              emailAddress={customer.email} 
+              onSuccess={() => setLoginOpen(false)}
+            />
           </DialogBody>
           <DialogFooter>
             <Group gap={2}>

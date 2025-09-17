@@ -22,6 +22,7 @@ import type { LoginFormValues } from 'Forms'
 import Link from 'next/link'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
 
+
 const validationSchema = yup.object().shape({
   customerEmail: yup
     .string()
@@ -30,9 +31,21 @@ const validationSchema = yup.object().shape({
   customerPassword: yup.string().required('Password is required'),
 })
 
-export const LoginForm = ({ emailAddress }): JSX.Element => {
+interface LoginFormProps {
+  emailAddress?: string
+  onSuccess?: () => void
+}
+
+export const LoginForm: React.FC<LoginFormProps> = ({ emailAddress, onSuccess }) => {
   const { settings, config, isLoading, handleLogin } = useIdentityContext()
-  const stepsContext = useStepsContext()
+  // Try to get Steps context if available (for checkout flow)
+  let stepsContext = null
+  try {
+    stepsContext = useStepsContext()
+  } catch {
+    // Steps context not available - this is expected when LoginForm is used outside of checkout flow
+    stepsContext = null
+  }
   const log = useDevLogger()
   const [rateLimitCountdown, setRateLimitCountdown] = useState<number>(0)
 
@@ -88,13 +101,19 @@ export const LoginForm = ({ emailAddress }): JSX.Element => {
       })
       if (tokenData.accessToken) {
         await handleLogin(tokenData)
-        console.log('✅ Login successful - advancing to next step')
-        // Advance to next step using Chakra UI Steps context
+        console.log('✅ Login successful')
+        
+        // Handle success based on context:
+        // 1. If in checkout flow (Steps context available), advance to next step
+        // 2. If in global header (onSuccess callback provided), call it
         if (stepsContext && stepsContext.goToNextStep) {
           console.log('🚀 Advancing to next step after successful login')
           stepsContext.goToNextStep()
+        } else if (onSuccess) {
+          console.log('🚀 Calling onSuccess callback after successful login')
+          onSuccess()
         } else {
-          console.warn('⚠️ Steps context not available for step advancement')
+          console.log('ℹ️ Login successful - no step advancement or callback needed')
         }
       } else {
         // If no access token but no error thrown, treat as invalid credentials
