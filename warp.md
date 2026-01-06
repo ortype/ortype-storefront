@@ -40,49 +40,51 @@ This is a Next.js 14+ headless commerce storefront for "Or Type" - a typography 
 
 ## Local Setup & Common Commands
 
+**Package Manager**: This project uses **pnpm** with the `pn` shortcut alias.
+
 ### Development Server
 
 ```bash
 # Start development server with Sanity type generation
-npm run dev          # Runs on port 8000 (not 3000)
+pn dev               # Runs on port 8000 (not 3000)
 
 # Type generation only (auto-runs before dev/build)
-npm run typegen      # Generates Sanity types from schema
+pn typegen           # Generates Sanity types from schema
 ```
 
 ### Code Quality
 
 ```bash
 # Format code
-npm run format       # Prettier formatting
+pn format            # Prettier formatting
 
 # Linting
-npm run lint         # ESLint check
-npm run lint:fix     # Auto-fix lint + format issues
+pn lint              # ESLint check
+pn lint:fix          # Auto-fix lint + format issues
 
 # Type checking
-npm run type-check   # TypeScript compilation check
+pn type-check        # TypeScript compilation check
 ```
 
 ### Testing
 
 ```bash
 # Run all tests
-npm test
+pn test
 
 # Run specific auth dialog tests
-npm run test:auth
+pn test:auth
 
 # Watch mode and coverage
-npm run test:watch
-npm run test:coverage
+pn test:watch
+pn test:coverage
 ```
 
 ### Build & Production
 
 ```bash
-npm run build        # Production build
-npm start           # Start production server on port 8000
+pn build             # Production build
+pn start             # Start production server on port 8000
 ```
 
 ## App Router & Route Conventions
@@ -122,7 +124,7 @@ src/app/
 
 ```bash
 # Generate TypeScript types from Sanity schema
-npm run typegen
+pn typegen
 # This runs: sanity schema extract && sanity typegen generate
 ```
 
@@ -237,7 +239,7 @@ import { Box, Button, Stack } from '@chakra-ui/react'
 
 ```bash
 # Install testing dependencies first
-npm install --save-dev @testing-library/react @testing-library/jest-dom @testing-library/user-event jest jest-environment-jsdom @types/jest
+pn add -D @testing-library/react @testing-library/jest-dom @testing-library/user-event jest jest-environment-jsdom @types/jest
 ```
 
 ### Test Configuration
@@ -249,10 +251,10 @@ npm install --save-dev @testing-library/react @testing-library/jest-dom @testing
 ### Running Tests
 
 ```bash
-npm test                    # All tests
-npm run test:auth          # Authentication dialog tests specifically
-npm run test:watch         # Watch mode
-npm run test:coverage      # With coverage report
+pn test                    # All tests
+pn test:auth               # Authentication dialog tests specifically
+pn test:watch              # Watch mode
+pn test:coverage           # With coverage report
 ```
 
 ## Development Workflow
@@ -261,10 +263,10 @@ npm run test:coverage      # With coverage report
 
 ```bash
 # Full quality check sequence
-npm run format        # Prettier formatting
-npm run lint:fix      # ESLint auto-fix + format
-npm run type-check    # TypeScript validation
-npm test             # Run test suite
+pn format            # Prettier formatting
+pn lint:fix          # ESLint auto-fix + format
+pn type-check        # TypeScript validation
+pn test              # Run test suite
 ```
 
 ### Build Configuration Notes
@@ -355,7 +357,7 @@ src/components/
 ### Critical Dependencies
 
 - Node.js >=20 required
-- Uses `pnpm-lock.yaml` (prefer pnpm over npm)
+- Uses **pnpm** as package manager (with `pn` shortcut alias)
 - Sanity type generation runs automatically before dev/build
 
 ### Testing Philosophy
@@ -380,6 +382,6 @@ src/components/
 
 ### Build Issues
 
-- Run `npm run typegen` to regenerate Sanity types
-- Check TypeScript compilation with `npm run type-check`
+- Run `pn typegen` to regenerate Sanity types
+- Check TypeScript compilation with `pn type-check`
 - Verify environment variables are properly set
