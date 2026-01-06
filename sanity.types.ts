@@ -464,6 +464,26 @@ export type Font = {
 export type ModuleVideo = {
   _type: 'module.video'
   url?: string
+  isBackground?: boolean
+  aspectRatio?: number
+  caption?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
 }
 
 export type FontVariant = {
@@ -989,6 +1009,26 @@ export type HomePageQueryResult = {
                 _key: string
                 _type: 'module.video'
                 url?: string
+                isBackground?: boolean
+                aspectRatio?: number
+                caption?: Array<{
+                  children?: Array<{
+                    marks?: Array<string>
+                    text?: string
+                    _type: 'span'
+                    _key: string
+                  }>
+                  style?: 'normal'
+                  listItem?: never
+                  markDefs?: Array<{
+                    href?: string
+                    _type: 'link'
+                    _key: string
+                  }>
+                  level?: number
+                  _type: 'block'
+                  _key: string
+                }>
                 markDefs: null
               }
           > | null
@@ -1248,6 +1288,26 @@ export type FontsQueryResult = Array<{
               _key: string
               _type: 'module.video'
               url?: string
+              isBackground?: boolean
+              aspectRatio?: number
+              caption?: Array<{
+                children?: Array<{
+                  marks?: Array<string>
+                  text?: string
+                  _type: 'span'
+                  _key: string
+                }>
+                style?: 'normal'
+                listItem?: never
+                markDefs?: Array<{
+                  href?: string
+                  _type: 'link'
+                  _key: string
+                }>
+                level?: number
+                _type: 'block'
+                _key: string
+              }>
               markDefs: null
             }
         > | null
@@ -1466,6 +1526,26 @@ export type FontAndMoreFontsQueryResult = {
                 _key: string
                 _type: 'module.video'
                 url?: string
+                isBackground?: boolean
+                aspectRatio?: number
+                caption?: Array<{
+                  children?: Array<{
+                    marks?: Array<string>
+                    text?: string
+                    _type: 'span'
+                    _key: string
+                  }>
+                  style?: 'normal'
+                  listItem?: never
+                  markDefs?: Array<{
+                    href?: string
+                    _type: 'link'
+                    _key: string
+                  }>
+                  level?: number
+                  _type: 'block'
+                  _key: string
+                }>
                 markDefs: null
               }
           > | null
@@ -1665,6 +1745,26 @@ export type FontAndMoreFontsQueryResult = {
                 _key: string
                 _type: 'module.video'
                 url?: string
+                isBackground?: boolean
+                aspectRatio?: number
+                caption?: Array<{
+                  children?: Array<{
+                    marks?: Array<string>
+                    text?: string
+                    _type: 'span'
+                    _key: string
+                  }>
+                  style?: 'normal'
+                  listItem?: never
+                  markDefs?: Array<{
+                    href?: string
+                    _type: 'link'
+                    _key: string
+                  }>
+                  level?: number
+                  _type: 'block'
+                  _key: string
+                }>
                 markDefs: null
               }
           > | null

@@ -1,18 +1,22 @@
 import getVideoId from '@/sanity/utils/get-video-id'
-import { Box, Presence, Text } from '@chakra-ui/react'
+import { AspectRatio, Box, Presence, Text } from '@chakra-ui/react'
 import {
   PortableText,
   PortableTextBlock,
   PortableTextComponents,
 } from '@portabletext/react'
-import React, { useEffect, useState } from 'react'
-import { ReactPlayerProps } from 'react-player/types'
-import VimeoPlayer from 'react-player/vimeo'
+import { useInView } from 'framer-motion'
+import React, { useEffect, useRef, useState } from 'react'
+import ReactPlayer from 'react-player'
+import VimeoPlayerNative from './vimeo-player-native'
 
 interface VideoValue {
   url?: string
   caption?: PortableTextBlock[]
   isBackground?: boolean
+  aspectRatio?: number
+  videoUrl?: string
+  poster?: string
 }
 
 interface VideoProps {
@@ -30,29 +34,42 @@ const extractVideoId = (url: string): string | null => {
 }
 
 const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
-  const { url, caption, isBackground = true } = value as VideoValue
-
-  const [loading, setLoading] = useState<boolean>(true)
-  const [playerReady, setPlayerReady] = useState<boolean>(false)
+  const {
+    url,
+    caption,
+    isBackground = true,
+    aspectRatio,
+    videoUrl,
+    poster,
+  } = value as VideoValue
 
   const [videoId, setVideoId] = useState<string | null>(null)
+  const [service, setService] = useState<string | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(containerRef)
 
   useEffect(() => {
-    setLoading(true)
     if (url) {
-      setVideoId(extractVideoId(url))
+      const videoData = getVideoId(url)
+      setVideoId(videoData?.id || null)
+      setService(videoData?.service || null)
     }
   }, [url])
 
   if (!url || !videoId) return null
 
+  // Calculate aspect ratio with fallback to 16:9
+  const ratio = aspectRatio || 16 / 9
+
+  // Use native player for Vimeo background videos
+  const useNativePlayer = isBackground && service === 'vimeo'
+
   let src: string | undefined
   const config: Record<string, any> = {}
-  // let ReactPlayer
-  if (url?.match(/youtube\.com/)) {
+
+  if (service === 'youtube') {
     src = `https://www.youtube.com/embed/${videoId}`
-    // ReactPlayer = YoutubePlayer
-  } else if (url?.match(/vimeo\.com/)) {
+  } else if (service === 'vimeo') {
     src = `https://player.vimeo.com/video/${videoId}`
     config.vimeo = {
       playerOptions: {
@@ -66,35 +83,69 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
         fullscreen: false,
         pip: false,
       },
-      preload: true,
-      iframeParams: {
-        allow: 'autoplay',
-      },
     }
   }
 
-  const handlePlayerReady = () => {
-    setLoading(false)
-    setPlayerReady(true)
-  }
-
   return (
-    <VimeoPlayer
-      url={src}
-      volume={1}
-      onReady={() => {
-        setLoading(false)
-        setPlayerReady(true)
-      }}
-      loop={true}
-      muted={true}
-      controls={false}
-      playing={playerReady}
-      config={config}
-      width="100%"
-      height="100%"
-      style={style}
-    />
+    <>
+      <AspectRatio 
+        ratio={ratio} 
+        ref={containerRef}
+        maxHeight="100%"
+        width="auto"
+        maxWidth="100%"
+        mx="auto"
+      >
+        {useNativePlayer ? (
+          <VimeoPlayerNative
+            videoId={videoId}
+            videoUrl={videoUrl}
+            poster={poster}
+            autoplay={isInView}
+            loop={isBackground}
+            muted={isBackground}
+            controls={false}
+            isBackground={isBackground}
+          />
+        ) : (
+          <Presence
+            present={true}
+            animationName={{ _open: 'fade-in', _closed: 'fade-out' }}
+            animationDuration="moderate"
+          >
+            <ReactPlayer
+              url={src}
+              volume={isBackground ? 0 : 1}
+              muted={isBackground}
+              playsinline
+              controls={!isBackground}
+              playing={isBackground && isInView}
+              loop={isBackground}
+              config={config}
+              width="100%"
+              height="100%"
+              style={style}
+            />
+          </Presence>
+        )}
+      </AspectRatio>
+      {caption && (
+        <Box mt={4}>
+          <PortableText
+            value={caption}
+            components={
+              {
+                block: {
+                  normal: ({ children }: { children: React.ReactNode }) => (
+                    <Text>{children}</Text>
+                  ),
+                },
+              } as PortableTextComponents
+            }
+          />
+        </Box>
+      )}
+    </>
   )
 }
 

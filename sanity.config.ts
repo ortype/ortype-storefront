@@ -8,6 +8,7 @@ import { media } from 'sanity-plugin-media'
 import { presentationTool, type DocumentLocation } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
 import { apiVersion, dataset, projectId, studioUrl } from './src/sanity/env'
+import { customDocumentActions } from './src/sanity/plugins/custom-document-actions'
 import { resolve } from './src/sanity/presentation/resolve'
 import authorType from './src/sanity/schemas/author'
 import blockContent from './src/sanity/schemas/blockContent'
@@ -65,6 +66,7 @@ export default defineConfig({
       previewUrl: { previewMode: { enable: '/api/draft-mode/enable' } },
     }),
     structureTool({ structure }),
+    customDocumentActions(),
     media(),
     // Vision lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin

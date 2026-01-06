@@ -50,13 +50,22 @@ export default defineType({
       title: 'YouTube or Vimeo video URL',
       validation: (Rule) => Rule.required(),
     }),
-    /*
-    {
+    defineField({
       name: 'isBackground',
       type: 'boolean',
       title: 'Background video (autoplay)',
-    },
-    {
+      initialValue: true,
+    }),
+    defineField({
+      name: 'aspectRatio',
+      type: 'number',
+      title: 'Aspect Ratio',
+      description:
+        'Optional aspect ratio (e.g., 1.777 for 16:9, 0.5625 for 9:16). If not provided, defaults to 16:9.',
+      validation: (Rule) => Rule.positive(),
+      hidden: ({ parent }) => !parent?.url,
+    }),
+    defineField({
       name: 'caption',
       title: 'Caption',
       type: 'array',
@@ -68,8 +77,8 @@ export default defineType({
           type: 'block',
         },
       ],
-      hidden: ({ parent }) => parent.isBackground,
-    },*/
+      hidden: ({ parent }) => parent?.isBackground,
+    }),
   ],
   preview: {
     select: {
