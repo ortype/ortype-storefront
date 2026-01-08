@@ -11,28 +11,34 @@ interface VideoModule {
 }
 
 // Helper function to recursively find all module.video items in a document
-function findVideoModules(obj: any, videos: VideoModule[] = []): VideoModule[] {
+function findVideoModules(obj: any, videos: VideoModule[] = [], path: string = ''): VideoModule[] {
   if (!obj || typeof obj !== 'object') {
     return videos
   }
 
-  // Check if current object is a video module
-  if (obj._type === 'module.video' && obj._key && obj.url) {
+  // Check if current object is a video module FIRST before recursing
+  if (obj._type === 'module.video' && obj.url) {
+    // Generate a _key if one doesn't exist (for direct fields like headerVideo)
+    const key = obj._key || `${path}_video`
     videos.push({
       _type: obj._type,
-      _key: obj._key,
+      _key: key,
       url: obj.url,
       aspectRatio: obj.aspectRatio,
       poster: obj.poster,
       isBackground: obj.isBackground,
     })
+    // Don't recurse into video module properties
+    return videos
   }
 
   // Recursively search through arrays and objects
   if (Array.isArray(obj)) {
-    obj.forEach((item) => findVideoModules(item, videos))
+    obj.forEach((item, index) => findVideoModules(item, videos, `${path}[${index}]`))
   } else {
-    Object.values(obj).forEach((value) => findVideoModules(value, videos))
+    Object.entries(obj).forEach(([key, value]) => {
+      findVideoModules(value, videos, path ? `${path}.${key}` : key)
+    })
   }
 
   return videos
@@ -87,27 +93,18 @@ export function VimeoMetadataAction(props: any) {
     onHandle: async () => {
       setIsPublishing(true)
 
-      console.log('[VimeoMetadataAction] Starting publish action for:', props.type)
-      console.log('[VimeoMetadataAction] Draft document:', props.draft)
-
       // Find all video modules in the document
       const videoModules = findVideoModules(props.draft)
-      console.log('[VimeoMetadataAction] Found video modules:', videoModules)
 
-      // Filter for Vimeo videos that don't have complete metadata
+      // Filter for Vimeo videos that don't have aspect ratio
       const vimeoVideosToFetch = videoModules.filter((video) => {
         const isVimeo = video.url?.includes('vimeo.com')
         const needsAspectRatio = !video.aspectRatio
-        const needsPoster = !video.poster
-        const needsMetadata = needsAspectRatio || needsPoster
-        console.log(`[VimeoMetadataAction] Video ${video._key}: isVimeo=${isVimeo}, needsAspectRatio=${needsAspectRatio}, needsPoster=${needsPoster}`)
-        return isVimeo && needsMetadata
+        return isVimeo && needsAspectRatio
       })
-      console.log('[VimeoMetadataAction] Vimeo videos to fetch:', vimeoVideosToFetch)
 
       if (vimeoVideosToFetch.length > 0) {
         try {
-          console.log('[VimeoMetadataAction] Calling /api/vimeo with:', vimeoVideosToFetch)
           // Call the Vimeo API route
           const response = await fetch('/api/vimeo', {
             method: 'POST',
@@ -117,22 +114,15 @@ export function VimeoMetadataAction(props: any) {
             body: JSON.stringify({ data: vimeoVideosToFetch }),
           })
 
-          console.log('[VimeoMetadataAction] API response status:', response.status)
-
           if (response.ok) {
             const { results } = await response.json()
-            console.log('[VimeoMetadataAction] API results:', results)
 
             // Create a map of _key to video metadata
-            const videoMap = new Map<
-              string,
-              { aspectRatio?: number; poster?: string }
-            >()
+            const videoMap = new Map<string, { aspectRatio?: number }>()
             results.forEach((result: any) => {
               if (result.aspectRatio) {
                 videoMap.set(result._key, {
                   aspectRatio: result.aspectRatio,
-                  poster: result.poster,
                 })
               }
             })
@@ -161,12 +151,20 @@ export function VimeoMetadataAction(props: any) {
                 updates.header = updateVideoModules(props.draft.header, videoMap)
               }
 
+              // Handle direct video fields like headerVideo
+              if (props.draft.headerVideo && props.draft.headerVideo._type === 'module.video') {
+                const headerVideoKey = 'headerVideo_video'
+                if (videoMap.has(headerVideoKey)) {
+                  const metadata = videoMap.get(headerVideoKey)!
+                  updates.headerVideo = {
+                    ...props.draft.headerVideo,
+                    aspectRatio: metadata.aspectRatio,
+                  }
+                }
+              }
+
               // Apply the patch
               patch.execute([{ set: updates }])
-
-              console.log(
-                `Updated ${videoMap.size} video(s) with aspect ratios`,
-              )
             }
           } else {
             console.error('Failed to fetch Vimeo metadata')
