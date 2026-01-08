@@ -49,6 +49,7 @@ export default function FontHeader({
           h={'100%'}
           color={'white'}
           fontWeight={'normal'}
+          whiteSpace={{ base: 'normal', lg: 'nowrap' }}
         >
           {title}
         </Heading>
