@@ -26,11 +26,15 @@ export default function FontHeader({
     <Box
       className={'header-spread'}
       flex={'0 0 100%'} // responsive values
-      mb={marginBottom}
+      // mb={marginBottom}
+      mb={'10vh'}
       position="relative"
       // the before creates the height
       height={`${spreadAspectValue}vh`}
       overflow={'hidden'}
+      display={'flex'}
+      flexDirection={'column'}
+      justifyContent={'space-between'}
     >
       <AbsoluteCenter zIndex={1}>
         <Heading
@@ -53,6 +57,7 @@ export default function FontHeader({
         css={{
           '& > div > div > div': { position: 'inherit !important' },
         }}
+        overflow={'hidden'}
       >
         <Video
           value={video}
