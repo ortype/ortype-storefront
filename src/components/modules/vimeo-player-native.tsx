@@ -25,7 +25,8 @@ const VimeoPlayerNative: React.FC<VimeoPlayerNativeProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  
+  const [isPlaying, setIsPlaying] = useState(false)
+
   // Build iframe URL - background mode handles autoplay automatically
   const iframeSrc = React.useMemo(() => {
     const params = new URLSearchParams(
@@ -49,17 +50,34 @@ const VimeoPlayerNative: React.FC<VimeoPlayerNativeProps> = ({
     return `https://player.vimeo.com/video/${videoId}?${params.toString()}`
   }, [loop, muted, controls, isBackground, videoId])
 
+  // Listen for Vimeo player events using postMessage API
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
+    const handleMessage = (event: MessageEvent) => {
+      // Only accept messages from Vimeo
+      if (!event.origin.includes('vimeo.com')) return
 
-    // Attempt autoplay when the component mounts if autoplay is enabled
-    if (autoplay) {
-      video.play().catch((error) => {
-        console.warn('Autoplay prevented:', error)
-      })
+      try {
+        const data = JSON.parse(event.data)
+        
+        // When player is ready, register event listeners
+        if (data.event === 'ready' && iframeRef.current?.contentWindow) {
+          const player = iframeRef.current.contentWindow
+          player.postMessage(JSON.stringify({ method: 'addEventListener', value: 'play' }), '*')
+          player.postMessage(JSON.stringify({ method: 'addEventListener', value: 'timeupdate' }), '*')
+        }
+        
+        // Listen for play or timeupdate events
+        if (data.event === 'play' || data.event === 'timeupdate') {
+          setIsPlaying(true)
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
     }
-  }, [autoplay, videoUrl])
+
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
 
   // Fall back to iframe if no direct video URL is available
   if (!videoUrl) {
@@ -74,6 +92,8 @@ const VimeoPlayerNative: React.FC<VimeoPlayerNativeProps> = ({
           width: '100%',
           height: '100%',
           border: 0,
+          opacity: isPlaying ? 1 : 0,
+          transition: 'opacity 0.6s ease-in',
         }}
         allow="autoplay; fullscreen; picture-in-picture"
         allowFullScreen
