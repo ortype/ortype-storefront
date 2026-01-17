@@ -22,7 +22,6 @@ import type { LoginFormValues } from 'Forms'
 import Link from 'next/link'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
 
-
 const validationSchema = yup.object().shape({
   customerEmail: yup
     .string()
@@ -36,7 +35,10 @@ interface LoginFormProps {
   onSuccess?: () => void
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ emailAddress, onSuccess }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({
+  emailAddress,
+  onSuccess,
+}) => {
   const { settings, config, isLoading, handleLogin } = useIdentityContext()
   // Try to get Steps context if available (for checkout flow)
   let stepsContext = null
@@ -102,7 +104,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ emailAddress, onSuccess })
       if (tokenData.accessToken) {
         await handleLogin(tokenData)
         console.log('✅ Login successful')
-        
+
         // Handle success based on context:
         // 1. If in checkout flow (Steps context available), advance to next step
         // 2. If in global header (onSuccess callback provided), call it
@@ -113,7 +115,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ emailAddress, onSuccess })
           console.log('🚀 Calling onSuccess callback after successful login')
           onSuccess()
         } else {
-          console.log('ℹ️ Login successful - no step advancement or callback needed')
+          console.log(
+            'ℹ️ Login successful - no step advancement or callback needed'
+          )
         }
       } else {
         // If no access token but no error thrown, treat as invalid credentials
@@ -166,6 +170,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ emailAddress, onSuccess })
 
               <Button
                 variant={'outline'}
+                bg={'white'}
+                borderRadius={'5rem'}
+                size={'sm'}
+                fontSize={'md'}
                 type="submit"
                 alignSelf={'flex-end'}
                 loadingText={'Submitting'}

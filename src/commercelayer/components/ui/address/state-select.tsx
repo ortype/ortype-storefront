@@ -1,19 +1,13 @@
-import { Field } from '@/components/ui/field'
-import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from '@/components/ui/native-select'
-import { AddressField } from './address-field'
-// Note: Using a simple text fallback instead of ChevronDownIcon from @chakra-ui/icons
-// to avoid dependency issues. The NativeSelectField should have its own dropdown arrow styling.
-import { forwardRef, useContext, useEffect, useState, useMemo } from 'react'
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
+import { FloatingLabelSelect } from '@/commercelayer/components/ui/floating-label-select'
+import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import {
   getStateOfCountry,
   isValidState,
   type StateOption,
   type States,
 } from '@/commercelayer/utils/country-utils'
-import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { forwardRef, useContext, useEffect, useMemo, useState } from 'react'
 
 // Optional imports - handle gracefully if providers aren't available
 let useAddressState: any = null
@@ -207,20 +201,15 @@ export const StateSelect = forwardRef<
       }
     }
 
-    const errorClassName = hasError ? 'border-red-500 focus:border-red-500' : ''
-    const classNameComputed = !isEmptyStates
-      ? `${selectClassName} ${errorClassName}`
-      : `${inputClassName} ${errorClassName}`
-
     // If no states available, render text input
     if (isEmptyStates) {
       return (
-        <AddressField
+        <FloatingLabelInput
           ref={ref as React.Ref<HTMLInputElement>}
           label={label}
           error={error}
           value={val}
-          onChange={handleInputChange}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={
             inputPlaceholder ||
             placeholder ||
@@ -229,7 +218,11 @@ export const StateSelect = forwardRef<
           disabled={disabled}
           required={required}
           type="text"
-          className={classNameComputed}
+          variant="subtle"
+          size="lg"
+          fontSize="md"
+          borderRadius={0}
+          className={inputClassName}
         />
       )
     }
@@ -245,20 +238,18 @@ export const StateSelect = forwardRef<
     ]
 
     return (
-      <Field label={label} errorText={error} invalid={!!error}>
-        <NativeSelectRoot disabled={disabled}>
-          <NativeSelectField
-            ref={ref as React.Ref<HTMLSelectElement>}
-            items={items}
-            value={val}
-            onChange={handleSelectChange}
-            // icon prop removed - NativeSelectField should handle dropdown styling
-            className={classNameComputed}
-            required={required}
-            name={name}
-          />
-        </NativeSelectRoot>
-      </Field>
+      <FloatingLabelSelect
+        ref={ref as React.Ref<HTMLSelectElement>}
+        label={label}
+        error={error}
+        items={items}
+        value={val}
+        onChange={handleSelectChange}
+        disabled={disabled}
+        className={selectClassName}
+        required={required}
+        name={name}
+      />
     )
   }
 )

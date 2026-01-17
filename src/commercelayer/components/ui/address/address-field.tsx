@@ -1,5 +1,4 @@
-import { Field } from '@/components/ui/field'
-import { Input as ChakraInput } from '@chakra-ui/react'
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import { forwardRef, type InputHTMLAttributes } from 'react'
 
 interface AddressFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -10,7 +9,7 @@ interface AddressFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 /**
- * AddressField - A thin wrapper around Input component with error display.
+ * AddressField - A thin wrapper around FloatingLabelInput component with error display.
  * Designed for use in address forms with consistent styling and error handling.
  */
 export const AddressField = forwardRef<HTMLInputElement, AddressFieldProps>(
@@ -21,15 +20,18 @@ export const AddressField = forwardRef<HTMLInputElement, AddressFieldProps>(
     }
 
     return (
-      <Field label={label} errorText={error} invalid={!!error}>
-        <ChakraInput
-          ref={ref}
-          {...props}
-          variant="subtle"
-          value={value}
-          onChange={handleChange}
-        />
-      </Field>
+      <FloatingLabelInput
+        ref={ref}
+        {...props}
+        label={label}
+        error={error}
+        variant="subtle"
+        size="lg"
+        fontSize="md"
+        borderRadius={0}
+        value={value}
+        onChange={handleChange}
+      />
     )
   }
 )

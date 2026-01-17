@@ -12,7 +12,7 @@ import {
   useAddressState,
 } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Box, Grid } from '@chakra-ui/react'
+import { Box, Grid, Stack } from '@chakra-ui/react'
 
 interface Props {
   billingAddress?: Address
@@ -90,8 +90,8 @@ export const BillingAddressForm: React.FC<Props> = ({
 
   return (
     <>
-      <Grid>
-        <Box>
+      <Stack gap={1}>
+        <Grid templateColumns="repeat(2, 1fr)" gap={1}>
           <AddressInputGroup
             fieldName="billing_address_first_name"
             resource="billing_address"
@@ -100,8 +100,7 @@ export const BillingAddressForm: React.FC<Props> = ({
             onChange={handleAddressInputChange}
             required
           />
-        </Box>
-        <Box>
+
           <AddressInputGroup
             fieldName="billing_address_last_name"
             resource="billing_address"
@@ -110,9 +109,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             onChange={handleAddressInputChange}
             required
           />
-        </Box>
-      </Grid>
-      <Box>
+        </Grid>
+
         <AddressInputGroup
           fieldName="billing_address_line_1"
           resource="billing_address"
@@ -121,8 +119,7 @@ export const BillingAddressForm: React.FC<Props> = ({
           onChange={handleAddressInputChange}
           required
         />
-      </Box>
-      <Box>
+
         <AddressInputGroup
           fieldName="billing_address_line_2"
           resource="billing_address"
@@ -130,19 +127,8 @@ export const BillingAddressForm: React.FC<Props> = ({
           value={billing.line_2 || billingAddress?.line_2 || ''}
           onChange={handleAddressInputChange}
         />
-      </Box>
-      <Grid>
-        <Box>
-          <AddressInputGroup
-            fieldName="billing_address_city"
-            resource="billing_address"
-            type="text"
-            value={billing.city || billingAddress?.city || ''}
-            onChange={handleAddressInputChange}
-            required
-          />
-        </Box>
-        <Box>
+
+        <Grid templateColumns="repeat(2, 1fr)" gap={1}>
           <AddressInputGroup
             fieldName="billing_address_country_code"
             resource="billing_address"
@@ -152,10 +138,7 @@ export const BillingAddressForm: React.FC<Props> = ({
             openShippingAddress={openShippingAddress}
             required
           />
-        </Box>
-      </Grid>
-      <Grid>
-        <Box>
+
           <AddressInputGroup
             fieldName="billing_address_state_code"
             resource="billing_address"
@@ -167,8 +150,18 @@ export const BillingAddressForm: React.FC<Props> = ({
             }
             required
           />
-        </Box>
-        <Box>
+        </Grid>
+
+        <Grid templateColumns="repeat(2, 1fr)" gap={1}>
+          <AddressInputGroup
+            fieldName="billing_address_city"
+            resource="billing_address"
+            type="text"
+            value={billing.city || billingAddress?.city || ''}
+            onChange={handleAddressInputChange}
+            required
+          />
+
           <AddressInputGroup
             fieldName="billing_address_zip_code"
             resource="billing_address"
@@ -177,9 +170,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             onChange={handleAddressInputChange}
             required
           />
-        </Box>
-      </Grid>
-      <Box>
+        </Grid>
+
         <AddressInputGroup
           fieldName="billing_address_phone"
           resource="billing_address"
@@ -187,9 +179,8 @@ export const BillingAddressForm: React.FC<Props> = ({
           value={billing.phone || billingAddress?.phone || ''}
           onChange={handleAddressInputChange}
         />
-      </Box>
-      {requiresBillingInfo && (
-        <Box>
+
+        {requiresBillingInfo && (
           <AddressInputGroup
             fieldName="billing_address_billing_info"
             resource="billing_address"
@@ -197,8 +188,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             value={billing.billing_info || billingAddress?.billing_info || ''}
             onChange={handleAddressInputChange}
           />
-        </Box>
-      )}
+        )}
+      </Stack>
     </>
   )
 }

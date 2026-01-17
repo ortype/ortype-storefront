@@ -22,6 +22,10 @@ export const Input = ({
         {...form?.register(name)}
         {...props}
         variant={'subtle'}
+        size={'lg'}
+        fontSize={'lg'}
+        mt={1}
+        borderRadius={0}
         type={type}
       />
     </Field>

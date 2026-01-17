@@ -85,6 +85,9 @@ export const PasswordInput = React.forwardRef<
           {...registration}
           {...rest}
           variant={'subtle'}
+          size={'lg'}
+          fontSize={'lg'}
+          borderRadius={0}
           type={visible ? 'text' : 'password'}
         />
       </InputGroup>

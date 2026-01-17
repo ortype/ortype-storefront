@@ -1,14 +1,7 @@
 import { Input } from '@/commercelayer/components/ui/Input'
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { Button } from '@/components/ui/chakra-button'
-import { Field } from '@/components/ui/field'
-import {
-  Box,
-  Input as ChakraInput,
-  Container,
-  Fieldset,
-} from '@chakra-ui/react'
+import { Box, Fieldset } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'

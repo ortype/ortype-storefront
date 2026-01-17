@@ -5,7 +5,7 @@ import {
   defineConfig,
   mergeConfigs,
 } from '@chakra-ui/react'
-// import { animationStyles } from './animation-styles'
+import { animationStyles } from './animation-styles'
 import { breakpoints } from './breakpoints'
 import { globalCss } from './global-css'
 import { keyframes } from './keyframes'
@@ -30,7 +30,7 @@ const themeConfig = defineConfig({
     slotRecipes,
     // textStyles,
     // layerStyles,
-    // animationStyles,
+    animationStyles,
   },
 })
 

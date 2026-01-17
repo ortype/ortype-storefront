@@ -1,12 +1,6 @@
-import { Field } from '@/components/ui/field'
-import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from '@/components/ui/native-select'
-import { getCountries } from '@/commercelayer/utils/country-utils'
+import { FloatingLabelSelect } from '@/commercelayer/components/ui/floating-label-select'
 import type { CountryOption } from '@/commercelayer/utils/country-utils'
-// Note: Using a simple text fallback instead of ChevronDownIcon from @chakra-ui/icons
-// to avoid dependency issues. The NativeSelectField should have its own dropdown arrow styling.
+import { getCountries } from '@/commercelayer/utils/country-utils'
 import { forwardRef } from 'react'
 
 interface CountrySelectProps {
@@ -52,17 +46,15 @@ export const CountrySelect = forwardRef<HTMLSelectElement, CountrySelectProps>(
     ]
 
     return (
-      <Field label={label} errorText={error} invalid={!!error}>
-        <NativeSelectRoot disabled={disabled}>
-          <NativeSelectField
-            ref={ref}
-            items={items}
-            value={value || ''}
-            onChange={handleChange}
-            // icon prop removed - NativeSelectField should handle dropdown styling
-          />
-        </NativeSelectRoot>
-      </Field>
+      <FloatingLabelSelect
+        ref={ref}
+        label={label}
+        error={error}
+        items={items}
+        value={value || ''}
+        onChange={handleChange}
+        disabled={disabled}
+      />
     )
   }
 )
