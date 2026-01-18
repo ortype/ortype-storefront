@@ -32,7 +32,7 @@ import { segmentGroupSlotRecipe } from './segment-group'
 import { selectSlotRecipe } from './select'
 // import { sliderSlotRecipe } from "./slider"
 // import { statSlotRecipe } from "./stat"
-// import { stepsSlotRecipe } from "./steps"
+import { stepsSlotRecipe } from './steps'
 // import { switchSlotRecipe } from "./switch"
 // import { tableSlotRecipe } from "./table"
 // import { tabsSlotRecipe } from "./tabs"
@@ -79,7 +79,7 @@ export const slotRecipes = {
   select: selectSlotRecipe,
   // slider: sliderSlotRecipe,
   // stat: statSlotRecipe,
-  // steps: stepsSlotRecipe,
+  steps: stepsSlotRecipe,
   // switch: switchSlotRecipe,
   // table: tableSlotRecipe,
   // tabs: tabsSlotRecipe,

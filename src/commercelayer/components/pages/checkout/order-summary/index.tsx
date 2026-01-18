@@ -120,7 +120,7 @@ export const OrderSummary: React.FC<Props> = ({ readonly }) => {
         </Box>
       }
     >
-      <Box bg={'#FFF8D3'} mt={4} px={4} py={3} borderRadius={20} w={'full'}>
+      <Box bg={'#FFF8D3'} mt={8} px={4} py={3} borderRadius={20} w={'full'}>
         <Heading
           as={'h5'}
           fontSize={'xl'}
@@ -130,7 +130,14 @@ export const OrderSummary: React.FC<Props> = ({ readonly }) => {
         >
           {'Order Overview'}
         </Heading>
-        <SimpleGrid columns={3} py={3} borderTop={'1px solid #E7E0BF'} mb={1.5}>
+        <SimpleGrid
+          columns={3}
+          py={3}
+          borderTop={'1px solid #E7E0BF'}
+          borderBottom={'1px solid #E7E0BF'}
+          mb={1.5}
+          fontSize={'sm'}
+        >
           <Box>{parentFontString}</Box>
           <Box>
             {sizes.find(
@@ -140,12 +147,7 @@ export const OrderSummary: React.FC<Props> = ({ readonly }) => {
           <Box></Box>
         </SimpleGrid>
         {order?.line_items?.map((lineItem) => (
-          <SimpleGrid
-            key={lineItem.id}
-            columns={3}
-            py={1.5}
-            borderTop={'1px solid #E7E0BF'}
-          >
+          <SimpleGrid key={lineItem.id} columns={3} py={1.5} fontSize={'sm'}>
             <Box>{lineItem.item?.name}</Box>
             <Box>
               {

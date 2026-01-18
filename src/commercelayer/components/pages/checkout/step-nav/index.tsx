@@ -1,7 +1,7 @@
 'use client'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Steps } from '@chakra-ui/react'
+import { defineStyle, Steps, useStepsContext } from '@chakra-ui/react'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SingleStepEnum } from '../types'
@@ -45,14 +45,17 @@ export const StepNav: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation()
   const ctx = useContext(CheckoutContext)
+  const stepsContext = useStepsContext()
 
   if (!ctx) {
     return null
   }
   return (
-    <Steps.List>
+    <Steps.List css={listStyles}>
       {steps.map((step, index) => {
         const stepComplete = isStepComplete(step.key, ctx)
+        const isCurrentStep = stepsContext.value === index
+
         // Allow navigation to:
         // 1. Any completed step (backward navigation) - UNLESS order is complete
         // 2. The first step (always accessible) - UNLESS order is complete
@@ -67,15 +70,15 @@ export const StepNav: React.FC<Props> = ({
             (!stepComplete && allPreviousStepsComplete)) // Next incomplete step if prerequisites met
 
         return (
-          <Steps.Item
-            key={step.key}
-            index={index}
-            title={t(`step${step.key}.label`) || step.label}
-          >
+          <Steps.Item key={step.key} index={index} css={itemStyles}>
             {canNavigateToStep ? (
-              <Steps.Trigger>
-                <Steps.Indicator />
-                <Steps.Title>
+              <Steps.Trigger
+                css={isCurrentStep ? activeTriggerStyles : triggerStyles}
+              >
+                <Steps.Title
+                  fontWeight="normal"
+                  color={isCurrentStep ? 'white' : undefined}
+                >
                   {t(`step${step.key}.label`) || step.label}
                 </Steps.Title>
                 {showDescription && step.description && (
@@ -86,22 +89,79 @@ export const StepNav: React.FC<Props> = ({
               </Steps.Trigger>
             ) : (
               // Non-clickable step indicator for incomplete steps
-              <>
-                <Steps.Indicator />
-                <Steps.Title>
-                  {t(`step${step.key}.label`) || step.label}
-                </Steps.Title>
-                {showDescription && step.description && (
-                  <Steps.Description>
-                    {t(`step${step.key}.description`) || step.description}
-                  </Steps.Description>
-                )}
-              </>
+              <Steps.Title css={disabledTitleStyles}>
+                {t(`step${step.key}.label`) || step.label}
+              </Steps.Title>
             )}
-            <Steps.Separator />
           </Steps.Item>
         )
       })}
     </Steps.List>
   )
 }
+
+const listStyles = defineStyle({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: '1',
+  flexWrap: 'wrap',
+})
+
+const itemStyles = defineStyle({
+  flex: '0 0 auto',
+})
+
+// Shared sizing styles for DRY
+const sharedSizing = {
+  h: '1.7rem',
+  minW: '10',
+  textStyle: 'sm',
+  px: '0.5rem',
+  borderRadius: 'full',
+  borderWidth: '2px',
+}
+
+const triggerStyles = defineStyle({
+  ...sharedSizing,
+  cursor: 'pointer',
+  borderColor: 'colorPalette.border',
+  color: 'colorPalette.fg',
+  bg: 'white',
+  transitionProperty: 'common',
+  transitionDuration: 'moderate',
+  _hover: {
+    bg: 'colorPalette.subtle',
+  },
+  _expanded: {
+    bg: 'colorPalette.subtle',
+  },
+})
+
+const activeTriggerStyles = defineStyle({
+  ...sharedSizing,
+  cursor: 'pointer',
+  borderColor: 'black',
+  color: 'white',
+  bg: 'black',
+  transitionProperty: 'common',
+  transitionDuration: 'moderate',
+  _hover: {
+    bg: 'black',
+  },
+})
+
+const disabledTitleStyles = defineStyle({
+  ...sharedSizing,
+  display: 'flex',
+  alignItems: 'center',
+  borderColor: 'colorPalette.border',
+  color: 'colorPalette.fg',
+  bg: 'white',
+  cursor: 'not-allowed',
+  opacity: 0.4,
+  _disabled: {
+    layerStyle: 'disabled',
+  },
+})

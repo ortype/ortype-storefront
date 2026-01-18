@@ -27,7 +27,7 @@ export const MainHeader: React.FC<Props> = ({ orderNumber, steps }) => {
         fontWeight={'normal'}
         textTransform={'uppercase'}
         mx={'auto'}
-        pb={8}
+        pb={4}
       >
         {displayTitle}
       </Heading>

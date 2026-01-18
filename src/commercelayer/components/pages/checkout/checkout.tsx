@@ -191,8 +191,8 @@ const Checkout: React.FC<Props> = ({
   }
 
   return (
-    <Container my={24} maxW="50rem" centerContent>
-      <Steps.RootProvider value={stepperHook}>
+    <Container mt={6} mb={24} maxW="50rem" centerContent>
+      <Steps.RootProvider value={stepperHook} size={'sm'}>
         <MainHeader orderNumber={orderNumber} steps={steps} />
         <StepNav steps={steps} />
         {steps.map((step, index) => {
