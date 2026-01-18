@@ -25,7 +25,7 @@ import { nativeSelectSlotRecipe } from './native-select'
 // import { popoverSlotRecipe } from "./popover"
 // import { progressSlotRecipe } from "./progress"
 // import { progressCircleSlotRecipe } from "./progress-circle"
-// import { radioCardSlotRecipe } from "./radio-card"
+import { radioCardSlotRecipe } from './radio-card'
 import { radioGroupSlotRecipe } from './radio-group'
 // import { ratingGroupSlotRecipe } from "./rating-group"
 import { segmentGroupSlotRecipe } from './segment-group'
@@ -72,7 +72,7 @@ export const slotRecipes = {
   // popover: popoverSlotRecipe,
   // progress: progressSlotRecipe,
   // progressCircle: progressCircleSlotRecipe,
-  // radioCard: radioCardSlotRecipe,
+  radioCard: radioCardSlotRecipe,
   radioGroup: radioGroupSlotRecipe,
   // ratingGroup: ratingGroupSlotRecipe,
   segmentGroup: segmentGroupSlotRecipe,
