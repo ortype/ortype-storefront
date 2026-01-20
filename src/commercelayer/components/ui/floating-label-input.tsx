@@ -38,6 +38,7 @@ export const FloatingLabelInput = forwardRef<
   })
 
   const hasValue = inputState.length > 0
+  const [hasInteracted, setHasInteracted] = useState(false)
 
   return (
     <Field.Root invalid={!!error}>
@@ -47,9 +48,11 @@ export const FloatingLabelInput = forwardRef<
           {...rest}
           placeholder={typeof label === 'string' ? label : String(label)}
           onFocus={(e) => {
+            setHasInteracted(true)
             props.onFocus?.(e)
           }}
           onBlur={(e) => {
+            setHasInteracted(true)
             props.onBlur?.(e)
           }}
           onChange={(e) => {
@@ -60,7 +63,10 @@ export const FloatingLabelInput = forwardRef<
           css={hasValue ? inputStyles : undefined}
         />
         {hasValue && (
-          <Field.Label css={floatingStyles} animationStyle="slide-up-fade-in">
+          <Field.Label 
+            css={floatingStyles}
+            animationStyle={hasInteracted ? 'slide-up-fade-in' : undefined}
+          >
             {label}
           </Field.Label>
         )}

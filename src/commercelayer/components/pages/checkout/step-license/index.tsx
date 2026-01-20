@@ -1,14 +1,14 @@
-import { VStack, useStepsContext } from '@chakra-ui/react'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { VStack, useStepsContext } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { CheckoutSummary } from '../checkout-summary'
 import {
-  licenseOwnerSchema,
-  LicenseOwnerFormData,
   LicenseOwnerForm,
+  LicenseOwnerFormData,
+  licenseOwnerSchema,
 } from './license-owner-form'
 import { LicenseSummary } from './license-summary'
 
@@ -94,7 +94,10 @@ export const StepLicense: React.FC<Props> = () => {
         setError('Save function not available')
         return
       }
-      const result = await saveLicenseOwner(data as any, projectType === 'client')
+      const result = await saveLicenseOwner(
+        data as any,
+        projectType === 'client'
+      )
 
       if (!result.success) {
         setError(result.error || 'Failed to save license owner')
@@ -113,7 +116,6 @@ export const StepLicense: React.FC<Props> = () => {
       setIsLocalLoader(false)
     }
   }
-
 
   if (!checkoutCtx) {
     return null

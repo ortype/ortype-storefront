@@ -92,11 +92,9 @@ export const FloatingLabelSelect = forwardRef<
             css={hasValue ? selectStyles : selectStylesDefault}
           />
         </NativeSelectRoot>
-        {hasValue && (
-          <Field.Label css={floatingStyles} animationStyle="slide-up-fade-in">
-            {label}
-          </Field.Label>
-        )}
+        <Field.Label css={floatingStyles}>
+          {label}
+        </Field.Label>
       </Box>
       {error && <Field.ErrorText>{error}</Field.ErrorText>}
     </Field.Root>
@@ -106,6 +104,8 @@ export const FloatingLabelSelect = forwardRef<
 FloatingLabelSelect.displayName = 'FloatingLabelSelect'
 
 const selectStylesDefault = defineStyle({
+  paddingTop: '3',
+  paddingBottom: '1',
   paddingLeft: '3',
   color: 'fg.muted',
   '& option[value=""]': {

@@ -1,5 +1,7 @@
+import { LicenseSizeNativeSelect } from '@/commercelayer/components/forms/LicenseSizeNativeSelect'
 import { AddressField } from '@/commercelayer/components/ui/address/address-field'
 import { CountrySelect } from '@/commercelayer/components/ui/address/country-select'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
 import {
   Box,
@@ -82,8 +84,11 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
     formState: { errors },
   } = form
 
+  // Access OrderProvider for license size
+  const { licenseSize, setLicenseSize } = useOrderContext()
+
   return (
-    <VStack gap={4} alignItems={'stretch'}>
+    <VStack gap={1} alignItems={'stretch'}>
       {showProjectTypeSelection && (
         <RadioCardRoot
           value={projectType}
@@ -125,16 +130,18 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
       <FormProvider {...form}>
         <Box as="form" w="full" onSubmit={handleSubmit(onSubmit)}>
           <VStack gap={1} alignItems={'flex-start'}>
-            <Text
-              fontSize={'xs'}
-              textTransform={'uppercase'}
-              fontVariantNumeric={'tabular-nums'}
-              color={'#737373'}
-            >
-              {'Your client'}
-            </Text>
             {projectType === 'client' || isDialog ? (
               <>
+                {isDialog && (
+                  <Text
+                    fontSize={'xs'}
+                    textTransform={'uppercase'}
+                    fontVariantNumeric={'tabular-nums'}
+                    color={'#737373'}
+                  >
+                    {'Your client'}
+                  </Text>
+                )}
                 <Controller
                   name="company"
                   render={({ field, fieldState: { error } }) => (
@@ -250,14 +257,21 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 />
               </>
             ) : (
-              <Box bg={'brand.50'} p={4} w="full" px={3}>
-                <Text>
-                  {t(
-                    'stepLicense.billingAddressUsed',
-                    'Billing address will be used for license owner information.'
-                  )}
-                </Text>
-              </Box>
+              <>
+                <Box bg={'brand.50'} p={4} w="full" px={3}>
+                  <Text>
+                    {t(
+                      'stepLicense.billingAddressUsed',
+                      'Your address will be used for license owner information.'
+                    )}
+                  </Text>
+                </Box>
+                <LicenseSizeNativeSelect
+                  setLicenseSize={setLicenseSize}
+                  licenseSize={licenseSize}
+                  label={'Your company size'}
+                />
+              </>
             )}
 
             {/* Display save errors */}
