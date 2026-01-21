@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, type JSX } from 'react'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Alert } from '@chakra-ui/react'
+import { Alert, Box, Text } from '@chakra-ui/react'
 import { usePaymentMethodContext } from '../payment/payment-method'
 
 export interface WireTransferConfig {
@@ -84,13 +84,30 @@ export function WireTransferPayment({
 
   return (
     <form ref={formRef}>
-      <Alert.Root variant={'solid'} status={'info'}>
+      <Box
+        bg="brand.50"
+        px={4}
+        borderRadius={0}
+        minH="3rem"
+        css={{
+          display: 'flex',
+          alignItems: 'center',
+          paddingTop: '3',
+          paddingBottom: '3',
+        }}
+      >
+        <Text fontSize="md">
+          You will receive detailed wire transfer instructions via email after
+          completing your order.
+        </Text>
+      </Box>
+      {/*<Alert.Root variant={'solid'} status={'info'}>
         <Alert.Indicator />
         <Alert.Title>
           You will receive detailed wire transfer instructions via email after
           completing your order.
         </Alert.Title>
-      </Alert.Root>
+      </Alert.Root>*/}
     </form>
   )
 }

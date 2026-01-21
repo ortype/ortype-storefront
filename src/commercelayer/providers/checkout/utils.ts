@@ -304,23 +304,27 @@ export const fetchOrder = async (
   // This follows the same pattern as Commerce Layer React Components
   // Check both editable field and status to ensure order is actually placed
   const isOrderPlaced = order.status === 'placed' || order.editable === false
-  
+
   // Debug logging for development to track localStorage clearing
   if (process.env.NODE_ENV === 'development') {
     console.log('fetchOrder - localStorage clearing check:', {
       orderId: order.id,
       status: order.status,
       editable: order.editable,
+      paymentMethod: order.payment_method,
       isOrderPlaced,
       clearWhenPlaced: options?.clearWhenPlaced,
       willClear: options?.clearWhenPlaced && isOrderPlaced,
       persistKey: options?.persistKey,
     })
   }
-  
+
   if (options?.clearWhenPlaced && isOrderPlaced) {
     if (options.persistKey && options.deleteLocalOrder) {
-      console.log('fetchOrder: Clearing localStorage for placed order:', options.persistKey)
+      console.log(
+        'fetchOrder: Clearing localStorage for placed order:',
+        options.persistKey
+      )
       options.deleteLocalOrder(options.persistKey)
     }
   }

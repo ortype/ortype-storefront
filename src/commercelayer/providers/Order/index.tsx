@@ -9,7 +9,7 @@ import utils, {
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
-import { getOrder } from '@/commercelayer/utils/getOrder'
+import { getOrder } from './utils/getOrder'
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
 import {
   LineItem,

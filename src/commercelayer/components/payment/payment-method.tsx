@@ -2,7 +2,13 @@ import { Radio, RadioGroup } from '@/components/ui/radio'
 import { HStack, Text } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import classNames from 'classnames'
-import React, { useContext, useEffect, useState, type ReactNode } from 'react'
+import React, {
+  memo,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
@@ -22,146 +28,144 @@ interface PaymentMethodProps {
   sortBy?: Array<PaymentMethodType['payment_source_type']>
 }
 
-export const PaymentMethod: React.FC<PaymentMethodProps> = ({
-  children,
-  className,
-  loader = 'Loading...',
-  autoSelectSinglePaymentMethod,
-  clickableContainer,
-  hide = [],
-  onClick,
-  sortBy,
-  ...props
-}) => {
-  const [paymentSelected, setPaymentSelected] = useState('')
-  // Preserve payment methods during loading to prevent disappear/reappear
-  const [cachedPaymentMethods, setCachedPaymentMethods] = useState<PaymentMethodType[]>([])
+export const PaymentMethod: React.FC<PaymentMethodProps> = memo(
+  ({
+    children,
+    className,
+    loader = 'Loading...',
+    autoSelectSinglePaymentMethod,
+    clickableContainer,
+    hide = [],
+    onClick,
+    sortBy,
+    ...props
+  }) => {
+    const [paymentSelected, setPaymentSelected] = useState('')
+    // Preserve payment methods during loading to prevent disappear/reappear
+    const [cachedPaymentMethods, setCachedPaymentMethods] = useState<
+      PaymentMethodType[]
+    >([])
 
-  const checkoutCtx = useContext(CheckoutContext)
+    const checkoutCtx = useContext(CheckoutContext)
 
-  if (!checkoutCtx) {
-    return null
-  }
-
-  const { order, isLoading, loadPaymentMethods } = checkoutCtx
-
-  // Get payment methods from order
-  const paymentMethods = order?.available_payment_methods || []
-
-  // Cache payment methods when they become available, preserve during loading
-  useEffect(() => {
-    if (paymentMethods.length > 0) {
-      setCachedPaymentMethods(paymentMethods)
+    if (!checkoutCtx) {
+      return null
     }
-  }, [paymentMethods])
 
-  // Use cached payment methods during loading to prevent disappear/reappear
-  const effectivePaymentMethods = paymentMethods.length > 0 ? paymentMethods : (isLoading ? cachedPaymentMethods : [])
+    const { order, isLoading, loadPaymentMethods } = checkoutCtx
 
-  // Load payment methods if not available
-  useEffect(() => {
-    if (!effectivePaymentMethods.length && !isLoading && loadPaymentMethods) {
-      loadPaymentMethods().catch(console.error)
-    }
-  }, [effectivePaymentMethods.length, isLoading, loadPaymentMethods])
+    // Get payment methods from order
+    const paymentMethods = order?.available_payment_methods || []
 
-  // Filter out hidden payment methods
-  const filteredPaymentMethods = effectivePaymentMethods.filter((pm) => {
-    if (typeof hide === 'function') {
-      return !hide(pm)
-    }
-    return !hide.includes(pm.payment_source_type)
-  })
+    // Cache payment methods when they become available, preserve during loading
+    useEffect(() => {
+      if (paymentMethods.length > 0) {
+        setCachedPaymentMethods(paymentMethods)
+      }
+    }, [paymentMethods])
 
-  // Sort payment methods if sortBy is provided
-  const sortedPaymentMethods = sortBy
-    ? [...filteredPaymentMethods].sort((a, b) => {
-        const aIndex = sortBy.indexOf(a.payment_source_type)
-        const bIndex = sortBy.indexOf(b.payment_source_type)
-        if (aIndex === -1) return 1
-        if (bIndex === -1) return -1
-        return aIndex - bIndex
-      })
-    : filteredPaymentMethods
+    // Use cached payment methods when current methods are empty to prevent disappear/reappear
+    // This prevents flicker when order updates cause paymentMethods to temporarily be empty
+    const effectivePaymentMethods =
+      paymentMethods.length > 0 ? paymentMethods : cachedPaymentMethods
 
-  // Use CheckoutContext loading state instead of local loading state
-  const loading = isLoading || sortedPaymentMethods.length === 0
+    // Load payment methods if not available
+    useEffect(() => {
+      if (!effectivePaymentMethods.length && !isLoading && loadPaymentMethods) {
+        loadPaymentMethods().catch(console.error)
+      }
+    }, [effectivePaymentMethods.length, isLoading, loadPaymentMethods])
 
-  useEffect(() => {
-    if (sortedPaymentMethods.length > 0) {
-      // Auto-select single payment method
-      if (
-        autoSelectSinglePaymentMethod &&
-        sortedPaymentMethods.length === 1 &&
-        !paymentSelected
-      ) {
-        const [paymentMethod] = sortedPaymentMethods
-        setPaymentSelected(paymentMethod.id)
+    // Filter out hidden payment methods
+    const filteredPaymentMethods = effectivePaymentMethods.filter((pm) => {
+      if (typeof hide === 'function') {
+        return !hide(pm)
+      }
+      return !hide.includes(pm.payment_source_type)
+    })
 
-        if (onClick) {
-          onClick({
-            payment: paymentMethod,
-            paymentSource: order?.payment_source,
-          })
-        }
+    // Sort payment methods if sortBy is provided
+    const sortedPaymentMethods = sortBy
+      ? [...filteredPaymentMethods].sort((a, b) => {
+          const aIndex = sortBy.indexOf(a.payment_source_type)
+          const bIndex = sortBy.indexOf(b.payment_source_type)
+          if (aIndex === -1) return 1
+          if (bIndex === -1) return -1
+          return aIndex - bIndex
+        })
+      : filteredPaymentMethods
 
-        if (typeof autoSelectSinglePaymentMethod === 'function') {
-          autoSelectSinglePaymentMethod()
+    useEffect(() => {
+      if (sortedPaymentMethods.length > 0) {
+        // Auto-select single payment method
+        if (
+          autoSelectSinglePaymentMethod &&
+          sortedPaymentMethods.length === 1 &&
+          !paymentSelected
+        ) {
+          const [paymentMethod] = sortedPaymentMethods
+          setPaymentSelected(paymentMethod.id)
+
+          if (onClick) {
+            onClick({
+              payment: paymentMethod,
+              paymentSource: order?.payment_source,
+            })
+          }
+
+          if (typeof autoSelectSinglePaymentMethod === 'function') {
+            autoSelectSinglePaymentMethod()
+          }
         }
       }
-    }
-  }, [
-    sortedPaymentMethods,
-    order,
-    autoSelectSinglePaymentMethod,
-    onClick,
-    paymentSelected,
-  ])
+    }, [
+      sortedPaymentMethods,
+      order,
+      autoSelectSinglePaymentMethod,
+      onClick,
+      paymentSelected,
+    ])
 
-  const handlePaymentMethodClick = (paymentMethod: PaymentMethodType) => {
-    if (clickableContainer && onClick) {
-      setPaymentSelected(paymentMethod.id)
-      onClick({
-        payment: paymentMethod,
-        paymentSource: order?.payment_source,
-      })
+    const handlePaymentMethodClick = (paymentMethod: PaymentMethodType) => {
+      if (clickableContainer && onClick) {
+        setPaymentSelected(paymentMethod.id)
+        onClick({
+          payment: paymentMethod,
+          paymentSource: order?.payment_source,
+        })
+      }
     }
-  }
 
-  // For clickable container, handle the click at this level
-  const handleContainerClick = () => {
-    if (clickableContainer && sortedPaymentMethods.length > 0) {
-      const [firstPaymentMethod] = sortedPaymentMethods
-      handlePaymentMethodClick(firstPaymentMethod)
+    // For clickable container, handle the click at this level
+    const handleContainerClick = () => {
+      if (clickableContainer && sortedPaymentMethods.length > 0) {
+        const [firstPaymentMethod] = sortedPaymentMethods
+        handlePaymentMethodClick(firstPaymentMethod)
+      }
     }
-  }
 
-  return (
-    <PaymentMethodLoadingContext.Provider value={loading}>
+    return (
       <div onClick={handleContainerClick} {...props}>
-        {/* Always render children to prevent disappear/reappear */}
-        {sortedPaymentMethods.length > 0 ? (
-          sortedPaymentMethods.map((paymentMethod) => (
-            <PaymentMethodProvider key={paymentMethod.id} value={paymentMethod}>
-              {children}
-            </PaymentMethodProvider>
-          ))
-        ) : (
-          // Render children with null context when loading - let components handle loading state
-          <PaymentMethodProvider key="loading" value={null as any}>
-            {children}
-          </PaymentMethodProvider>
-        )}
+        {/* Always render cached payment methods to prevent unmount/remount flicker */}
+        {sortedPaymentMethods.length > 0
+          ? sortedPaymentMethods.map((paymentMethod) => (
+              <PaymentMethodProvider
+                key={paymentMethod.id}
+                value={paymentMethod}
+              >
+                {children}
+              </PaymentMethodProvider>
+            ))
+          : null}
       </div>
-    </PaymentMethodLoadingContext.Provider>
-  )
-}
+    )
+  }
+)
+
+PaymentMethod.displayName = 'PaymentMethod'
 
 // Context provider for payment method data
 const PaymentMethodContext = React.createContext<PaymentMethodType | null>(null)
-
-// Context for PaymentMethod loading state
-const PaymentMethodLoadingContext = React.createContext<boolean>(false)
 
 interface PaymentMethodProviderProps {
   value: PaymentMethodType
@@ -192,9 +196,4 @@ export const usePaymentMethodContextRequired = () => {
     )
   }
   return context
-}
-
-export const usePaymentMethodLoading = () => {
-  const loading = useContext(PaymentMethodLoadingContext)
-  return loading
 }

@@ -54,8 +54,11 @@ export const FloatingLabelSelect = forwardRef<
     props.onChange?.(e)
   }
 
-  // Create placeholder option if items exist and label is provided
-  const itemsWithPlaceholder = rest.items
+  // Check if items already has a placeholder with empty value
+  const hasEmptyValueOption = rest.items?.some((item) => item.value === '')
+  
+  // Only add placeholder if items don't already have one
+  const itemsWithPlaceholder = rest.items && !hasEmptyValueOption
     ? [
         {
           value: '',
@@ -92,9 +95,7 @@ export const FloatingLabelSelect = forwardRef<
             css={hasValue ? selectStyles : selectStylesDefault}
           />
         </NativeSelectRoot>
-        <Field.Label css={floatingStyles}>
-          {label}
-        </Field.Label>
+        <Field.Label css={floatingStyles}>{label}</Field.Label>
       </Box>
       {error && <Field.ErrorText>{error}</Field.ErrorText>}
     </Field.Root>

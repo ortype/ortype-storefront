@@ -265,7 +265,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 }) => {
   const orderRef = useRef<Order>(initialOrder)
   const [state, dispatch] = useReducer(reducer, initialState)
-  
+
   // Payment submission registry
   const paymentSubmitterRef = useRef<(() => Promise<boolean>) | null>(null)
 
@@ -342,7 +342,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     // Update the order ref with the current order to keep cache fresh
     orderRef.current = currentOrder
 
-    const isShipmentRequired = await checkIfShipmentRequired(cl, orderId, currentOrder)
+    const isShipmentRequired = await checkIfShipmentRequired(
+      cl,
+      orderId,
+      currentOrder
+    )
 
     const others = calculateSettings(
       currentOrder,
@@ -389,11 +393,13 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }) => {
     // dispatch({ type: ActionType.START_LOADING })
     // TODO Remove after fixing components
-    const currentOrder = params.order ?? (await fetchOrder(cl, orderId, {
-      clearWhenPlaced: orderStorageContext.clearWhenPlaced,
-      persistKey: orderStorageContext.persistKey,
-      deleteLocalOrder: orderStorageContext.deleteLocalOrder,
-    }))
+    const currentOrder =
+      params.order ??
+      (await fetchOrder(cl, orderId, {
+        clearWhenPlaced: orderStorageContext.clearWhenPlaced,
+        persistKey: orderStorageContext.persistKey,
+        deleteLocalOrder: orderStorageContext.deleteLocalOrder,
+      }))
 
     const others = calculateSettings(
       currentOrder,
@@ -416,11 +422,13 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
   const autoSelectShippingMethod = async (order?: Order) => {
     dispatch({ type: ActionType.START_LOADING })
-    const currentOrder = order ?? (await fetchOrder(cl, orderId, {
-      clearWhenPlaced: orderStorageContext.clearWhenPlaced,
-      persistKey: orderStorageContext.persistKey,
-      deleteLocalOrder: orderStorageContext.deleteLocalOrder,
-    }))
+    const currentOrder =
+      order ??
+      (await fetchOrder(cl, orderId, {
+        clearWhenPlaced: orderStorageContext.clearWhenPlaced,
+        persistKey: orderStorageContext.persistKey,
+        deleteLocalOrder: orderStorageContext.deleteLocalOrder,
+      }))
 
     const others = calculateSettings(
       currentOrder,
@@ -836,7 +844,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     if (orderRef.current) {
       return orderRef.current
     }
-    
+
     // Pass localStorage clearing parameters to fetchOrder
     return await fetchOrder(cl, orderId, {
       clearWhenPlaced: orderStorageContext.clearWhenPlaced,

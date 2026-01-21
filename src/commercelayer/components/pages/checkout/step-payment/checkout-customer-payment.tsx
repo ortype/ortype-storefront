@@ -4,7 +4,7 @@ import {
   type CustomerSaveToWalletProps,
 } from '@/commercelayer/components'
 import { Box, VStack } from '@chakra-ui/react'
-import { MouseEvent, useContext, useRef, useState } from 'react'
+import { MouseEvent, memo, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PaymentDetails } from './payment-details'
@@ -23,7 +23,7 @@ type TTemplateCustomerCards = Parameters<
   typeof PaymentSource
 >[0]['templateCustomerCards']
 
-export const CheckoutCustomerPayment: React.FC<Props> = ({
+export const CheckoutCustomerPayment: React.FC<Props> = memo(({
   selectPayment,
   autoSelectCallback,
 }) => {
@@ -44,10 +44,17 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
     return <div>No order available</div>
   }
 
+  // Initialize selected payment method from order on mount
+  useEffect(() => {
+    if (order.payment_method && !selectedPaymentMethod) {
+      setSelectedPaymentMethod(order.payment_method)
+    }
+  }, [order.payment_method, selectedPaymentMethod])
+
   // Store payment form reference for potential programmatic submission
-  const setPaymentRef = (ref: React.RefObject<HTMLFormElement>) => {
+  const setPaymentRef = useCallback((ref: React.RefObject<HTMLFormElement>) => {
     paymentFormRef.current = ref.current
-  }
+  }, [])
 
   const TemplateSaveToWalletCheckbox = ({
     name,
@@ -101,4 +108,6 @@ export const CheckoutCustomerPayment: React.FC<Props> = ({
       </PaymentSource>*/}
     </>
   )
-}
+})
+
+CheckoutCustomerPayment.displayName = 'CheckoutCustomerPayment'

@@ -1,11 +1,11 @@
 'use client'
 
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
+import { StripeElementField } from '@/commercelayer/components/ui/stripe-element-field'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Alert } from '@/components/ui/alert'
-import { Box, Text } from '@chakra-ui/react'
+import { Box, Spinner, Stack, Text } from '@chakra-ui/react'
 import {
-  CardCvcElement,
-  CardExpiryElement,
   CardNumberElement,
   Elements,
   useElements,
@@ -28,11 +28,6 @@ interface CustomStripePaymentFormProps {
   setPaymentRef?: (ref: React.RefObject<HTMLFormElement>) => void
 }
 
-// Stable element options
-const ELEMENT_OPTIONS = {
-  base: {},
-} as const
-
 /**
  * PCI-Compliant Custom Stripe payment form using Elements
  */
@@ -51,6 +46,16 @@ const CustomStripeElementsForm: React.FC<{
     cardExpiry: false,
     cardCvc: false,
   })
+  const [elementsReady, setElementsReady] = useState({
+    cardNumber: false,
+    cardExpiry: false,
+    cardCvc: false,
+  })
+  const [errors, setErrors] = useState({
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvc: '',
+  })
   const [cardholderName, setCardholderName] = useState('')
   const [error, setError] = useState<string | null>(null)
 
@@ -68,6 +73,12 @@ const CustomStripeElementsForm: React.FC<{
     isComplete.cardExpiry &&
     isComplete.cardCvc &&
     cardholderName.trim()
+
+  // Check if all Stripe Elements are ready (iframes mounted)
+  const allElementsReady =
+    elementsReady.cardNumber &&
+    elementsReady.cardExpiry &&
+    elementsReady.cardCvc
 
   /**
    * Payment Handler Registration Logic
@@ -212,112 +223,132 @@ const CustomStripeElementsForm: React.FC<{
   }, [allComplete, stripe, elements, onPaymentReady])
 
   return (
-    <Box>
+    <Box position="relative">
+      {/* Show spinner overlay while Elements are loading */}
+      {!allElementsReady && (
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          zIndex={1}
+          py={8}
+        >
+          <Spinner size="lg" />
+        </Box>
+      )}
+
       {error && (
         <Alert status="error" mb={4} size="sm">
           {error}
         </Alert>
       )}
 
-      <form ref={formRef}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form
+        ref={formRef}
+        style={{
+          opacity: allElementsReady ? 1 : 0.3,
+          transition: 'opacity 0.2s',
+        }}
+      >
+        <Stack gap={1}>
           {/* Card Number */}
-          <div>
-            <label>Card Number</label>
-            <div
-              style={{
-                border: '1px solid #ccc',
-                padding: '10px',
-                borderRadius: '4px',
-              }}
-            >
-              <CardNumberElement
-                options={ELEMENT_OPTIONS}
+          <StripeElementField
+            label="Card Number"
+            element="cardNumber"
+            error={errors.cardNumber}
+            onReady={() => {
+              console.log('CardNumber onReady fired')
+              setElementsReady((prev) => ({ ...prev, cardNumber: true }))
+            }}
+            onChange={(e) => {
+              setIsComplete((prev) => ({
+                ...prev,
+                cardNumber: e.complete,
+              }))
+              setErrors((prev) => ({
+                ...prev,
+                cardNumber: e.error?.message || '',
+              }))
+              setError(null)
+            }}
+          />
+
+          {/* Expiry and CVC */}
+          <Stack direction="row" gap={1}>
+            <Box flex={1}>
+              <StripeElementField
+                label="Expiry Date"
+                element="cardExpiry"
+                error={errors.cardExpiry}
+                onReady={() => {
+                  console.log('CardExpiry onReady fired')
+                  setElementsReady((prev) => ({ ...prev, cardExpiry: true }))
+                }}
                 onChange={(e) => {
                   setIsComplete((prev) => ({
                     ...prev,
-                    cardNumber: e.complete,
+                    cardExpiry: e.complete,
+                  }))
+                  setErrors((prev) => ({
+                    ...prev,
+                    cardExpiry: e.error?.message || '',
                   }))
                   setError(null)
                 }}
               />
-            </div>
-          </div>
+            </Box>
 
-          {/* Expiry and CVC */}
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <div style={{ flex: 1 }}>
-              <label>Expiry Date</label>
-              <div
-                style={{
-                  border: '1px solid #ccc',
-                  padding: '10px',
-                  borderRadius: '4px',
+            <Box flex={1}>
+              <StripeElementField
+                label="CVC"
+                element="cardCvc"
+                error={errors.cardCvc}
+                onReady={() => {
+                  console.log('CardCvc onReady fired')
+                  setElementsReady((prev) => ({ ...prev, cardCvc: true }))
                 }}
-              >
-                <CardExpiryElement
-                  options={ELEMENT_OPTIONS}
-                  onChange={(e) => {
-                    setIsComplete((prev) => ({
-                      ...prev,
-                      cardExpiry: e.complete,
-                    }))
-                    setError(null)
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <label>CVC</label>
-              <div
-                style={{
-                  border: '1px solid #ccc',
-                  padding: '10px',
-                  borderRadius: '4px',
+                onChange={(e) => {
+                  setIsComplete((prev) => ({
+                    ...prev,
+                    cardCvc: e.complete,
+                  }))
+                  setErrors((prev) => ({
+                    ...prev,
+                    cardCvc: e.error?.message || '',
+                  }))
+                  setError(null)
                 }}
-              >
-                <CardCvcElement
-                  options={ELEMENT_OPTIONS}
-                  onChange={(e) => {
-                    setIsComplete((prev) => ({
-                      ...prev,
-                      cardCvc: e.complete,
-                    }))
-                    setError(null)
-                  }}
-                />
-              </div>
-            </div>
-          </div>
+              />
+            </Box>
+          </Stack>
 
           {/* Cardholder Name */}
-          <div>
-            <label>Cardholder Name</label>
-            <input
-              type="text"
-              value={cardholderName}
-              onChange={(e) => setCardholderName(e.target.value)}
-              placeholder="John Doe"
-              style={{
-                border: '1px solid #ccc',
-                padding: '10px',
-                borderRadius: '4px',
-                width: '100%',
-                fontSize: '16px',
-              }}
-            />
-          </div>
+          <FloatingLabelInput
+            label="Cardholder Name"
+            value={cardholderName}
+            onChange={(e) => setCardholderName(e.target.value)}
+            variant="subtle"
+            size="lg"
+            fontSize="md"
+            borderRadius={0}
+          />
 
-          {/* Save to Wallet Checkbox */}
+          {/* 
+          Save to Wallet Checkbox 
+          // @TODO: style this
           {templateCustomerSaveToWallet ? (
-            <div>
+            <Box>
               {templateCustomerSaveToWallet({
                 name: 'save_payment_source_to_customer_wallet',
               })}
-            </div>
+            </Box>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Box display="flex" alignItems="center" gap={2}>
               <input
                 type="checkbox"
                 id="save_payment_source_to_customer_wallet"
@@ -327,9 +358,10 @@ const CustomStripeElementsForm: React.FC<{
               <label htmlFor="save_payment_source_to_customer_wallet">
                 Save card for future purchases
               </label>
-            </div>
+            </Box>
           )}
-        </div>
+          */}
+        </Stack>
       </form>
     </Box>
   )
@@ -345,16 +377,6 @@ const CustomStripePaymentForm: React.FC<CustomStripePaymentFormProps> = ({
   onPaymentReady,
   setPaymentRef,
 }) => {
-  if (!stripe) {
-    return (
-      <Box>
-        <Text fontSize="sm" color="gray.600">
-          Loading payment form...
-        </Text>
-      </Box>
-    )
-  }
-
   const elementsOptions: StripeElementsOptions = {
     clientSecret,
   }
@@ -385,7 +407,6 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
   setPaymentRef,
   ...divProps
 }) => {
-  const [isLoaded, setIsLoaded] = useState(false)
   const [stripe, setStripe] = useState<Stripe | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -414,7 +435,6 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
             const res = await loadStripe(publishableKey, options)
             if (res != null) {
               setStripe(res)
-              setIsLoaded(true)
             } else {
               setError('Failed to initialize Stripe')
             }
@@ -431,7 +451,6 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
       })
 
     return () => {
-      setIsLoaded(false)
       setStripe(null)
     }
   }, [show, publishableKey, connectedAccount, locale, error])
@@ -448,12 +467,19 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
     )
   }
 
-  if (!isLoaded || !stripe || !clientSecret) {
+  // Show spinner until Stripe and clientSecret are ready
+  // This prevents "Invalid clientSecret" error when Elements tries to render
+  if (!stripe || !clientSecret) {
     return (
-      <Box className={containerClassName} {...divProps}>
-        <Text fontSize="sm" color="gray.600">
-          Loading payment form...
-        </Text>
+      <Box
+        className={containerClassName}
+        {...divProps}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        py={8}
+      >
+        <Spinner size="lg" />
       </Box>
     )
   }

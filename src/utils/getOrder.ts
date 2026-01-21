@@ -1,3 +1,11 @@
+/**
+ * @deprecated This file is used by legacy OrderProvider component.
+ * Will be removed once account area is refactored.
+ * For new code:
+ * - Use fetchOrder from @/commercelayer/providers/checkout/utils for checkout context
+ * - Use getOrder from @/commercelayer/providers/Order/utils/getOrder for cart/order display
+ */
+
 import type { CommerceLayerClient } from '@commercelayer/sdk'
 
 import { retryCall } from '@/utils/retryCall'
