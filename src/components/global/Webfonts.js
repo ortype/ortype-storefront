@@ -17,6 +17,13 @@ export const FontScale = {
   BREAKPOINTS: breakpoints,
 }
 
+/*
+Base: 0.9rem (MIN_FONT)
+•  Small viewport (35rem+): Fluid between 0.765rem to 1.1475rem (with M_MULTIPLIER 0.85)
+•  Medium viewport (70rem+): Fluid between 0.99rem to 1.485rem (with L_MULTIPLIER 1.1)  
+•  Large viewport (120rem+): 1.35rem (MAX_FONT)
+*/
+
 const {
   MIN_FONT,
   MAX_FONT,

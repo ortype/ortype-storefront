@@ -6,8 +6,8 @@ import {
   CardExpiryElement,
   CardNumberElement,
 } from '@stripe/react-stripe-js'
-import type { StripeElementChangeEvent } from '@stripe/stripe-js'
-import { useState } from 'react'
+import type { StripeElement, StripeElementChangeEvent } from '@stripe/stripe-js'
+import { useEffect, useState } from 'react'
 
 interface StripeElementFieldProps {
   label: string
@@ -31,7 +31,7 @@ export const stripeElementStyle = {
       color: 'black',
       fontFamily: 'Alltaf-Regular, sans',
       fontWeight: '400',
-      '-webkit-font-smoothing': 'antialiased',
+      '-webkit-font-smoothing': 'antialiased', // @TODO: how to implement this prop in the iframe?
       '::placeholder': {
         color: 'transparent', // Hide Stripe's placeholder to avoid overlap
       },
@@ -97,6 +97,9 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
   const [hasValue, setHasValue] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
+  const [elementInstance, setElementInstance] = useState<StripeElement | null>(
+    null
+  )
 
   const ElementComponent = {
     cardNumber: CardNumberElement,
@@ -118,6 +121,38 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
     setIsFocused(false)
     setHasInteracted(true)
   }
+
+  // Sync Stripe Element font size with responsive typography
+  // 1. Read the computed HTML font-size at mount and on window resize
+  // 2. Calculate proportional sizes based on your responsive typography (1.25rem for font size, 1.5rem for line height)
+  // 3. Update the Element dynamically using Stripe's .update() method
+  useEffect(() => {
+    if (!elementInstance) return
+
+    const updateFontSize = () => {
+      const htmlFontSize = parseFloat(
+        getComputedStyle(document.documentElement).fontSize
+      )
+      // Stripe Elements should match body text size (1.25rem equivalent in your design)
+      const calculatedFontSize = `${htmlFontSize * 1}px`
+      const calculatedLineHeight = `${htmlFontSize * 1.5}px` // matches BASELINE * 0.75
+
+      elementInstance.update({
+        style: {
+          base: {
+            fontSize: calculatedFontSize,
+            lineHeight: calculatedLineHeight,
+          },
+        },
+      })
+    }
+
+    // Update on mount and resize
+    updateFontSize()
+    window.addEventListener('resize', updateFontSize)
+
+    return () => window.removeEventListener('resize', updateFontSize)
+  }, [elementInstance])
 
   return (
     <Field.Root invalid={!!error}>
@@ -159,7 +194,10 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
               onChange={handleChange}
               onFocus={handleFocus}
               onBlur={handleBlur}
-              onReady={onReady}
+              onReady={(el) => {
+                setElementInstance(el)
+                onReady?.()
+              }}
             />
           </Box>
         </Box>
