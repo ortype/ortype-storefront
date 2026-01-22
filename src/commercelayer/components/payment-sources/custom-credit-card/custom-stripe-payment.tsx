@@ -1,7 +1,10 @@
 'use client'
 
 import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
-import { StripeElementField } from '@/commercelayer/components/ui/stripe-element-field'
+import {
+  StripeElementField,
+  StripeElementSkelton,
+} from '@/commercelayer/components/ui/stripe-element-field'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Alert } from '@/components/ui/alert'
 import { Box, Spinner, Stack, Text } from '@chakra-ui/react'
@@ -236,7 +239,7 @@ const CustomStripeElementsForm: React.FC<{
           justifyContent="center"
           alignItems="center"
           zIndex={1}
-          py={8}
+          py={'3.5rem'}
         >
           <Spinner size="lg" />
         </Box>
@@ -378,7 +381,28 @@ const CustomStripePaymentForm: React.FC<CustomStripePaymentFormProps> = ({
   setPaymentRef,
 }) => {
   const elementsOptions: StripeElementsOptions = {
+    // /node_modules/.pnpm/@stripe+stripe-js@7.8.0/node_modules/@stripe/stripe-js/dist/stripe-js/elements-group.d.ts:1000
     clientSecret,
+    // @NOTE: This appears to successfully enable custom fonts in the Elements
+    fonts: [
+      {
+        family: 'Alltaf-Regular',
+        src: 'url(https://assets.ortype.is/v3/alltaf-regular-webfont.woff) format(woff2)',
+        weight: '400',
+      },
+    ],
+    // @NOTE: These appear to have no effect with the current setup
+    appearance: {
+      variables: {
+        spacingUnit: 'rem',
+        colorPrimary: 'black',
+        colorBackground: '#EEE',
+        fontSizeBase: '20px',
+        fontFamily: 'Alltaf-Regular, sans',
+      },
+      theme: 'flat',
+      labels: 'floating',
+    },
   }
 
   return (
@@ -467,19 +491,45 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
     )
   }
 
-  // Show spinner until Stripe and clientSecret are ready
+  // Show spinner with skelton until Stripe and clientSecret are ready
   // This prevents "Invalid clientSecret" error when Elements tries to render
   if (!stripe || !clientSecret) {
     return (
-      <Box
-        className={containerClassName}
-        {...divProps}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        py={8}
-      >
-        <Spinner size="lg" />
+      <Box position={'relative'}>
+        <Stack gap={1}>
+          <StripeElementSkelton label="Card Number" />
+          <Stack direction="row" gap={1}>
+            <Box flex={1}>
+              <StripeElementSkelton label="Expiry Date" />
+            </Box>
+
+            <Box flex={1}>
+              <StripeElementSkelton label="CVC" />
+            </Box>
+          </Stack>
+          <FloatingLabelInput
+            label="Cardholder Name"
+            value={''}
+            variant="subtle"
+            size="lg"
+            fontSize="md"
+            borderRadius={0}
+          />
+        </Stack>
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          zIndex={1}
+          py={'3.5rem'}
+        >
+          <Spinner size="lg" />
+        </Box>
       </Box>
     )
   }

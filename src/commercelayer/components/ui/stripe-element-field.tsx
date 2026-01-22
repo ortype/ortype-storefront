@@ -22,15 +22,22 @@ export const stripeElementStyle = {
   style: {
     base: {
       width: '100%',
-      fontSize: '1rem',
-      color: 'var(--chakra-colors-fg-default)',
-      fontFamily: 'inherit',
-      lineHeight: '1.5',
+      // @NOTE: we may need to calculate and pass a dynamic var with JS (hopefully)
+      // to match our responsive typography defined here:
+      // `src/components/global/Webfonts.js:104`
+      fontSize: '20px',
+      // @NOTE: same goes for line-height, since our responsive typography defines base font size on the HTML element
+      lineHeight: '1.5rem',
+      color: 'black',
+      fontFamily: 'Alltaf-Regular, sans',
+      fontWeight: '400',
+      '-webkit-font-smoothing': 'antialiased',
       '::placeholder': {
         color: 'transparent', // Hide Stripe's placeholder to avoid overlap
       },
     },
     invalid: {
+      // @NOTE: these global vars are not available to the iframe elements
       color: 'var(--chakra-colors-fg-error)',
       iconColor: 'var(--chakra-colors-fg-error)',
     },
@@ -39,6 +46,40 @@ export const stripeElementStyle = {
     },
   },
 } as const
+
+export const StripeElementSkelton: React.FC<{ label: string }> = ({
+  label,
+}) => {
+  return (
+    <Field.Root>
+      <Box pos="relative" w="full">
+        {/* Container that mimics Chakra Input with variant="subtle", size="lg" */}
+        <Box
+          borderWidth="0"
+          borderStyle="solid"
+          borderColor="transparent"
+          bg="brand.50"
+          px={3}
+          borderRadius={0}
+          css={defaultContainerStyles}
+        >
+          <Box
+            w="full"
+            css={{
+              '& .StripeElement': {
+                width: '100%',
+              },
+            }}
+          />
+        </Box>
+
+        <Field.Label css={placeholderStyles} htmlFor={undefined}>
+          {label}
+        </Field.Label>
+      </Box>
+    </Field.Root>
+  )
+}
 
 /**
  * StripeElementField - Wraps Stripe Elements with FloatingLabelInput-style UI
@@ -85,17 +126,20 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
         <Box
           borderWidth="0"
           borderStyle="solid"
-          borderColor="border.default"
+          borderColor="transparent"
           bg="brand.50"
-          px={4}
+          px={3}
           borderRadius={0}
-          transition="border-color 0.2s"
-          _focusWithin={{
-            borderColor: 'border.emphasized',
-          }}
-          _invalid={{
-            borderColor: 'border.error',
-          }}
+          // @NOTE: how can we apply the `theme/recipes/input.ts` 'subtle' variant's focus ring to the iframe elements`
+          // transition="border-color 0.2s"
+          // _focusWithin={{
+          //   focusVisibleRing: 'inside',
+          //   focusRingWidth: '2px',
+          //   focusRingColor: 'black',
+          // }}
+          // _invalid={{
+          //   borderColor: 'border.error',
+          // }}
           css={
             hasValue || isFocused
               ? containerWithValueStyles
@@ -148,17 +192,18 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
 const defaultContainerStyles = defineStyle({
   paddingTop: '3',
   paddingBottom: '3',
+  h: 'var(--or-sizes-11)',
 })
 
 const containerWithValueStyles = defineStyle({
-  paddingTop: '3',
+  paddingTop: '4',
   paddingBottom: '1',
+  h: 'var(--or-sizes-11)',
 })
 
 const floatingStyles = defineStyle({
   pos: 'absolute',
   bg: 'transparent',
-  px: '0.05rem',
   top: '0',
   insetStart: '3',
   fontWeight: 'normal',
@@ -172,7 +217,7 @@ const placeholderStyles = defineStyle({
   bg: 'transparent',
   top: '50%',
   transform: 'translateY(-50%)',
-  insetStart: '4',
+  insetStart: '3',
   fontWeight: 'normal',
   pointerEvents: 'none',
   color: 'fg.muted',
