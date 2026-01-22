@@ -7,7 +7,7 @@ import {
   CardNumberElement,
 } from '@stripe/react-stripe-js'
 import type { StripeElement, StripeElementChangeEvent } from '@stripe/stripe-js'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface StripeElementFieldProps {
   label: string
@@ -16,32 +16,6 @@ interface StripeElementFieldProps {
   onChange?: (event: StripeElementChangeEvent) => void
   onReady?: () => void
 }
-
-// Stripe element styling to match Chakra UI theme
-export const stripeElementStyle = {
-  style: {
-    base: {
-      width: '100%',
-      fontSize: '20px', // these get reset by element updater
-      lineHeight: '1.5rem',
-      color: 'black',
-      fontFamily: 'Alltaf-Regular, sans',
-      fontWeight: '400',
-      '-webkit-font-smoothing': 'antialiased', // @TODO: how to implement this prop in the iframe?
-      '::placeholder': {
-        color: 'transparent', // Hide Stripe's placeholder to avoid overlap
-      },
-    },
-    invalid: {
-      // @NOTE: these global vars are not available to the iframe elements
-      color: 'var(--chakra-colors-fg-error)',
-      iconColor: 'var(--chakra-colors-fg-error)',
-    },
-    complete: {
-      color: 'var(--chakra-colors-fg-default)',
-    },
-  },
-} as const
 
 export const StripeElementSkelton: React.FC<{ label: string }> = ({
   label,
@@ -149,6 +123,39 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
 
     return () => window.removeEventListener('resize', updateFontSize)
   }, [elementInstance])
+
+  // CSS Variables Not Available in iframes
+  // Dynamically compute actual color
+  const stripeElementStyle = useMemo(() => {
+    const errorColor =
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--or-colors-fg-error')
+        .trim() || '#ef4444'
+
+    const completeColor =
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--or-colors-fg')
+        .trim() || '#000'
+
+    return {
+      style: {
+        base: {
+          width: '100%',
+          fontSize: '20px', // these get reset by element updater
+          lineHeight: '1.5rem',
+          color: 'black',
+          fontFamily: 'Alltaf-Regular, sans',
+          fontWeight: '400',
+          // '-webkit-font-smoothing': 'antialiased', // @TODO: how to implement this prop in the iframe?
+          '::placeholder': {
+            color: 'transparent', // Hide Stripe's placeholder to avoid overlap
+          },
+        },
+        invalid: { color: errorColor, iconColor: errorColor },
+        complete: { color: completeColor },
+      },
+    }
+  }, [])
 
   return (
     <Field.Root invalid={!!error}>
