@@ -22,11 +22,7 @@ export const stripeElementStyle = {
   style: {
     base: {
       width: '100%',
-      // @NOTE: we may need to calculate and pass a dynamic var with JS (hopefully)
-      // to match our responsive typography defined here:
-      // `src/components/global/Webfonts.js:104`
-      fontSize: '20px',
-      // @NOTE: same goes for line-height, since our responsive typography defines base font size on the HTML element
+      fontSize: '20px', // these get reset by element updater
       lineHeight: '1.5rem',
       color: 'black',
       fontFamily: 'Alltaf-Regular, sans',
@@ -156,7 +152,21 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
 
   return (
     <Field.Root invalid={!!error}>
-      <Box pos="relative" w="full">
+      <Box
+        pos="relative"
+        w="full"
+        _before={{
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          borderRadius: 0,
+          pointerEvents: 'none',
+          // transition: 'all 0.2s',
+          ...(isFocused && {
+            boxShadow: '0 0 0 3px black',
+          }),
+        }}
+      >
         {/* Container that mimics Chakra Input with variant="subtle", size="lg" */}
         <Box
           borderWidth="0"
@@ -165,21 +175,7 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
           bg="brand.50"
           px={3}
           borderRadius={0}
-          // @NOTE: how can we apply the `theme/recipes/input.ts` 'subtle' variant's focus ring to the iframe elements`
-          // transition="border-color 0.2s"
-          // _focusWithin={{
-          //   focusVisibleRing: 'inside',
-          //   focusRingWidth: '2px',
-          //   focusRingColor: 'black',
-          // }}
-          // _invalid={{
-          //   borderColor: 'border.error',
-          // }}
-          css={
-            hasValue || isFocused
-              ? containerWithValueStyles
-              : defaultContainerStyles
-          }
+          css={hasValue ? containerWithValueStyles : defaultContainerStyles}
         >
           <Box
             w="full"
@@ -203,7 +199,7 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
         </Box>
 
         {/* Floating label that appears when field has value or is focused */}
-        {(hasValue || isFocused) && (
+        {hasValue && (
           <Field.Label
             css={floatingStyles}
             animationStyle={hasInteracted ? 'slide-up-fade-in' : undefined}
@@ -213,7 +209,7 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
         )}
 
         {/* Placeholder label when field is empty and not focused */}
-        {!hasValue && !isFocused && (
+        {!hasValue && (
           <Field.Label css={placeholderStyles} htmlFor={undefined}>
             {label}
           </Field.Label>
