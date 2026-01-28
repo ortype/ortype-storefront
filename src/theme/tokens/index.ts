@@ -5,7 +5,7 @@
 import { colors } from './colors'
 // import { durations } from "./durations"
 // import { easings } from "./easings"
-// import { fonts } from "./fonts"
+import { fonts } from './fonts'
 // import { fontSizes } from "./font-sizes"
 // import { fontWeights } from "./font-weights"
 // import { letterSpacings } from "./letter-spacings"
@@ -24,7 +24,7 @@ export const tokens = {
   colors,
   // durations,
   // easings,
-  // fonts,
+  fonts,
   // fontSizes,
   // fontWeights,
   // letterSpacings,

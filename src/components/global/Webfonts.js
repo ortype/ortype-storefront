@@ -104,6 +104,26 @@ const Webfonts = ({ children }) => {
       {getFontFaceBlocks()}
       <Global
         styles={{
+          '@font-face': {
+            fontFamily: 'Alltaf-Regular',
+            src: 'url("https://assets.ortype.is/v3/alltaf-regular-webfont.woff2") format("woff2"), url("https://assets.ortype.is/v3/alltaf-regular-webfont.woff") format("woff")',
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+          },
+        }}
+      />
+      <Global
+        styles={{
+          '@font-face': {
+            fontFamily: 'Alltaf-Bold',
+            src: 'url("https://assets.ortype.is/v3/Alltaf-Bold.woff") format("woff")',
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+          },
+        }}
+      />
+      <Global
+        styles={{
           html: {
             fontFamily: `Alltaf-Regular`,
             fontSize: `${MIN_FONT}rem`,
@@ -126,19 +146,6 @@ const Webfonts = ({ children }) => {
               fontSize: `${MAX_FONT}rem`,
             },
             // backgroundColor: `#F1F1F1`,
-          },
-          [`@font-face`]: {
-            fontFamily: 'Alltaf-Regular',
-            src: `url("https://assets.ortype.is/v3/alltaf-regular-webfont.woff2") format("woff2"), url("https://assets.ortype.is/v3/alltaf-regular-webfont.woff") format("woff")`,
-            fontWeight: 'normal',
-            fontStyle: 'normal',
-          },
-          // @TODO: bold alltaf
-          [`@font-face`]: {
-            fontFamily: 'Alltaf-Bold',
-            src: `url("https://assets.ortype.is/v3/Alltaf-Bold.woff") format("woff")`,
-            fontWeight: 'normal',
-            fontStyle: 'normal',
           },
           body: {
             // fontFamily: "Alltaf-Regular",
