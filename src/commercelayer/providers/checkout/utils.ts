@@ -305,20 +305,6 @@ export const fetchOrder = async (
   // Check both editable field and status to ensure order is actually placed
   const isOrderPlaced = order.status === 'placed' || order.editable === false
 
-  // Debug logging for development to track localStorage clearing
-  if (process.env.NODE_ENV === 'development') {
-    console.log('fetchOrder - localStorage clearing check:', {
-      orderId: order.id,
-      status: order.status,
-      editable: order.editable,
-      paymentMethod: order.payment_method,
-      isOrderPlaced,
-      clearWhenPlaced: options?.clearWhenPlaced,
-      willClear: options?.clearWhenPlaced && isOrderPlaced,
-      persistKey: options?.persistKey,
-    })
-  }
-
   if (options?.clearWhenPlaced && isOrderPlaced) {
     if (options.persistKey && options.deleteLocalOrder) {
       console.log(
@@ -355,12 +341,15 @@ export const fetchPaymentMethods = async ({
       }
     }
 
-    // Fetch order with available_payment_methods included
+    // Fetch order with available_payment_methods and payment_source included
+    // Must specify stripe_payments fields to get client_secret for Stripe payments
     const order = await cl.orders.retrieve(orderId, {
       include: [
         'available_payment_methods',
         'payment_method',
         'payment_source',
+        'billing_address',
+        'shipping_address',
       ],
     })
 

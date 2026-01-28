@@ -31,6 +31,7 @@ export const StripeElementSkelton: React.FC<{ label: string }> = ({
           bg="brand.50"
           px={3}
           borderRadius={0}
+          h={'var(--or-sizes-11)'}
           css={defaultContainerStyles}
         >
           <Box
@@ -168,7 +169,6 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
           inset: 0,
           borderRadius: 0,
           pointerEvents: 'none',
-          // transition: 'all 0.2s',
           ...(isFocused && {
             boxShadow: '0 0 0 3px black',
           }),
@@ -182,6 +182,7 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
           bg="brand.50"
           px={3}
           borderRadius={0}
+          h={'var(--or-sizes-11)'}
           css={hasValue ? containerWithValueStyles : defaultContainerStyles}
         >
           <Box
@@ -233,13 +234,11 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
 const defaultContainerStyles = defineStyle({
   paddingTop: '3',
   paddingBottom: '3',
-  h: 'var(--or-sizes-11)',
 })
 
 const containerWithValueStyles = defineStyle({
   paddingTop: '4',
   paddingBottom: '1',
-  h: 'var(--or-sizes-11)',
 })
 
 const floatingStyles = defineStyle({

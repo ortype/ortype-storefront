@@ -1,15 +1,14 @@
 import { LINE_ITEMS_SHOPPABLE } from '@/components/utils/constants'
-import CommerceLayer, { Order } from '@commercelayer/sdk'
+import { Order } from '@commercelayer/sdk'
 import {
   InvalidCheckoutSettings,
   UseCheckoutSettingsOrInvalid,
 } from 'CustomApp'
-import React, { useContext, useEffect, useState } from 'react'
 
+import type { TypeAccepted } from '@/commercelayer/providers/checkout/utils'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
-import type { TypeAccepted } from '@/commercelayer/providers/checkout/utils'
 
 export const defaultSettings: UseCheckoutSettingsOrInvalid = {
   isValid: false,
@@ -21,16 +20,16 @@ export const defaultSettings: UseCheckoutSettingsOrInvalid = {
  * 2. Clearing existing payment methods for a clean checkout start
  * 3. Validating the order contains shoppable line items
  * 4. Enabling autorefresh for real-time updates during checkout
- * 
+ *
  * @param orderId - The Commerce Layer order ID
  * @param order - The order object from Commerce Layer
  * @param isLoading - Whether the order is still being fetched
  * @param paymentReturn - Whether user is returning from external payment (PayPal, etc.)
  * @param redirectResult - Result from external payment redirect
  * @param config - Commerce Layer client configuration
- * 
+ *
  * @returns Promise resolving to validation result
- * 
+ *
  * IMPORTANT: This function makes an API call to Commerce Layer to refresh the order.
  * It should only be called once per checkout session to avoid rate limiting.
  */
@@ -87,14 +86,24 @@ export const isValidCheckout = async (
         // CRITICAL API CALL: Refresh and prepare order for checkout
         // This single API call:
         // - _refresh: true → Recalculates prices, taxes, shipping, inventory
-        // - payment_method: null → Clears existing payment methods
+        // - payment_method: null → Only clear if no payment method exists (preserve user selection)
         // - autorefresh: true → Enables real-time updates during checkout
-        await cl.orders.update({
+
+        // Only clear payment method if it doesn't exist
+        // This preserves user's payment selection across page refreshes
+        const updatePayload: any = {
           id: orderId,
-          _refresh,                                       // Triggers Commerce Layer recalculation
-          payment_method: cl.payment_methods.relationship(null), // Reset payment for clean start
-          ...(!order.autorefresh && { autorefresh: true }), // Enable live updates
-        })
+          _refresh,
+          ...(!order.autorefresh && { autorefresh: true }),
+        }
+
+        // Only reset payment method if there isn't one already
+        // This prevents clearing user's payment selection on refresh
+        if (!order.payment_method) {
+          updatePayload.payment_method = cl.payment_methods.relationship(null)
+        }
+
+        await cl.orders.update(updatePayload)
       } catch {
         console.log('error refreshing order')
       }

@@ -19,27 +19,27 @@ import React, {
   useRef,
 } from 'react'
 
+import { type AddressInput } from '@/commercelayer/providers/address'
 import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
-import getCommerceLayer, {
-  isValidCommerceLayerConfig,
-} from '@/commercelayer/utils/getCommerceLayer'
+import { OrderStorageContext } from '@/commercelayer/providers/Order/Storage'
 import {
+  setOrderBillingAddress as attachBillingAddressToOrderUtil,
   createBillingAddress as createBillingAddressUtil,
   updateBillingAddress as updateBillingAddressUtil,
-  setOrderBillingAddress as attachBillingAddressToOrderUtil,
   validateAddress,
   type AddressOperationResult,
 } from '@/commercelayer/utils/address'
-import { type AddressInput } from '@/commercelayer/providers/address'
-import { OrderStorageContext } from '@/commercelayer/providers/Order/Storage'
+import getCommerceLayer, {
+  isValidCommerceLayerConfig,
+} from '@/commercelayer/utils/getCommerceLayer'
 import { ActionType, reducer } from './reducer'
 import {
   calculateSettings,
   checkAndSetDefaultAddressForOrder,
   checkIfShipmentRequired,
   fetchOrder,
-  fetchPaymentMethods,
   FetchOrderByIdResponse,
+  fetchPaymentMethods,
   saveCustomerUser as saveCustomerUserUtil,
 } from './utils'
 
@@ -316,6 +316,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         lineItemsCount: order?.line_items?.length || 0,
         isShipmentRequired,
         orderStatus: order?.status,
+        hasPaymentSource: !!order?.payment_source,
       })
     }
 

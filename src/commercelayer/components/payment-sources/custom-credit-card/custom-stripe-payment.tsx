@@ -496,7 +496,7 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
   if (!stripe || !clientSecret) {
     return (
       <Box position={'relative'}>
-        <Stack gap={1}>
+        <Stack gap={1} opacity={0.3}>
           <StripeElementSkelton label="Card Number" />
           <Stack direction="row" gap={1}>
             <Box flex={1}>
