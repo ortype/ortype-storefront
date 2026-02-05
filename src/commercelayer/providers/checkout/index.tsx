@@ -120,6 +120,7 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   domain: string
   isFirstLoading: boolean
   hasLineItems: boolean
+  orderNumber: string
   getOrder: (order: Order) => void
   getOrderFromRef: () => Promise<Order>
   updateOrder: (params: UpdateOrderArgs) => Promise<{

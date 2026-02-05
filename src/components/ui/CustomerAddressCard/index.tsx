@@ -1,3 +1,4 @@
+import { Box, Text, VStack } from '@chakra-ui/react'
 import { Address, AddressField } from '@commercelayer/react-components'
 import { Address as AddressCollection } from '@commercelayer/sdk'
 
@@ -77,19 +78,20 @@ export const CustomAddress = ({
   phone,
   addressType,
 }: AddressProps) => (
-  <>
-    <p className="font-bold text-base" data-testid={`fullname_${addressType}`}>
-      {firstName} {lastName}
-    </p>
-    <p
-      className="text-sm text-gray-500"
-      data-testid={`full_address_${addressType}`}
-    >
+  <Box bg={'brand.50'} p={4} w="full">
+    <VStack align="start" gap={2}>
+      <Text data-testid={`fullname_${addressType}`}>
+        {firstName} {lastName}
+      </Text>
+    </VStack>
+
+    <Text data-testid={`full_address_${addressType}`}>
       {[line1, line2].join(', ')}
-      <br />
-      {zipCode} {city} - {stateCode} ({countryCode})
-      <br />
-      {phone}
-    </p>
-  </>
+    </Text>
+    <Text>
+      {city}, - {stateCode} {zipCode}, ({countryCode})
+    </Text>
+
+    <Text>{phone}</Text>
+  </Box>
 )

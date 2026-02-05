@@ -29,7 +29,7 @@ export const MainHeader: React.FC<Props> = ({ orderNumber, steps }) => {
         mx={'auto'}
         pb={4}
       >
-        {displayTitle}
+        {stepsContext.isCompleted ? 'Thank you for your order!' : displayTitle}
       </Heading>
     </>
   )

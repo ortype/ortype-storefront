@@ -1,7 +1,6 @@
 import { Radio, RadioGroup } from '@/components/ui/radio'
 import { HStack, Text } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
-import classNames from 'classnames'
 import React, {
   memo,
   useContext,

@@ -213,13 +213,7 @@ const Checkout: React.FC<Props> = ({
           )
         })}
         <Steps.CompletedContent>
-          <StepComplete
-            logoUrl={logoUrl}
-            companyName={companyName}
-            supportEmail={supportEmail}
-            supportPhone={supportPhone}
-            orderNumber={orderNumber}
-          />
+          <StepComplete orderNumber={ctx.orderNumber} />
         </Steps.CompletedContent>
         <OrderSummary />
       </Steps.RootProvider>

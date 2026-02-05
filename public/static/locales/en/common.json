@@ -147,17 +147,17 @@
 
   "stepComplete": {
     "title": "Thank you for your order!",
-    "description": "Order confirmation number: <WrapperOrderId>#{{orderNumber}}</WrapperOrderId>",
+    "description": "Order #",
     "continue": "Continue shopping",
     "supportEmail": "For questions, email us at <br /><WrapperStyle><WrapperEmail>{{email}}</WrapperEmail></WrapperStyle>",
     "supportPhone": "For questions, call <br /><WrapperStyle><WrapperPhone>{{phone}}</WrapperPhone></WrapperStyle>",
     "fullSupport": "For questions, email us at <br /><WrapperStyle><WrapperEmail>{{email}}</WrapperEmail></WrapperStyle> or call <WrapperStyle><WrapperPhone>{{phone}}</WrapperPhone></WrapperStyle>",
-    "ship_to": "Shipped to:",
-    "billed_to": "Billed to:",
-    "payment": "Payment:",
+    "ship_to": "Shipped to",
+    "billed_to": "Billed to",
+    "payment": "Payment",
     "summary_title": "Summary",
     "customer_title": "Customer",
-    "email": "E-mail:",
+    "email": "Email",
     "free_payment": "This order did not require a payment"
   },
 

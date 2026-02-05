@@ -27,6 +27,7 @@ export const PaymentSourceBrandIcon: React.FC<PaymentSourceBrandIconProps> = ({
 }
 
 // Helper function to get brand icon (you can replace with actual icons)
+// @TODO: replace these emojis with actual brand icons
 function getBrandIcon(brand: string): string {
   const iconMap: Record<string, string> = {
     visa: '💳',

@@ -546,6 +546,7 @@ export function calculateSettings(
     cartUrl: order.cart_url,
     taxIncluded: order.tax_included,
     requiresBillingInfo: order.requires_billing_info,
+    orderNumber: order.number,
   }
 }
 

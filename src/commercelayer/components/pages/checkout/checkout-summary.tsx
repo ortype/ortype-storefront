@@ -159,9 +159,10 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
             bg={'brand.50'}
             py={1}
             px={3}
+            h={8}
           >
             <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
-              {t('checkoutSummary.billingAddressLabel', 'Billing Address')}
+              {t('checkoutSummary.billingAddressLabel', 'Billing address')}
             </Text>
             <Box flexGrow={1} pl={4}>
               {renderBillingAddress()}
@@ -189,9 +190,10 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
             bg={'brand.50'}
             py={1}
             px={3}
+            h={8}
           >
             <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
-              {t('checkoutSummary.licenseOwnerLabel', 'License Owner')}
+              {t('checkoutSummary.licenseOwnerLabel', 'License owner')}
             </Text>{' '}
             <Box flexGrow={1} pl={4}>
               {getLicenseOwnerDisplayValue()}
