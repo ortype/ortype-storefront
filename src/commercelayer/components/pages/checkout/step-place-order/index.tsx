@@ -56,7 +56,7 @@ const StepPlaceOrder: React.FC<Props> = ({
   }
 
   return (
-    <Flex justifyContent={'space-between'} alignItems={'start'}>
+    <Flex justifyContent={'space-between'} alignItems={'start'} w={'full'}>
       {/* <Heading
         as={'h5'}
         fontSize={'xl'}
@@ -106,6 +106,7 @@ const StepPlaceOrder: React.FC<Props> = ({
         data-testid="save-payment-button"
         isActive={isActive}
         onClick={handlePlaceOrder}
+        gap={1}
         // disabled={!checked} // @NOTE: do not disable button, but alert user to the checkbox with a red outline
         // label={t('stepPayment.submit')}
         label={`Pay ${order?.total_amount_with_taxes_float} EUR`}

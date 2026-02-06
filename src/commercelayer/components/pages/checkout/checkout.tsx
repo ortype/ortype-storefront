@@ -1,13 +1,15 @@
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import {
+  Box,
   Button,
   ButtonGroup,
   Container,
   Steps,
   useSteps,
+  VStack,
 } from '@chakra-ui/react'
 import { useParams } from 'next/navigation'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
 import { MainHeader } from '@/commercelayer/components/pages/checkout/main-header'
 import { OrderSummary } from '@/commercelayer/components/pages/checkout/order-summary'
@@ -21,6 +23,7 @@ import StepPlaceOrder from '@/commercelayer/components/pages/checkout/step-place
 import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shipping'
 import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { useInView } from 'framer-motion'
 
 interface Props {
   logoUrl?: string
@@ -81,6 +84,16 @@ const Checkout: React.FC<Props> = ({
 }) => {
   const ctx = useContext(CheckoutContext)
   const { customer } = useIdentityContext()
+
+  const sentinelRef = useRef(null)
+  const isInView = useInView(sentinelRef, { margin: '-50px' }) // adjust margin for the OrderSummary height
+  const [manualOverride, setManualOverride] = useState<boolean | null>(null)
+  const toggleBox = () => {
+    setManualOverride(!manualOverride)
+  }
+
+  // Expand if: user manually opened OR sentinel is in view (no overlap)
+  const isExpanded = manualOverride ?? isInView
 
   const params = useParams()
   // Track when initial load step advancement has been completed
@@ -191,7 +204,7 @@ const Checkout: React.FC<Props> = ({
   }
 
   return (
-    <Container mt={6} mb={24} maxW="50rem" centerContent>
+    <Container mt={6} mb={24} maxW="50rem" centerContent position={'relative'}>
       <Steps.RootProvider value={stepperHook} size={'sm'}>
         <MainHeader orderNumber={orderNumber} steps={steps} />
         <StepNav steps={steps} />
@@ -210,11 +223,30 @@ const Checkout: React.FC<Props> = ({
         <Steps.CompletedContent>
           <StepComplete orderNumber={ctx.orderNumber} />
         </Steps.CompletedContent>
-        <OrderSummary />
-        {stepperHook.count - 1 === stepperHook.value && (
-          <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
-        )}
         {/* stepperHook.isCompleted && <OrderSummary /> */}
+        <Box id={'sentinel'} ref={sentinelRef} h="100px" />{' '}
+        {/* Scroll sentinel */}
+        <VStack
+          position={'fixed'}
+          bottom={0}
+          left={0}
+          right={0}
+          margin={'0 auto'}
+          px={8}
+          pb={2}
+          maxW="50rem"
+          css={{
+            '.collapsible-box': {
+              transition: 'bottom 0.3s',
+            },
+          }}
+          gap={2}
+        >
+          <OrderSummary isOpen={isExpanded} toggleBox={toggleBox} />
+          {stepperHook.count - 1 === stepperHook.value && (
+            <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
+          )}
+        </VStack>
       </Steps.RootProvider>
     </Container>
   )

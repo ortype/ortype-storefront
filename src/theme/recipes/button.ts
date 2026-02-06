@@ -92,10 +92,10 @@ export const buttonRecipe = defineRecipe({
         minW: '12',
         textStyle: 'md',
         px: '4',
-        gap: '2.5',
+        gap: '0.5',
         _icon: {
-          width: '6',
-          height: '6',
+          width: '7',
+          height: '7',
         },
       },
       '2xl': {
@@ -105,8 +105,8 @@ export const buttonRecipe = defineRecipe({
         px: '5',
         gap: '3',
         _icon: {
-          width: '7',
-          height: '7',
+          width: '8',
+          height: '8',
         },
       },
     },

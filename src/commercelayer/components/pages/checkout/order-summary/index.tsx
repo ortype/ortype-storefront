@@ -1,7 +1,10 @@
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
 import { sizes } from '@/lib/settings'
 import { Box, Heading, Show, SimpleGrid } from '@chakra-ui/react'
-import { useMemo } from 'react'
+import { motion } from 'framer-motion'
+import { useMemo, useState } from 'react'
+
+const MotionBox = motion(Box)
 
 /**
  * OrderSummary Component - Data Dependencies
@@ -59,9 +62,15 @@ export const getFontReferenceCounts = (
 
 interface Props {
   readonly?: boolean
+  isOpen: boolean
+  toggleBox: () => void
 }
 
-export const OrderSummary: React.FC<Props> = ({ readonly }) => {
+export const OrderSummary: React.FC<Props> = ({
+  readonly,
+  isOpen,
+  toggleBox,
+}) => {
   const { order, isLoading, hasLineItems } = useCheckoutContext()
 
   // Temporary validation logging - TODO: Remove after verification
@@ -139,61 +148,77 @@ export const OrderSummary: React.FC<Props> = ({ readonly }) => {
           fontSize={'xl'}
           textTransform={'uppercase'}
           fontWeight={'normal'}
-          mb={1}
+          //mb={1}
+          onClick={toggleBox}
+          cursor={'pointer'}
         >
           {'Order Overview'}
         </Heading>
-        <SimpleGrid
-          columns={3}
-          py={3}
-          borderTop={'1px solid #E7E0BF'}
-          borderBottom={'1px solid #E7E0BF'}
-          mb={1.5}
-          fontSize={'sm'}
+
+        <MotionBox
+          className={'collapsible-box'}
+          overflow={'hidden'}
+          initial={{ height: 0 }}
+          animate={{ height: isOpen ? 'auto' : 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <Box>{parentFontString}</Box>
-          <Box>
-            {sizes.find(
-              ({ value }) => value === order?.metadata?.license?.size?.value
-            )?.label || ''}
-          </Box>
-          <Box></Box>
-        </SimpleGrid>
-        {displayLineItems.map((lineItem) => (
-          <SimpleGrid key={lineItem.id} columns={3} py={1.5} fontSize={'sm'}>
-            <Box>{lineItem.item?.name}</Box>
+          <SimpleGrid
+            columns={3}
+            py={3}
+            borderTop={'1px solid #E7E0BF'}
+            borderBottom={'1px solid #E7E0BF'}
+            mb={1.5}
+            fontSize={'sm'}
+          >
+            <Box>{parentFontString}</Box>
             <Box>
-              {
-                // @TODO: these should be sorted in the same order as the 'license types' data source
-                lineItem?.line_item_options
-                  ?.map((option) => option.name)
-                  .filter(Boolean)
-                  .join(', ')
-              }
+              {sizes.find(
+                ({ value }) => value === order?.metadata?.license?.size?.value
+              )?.label || ''}
             </Box>
+            <Box></Box>
+          </SimpleGrid>
+          {displayLineItems.map((lineItem) => (
+            <SimpleGrid key={lineItem.id} columns={3} py={1.5} fontSize={'sm'}>
+              <Box>{lineItem.item?.name}</Box>
+              <Box>
+                {
+                  // @TODO: these should be sorted in the same order as the 'license types' data source
+                  lineItem?.line_item_options
+                    ?.map((option) => option.name)
+                    .filter(Boolean)
+                    .join(', ')
+                }
+              </Box>
+              <Box
+                textAlign={'right'}
+                fontVariantNumeric={'tabular-nums'}
+              >{`EUR ${lineItem.unit_amount_float}`}</Box>
+            </SimpleGrid>
+          ))}
+          <SimpleGrid
+            columns={3}
+            py={3}
+            mt={1.5}
+            borderTop={'1px solid #E7E0BF'}
+          >
             <Box
+              fontSize={'xl'}
+              textTransform={'uppercase'}
+              fontWeight={'normal'}
+            >
+              {'Total'}
+            </Box>
+            <Box></Box>
+            <Box
+              fontSize={'xl'}
               textAlign={'right'}
               fontVariantNumeric={'tabular-nums'}
-            >{`EUR ${lineItem.unit_amount_float}`}</Box>
+            >
+              {`EUR ${order?.total_amount_with_taxes_float}`}
+            </Box>
           </SimpleGrid>
-        ))}
-        <SimpleGrid columns={3} py={3} mt={1.5} borderTop={'1px solid #E7E0BF'}>
-          <Box
-            fontSize={'xl'}
-            textTransform={'uppercase'}
-            fontWeight={'normal'}
-          >
-            {'Total'}
-          </Box>
-          <Box></Box>
-          <Box
-            fontSize={'xl'}
-            textAlign={'right'}
-            fontVariantNumeric={'tabular-nums'}
-          >
-            {`EUR ${order?.total_amount_with_taxes_float}`}
-          </Box>
-        </SimpleGrid>
+        </MotionBox>
       </Box>
     </Show>
   )
