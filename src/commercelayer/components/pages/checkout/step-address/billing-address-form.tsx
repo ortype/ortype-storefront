@@ -90,7 +90,7 @@ export const BillingAddressForm: React.FC<Props> = ({
 
   return (
     <>
-      <Stack gap={1}>
+      <Stack gap={1} w={'full'}>
         <Grid templateColumns="repeat(2, 1fr)" gap={1}>
           <AddressInputGroup
             fieldName="billing_address_first_name"

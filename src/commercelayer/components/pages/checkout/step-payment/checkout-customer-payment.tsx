@@ -77,9 +77,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
       return (
         <Field
           //bg={'brand.50'}
-          // mt={1}
-          h={11}
-          px={3}
+          mt={1}
+          // h={11}
+
           justifyContent={'center'}
         >
           <Checkbox
@@ -90,7 +90,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
             defaultChecked={false}
             onClick={handleClick}
             variant={'outline'}
-            size={'lg'}
+            size={'sm'}
             // Remove onChange handler to prevent state updates
           >
             {t('stepPayment.saveToWallet') || 'Save to wallet'}
@@ -113,7 +113,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
 
     return (
       <>
-        {/* Render existing PaymentSource for saved customer cards */}
+        {/* 
+          @TODO: Render existing PaymentSource for saved customer cards
+        */}
         {/*<PaymentSource className="flex flex-col w-full" loader={<div />}>
           <Box>
             <PaymentDetails hasEditButton />

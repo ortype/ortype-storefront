@@ -1,11 +1,12 @@
+import { Errors } from '@/commercelayer/components'
+import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import '@adyen/adyen-web/dist/adyen.css'
-import { Box, Heading, VStack } from '@chakra-ui/react'
+import { Box, Container, Heading, VStack } from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import { useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-
-import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { CheckoutSummary } from '../checkout-summary'
+import { messages } from '../step-place-order/messages'
 import { CheckoutCustomerPayment } from './checkout-customer-payment'
 
 export type THandleClick = (params: {
@@ -57,12 +58,12 @@ export const StepPayment: React.FC = () => {
   }
 
   return (
-    <VStack gap={4} mb={4} align="start" w="full">
+    <VStack gap={4} align="start" w="full">
       <CheckoutSummary
         showEmail={true}
         showBillingAddress={true}
         showLicenseOwner={true}
-        heading={t('stepPayment.summaryHeading', 'Order Details')}
+        heading={t('stepPayment.summaryHeading', 'Your Details')}
       />
 
       <Box w="full">
@@ -83,6 +84,38 @@ export const StepPayment: React.FC = () => {
         ) : (
           <p className="text-sm text-gray-400">{t('stepPayment.amountZero')}</p>
         )}
+      </Box>
+      <Box data-testid="errors-container">
+        <Errors
+          resource="orders"
+          messages={
+            messages &&
+            messages.map((msg) => {
+              return { ...msg, message: t(msg.message) }
+            })
+          }
+        >
+          {(props) => {
+            if (props.errors?.length === 0) {
+              return null
+            }
+            const compactedErrors = props.errors
+            return (
+              <>
+                {compactedErrors?.map((error, index) => {
+                  if (error?.trim().length === 0 || !error) {
+                    return null
+                  }
+                  return (
+                    <Box key={index}>
+                      <Box>{error}</Box>
+                    </Box>
+                  )
+                })}
+              </>
+            )
+          }}
+        </Errors>
       </Box>
     </VStack>
   )

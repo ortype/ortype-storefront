@@ -4,19 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 // import { GTMContext } from '@/components/data/GTMProvider'
-import { Errors, PlaceOrderButton } from '@/commercelayer/components'
+import { PlaceOrderButton } from '@/commercelayer/components'
 import { Button } from '@/components/ui/chakra-button'
 import { Field } from '@/components/ui/field'
-import {
-  Box,
-  Checkbox,
-  Container,
-  Flex,
-  Heading,
-  Link,
-  VStack,
-} from '@chakra-ui/react'
-import { messages } from './messages'
+import { Checkbox, Flex, Link } from '@chakra-ui/react'
 
 interface Props {
   isActive: boolean
@@ -65,40 +56,7 @@ const StepPlaceOrder: React.FC<Props> = ({
   }
 
   return (
-    <VStack gap={1} align={'start'}>
-      <Container data-testid="errors-container">
-        <Errors
-          resource="orders"
-          messages={
-            messages &&
-            messages.map((msg) => {
-              return { ...msg, message: t(msg.message) }
-            })
-          }
-        >
-          {(props) => {
-            if (props.errors?.length === 0) {
-              return null
-            }
-            const compactedErrors = props.errors
-            return (
-              <>
-                {compactedErrors?.map((error, index) => {
-                  if (error?.trim().length === 0 || !error) {
-                    return null
-                  }
-                  return (
-                    <Box key={index}>
-                      <Box>{error}</Box>
-                    </Box>
-                  )
-                })}
-              </>
-            )
-          }}
-        </Errors>
-      </Container>
-
+    <Flex justifyContent={'space-between'} alignItems={'start'}>
       {/* <Heading
         as={'h5'}
         fontSize={'xl'}
@@ -109,7 +67,7 @@ const StepPlaceOrder: React.FC<Props> = ({
         {'Terms of use'}
       </Heading>*/}
 
-      <Box
+      {/*<Box
         px={3}
         mb={1}
         fontSize={'xs'}
@@ -120,29 +78,29 @@ const StepPlaceOrder: React.FC<Props> = ({
         <Flex gap={1} alignItems={'center'}>
           {'Terms of use'}
         </Flex>
-      </Box>
+      </Box>*/}
 
-      <Field h={11} px={3} mb={2} bg={'brand.50'} justifyContent={'center'}>
-        <Checkbox.Root
-          checked={checked}
-          onCheckedChange={(e) => setChecked(!!e.checked)}
-          variant={'outline'}
-          size={'lg'}
-        >
-          <Checkbox.HiddenInput />
-          <Checkbox.Control />
-          <Checkbox.Label>
-            I agree with Or Type's{' '}
-            <Link
-              href="https://assets.ortype.is/pdfs/Or-Type-EULA-2022.pdf"
-              variant={'underline'}
-            >
-              EULA
-            </Link>{' '}
-            and confirm that all the information provided is truthful.
-          </Checkbox.Label>
-        </Checkbox.Root>
-      </Field>
+      <Checkbox.Root
+        checked={checked}
+        onCheckedChange={(e) => setChecked(!!e.checked)}
+        variant={'outline'}
+        size={'sm'}
+      >
+        <Checkbox.HiddenInput />
+        <Checkbox.Control />
+        <Checkbox.Label>
+          I agree with Or Type's{' '}
+          <Link
+            href="https://assets.ortype.is/pdfs/Or-Type-EULA-2022.pdf"
+            variant={'underline'}
+          >
+            EULA
+          </Link>{' '}
+          {/*and confirm that all the information provided is truthful.*/}
+        </Checkbox.Label>
+      </Checkbox.Root>
+      {/*<Field h={11} px={3} mb={2} bg={'brand.50'} justifyContent={'center'}>
+      </Field>*/}
       <Button
         as={PlaceOrderButton}
         data-testid="save-payment-button"
@@ -152,7 +110,7 @@ const StepPlaceOrder: React.FC<Props> = ({
         // label={t('stepPayment.submit')}
         label={`Pay ${order?.total_amount_with_taxes_float} EUR`}
       />
-    </VStack>
+    </Flex>
   )
 }
 

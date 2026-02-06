@@ -3,9 +3,10 @@ import {
   useAddressState,
 } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Box, Button, useStepsContext } from '@chakra-ui/react'
+import { Box, Button, Heading, useStepsContext, VStack } from '@chakra-ui/react'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CheckoutSummary } from '../checkout-summary'
 import { BillingAddressForm } from './billing-address-form'
 
 interface Props {
@@ -71,58 +72,54 @@ const StepAddressContainer: React.FC<{
   const canProceed = billing && Object.keys(billing).length > 0
 
   return (
-    <Box>
-      <>
-        <>
-          <BillingAddressForm
-            billingAddress={billingAddress}
-            openShippingAddress={openShippingAddress}
-          />
-          {/* TODO: Replace with shipping address form when implementing shipping flow
-           * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
-           * Components needed:
-           * - shipping-address-form-new/index.tsx
-           * - Update AddressProvider for shipping state
-           * - Add shipping validation and save logic
-           */}
-          {isShipmentRequired && (
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-              <p className="text-yellow-800">
-                Shipping address form - TODO: Implement
-              </p>
-              <p className="text-sm text-yellow-600 mt-2">
-                See SHIPPING_MIGRATION_TODO.md for implementation details
-              </p>
-            </div>
-          )}
+    <VStack gap={2} mb={4} align={'start'} w={'full'}>
+      <BillingAddressForm
+        billingAddress={billingAddress}
+        openShippingAddress={openShippingAddress}
+      />
+      {/* TODO: Replace with shipping address form when implementing shipping flow
+       * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
+       * Components needed:
+       * - shipping-address-form-new/index.tsx
+       * - Update AddressProvider for shipping state
+       * - Add shipping validation and save logic
+       */}
+      {isShipmentRequired && (
+        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+          <p className="text-yellow-800">
+            Shipping address form - TODO: Implement
+          </p>
+          <p className="text-sm text-yellow-600 mt-2">
+            See SHIPPING_MIGRATION_TODO.md for implementation details
+          </p>
+        </div>
+      )}
 
-          {/* Proceed button within the address step */}
-          <Box mt={6}>
-            {error && (
-              <Box color="red.500" fontSize="sm" mb={4}>
-                {error}
-              </Box>
-            )}
-            <Button
-              onClick={handleProceed}
-              loading={isLoading}
-              disabled={!canProceed || isLoading}
-              variant={'outline'}
-              bg={'white'}
-              borderRadius={'5rem'}
-              size={'sm'}
-              fontSize={'md'}
-            >
-              {isLoading
-                ? 'Saving Address...'
-                : isShipmentRequired
-                ? t('stepAddress.continueToShipping', 'Proceed')
-                : t('stepAddress.continueToLicense', 'Proceed')}
-            </Button>
+      {/* Proceed button within the address step */}
+      <Box>
+        {error && (
+          <Box color="red.500" fontSize="sm" mb={4}>
+            {error}
           </Box>
-        </>
-      </>
-    </Box>
+        )}
+        <Button
+          onClick={handleProceed}
+          loading={isLoading}
+          disabled={!canProceed || isLoading}
+          variant={'outline'}
+          bg={'white'}
+          borderRadius={'5rem'}
+          size={'sm'}
+          fontSize={'md'}
+        >
+          {isLoading
+            ? 'Saving Address...'
+            : isShipmentRequired
+            ? t('stepAddress.continueToShipping', 'Proceed')
+            : t('stepAddress.continueToLicense', 'Proceed')}
+        </Button>
+      </Box>
+    </VStack>
   )
 }
 
@@ -179,13 +176,29 @@ export const StepAddress: React.FC<Props> = () => {
   // Removed handleSave - SaveBillingAddressButton now handles this directly
 
   return (
-    <AddressProvider>
-      <StepAddressContainer
-        isShipmentRequired={isShipmentRequired}
-        billingAddress={billingAddress}
-        openShippingAddress={openShippingAddress}
+    <VStack gap={2} align="start" w="full">
+      <CheckoutSummary
+        showEmail={true}
+        showBillingAddress={false}
+        showLicenseOwner={false}
+        heading={t('stepPayment.summaryHeading', 'Your Details')}
       />
-    </AddressProvider>
+      <Heading
+        as={'h5'}
+        fontSize={'xl'}
+        textTransform={'uppercase'}
+        fontWeight={'normal'}
+      >
+        {'Billing address'}
+      </Heading>
+      <AddressProvider>
+        <StepAddressContainer
+          isShipmentRequired={isShipmentRequired}
+          billingAddress={billingAddress}
+          openShippingAddress={openShippingAddress}
+        />
+      </AddressProvider>
+    </VStack>
   )
 }
 

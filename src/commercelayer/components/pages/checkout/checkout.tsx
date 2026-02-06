@@ -196,19 +196,14 @@ const Checkout: React.FC<Props> = ({
         <MainHeader orderNumber={orderNumber} steps={steps} />
         <StepNav steps={steps} />
         {steps.map((step, index) => {
-          const stepNumber = index + 1
+          // const stepNumber = index + 1
           return (
             <Steps.Content key={step.key} index={index}>
               {step.key === 'Email' && <StepEmail />}
               {step.key === 'Address' && <StepAddress />}
               {step.key === 'License' && <StepLicense />}
               {step.key === 'Shipping' && <StepShipping />}
-              {step.key === 'Payment' && (
-                <>
-                  <StepPayment />
-                  <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
-                </>
-              )}
+              {step.key === 'Payment' && <StepPayment />}
             </Steps.Content>
           )
         })}
@@ -216,6 +211,9 @@ const Checkout: React.FC<Props> = ({
           <StepComplete orderNumber={ctx.orderNumber} />
         </Steps.CompletedContent>
         <OrderSummary />
+        {stepperHook.count - 1 === stepperHook.value && (
+          <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
+        )}
         {/* stepperHook.isCompleted && <OrderSummary /> */}
       </Steps.RootProvider>
     </Container>
