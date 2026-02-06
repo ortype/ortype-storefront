@@ -10,6 +10,7 @@ interface PaymentMethodContainerProps {
   templateSaveToWallet?: React.ComponentType<CustomerSaveToWalletProps>
   onPaymentRef?: (ref: React.RefObject<HTMLFormElement>) => void
   onCardClick: (paymentMethod: any) => void
+  isSinglePaymentMethod?: boolean
 }
 
 export const PaymentMethodContainer: React.FC<PaymentMethodContainerProps> =
@@ -20,6 +21,7 @@ export const PaymentMethodContainer: React.FC<PaymentMethodContainerProps> =
       templateSaveToWallet,
       onPaymentRef,
       onCardClick,
+      isSinglePaymentMethod,
     }) => {
       const paymentMethod = usePaymentMethodContext()
 
@@ -36,6 +38,7 @@ export const PaymentMethodContainer: React.FC<PaymentMethodContainerProps> =
         <PaymentMethodCard
           isSelected={isSelected}
           onCardClick={handleCardClick}
+          isSinglePaymentMethod={isSinglePaymentMethod}
         >
           {/* Always render form to prevent mounting/unmounting flicker */}
           <PaymentMethodForm

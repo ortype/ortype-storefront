@@ -6,6 +6,7 @@ interface PaymentMethodCardProps {
   isSelected: boolean
   onCardClick: () => void
   children?: React.ReactNode
+  isSinglePaymentMethod?: boolean
 }
 
 // Helper function to get payment method display name
@@ -25,7 +26,7 @@ function getPaymentMethodDisplayName(paymentSourceType: string): string {
 }
 
 export const PaymentMethodCard: React.FC<PaymentMethodCardProps> = memo(
-  ({ isSelected, onCardClick, children }) => {
+  ({ isSelected, onCardClick, children, isSinglePaymentMethod }) => {
     const paymentMethod = usePaymentMethodContext()
 
     // Payment methods are cached - paymentMethod should always exist
@@ -40,42 +41,46 @@ export const PaymentMethodCard: React.FC<PaymentMethodCardProps> = memo(
     )
 
     const handleCardClick = () => {
-      onCardClick()
+      if (!isSinglePaymentMethod) {
+        onCardClick()
+      }
     }
 
     return (
       <VStack align="stretch" w={'full'} gap={0}>
-        <Flex
-          bg={'brand.50'}
-          p={4}
-          justifyContent={'space-between'}
-          cursor={'pointer'}
-          onClick={handleCardClick}
-          _hover={{
-            bg: 'brand.100',
-            '& .indicator': {
-              bg: 'black',
-            },
-          }}
-          transition="background-color 0.2s"
-        >
-          <Stack direction={'row'} gap={2} alignItems={'center'}>
-            <Button
-              className={'indicator'}
-              variant={'circle'}
-              w={6}
-              borderWidth={'2px'}
-              h={6}
-              minW={6}
-              p={0}
-              bg={isSelected ? 'black' : 'white'}
-              pointerEvents="none"
-            />
-            <Text fontSize={'2xl'} as={'span'}>
-              {displayName}
-            </Text>
-          </Stack>
-          {/*<Flex alignItems={'center'}>
+        {!isSinglePaymentMethod && (
+          <Flex
+            bg={'brand.50'}
+            p={4}
+            justifyContent={'space-between'}
+            cursor={'pointer'}
+            onClick={handleCardClick}
+            _hover={{
+              bg: 'brand.100',
+              '& .indicator': {
+                bg: 'black',
+              },
+            }}
+            transition="background-color 0.2s"
+          >
+            <Stack direction={'row'} gap={2} alignItems={'center'}>
+              <Button
+                className={'indicator'}
+                variant={'circle'}
+                w={6}
+                borderWidth={'2px'}
+                h={6}
+                minW={6}
+                p={0}
+                bg={isSelected ? 'black' : 'white'}
+                pointerEvents="none"
+              />
+
+              <Text fontSize={'2xl'} as={'span'}>
+                {displayName}
+              </Text>
+            </Stack>
+            {/*<Flex alignItems={'center'}>
           {paymentMethod?.price_amount_cents && paymentMethod.price_amount_cents > 0 && (
             <Text as={'span'} color={'brand.400'}>
               +{(paymentMethod.price_amount_cents / 100).toFixed(2)}{' '}
@@ -83,7 +88,8 @@ export const PaymentMethodCard: React.FC<PaymentMethodCardProps> = memo(
             </Text>
           )}
         </Flex>*/}
-        </Flex>
+          </Flex>
+        )}
         <Box mb={1} pt={1}>
           <Show when={isSelected}>{children}</Show>
         </Box>

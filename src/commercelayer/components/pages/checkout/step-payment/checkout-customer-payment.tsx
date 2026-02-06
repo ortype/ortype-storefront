@@ -108,6 +108,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
       })
     }
 
+    const isSinglePaymentMethod =
+      (order.available_payment_methods?.length ?? 0) === 1
+
     return (
       <>
         {/* Render existing PaymentSource for saved customer cards */}
@@ -123,6 +126,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
             templateSaveToWallet={TemplateSaveToWalletCheckbox}
             onPaymentRef={setPaymentRef}
             onCardClick={handlePaymentMethodSelection}
+            isSinglePaymentMethod={isSinglePaymentMethod}
           />
         </PaymentMethod>
       </>
