@@ -73,7 +73,7 @@ export const StepPayment: React.FC = () => {
           fontWeight={'normal'}
           mb={1}
         >
-          {'Payment methods'}
+          {'Secure payment'}
         </Heading>
         {isPaymentRequired ? (
           <CheckoutCustomerPayment

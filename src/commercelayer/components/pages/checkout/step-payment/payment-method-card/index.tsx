@@ -11,13 +11,13 @@ interface PaymentMethodCardProps {
 // Helper function to get payment method display name
 function getPaymentMethodDisplayName(paymentSourceType: string): string {
   const nameMap: Record<string, string> = {
-    credit_cards: 'Credit Card',
-    stripe_payments: 'Credit Card',
+    credit_cards: 'Pay with card',
+    stripe_payments: 'Pay with card',
     paypal_payments: 'PayPal',
     wire_transfers: 'Wire Transfer',
-    adyen_payments: 'Credit Card',
-    braintree_payments: 'Credit Card',
-    checkout_com_payments: 'Credit Card',
+    adyen_payments: 'Pay with card',
+    braintree_payments: 'Pay with card',
+    checkout_com_payments: 'Pay with card',
     external_payments: 'External Payment',
   }
 

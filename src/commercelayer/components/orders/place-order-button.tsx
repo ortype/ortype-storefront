@@ -1,6 +1,8 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Button, useStepsContext } from '@chakra-ui/react'
 import { Order } from '@commercelayer/sdk'
+import { LockIcon } from '@sanity/icons'
+
 import React, {
   useContext,
   useState,
@@ -94,13 +96,13 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
       variant={'solid'}
       bg={'red'}
       borderRadius={'5rem'}
-      size={'sm'}
-      fontSize={'md'}
+      size={'xl'}
+      color={'white'}
       onClick={handleClick}
       disabled={!canPlaceOrder}
       {...props}
     >
-      {children || (isPlacing ? 'Placing Order...' : label)}
+      <LockIcon /> {children || (isPlacing ? 'Placing Order...' : label)}
     </Button>
   )
 }

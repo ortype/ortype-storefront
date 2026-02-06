@@ -4,9 +4,18 @@ import { useTranslation } from 'react-i18next'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 // import { GTMContext } from '@/components/data/GTMProvider'
-import { Button } from '@/components/ui/chakra-button'
-import { Box, Container, Flex } from '@chakra-ui/react'
 import { Errors, PlaceOrderButton } from '@/commercelayer/components'
+import { Button } from '@/components/ui/chakra-button'
+import { Field } from '@/components/ui/field'
+import {
+  Box,
+  Checkbox,
+  Container,
+  Flex,
+  Heading,
+  Link,
+  VStack,
+} from '@chakra-ui/react'
 import { messages } from './messages'
 
 interface Props {
@@ -24,6 +33,8 @@ const StepPlaceOrder: React.FC<Props> = ({
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
 
+  const [checked, setChecked] = useState(false)
+
   const checkoutCtx = useContext(CheckoutContext)
   // const gtmCtx = useContext(GTMContext)
 
@@ -31,7 +42,7 @@ const StepPlaceOrder: React.FC<Props> = ({
     return null
   }
 
-  const { placeOrder } = checkoutCtx
+  const { order, placeOrder } = checkoutCtx
 
   const handlePlaceOrder = async ({
     placed,
@@ -40,6 +51,7 @@ const StepPlaceOrder: React.FC<Props> = ({
     placed: boolean
     order?: Order
   }) => {
+    if (!checked) return
     if (placed) {
       setIsPlacingOrder(true)
       await placeOrder(order)
@@ -53,7 +65,7 @@ const StepPlaceOrder: React.FC<Props> = ({
   }
 
   return (
-    <>
+    <VStack gap={1} align={'start'}>
       <Container data-testid="errors-container">
         <Errors
           resource="orders"
@@ -87,18 +99,60 @@ const StepPlaceOrder: React.FC<Props> = ({
         </Errors>
       </Container>
 
-      <>
-        <Flex>
-          <Button
-            as={PlaceOrderButton}
-            data-testid="save-payment-button"
-            isActive={isActive}
-            onClick={handlePlaceOrder}
-            label={t('stepPayment.submit')}
-          />
+      {/* <Heading
+        as={'h5'}
+        fontSize={'xl'}
+        textTransform={'uppercase'}
+        fontWeight={'normal'}
+        mb={0}
+      >
+        {'Terms of use'}
+      </Heading>*/}
+
+      <Box
+        px={3}
+        mb={1}
+        fontSize={'xs'}
+        textTransform={'uppercase'}
+        color={'#737373'}
+        asChild
+      >
+        <Flex gap={1} alignItems={'center'}>
+          {'Terms of use'}
         </Flex>
-      </>
-    </>
+      </Box>
+
+      <Field h={11} px={3} mb={2} bg={'brand.50'} justifyContent={'center'}>
+        <Checkbox.Root
+          checked={checked}
+          onCheckedChange={(e) => setChecked(!!e.checked)}
+          variant={'outline'}
+          size={'lg'}
+        >
+          <Checkbox.HiddenInput />
+          <Checkbox.Control />
+          <Checkbox.Label>
+            I agree with Or Type's{' '}
+            <Link
+              href="https://assets.ortype.is/pdfs/Or-Type-EULA-2022.pdf"
+              variant={'underline'}
+            >
+              EULA
+            </Link>{' '}
+            and confirm that all the information provided is truthful.
+          </Checkbox.Label>
+        </Checkbox.Root>
+      </Field>
+      <Button
+        as={PlaceOrderButton}
+        data-testid="save-payment-button"
+        isActive={isActive}
+        onClick={handlePlaceOrder}
+        // disabled={!checked} // @NOTE: do not disable button, but alert user to the checkbox with a red outline
+        // label={t('stepPayment.submit')}
+        label={`Pay ${order?.total_amount_with_taxes_float} EUR`}
+      />
+    </VStack>
   )
 }
 

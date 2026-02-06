@@ -6,7 +6,7 @@
 // import { breadcrumbSlotRecipe } from "./breadcrumb"
 // import { cardSlotRecipe } from "./card"
 import { checkboxSlotRecipe } from './checkbox'
-// import { checkboxCardSlotRecipe } from "./checkbox-card"
+import { checkboxCardSlotRecipe } from './checkbox-card'
 // import { collapsibleSlotRecipe } from "./collapsible"
 // import { dataListSlotRecipe } from "./data-list"
 import { dialogSlotRecipe } from './dialog'
@@ -53,7 +53,7 @@ export const slotRecipes = {
   // breadcrumb: breadcrumbSlotRecipe,
   // card: cardSlotRecipe,
   checkbox: checkboxSlotRecipe,
-  // checkboxCard: checkboxCardSlotRecipe,
+  checkboxCard: checkboxCardSlotRecipe,
   // collapsible: collapsibleSlotRecipe,
   // dataList: dataListSlotRecipe,
   dialog: dialogSlotRecipe,

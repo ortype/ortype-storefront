@@ -341,15 +341,13 @@ const CustomStripeElementsForm: React.FC<{
             borderRadius={0}
           />
 
-          {/* 
-          Save to Wallet Checkbox 
-          // @TODO: style this
+          {/*Save to Wallet Checkbox */}
           {templateCustomerSaveToWallet ? (
-            <Box>
+            <>
               {templateCustomerSaveToWallet({
                 name: 'save_payment_source_to_customer_wallet',
               })}
-            </Box>
+            </>
           ) : (
             <Box display="flex" alignItems="center" gap={2}>
               <input
@@ -363,7 +361,6 @@ const CustomStripeElementsForm: React.FC<{
               </label>
             </Box>
           )}
-          */}
         </Stack>
       </form>
     </Box>

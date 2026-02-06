@@ -103,7 +103,7 @@
     "title": "Dreams can't be bought – but fonts can",
     "label": "Payment",
     "methodUnselected": "Select a payment method",
-    "creditCard": "Credit card",
+    "creditCard": "Pay with card",
     "wireTransfer": "Wire transfer",
     "wireTransferDescription": "Upon order confirmation, you’ll receive instructions to complete payment.",
     "paypalDescription": "After placing the order, you will be redirected to the PayPal website to sign in and authorize the payment",
@@ -111,7 +111,7 @@
     "submit": "Place order",
     "notRequired": "This order does not require payment",
     "amountZero": "The total amount of the order is zero, you can place the order as it is right now",
-    "saveToWallet": "Save new card on your wallet",
+    "saveToWallet": "Save card for future purchases",
     "expires": "Expires"
   },
 

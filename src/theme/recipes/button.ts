@@ -88,25 +88,25 @@ export const buttonRecipe = defineRecipe({
         },
       },
       xl: {
-        h: '12',
+        h: '10',
         minW: '12',
         textStyle: 'md',
-        px: '5',
+        px: '4',
         gap: '2.5',
-        _icon: {
-          width: '5',
-          height: '5',
-        },
-      },
-      '2xl': {
-        h: '16',
-        minW: '16',
-        textStyle: 'lg',
-        px: '7',
-        gap: '3',
         _icon: {
           width: '6',
           height: '6',
+        },
+      },
+      '2xl': {
+        h: '12',
+        minW: '16',
+        textStyle: '2xl',
+        px: '5',
+        gap: '3',
+        _icon: {
+          width: '7',
+          height: '7',
         },
       },
     },

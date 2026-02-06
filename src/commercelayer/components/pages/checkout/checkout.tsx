@@ -216,6 +216,7 @@ const Checkout: React.FC<Props> = ({
           <StepComplete orderNumber={ctx.orderNumber} />
         </Steps.CompletedContent>
         <OrderSummary />
+        {/* stepperHook.isCompleted && <OrderSummary /> */}
       </Steps.RootProvider>
     </Container>
   )

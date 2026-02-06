@@ -50,22 +50,35 @@ export const BuySummary = () => {
     hasValidLicenseType,
   } = useOrderContext()
 
-  // Memoize font reference calculations to prevent unnecessary recalculations
-  const { fontRefCounts, fontCount, parentFontString } = useMemo(() => {
-    if (!order?.line_items) {
-      return { fontRefCounts: {}, fontCount: 0, parentFontString: '0 fonts' }
-    }
+  // Memoize line item filtering and font reference calculations
+  const { displayLineItems, fontRefCounts, fontCount, parentFontString } =
+    useMemo(() => {
+      if (!order?.line_items) {
+        return {
+          displayLineItems: [],
+          fontRefCounts: {},
+          fontCount: 0,
+          parentFontString: '0 fonts',
+        }
+      }
 
-    const counts = getFontReferenceCounts(order.line_items)
-    const count = Object.keys(counts).length
-    const fontString = count + ' ' + (count === 1 ? 'font' : 'fonts')
+      // Filter out payment method and shipping line items - only show SKUs and bundles
+      const filteredItems = order.line_items.filter(
+        (lineItem) =>
+          lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
+      )
 
-    return {
-      fontRefCounts: counts,
-      fontCount: count,
-      parentFontString: fontString,
-    }
-  }, [order?.line_items])
+      const counts = getFontReferenceCounts(order.line_items)
+      const count = Object.keys(counts).length
+      const fontString = count + ' ' + (count === 1 ? 'font' : 'fonts')
+
+      return {
+        displayLineItems: filteredItems,
+        fontRefCounts: counts,
+        fontCount: count,
+        parentFontString: fontString,
+      }
+    }, [order?.line_items])
 
   return (
     <Show
@@ -84,7 +97,7 @@ export const BuySummary = () => {
         </Box>
       }
     >
-      <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20}>
+      <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20} w={'full'}>
         <Heading
           as={'h5'}
           fontSize={'xl'}
@@ -94,7 +107,14 @@ export const BuySummary = () => {
         >
           {"What's in your cart"}
         </Heading>
-        <SimpleGrid columns={3} py={3} borderTop={'1px solid #E7E0BF'} mb={1.5}>
+        <SimpleGrid
+          columns={3}
+          py={3}
+          borderTop={'1px solid #E7E0BF'}
+          borderBottom={'1px solid #E7E0BF'}
+          mb={1.5}
+          fontSize={'sm'}
+        >
           <Box>{parentFontString}</Box>
           <Box>
             {sizes.find(
@@ -103,13 +123,8 @@ export const BuySummary = () => {
           </Box>
           <Box></Box>
         </SimpleGrid>
-        {order?.line_items?.map((lineItem) => (
-          <SimpleGrid
-            key={lineItem.id}
-            columns={3}
-            py={1.5}
-            borderTop={'1px solid #E7E0BF'}
-          >
+        {displayLineItems.map((lineItem) => (
+          <SimpleGrid key={lineItem.id} columns={3} py={1.5} fontSize={'sm'}>
             <Box>{lineItem.item?.name}</Box>
             <Box>
               {
