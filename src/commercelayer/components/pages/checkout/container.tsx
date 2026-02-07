@@ -5,7 +5,7 @@ import { fetchOrder } from '@/commercelayer/providers/checkout/utils'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
-import { Text } from '@chakra-ui/react'
+import { Text, Box, Center, Spinner } from '@chakra-ui/react'
 import { useParams } from 'next/navigation'
 import { useCallback, useEffect, useState, useRef } from 'react'
 import type { Order } from '@commercelayer/sdk'
@@ -173,7 +173,13 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
 
   // Show loading state while fetching order
   if (localLoading || fetching) {
-    return <Text fontSize={'xs'}>{'Loading checkout...'}</Text>
+    return (
+      <Box pos="absolute" inset="0" bg="bg/80">
+        <Center h="full">
+          <Spinner color="black" size={'xl'} />
+        </Center>
+      </Box>
+    )
   }
 
   // Show error if order fetching failed

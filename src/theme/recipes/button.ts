@@ -57,12 +57,12 @@ export const buttonRecipe = defineRecipe({
       sm: {
         h: '8',
         minW: '8',
-        px: '2',
+        px: '3',
         textStyle: 'sm',
         gap: '2',
         _icon: {
-          width: '4',
-          height: '4',
+          width: '5',
+          height: '5',
         },
       },
       md: {

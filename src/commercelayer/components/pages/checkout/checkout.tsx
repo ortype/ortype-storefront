@@ -1,18 +1,10 @@
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Container,
-  Steps,
-  useSteps,
-  VStack,
-} from '@chakra-ui/react'
+import { Container, Steps, useSteps } from '@chakra-ui/react'
 import { useParams } from 'next/navigation'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { MainHeader } from '@/commercelayer/components/pages/checkout/main-header'
-import { OrderSummary } from '@/commercelayer/components/pages/checkout/order-summary'
+import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
 import { StepAddress } from '@/commercelayer/components/pages/checkout/step-address'
 import { StepComplete } from '@/commercelayer/components/pages/checkout/step-complete'
 import { StepEmail } from '@/commercelayer/components/pages/checkout/step-email'
@@ -22,8 +14,8 @@ import { StepPayment } from '@/commercelayer/components/pages/checkout/step-paym
 import StepPlaceOrder from '@/commercelayer/components/pages/checkout/step-place-order'
 import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shipping'
 import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
+import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { useInView } from 'framer-motion'
 
 interface Props {
   logoUrl?: string
@@ -84,16 +76,6 @@ const Checkout: React.FC<Props> = ({
 }) => {
   const ctx = useContext(CheckoutContext)
   const { customer } = useIdentityContext()
-
-  const sentinelRef = useRef(null)
-  const isInView = useInView(sentinelRef, { margin: '-50px' }) // adjust margin for the OrderSummary height
-  const [manualOverride, setManualOverride] = useState<boolean | null>(null)
-  const toggleBox = () => {
-    setManualOverride(!manualOverride)
-  }
-
-  // Expand if: user manually opened OR sentinel is in view (no overlap)
-  const isExpanded = manualOverride ?? isInView
 
   const params = useParams()
   // Track when initial load step advancement has been completed
@@ -199,12 +181,12 @@ const Checkout: React.FC<Props> = ({
     checkoutComSession = params['cko-session-id'] as string
   }
 
-  if (!ctx || ctx.isFirstLoading) {
+  /*  if (!ctx || ctx.isFirstLoading) {
     return <div>{'Loading...'}</div>
-  }
+  }*/
 
   return (
-    <Container mt={6} mb={24} maxW="50rem" centerContent position={'relative'}>
+    <Container mt={6} mb={0} maxW="50rem" centerContent position={'relative'}>
       <Steps.RootProvider value={stepperHook} size={'sm'}>
         <MainHeader orderNumber={orderNumber} steps={steps} />
         <StepNav steps={steps} />
@@ -223,30 +205,24 @@ const Checkout: React.FC<Props> = ({
         <Steps.CompletedContent>
           <StepComplete orderNumber={ctx.orderNumber} />
         </Steps.CompletedContent>
-        {/* stepperHook.isCompleted && <OrderSummary /> */}
-        <Box id={'sentinel'} ref={sentinelRef} h="100px" />{' '}
-        {/* Scroll sentinel */}
-        <VStack
-          position={'fixed'}
-          bottom={0}
-          left={0}
-          right={0}
-          margin={'0 auto'}
-          px={8}
-          pb={2}
-          maxW="50rem"
-          css={{
-            '.collapsible-box': {
-              transition: 'bottom 0.3s',
-            },
-          }}
-          gap={2}
-        >
-          <OrderSummary isOpen={isExpanded} toggleBox={toggleBox} />
-          {stepperHook.count - 1 === stepperHook.value && (
+
+        {/* Sticky bottom panel with OrderSummary and conditional StepPlaceOrder */}
+        <StickyBottomPanel
+          showFooter={stepperHook.count - 1 === stepperHook.value}
+          footer={() => (
             <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
           )}
-        </VStack>
+        >
+          {({ isExpanded, toggleBox }) => (
+            <OrderSummary
+              order={ctx.order}
+              hasLineItems={ctx.hasLineItems}
+              isOpen={isExpanded}
+              toggleBox={toggleBox}
+              heading={'Order overview'}
+            />
+          )}
+        </StickyBottomPanel>
       </Steps.RootProvider>
     </Container>
   )

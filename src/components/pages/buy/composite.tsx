@@ -3,6 +3,10 @@ import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeLis
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { useBuyContext } from '@/commercelayer/providers/Buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
+import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
+import { LockIcon } from '@sanity/icons'
+
 import { InfoTip } from '@/components/ui/toggle-tip'
 import {
   Box,
@@ -15,26 +19,50 @@ import {
   SimpleGrid,
   Spinner,
   Stack,
+  HStack,
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import React from 'react'
-import { BuySummary } from './buy-summary'
 import { SingleStyles } from './single-styles'
 
 export const CheckoutButton = ({ isDisabled, order }) => {
   return (
-    <Button
-      asChild
-      disabled={isDisabled}
-      variant={'solid'}
-      bg={'red'}
-      borderRadius={'5rem'}
-      size={'sm'}
-      fontSize={'md'}
-      alignSelf={'center'}
-    >
-      <Link href={`/checkout/${order?.id}`}>{'Checkout'}</Link>
-    </Button>
+    <Flex justifyContent={'space-between'} alignItems={'start'} w={'full'}>
+      <HStack gap={2}>
+        <Button
+          variant={'outline'}
+          bg={'white'}
+          borderRadius={'5rem'}
+          size={'sm'}
+          fontSize={'md'}
+        >
+          {'Share cart'}
+        </Button>
+        <Button
+          variant={'outline'}
+          bg={'white'}
+          borderRadius={'5rem'}
+          size={'sm'}
+          fontSize={'md'}
+        >
+          {'Save as PDF'}
+        </Button>
+      </HStack>
+      <Button
+        asChild
+        variant={'solid'}
+        bg={'red'}
+        borderRadius={'5rem'}
+        size={'sm'}
+        color={'white'}
+        disabled={isDisabled}
+        gap={1}
+      >
+        <Link href={`/checkout/${order?.id}`}>
+          <LockIcon /> {'Proceed to Checkout'}
+        </Link>
+      </Button>
+    </Flex>
   )
 }
 
@@ -82,56 +110,67 @@ export const Buy = () => {
 
   return (
     <>
-      <Container maxW="60rem" bg={'white'}>
-        <Stack direction={'column'} gap={6}>
-          <SimpleGrid columns={2} gap={3}>
-            <Stack direction={'column'} gap={4}>
-              <LicenseOwnerInput />
-              <LicenseTypeList
-                font={font}
-                skuOptions={skuOptions}
-                selectedSkuOptions={selectedSkuOptions}
-                setSelectedSkuOptions={setSelectedSkuOptions}
-              />
-              <LicenseSizeList
-                setLicenseSize={setLicenseSize}
-                licenseSize={licenseSize}
-              />
-            </Stack>
-            <Fieldset.Root>
-              <FieldsetLegend>{'4. Single Styles'}</FieldsetLegend>
-              <Fieldset.Content asChild>
-                <Flex
-                  mt={1}
-                  opacity={allLicenseInfoSet ? 1 : 0.3}
-                  pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
-                  bg={'#EEE'}
-                  p={2}
-                  gap={2}
-                >
-                  {font.variants?.map((variant) => (
-                    <SingleStyles
-                      key={variant._id}
-                      className={variant._id}
-                      order={order}
-                      orderId={orderId}
-                      name={`${font.shortName} ${variant.optionName}`}
-                      skuCode={variant._id}
-                      addLineItem={addLineItem}
-                      deleteLineItem={deleteLineItem}
-                      licenseSize={licenseSize}
-                      selectedSkuOptions={selectedSkuOptions}
-                    />
-                  ))}
-                </Flex>
-              </Fieldset.Content>
-            </Fieldset.Root>
-          </SimpleGrid>
-          <BuySummary />
-          <Show when={order && hasLineItems}>
+      <Container maxW="60rem" position={'relative'}>
+        <SimpleGrid columns={[1, null, 2]} gap={3}>
+          <Stack direction={'column'} gap={4}>
+            <LicenseOwnerInput />
+            <LicenseTypeList
+              font={font}
+              skuOptions={skuOptions}
+              selectedSkuOptions={selectedSkuOptions}
+              setSelectedSkuOptions={setSelectedSkuOptions}
+            />
+            <LicenseSizeList
+              setLicenseSize={setLicenseSize}
+              licenseSize={licenseSize}
+            />
+          </Stack>
+          <Fieldset.Root>
+            <FieldsetLegend>{'4. Single Styles'}</FieldsetLegend>
+            <Fieldset.Content asChild>
+              <Flex
+                mt={1}
+                opacity={allLicenseInfoSet ? 1 : 0.3}
+                pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
+                bg={'#EEE'}
+                p={2}
+                gap={2}
+              >
+                {font.variants?.map((variant) => (
+                  <SingleStyles
+                    key={variant._id}
+                    className={variant._id}
+                    order={order}
+                    orderId={orderId}
+                    name={`${font.shortName} ${variant.optionName}`}
+                    skuCode={variant._id}
+                    addLineItem={addLineItem}
+                    deleteLineItem={deleteLineItem}
+                    licenseSize={licenseSize}
+                    selectedSkuOptions={selectedSkuOptions}
+                  />
+                ))}
+              </Flex>
+            </Fieldset.Content>
+          </Fieldset.Root>
+        </SimpleGrid>
+        <StickyBottomPanel
+          maxW={'60rem'}
+          showFooter={order && hasLineItems}
+          footer={() => (
             <CheckoutButton order={order} isDisabled={!allLicenseInfoSet} />
-          </Show>
-        </Stack>
+          )}
+        >
+          {({ isExpanded, toggleBox }) => (
+            <OrderSummary
+              order={order}
+              hasLineItems={hasLineItems}
+              isOpen={isExpanded}
+              toggleBox={toggleBox}
+              heading="What's in your cart"
+            />
+          )}
+        </StickyBottomPanel>
       </Container>
       <Show when={isLoading}>
         <Box pos="absolute" inset="0" bg="bg/80">

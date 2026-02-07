@@ -1,32 +1,38 @@
-import { useCheckoutContext } from '@/commercelayer/providers/checkout'
+'use client'
+
 import { sizes } from '@/lib/settings'
 import { Box, Heading, Show, SimpleGrid } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 const MotionBox = motion(Box)
 
-/**
- * OrderSummary Component - Data Dependencies
- *
- * This component requires the following fields from CheckoutContext:
- * - order: Order object containing:
- *   - line_items: array of line items
- *   - line_items[].item.reference_origin: for font reference counting
- *   - line_items[].item.name: item display name
- *   - line_items[].line_item_options[].name: option names
- *   - line_items[].unit_amount_float: item pricing
- *   - metadata.license.size.value: license size for lookup in sizes map
- *   - total_amount_with_taxes_float: total order amount
- * - hasLineItems: boolean for conditional rendering
- * - isLoading: boolean for loading states (fallback UI)
- */
-
 interface LineItemType {
-  item: {
+  id: string
+  item_type?: string
+  item?: {
+    name?: string
     reference_origin?: string
     [key: string]: any
   }
+  line_item_options?: Array<{
+    name?: string
+    [key: string]: any
+  }>
+  unit_amount_float?: number
+  [key: string]: any
+}
+
+interface OrderType {
+  line_items?: LineItemType[]
+  metadata?: {
+    license?: {
+      size?: {
+        value?: string
+      }
+    }
+  }
+  total_amount_with_taxes_float?: number
   [key: string]: any
 }
 
@@ -49,7 +55,7 @@ export const getFontReferenceCounts = (
 
   const references = lineItems
     .filter((lineItem) => lineItem?.item?.reference_origin) // Safely check item exists
-    .map((lineItem) => lineItem.item.reference_origin)
+    .map((lineItem) => lineItem.item!.reference_origin!)
     .filter(Boolean) // Remove any undefined or null values
 
   return references.reduce<FontRefCounts>((acc, ref) => {
@@ -60,41 +66,51 @@ export const getFontReferenceCounts = (
   }, {})
 }
 
-interface Props {
-  readonly?: boolean
+interface OrderSummaryProps {
+  /** Order data containing line items and metadata */
+  order: OrderType | null | undefined
+  /** Whether the order has line items to display */
+  hasLineItems: boolean
+  /** Whether the summary box is expanded */
   isOpen: boolean
+  /** Function to toggle the summary box */
   toggleBox: () => void
+  /** Heading text for the summary */
+  heading?: string
+  /** Empty state text */
+  emptyText?: string
+  /** Optional readonly flag (for future use) */
+  readonly?: boolean
 }
 
-export const OrderSummary: React.FC<Props> = ({
-  readonly,
+/**
+ * Reusable OrderSummary component that displays order line items
+ * with collapsible behavior for use in StickyBottomPanel.
+ *
+ * @example
+ * ```tsx
+ * <StickyBottomPanel>
+ *   {({ isExpanded, toggleBox }) => (
+ *     <OrderSummary
+ *       order={order}
+ *       hasLineItems={hasLineItems}
+ *       isOpen={isExpanded}
+ *       toggleBox={toggleBox}
+ *       heading="What's in your cart"
+ *     />
+ *   )}
+ * </StickyBottomPanel>
+ * ```
+ */
+export const OrderSummary: React.FC<OrderSummaryProps> = ({
+  order,
+  hasLineItems,
   isOpen,
   toggleBox,
+  heading = 'Order Overview',
+  emptyText = 'Your cart is empty',
+  readonly,
 }) => {
-  const { order, isLoading, hasLineItems } = useCheckoutContext()
-
-  // Temporary validation logging - TODO: Remove after verification
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('OrderSummary validation - CheckoutContext data:', {
-      hasOrder: !!order,
-      isLoading,
-      hasLineItems,
-      lineItemsCount: order?.line_items?.length || 0,
-      hasMetadata: !!order?.metadata,
-      hasLicenseSize: !!order?.metadata?.license?.size?.value,
-      totalAmount: order?.total_amount_with_taxes_float,
-      sampleLineItem: order?.line_items?.[0]
-        ? {
-            id: order.line_items[0].id,
-            name: order.line_items[0].item?.name,
-            hasReferenceOrigin: !!order.line_items[0].item?.reference_origin,
-            hasOptions: !!order.line_items[0].line_item_options?.length,
-            unitAmount: order.line_items[0].unit_amount_float,
-          }
-        : null,
-    })
-  }
-
   // Memoize line item filtering and font reference calculations
   const { displayLineItems, fontRefCounts, fontCount, parentFontString } =
     useMemo(() => {
@@ -137,7 +153,7 @@ export const OrderSummary: React.FC<Props> = ({
             fontWeight={'normal'}
             mb={1}
           >
-            {'Your cart is empty'}
+            {emptyText}
           </Heading>
         </Box>
       }
@@ -148,11 +164,10 @@ export const OrderSummary: React.FC<Props> = ({
           fontSize={'xl'}
           textTransform={'uppercase'}
           fontWeight={'normal'}
-          //mb={1}
           onClick={toggleBox}
           cursor={'pointer'}
         >
-          {'Order Overview'}
+          {heading}
         </Heading>
 
         <MotionBox
