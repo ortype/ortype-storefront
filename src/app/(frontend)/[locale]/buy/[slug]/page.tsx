@@ -1,4 +1,4 @@
-import { BuyPage } from '@/components/pages/buy'
+import BuyPage from './buy-slug'
 import { client, getAllFontsSlugs } from '@/sanity/lib/client'
 import { sanityFetch } from '@/sanity/lib/live'
 import { buyFontsQuery, fontQuery } from '@/sanity/lib/queries'

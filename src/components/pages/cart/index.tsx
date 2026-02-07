@@ -2,9 +2,10 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { CheckoutButton } from '@/components/pages/buy/composite'
+import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { CartItem } from '@/components/pages/cart/cart-item'
 import { InfoTip } from '@/components/ui/toggle-tip'
+
 import {
   Box,
   Container,

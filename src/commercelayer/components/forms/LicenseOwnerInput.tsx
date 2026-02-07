@@ -1,5 +1,5 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { FieldsetLegend } from '@/components/pages/buy/composite'
+import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { Fieldset, Input } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'

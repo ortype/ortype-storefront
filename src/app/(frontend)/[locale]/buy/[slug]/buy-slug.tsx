@@ -1,17 +1,24 @@
 'use client'
-import { BuyProvider } from '@/commercelayer/providers/Buy'
 import type { BuyFontsQueryResult, FontPagePayload } from '@/types'
 import { Container, Heading } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
-import { useMemo } from 'react'
-import BuyNav from './buy-nav'
+import BuyNav from '@/commercelayer/components/pages/buy/buy-nav'
 
 export interface BuyPageProps {
   data: BuyFontsQueryResult | null
 }
 
+const DynamicBuyContainer: any = dynamic(
+  () => import('@/commercelayer/components/pages/buy/container'),
+  {
+    loading: function LoadingSkeleton() {
+      return <div />
+    },
+  }
+)
+
 const DynamicBuy: any = dynamic(
-  () => import('@/components/pages/buy/composite'),
+  () => import('@/commercelayer/components/pages/buy/index'),
   {
     loading: function LoadingSkeleton() {
       return <div />
@@ -36,9 +43,9 @@ export function BuyPage({ data }: BuyPageProps) {
         {`you or me or they are buying `}
         <BuyNav font={font} moreFonts={moreFonts} />
       </Heading>
-      <BuyProvider font={font}>
+      <DynamicBuyContainer font={font}>
         <DynamicBuy />
-      </BuyProvider>
+      </DynamicBuyContainer>
     </Container>
   )
 }

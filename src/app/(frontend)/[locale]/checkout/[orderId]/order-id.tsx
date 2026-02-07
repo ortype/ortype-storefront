@@ -11,7 +11,7 @@ const DynamicCheckoutContainer: any = dynamic(
   }
 )
 const DynamicCheckout: any = dynamic(
-  () => import('@/commercelayer/components/pages/checkout/checkout'),
+  () => import('@/commercelayer/components/pages/checkout/index'),
   {
     loading: function LoadingSkeleton() {
       return <div />

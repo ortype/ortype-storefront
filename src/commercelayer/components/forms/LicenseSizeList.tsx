@@ -1,5 +1,5 @@
 import { LicenseSize } from '@/commercelayer/providers/Order'
-import { FieldsetLegend } from '@/components/pages/buy/composite'
+import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { toaster } from '@/components/ui/toaster'
 import { Size, sizes } from '@/lib/settings'
 import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'

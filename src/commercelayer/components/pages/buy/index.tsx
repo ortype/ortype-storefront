@@ -1,12 +1,13 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
-import { useBuyContext } from '@/commercelayer/providers/Buy'
+import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
 import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
 import { LockIcon } from '@sanity/icons'
-
+import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
+import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { InfoTip } from '@/components/ui/toggle-tip'
 import {
   Box,
@@ -25,67 +26,6 @@ import Link from 'next/link'
 import React from 'react'
 import { SingleStyles } from './single-styles'
 
-export const CheckoutButton = ({ isDisabled, order }) => {
-  return (
-    <Flex justifyContent={'space-between'} alignItems={'start'} w={'full'}>
-      <HStack gap={2}>
-        <Button
-          variant={'outline'}
-          bg={'white'}
-          borderRadius={'5rem'}
-          size={'sm'}
-          fontSize={'md'}
-        >
-          {'Share cart'}
-        </Button>
-        <Button
-          variant={'outline'}
-          bg={'white'}
-          borderRadius={'5rem'}
-          size={'sm'}
-          fontSize={'md'}
-        >
-          {'Save as PDF'}
-        </Button>
-      </HStack>
-      <Button
-        asChild
-        variant={'solid'}
-        bg={'red'}
-        borderRadius={'5rem'}
-        size={'sm'}
-        color={'white'}
-        disabled={isDisabled}
-        gap={1}
-      >
-        <Link href={`/checkout/${order?.id}`}>
-          <LockIcon /> {'Proceed to Checkout'}
-        </Link>
-      </Button>
-    </Flex>
-  )
-}
-
-export const FieldsetLegend = ({ children }) => {
-  return (
-    <Fieldset.Legend
-      px={3}
-      fontSize={'xs'}
-      textTransform={'uppercase'}
-      fontVariantNumeric={'tabular-nums'}
-      color={'#737373'}
-      asChild
-    >
-      <Flex gap={1} alignItems={'center'}>
-        {children}
-        <InfoTip
-          content={'This is additional information about this fieldset'}
-        />
-      </Flex>
-    </Fieldset.Legend>
-  )
-}
-
 export const Buy = () => {
   const {
     order,
@@ -103,10 +43,6 @@ export const Buy = () => {
   const { font, addLineItem } = useBuyContext()
 
   // @TODO: on changing selected SKU options, update all line_items on the order
-
-  if (!skuOptions || skuOptions.length < 1) {
-    return <div>{'Loading...'}</div>
-  }
 
   return (
     <>
