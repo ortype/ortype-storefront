@@ -1,8 +1,8 @@
 'use client'
 import { BuyProvider } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { Text, Box, Center, Spinner } from '@chakra-ui/react'
 import type { BuyFontsQueryResult } from '@/types'
+import { Box, Center, Spinner, Text } from '@chakra-ui/react'
 import { useRef } from 'react'
 
 interface Props {
@@ -28,15 +28,6 @@ const BuyContainer = ({ font, children }: Props): JSX.Element => {
           <Spinner color="black" size={'xl'} />
         </Center>
       </Box>
-    )
-  }
-
-  // Show error if orderId is missing
-  if (!orderId) {
-    return (
-      <Text fontSize={'xs'} color={'red'}>
-        {'Order ID is required for checkout'}
-      </Text>
     )
   }
 

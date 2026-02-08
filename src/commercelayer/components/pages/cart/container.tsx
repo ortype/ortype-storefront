@@ -1,7 +1,7 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { isValidCart } from '@/commercelayer/utils/isValidCart'
-import { Button, Text } from '@chakra-ui/react'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
+import { Button, Text } from '@chakra-ui/react'
 
 interface Props {
   // settings: CheckoutSettings
@@ -20,7 +20,19 @@ const CartContainer = ({
 
   if (!validCart) {
     // @TODO: if orderId does not exist, show an empty cart instead of an error
-    return <Button size={'md'} variant={'circle'} bg={'white'}>{`0`}</Button>
+    return (
+      <Button
+        size={'md'}
+        _hover={{
+          bg: 'black',
+          color: 'white',
+        }}
+        variant={'circle'}
+        bg={'white'}
+        data-active={openMenu ? 'true' : undefined}
+        onMouseEnter={() => setMenuOpen(true)}
+      >{`0`}</Button>
+    )
   }
 
   return (

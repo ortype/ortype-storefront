@@ -27,7 +27,7 @@ const DynamicCartContainer: any = dynamic(
   }
 )
 const DynamicCart: any = dynamic(
-  () => import('@/components/pages/cart/composite'),
+  () => import('@/commercelayer/components/pages/cart/dialog'),
   {
     loading: function LoadingSkeleton() {
       return <div />

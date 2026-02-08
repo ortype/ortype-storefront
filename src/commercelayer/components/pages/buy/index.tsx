@@ -1,17 +1,14 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
-import { useBuyContext } from '@/commercelayer/providers/buy'
-import { useOrderContext } from '@/commercelayer/providers/Order'
-import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
-import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
-import { LockIcon } from '@sanity/icons'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { InfoTip } from '@/components/ui/toggle-tip'
+import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
+import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
+import { useBuyContext } from '@/commercelayer/providers/buy'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
   Box,
-  Button,
   Center,
   Container,
   Fieldset,
@@ -20,9 +17,7 @@ import {
   SimpleGrid,
   Spinner,
   Stack,
-  HStack,
 } from '@chakra-ui/react'
-import Link from 'next/link'
 import React from 'react'
 import { SingleStyles } from './single-styles'
 
@@ -94,7 +89,11 @@ export const Buy = () => {
           maxW={'60rem'}
           showFooter={order && hasLineItems}
           footer={() => (
-            <CheckoutButton order={order} isDisabled={!allLicenseInfoSet} />
+            <CheckoutButton
+              href={`/cart/`}
+              orderId={orderId}
+              isDisabled={!allLicenseInfoSet}
+            />
           )}
         >
           {({ isExpanded, toggleBox }) => (

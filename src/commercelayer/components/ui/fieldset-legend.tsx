@@ -1,21 +1,13 @@
 import { InfoTip } from '@/components/ui/toggle-tip'
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  Fieldset,
-  Flex,
-  Show,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  HStack,
-} from '@chakra-ui/react'
-import Link from 'next/link'
+import { Fieldset, Flex } from '@chakra-ui/react'
 import React from 'react'
 
-export const FieldsetLegend = ({ children }) => {
+interface Props {
+  info?: string
+  children: React.ReactNode
+}
+
+export const FieldsetLegend: React.FC<Props> = ({ children, info }) => {
   return (
     <Fieldset.Legend
       px={3}
@@ -27,9 +19,13 @@ export const FieldsetLegend = ({ children }) => {
     >
       <Flex gap={1} alignItems={'center'}>
         {children}
-        <InfoTip
-          content={'This is additional information about this fieldset'}
-        />
+        {info && (
+          <InfoTip
+            content={
+              info || 'This is additional information about this fieldset'
+            }
+          />
+        )}
       </Flex>
     </Fieldset.Legend>
   )

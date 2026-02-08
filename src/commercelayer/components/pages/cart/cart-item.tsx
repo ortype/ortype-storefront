@@ -110,7 +110,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
 
   return (
     <>
-      <SimpleGrid columns={2} gap={3} bg={'brand.50'} p={3}>
+      <SimpleGrid columns={[1, null, 2]} gap={3} bg={'brand.50'} p={3}>
         <Stack direction={'row'} gap={2} alignItems={'center'}>
           <Text fontSize={'2xl'} as={'span'} className={lineItem.sku_code}>
             {lineItem.name}

@@ -1,9 +1,9 @@
-import { useOrderContext } from '@/commercelayer/providers/Order'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
+import { useOrderContext } from '@/commercelayer/providers/Order'
+import { Alert } from '@/components/ui/alert'
 import { Fieldset, Input } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Alert } from '@/components/ui/alert'
 
 interface FormValues {
   full_name: string
@@ -22,7 +22,10 @@ interface OrderMetadata {
 
 const MAX_NAME_LENGTH = 100
 
-const LicenseOwnerInput = () => {
+interface Props {
+  label?: string
+}
+const LicenseOwnerInput: React.FC<Props> = ({ label }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { order, setLicenseOwner } = useOrderContext()
   const {
@@ -67,7 +70,7 @@ const LicenseOwnerInput = () => {
   return (
     <form onSubmit={onSubmit}>
       <Fieldset.Root invalid={!!errors.full_name}>
-        <FieldsetLegend>{'1. License Owner/Company*'}</FieldsetLegend>
+        <FieldsetLegend>{label || '1. License Owner/Company*'}</FieldsetLegend>
         <Fieldset.Content asChild>
           <Input
             {...register('full_name', {
@@ -96,12 +99,12 @@ const LicenseOwnerInput = () => {
             placeholder="Enter license owner or company name"
           />
         </Fieldset.Content>
-        {errors.full_name && (
+        {/*errors.full_name && (
           <Alert status="error" my="4">
             {errors.full_name.message}
           </Alert>
-        )}
-        <Fieldset.ErrorText className="sr-only">
+        )*/}
+        <Fieldset.ErrorText className="sr-only" fontSize={'xs'}>
           {errors.full_name?.message}
         </Fieldset.ErrorText>
       </Fieldset.Root>

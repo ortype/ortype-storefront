@@ -2,7 +2,7 @@ import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInpu
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Field } from '@/components/ui/field'
 import { Button, Fieldset, Heading, Link } from '@chakra-ui/react'
-
+import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -13,16 +13,8 @@ import {
 } from '@/components/ui/dialog'
 
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
-import { CartItem } from '@/components/pages/cart/cart-item'
+import { CartItem } from '@/commercelayer/components/pages/cart/cart-item'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
-
-const CheckoutButton = ({ isDisabled, order }) => {
-  return (
-    <Button as={Link} disabled={isDisabled} href={`/checkout/${order?.id}`}>
-      {'Checkout'}
-    </Button>
-  )
-}
 
 const Cart = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
   const { orderId, order, itemsCount, licenseSize, setLicenseSize } =
@@ -92,7 +84,7 @@ const Cart = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
             }
           </DialogBody>
           <DialogFooter>
-            <CheckoutButton order={order} isDisabled={false} />
+            <CheckoutButton orderId={orderId} isDisabled={false} />
           </DialogFooter>
         </DialogContent>
       </DialogRoot>

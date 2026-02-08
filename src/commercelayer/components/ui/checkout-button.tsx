@@ -1,21 +1,16 @@
+import { Button, Flex, HStack } from '@chakra-ui/react'
 import { LockIcon } from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  Fieldset,
-  Flex,
-  Show,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  HStack,
-} from '@chakra-ui/react'
 import Link from 'next/link'
 import React from 'react'
 
-export const CheckoutButton = ({ isDisabled, order }) => {
+interface Props {
+  isDisabled: boolean
+  orderId: string
+  label?: string
+  href?: string
+}
+
+export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
   return (
     <Flex justifyContent={'space-between'} alignItems={'start'} w={'full'}>
       <HStack gap={2}>
@@ -48,8 +43,8 @@ export const CheckoutButton = ({ isDisabled, order }) => {
         disabled={isDisabled}
         gap={1}
       >
-        <Link href={`/checkout/${order?.id}`}>
-          <LockIcon /> {'Proceed to Checkout'}
+        <Link href={href || `/checkout/${orderId}`}>
+          <LockIcon /> {label || 'Proceed to Checkout'}
         </Link>
       </Button>
     </Flex>
