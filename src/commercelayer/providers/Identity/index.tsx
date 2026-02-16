@@ -2,8 +2,6 @@
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
-import { getCustomerDetails } from '@/commercelayer/utils/getCustomerDetails'
-import { getSettings } from '@/commercelayer/utils/getSettings'
 import {
   getStoredTokenKey,
   setStoredCustomerToken,
@@ -23,6 +21,8 @@ import type {
   IdentityProviderState,
   IdentityProviderValue,
 } from './types'
+import { getCustomerDetails } from './utils/getCustomerDetails'
+import { getSettings } from './utils/getSettings'
 
 const initialCustomerState: CustomerStateData = {
   email: '',
@@ -99,7 +99,7 @@ export function IdentityProvider({
 
   // get customer using client-side token (for authenticated users)
   const fetchCustomerHandle = async (customerId?: string) => {
-    console.log('fetchCustomerHandle: ', customerId)
+    console.log('🔍 [IdentityProvider] fetchCustomerHandle: ', customerId)
     const client = isValidCommerceLayerConfig(clientConfig)
       ? getCommerceLayer(clientConfig)
       : undefined
@@ -113,7 +113,10 @@ export function IdentityProvider({
       customerId,
     }).then((customerResponse) => {
       const customerDetails = customerResponse?.object
-      console.log('getCustomerDetails.then: ', customerResponse)
+      console.log(
+        '🔍 [IdentityProvider] getCustomerDetails.then: ',
+        customerResponse
+      )
       setCustomer({
         ...customer,
         userMode: true,
@@ -124,12 +127,8 @@ export function IdentityProvider({
     })
   }
 
+  // fetch customer handle if custoemrId or accessToken changes
   useEffect(() => {
-    console.log(
-      'does this ever run?',
-      state.settings.accessToken,
-      state.settings.customerId
-    )
     state.settings.accessToken && fetchCustomerHandle(state.settings.customerId)
   }, [state.settings.customerId, state.settings.accessToken])
 
@@ -137,15 +136,59 @@ export function IdentityProvider({
   useEffect(() => {
     if (!state.isLoading && !state.settings.customerId && customer.isLoading) {
       console.log(
-        'Resetting customer isLoading to false - no authenticated session'
+        '🔍 [IdentityProvider] Resetting customer isLoading to false - no authenticated session'
       )
       setCustomer((prev) => ({ ...prev, isLoading: false }))
     }
   }, [state.isLoading, state.settings.customerId, customer.isLoading])
 
   if (clientId.length === 0 || scope.length === 0) {
-    console.log('IdentityProvider: Missing required parameter.')
+    console.log('🔍 [IdentityProvider]: Missing required parameter.')
     // return <div>Error 500 - Missing required parameter.</div>
+  }
+
+  // Check if an email belongs to an existing customer with a password
+  const checkCustomerEmail = async (email: string): Promise<boolean> => {
+    console.log('🔍 [IdentityProvider] checkCustomerEmail called:', email)
+
+    setCustomer((prev) => ({
+      ...prev,
+      isCheckingEmail: true,
+      checkoutEmail: email,
+    }))
+
+    try {
+      const response = await fetch('/api/customer-exists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+      console.log('🔍 [IdentityProvider] checkCustomerEmail result:', data)
+
+      const hasAccount = data.success && data.exists && data.hasPassword
+
+      setCustomer((prev) => ({
+        ...prev,
+        checkoutEmail: email,
+        checkoutEmailHasAccount: hasAccount,
+        isCheckingEmail: false,
+      }))
+
+      return hasAccount
+    } catch (error) {
+      console.error('🔍 [IdentityProvider] checkCustomerEmail error:', error)
+      setCustomer((prev) => ({
+        ...prev,
+        checkoutEmail: email,
+        checkoutEmailHasAccount: false,
+        isCheckingEmail: false,
+      }))
+      return false
+    }
   }
 
   const value: IdentityProviderValue = {
@@ -183,12 +226,17 @@ export function IdentityProvider({
             })
 
             const customerDetails = customerResponse?.object
+            const customerEmail = customerDetails?.email ?? ''
             setCustomer({
               ...customer,
               userMode: true,
-              email: customerDetails?.email ?? '',
+              email: customerEmail,
               hasPassword: customerDetails?.has_password ?? false,
               isLoading: false,
+              // Sync checkout state - user just logged in, so they have an account
+              checkoutEmail: customerEmail,
+              checkoutEmailHasAccount: true,
+              isCheckingEmail: false,
             })
           } catch (error) {
             console.error(
@@ -196,13 +244,32 @@ export function IdentityProvider({
               error
             )
             // Fallback to just setting userMode if fetching details fails
-            setCustomer({ ...customer, userMode: true, isLoading: false })
+            setCustomer((prev) => ({
+              ...prev,
+              userMode: true,
+              isLoading: false,
+              // Still mark as having account since login succeeded
+              checkoutEmailHasAccount: true,
+              isCheckingEmail: false,
+            }))
           }
         } else {
-          setCustomer({ ...customer, userMode: true, isLoading: false })
+          setCustomer((prev) => ({
+            ...prev,
+            userMode: true,
+            isLoading: false,
+            checkoutEmailHasAccount: true,
+            isCheckingEmail: false,
+          }))
         }
       } else {
-        setCustomer({ ...customer, userMode: true, isLoading: false })
+        setCustomer((prev) => ({
+          ...prev,
+          userMode: true,
+          isLoading: false,
+          checkoutEmailHasAccount: true,
+          isCheckingEmail: false,
+        }))
       }
     },
     handleLogout: () => {
@@ -216,9 +283,14 @@ export function IdentityProvider({
         ...initialCustomerState,
         isLoading: false,
         userMode: false,
+        // Reset checkout state on logout
+        checkoutEmail: undefined,
+        checkoutEmailHasAccount: undefined,
+        isCheckingEmail: false,
       })
     },
     fetchCustomerHandle,
+    checkCustomerEmail,
     setCustomerEmail: (email) => {
       setCustomer({
         ...initialCustomerState,
@@ -226,6 +298,8 @@ export function IdentityProvider({
         isLoading: false,
         userMode: false,
       })
+      // Also check if this email has an existing account
+      checkCustomerEmail(email)
     },
   }
   return (

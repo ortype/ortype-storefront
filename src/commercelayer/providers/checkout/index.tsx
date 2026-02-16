@@ -193,7 +193,6 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   licenseOwner: LicenseOwner
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
-  hasCustomer: boolean
   deleteLineItem: (params: { order?: Order; lineItemId: string }) => void
 }
 
@@ -208,9 +207,7 @@ const initialState: AppStateData = {
   order: undefined,
   isLoading: true,
   isFirstLoading: true,
-  isGuest: false,
   hasCustomerAddresses: false,
-  hasCustomer: false,
   isUsingNewBillingAddress: true,
   isUsingNewShippingAddress: true,
   hasSameAddresses: false,
@@ -311,8 +308,13 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
     // Debug logging for development to track order initialization
     if (process.env.NODE_ENV === 'development') {
-      console.log('CheckoutProvider - fetchInitialOrder:', {
+      console.log('📦 [CheckoutProvider] fetchInitialOrder:', {
+        preloadedOrder: preloadedOrder ? 'true' : 'false',
         orderId: order?.id,
+        guest: order?.guest,
+        customer_email: order?.customer_email,
+        customer_id: order?.customer?.id,
+        hasEmailAddress: Boolean(order.customer_email),
         hasLineItems: others.hasLineItems,
         lineItemsCount: order?.line_items?.length || 0,
         isShipmentRequired,
@@ -693,6 +695,13 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           customerEmail,
         })
 
+        console.log('📧 [CheckoutProvider] saveCustomerUser result:', {
+          success: result.success,
+          guest: result.order?.guest,
+          customer_email: result.order?.customer_email,
+          customer_id: result.order?.customer?.id,
+        })
+
         dispatch({
           type: ActionType.SET_CUSTOMER_EMAIL,
           payload: { customerEmail },
@@ -729,6 +738,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           include: ['customer'],
         })
 
+        console.log('setCustomerPassword: ', result.order)
         if (result.success && result.order) {
           return { success: true, order: result.order }
         }

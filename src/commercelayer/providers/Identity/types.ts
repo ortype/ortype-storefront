@@ -1,6 +1,6 @@
 import { CustomerTokenData } from '@/commercelayer/utils/oauthStorage'
-import type { Settings } from 'CustomApp'
 import type { Customer } from '@commercelayer/sdk'
+import type { Settings } from 'CustomApp'
 
 export interface CLayerClientConfig {
   accessToken?: string
@@ -23,6 +23,7 @@ export interface IdentityProviderValue {
   handleLogout: () => void
   fetchCustomerHandle: (customerId?: string) => Promise<Customer | undefined>
   setCustomerEmail: (email: string) => void
+  checkCustomerEmail: (email: string) => Promise<boolean>
 }
 
 export interface CustomerStateData {
@@ -30,4 +31,7 @@ export interface CustomerStateData {
   hasPassword: boolean
   isLoading: boolean
   userMode: boolean
+  checkoutEmail?: string
+  checkoutEmailHasAccount?: boolean
+  isCheckingEmail?: boolean
 }

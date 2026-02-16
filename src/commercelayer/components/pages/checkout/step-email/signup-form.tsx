@@ -19,6 +19,7 @@ import {
   Box,
   Button,
   Link as ChakraLink,
+  Container,
   Fieldset,
   Stack,
   useStepsContext,
@@ -61,7 +62,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
   const { settings, clientConfig, config, isLoading, handleLogin, customer } =
     useIdentityContext()
 
-  const { setCustomerPassword, isGuest, hasCustomer } = useCheckoutContext()
+  const { setCustomerPassword, hasEmailAddress } = useCheckoutContext()
   const stepsContext = useStepsContext()
   const [apiError, setApiError] = useState({})
 
@@ -109,7 +110,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
 
     // Check if we're in checkout context with existing customer that needs password setup
     // isGuest: true +  = customer exists but has no password (use shortcut signup)
-    if (setCustomerPassword && isGuest && hasCustomer) {
+    if (setCustomerPassword && settings.isGuest && hasEmailAddress) {
       try {
         // Use Commerce Layer's shortcut to sign up the associated customer
         const result = await setCustomerPassword(formData.customerPassword)
@@ -225,9 +226,9 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
           void onSubmit(e)
         }}
       >
-        <Fieldset.Root size="lg" maxW="sm">
-          <Fieldset.Content>
-            <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
+        <Fieldset.Root size="lg" maxW="lg">
+          <Fieldset.Content asChild>
+            <Stack gap="2" align="flex-start" minW={'sm'} maxW="sm">
               <Input name="customerEmail" label="Email" type="email" />
               <PasswordInput name="customerPassword" label="Password" />
               <PasswordInput
@@ -244,6 +245,11 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
                 loadingText={'Submitting'}
                 disabled={isSubmitting}
                 loading={isSubmitting}
+                variant={'outline'}
+                bg={'white'}
+                borderRadius={'5rem'}
+                size={'sm'}
+                fontSize={'md'}
               >
                 {'Sign Up'}
               </Button>

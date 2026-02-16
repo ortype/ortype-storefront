@@ -1,16 +1,21 @@
 'use client'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { defineStyle, Steps, useStepsContext } from '@chakra-ui/react'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SingleStepEnum } from '../types'
 
 // Inline step completion check
-const isStepComplete = (step: SingleStepEnum, ctx: any): boolean => {
+const isStepComplete = (
+  step: SingleStepEnum,
+  ctx: any,
+  customer: any
+): boolean => {
   switch (step) {
     case 'Email':
-      return ctx.hasEmailAddress
+      return ctx.hasEmailAddress && customer.userMode
     case 'Address':
       return (
         ctx.hasBillingAddress &&
@@ -45,6 +50,7 @@ export const StepNav: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation()
   const ctx = useContext(CheckoutContext)
+  const { customer } = useIdentityContext()
   const stepsContext = useStepsContext()
 
   if (!ctx) {
@@ -53,7 +59,7 @@ export const StepNav: React.FC<Props> = ({
   return (
     <Steps.List css={listStyles}>
       {steps.map((step, index) => {
-        const stepComplete = isStepComplete(step.key, ctx)
+        const stepComplete = isStepComplete(step.key, ctx, customer)
         const isCurrentStep = stepsContext.value === index
 
         // Allow navigation to:
@@ -62,7 +68,7 @@ export const StepNav: React.FC<Props> = ({
         // 3. The next incomplete step if all previous steps are complete (forward navigation)
         const allPreviousStepsComplete = steps
           .slice(0, index)
-          .every((prevStep) => isStepComplete(prevStep.key, ctx))
+          .every((prevStep) => isStepComplete(prevStep.key, ctx, customer))
         const canNavigateToStep =
           !ctx.isComplete && // Prevent all navigation if order is complete
           (stepComplete || // Can navigate to completed steps

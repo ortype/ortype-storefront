@@ -166,14 +166,14 @@ export async function checkAndSetDefaultAddressForOrder({
     })
   }
 
-  const updateObjet: OrderUpdate = {
+  const updateObject: OrderUpdate = {
     id: order.id,
     _billing_address_clone_id: address.id,
     _shipping_address_clone_id: address.id,
   }
   try {
     const { billing_address, shipping_address } = await cl.orders.update(
-      updateObjet,
+      updateObject,
       {
         include: ['billing_address', 'shipping_address'],
       }
@@ -511,20 +511,7 @@ export function calculateSettings(
       order.line_items.length > 0
   )
 
-  // Debug logging for development to track hasLineItems state
-  if (process.env.NODE_ENV === 'development') {
-    console.log('calculateSettings - hasLineItems calculation:', {
-      hasOrder: !!order,
-      hasLineItemsArray: !!order?.line_items,
-      isArray: Array.isArray(order?.line_items),
-      lineItemsLength: order?.line_items?.length || 0,
-      finalHasLineItems: hasLineItems,
-      orderId: order?.id,
-    })
-  }
-
   return {
-    isGuest: Boolean(order.guest),
     shippingCountryCodeLock: order.shipping_country_code_lock,
     hasEmailAddress: Boolean(order.customer_email),
     hasLicenseOwner: isValidLicenseOwner(order.metadata?.license?.owner),
@@ -532,7 +519,6 @@ export function calculateSettings(
     licenseOwner: order.metadata?.license?.owner || {},
     licenseSize: order.metadata?.license?.size,
     emailAddress: order.customer_email,
-    hasCustomer: Boolean(order.customer?.id),
     hasLineItems,
     ...calculatedAddresses,
     ...(isShipmentRequired

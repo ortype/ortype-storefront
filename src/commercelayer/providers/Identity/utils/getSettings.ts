@@ -1,9 +1,9 @@
 import CommerceLayer from '@commercelayer/sdk'
 import type { InvalidSettings, Settings } from 'CustomApp'
 
-import { getInfoFromJwt } from './getInfoFromJwt'
-import { getOrganization } from './getOrganization'
-import { getStoredSalesChannelToken } from './oauthStorage'
+import { getInfoFromJwt } from '@/commercelayer/utils/getInfoFromJwt'
+import { getOrganization } from '@/commercelayer/utils/getOrganization'
+import { getStoredSalesChannelToken } from '@/commercelayer/utils/oauthStorage'
 
 // default settings are by their nature not valid to show My Account data
 // they will be used as fallback for errors or 404 page

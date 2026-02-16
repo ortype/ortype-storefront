@@ -116,7 +116,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
     case ActionType.SET_ORDER: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('SET_ORDER: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: SET_ORDER: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -127,7 +130,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.UPDATE_ORDER: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('UPDATE_ORDER: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: UPDATE_ORDER: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -137,7 +143,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.SET_LICENSE_OWNER: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('SET_LICENSE_OWNER: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: SET_LICENSE_OWNER: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -151,7 +160,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.SET_LICENSE_SIZE: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('SET_LICENSE_SIZE: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: SET_LICENSE_SIZE: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -162,7 +174,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.SET_LICENSE_TYPES: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('SET_LICENSE_TYPES: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: SET_LICENSE_TYPES: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -173,7 +188,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.SET_SKU_OPTIONS: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('SET_SKU_OPTIONS: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: SET_SKU_OPTIONS: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -184,7 +202,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.CREATE_ORDER: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('CREATE_ORDER: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: CREATE_ORDER: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -196,7 +217,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.ADD_TO_CART: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('ADD_TO_CART: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: ADD_TO_CART: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,
@@ -208,7 +232,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
     }
     case ActionType.DELETE_LINE_ITEM: {
       if (process.env.NODE_ENV !== 'production') {
-        console.log('DELETE_LINE_ITEM: action.payload:', action.payload)
+        console.log(
+          '[OrderProvider]: Reducer: DELETE_LINE_ITEM: action.payload:',
+          action.payload
+        )
       }
       return {
         ...state,

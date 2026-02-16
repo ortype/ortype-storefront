@@ -41,15 +41,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
     // Reference to store the payment form for programmatic submission
     const paymentFormRef = useRef<HTMLFormElement | null>(null)
 
-    if (!checkoutCtx) {
-      return null
-    }
-
     const { order } = checkoutCtx
-
-    if (!order) {
-      return <div>No order available</div>
-    }
 
     // Initialize selected payment method from order on mount
     useEffect(() => {

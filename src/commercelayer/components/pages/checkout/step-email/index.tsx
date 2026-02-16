@@ -1,10 +1,8 @@
 import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
 import { useIdentityContext } from '@/commercelayer/providers/Identity'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Box, Flex } from '@chakra-ui/react'
-import classNames from 'classnames'
+import { Box, Center, Spinner, Container } from '@chakra-ui/react'
 import { useContext, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Email } from './Email'
 import { SignUpForm } from './signup-form'
 
@@ -20,11 +18,18 @@ export interface ShippingToggleProps {
 
 export const StepEmail: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
-  const { customer, setCustomerEmail } = useIdentityContext()
-  const { hasEmailAddress, emailAddress, isGuest, hasCustomer } = checkoutCtx
+  const { customer, checkCustomerEmail, setCustomerEmail, settings } =
+    useIdentityContext()
+  const { hasEmailAddress, emailAddress } = checkoutCtx
 
   // @NOTE: not doing anything yet with this state
   const [isLocalLoader, setIsLocalLoader] = useState(false)
+
+  useEffect(() => {
+    if (emailAddress && !customer.checkoutEmail) {
+      checkCustomerEmail(emailAddress)
+    }
+  }, [emailAddress])
 
   if (!checkoutCtx) {
     return null
@@ -32,16 +37,36 @@ export const StepEmail: React.FC<Props> = () => {
 
   // @NOTE: Use checkout provider's emailAddress as the source of truth
   // since it persists across page refreshes and comes from the order data
-  // The identity provider's customer.email is for authenticated customers only
+  // The identity provider's customer.email is for authenticated customers
+  // in case we are logged in but have not created an order yet
   const email = emailAddress || customer.email
 
   // Derive which auth form to show (Login vs Sign-Up)
-  // Use CheckoutContext.isGuest property: false = customer has password (show Login), true = guest (show Sign-Up)
+  // Use IdentityProvider's customer.checkoutEmailHasAccount property: false = customer has password (show Login), true = guest (show Sign-Up)
   // Provide graceful fallback: show Sign-Up if order.guest is undefined
-  const requiresLogin = !isGuest && hasEmailAddress
+  const requiresLogin = customer.checkoutEmailHasAccount && hasEmailAddress
+
+  if (customer.isCheckingEmail) {
+    return (
+      <Box pos="fixed" inset="0" bg="bg/80">
+        <Center h="full">
+          <Spinner color="black" size={'xl'} />
+        </Center>
+      </Box>
+    )
+  }
+
+  if (customer.userMode) {
+    return (
+      <Container
+        centerContent
+        my={4}
+      >{`Logged in as ${emailAddress}`}</Container>
+    )
+  }
 
   return (
-    <>
+    <Container centerContent my={4}>
       {hasEmailAddress ? (
         <>
           {requiresLogin ? (
@@ -53,6 +78,6 @@ export const StepEmail: React.FC<Props> = () => {
       ) : (
         <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
       )}
-    </>
+    </Container>
   )
 }

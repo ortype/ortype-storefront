@@ -19,7 +19,7 @@ import {
 import { useContext, useRef, useState } from 'react'
 
 const DynamicCartContainer: any = dynamic(
-  () => import('@/components/composite/CartContainer'),
+  () => import('@/commercelayer/components/pages/cart/container'),
   {
     loading: function LoadingSkeleton() {
       return <div />

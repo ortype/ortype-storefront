@@ -26,7 +26,7 @@ export const StepPayment: React.FC = () => {
     useState(false)
   const [autoSelected, setAutoselected] = useState(false)
 
-  const { isPaymentRequired, setPayment } = checkoutCtx
+  const { isPaymentRequired, setPayment, order } = checkoutCtx
 
   const { t } = useTranslation()
 
@@ -53,7 +53,7 @@ export const StepPayment: React.FC = () => {
 
   // if (!checkoutCtx || !checkoutCtx.hasShippingMethod) {
   // this exit on shippingMethod is causing an error in useEffect to enable button
-  if (!checkoutCtx) {
+  if (!checkoutCtx || !order) {
     return null
   }
 

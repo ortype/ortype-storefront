@@ -1,3 +1,4 @@
+import { LicenseOwner } from '@/commercelayer/providers/checkout'
 import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
 import { ActionType, reducer } from '@/commercelayer/providers/Order/reducer'
 import utils, {
@@ -9,8 +10,6 @@ import utils, {
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
-import { getOrder } from './utils/getOrder'
-import { LicenseOwner } from '@/commercelayer/providers/checkout'
 import {
   LineItem,
   OrderUpdate,
@@ -18,7 +17,9 @@ import {
   type Order,
 } from '@commercelayer/sdk'
 import type { ChildrenElement } from 'CustomApp'
+import { getOrder } from './utils/getOrder'
 
+import { toaster } from '@/components/ui/toaster'
 import {
   createContext,
   useCallback,
@@ -28,7 +29,6 @@ import {
   useState,
 } from 'react'
 import { OrderStorageContext } from './Storage'
-import { toaster } from '@/components/ui/toaster'
 
 /*
 1. Clean separation between utils and provider:
@@ -271,7 +271,7 @@ export function OrderProvider({
         }
 
         if (process.env.NODE_ENV !== 'production') {
-          console.log('createOrder: mergedMetadata:', {
+          console.log('[OrderProvider] createOrder: mergedMetadata:', {
             metadata,
             customMetadata: params?.customMetadata,
             merged: mergedMetadata,
@@ -365,7 +365,7 @@ export function OrderProvider({
           return { success: false }
         }
         if (process.env.NODE_ENV !== 'production') {
-          console.log('fetchOrder: ', orderId)
+          console.log('[OrderProvider] fetchOrder: ', orderId)
         }
         const orderResponse = await getOrder({ client: cl, orderId })
         const order = orderResponse?.object
@@ -482,16 +482,19 @@ export function OrderProvider({
         )
 
         if (process.env.NODE_ENV !== 'production') {
-          console.log('🎯 fetchSkuOptions: Processing types and options:', {
-            existingTypes,
-            matchingOptions: existingSelectedOptions.map((opt) => ({
-              id: opt.id,
-              name: opt.name,
-              reference: opt.reference,
-            })),
-            allOptionsCount: skuOptions.length,
-            allOptionsReferences: skuOptions.map((opt) => opt.reference),
-          })
+          console.log(
+            '[OrderProvider] 🎯 fetchSkuOptions: Processing types and options:',
+            {
+              existingTypes,
+              matchingOptions: existingSelectedOptions.map((opt) => ({
+                id: opt.id,
+                name: opt.name,
+                reference: opt.reference,
+              })),
+              allOptionsCount: skuOptions.length,
+              allOptionsReferences: skuOptions.map((opt) => opt.reference),
+            }
+          )
         }
 
         dispatch({
@@ -538,7 +541,7 @@ export function OrderProvider({
       const cl = config != null ? getCommerceLayer(config) : undefined
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log('setLicenseOwner: Starting with params:', {
+        console.log('[OrderProvider] setLicenseOwner: Starting with params:', {
           licenseOwner: params.licenseOwner,
           hasOrder: !!state.order,
           orderId: state.orderId,
@@ -608,7 +611,7 @@ export function OrderProvider({
         const { order, success } = await fetchOrder({ orderId })
 
         if (process.env.NODE_ENV !== 'production') {
-          console.log('setLicenseOwner: fetchOrder result:', {
+          console.log('[OrderProvider] setLicenseOwner: fetchOrder result:', {
             success,
             hasOrder: !!order,
           })
@@ -629,7 +632,7 @@ export function OrderProvider({
         }
 
         if (process.env.NODE_ENV !== 'production') {
-          console.log('setLicenseOwner: Order metadata:', {
+          console.log('[OrderProvider] setLicenseOwner: Order metadata:', {
             metadata: order.metadata,
             license: order.metadata?.license,
             owner: order.metadata?.license?.owner,
@@ -829,7 +832,10 @@ export function OrderProvider({
         const operationName = 'Set license size'
 
         if (process.env.NODE_ENV !== 'production') {
-          console.log('OrderProvider.setLicenseSize: ', params.licenseSize)
+          console.log(
+            '[OrderProvider] OrderProvider.setLicenseSize: ',
+            params.licenseSize
+          )
         }
 
         const orderId = await createOrUpdateOrder({
@@ -921,7 +927,7 @@ export function OrderProvider({
       const cl = config != null ? getCommerceLayer(config) : undefined
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log('setLicenseTypes: Starting with params:', {
+        console.log('[OrderProvider] setLicenseTypes: Starting with params:', {
           hasOrder: !!state.order,
           orderId: state.orderId,
           hasLineItems: !!(
@@ -942,7 +948,9 @@ export function OrderProvider({
         // Track the operation for better error messages
         const operationName = 'Set license types'
         if (process.env.NODE_ENV !== 'production') {
-          console.log('setLicenseTypes: Updating line item license types')
+          console.log(
+            '[OrderProvider] setLicenseTypes: Updating line item license types'
+          )
         }
 
         await updateLineItemLicenseTypes({
@@ -954,7 +962,7 @@ export function OrderProvider({
         const { order, success } = await fetchOrder({ orderId: state.orderId })
 
         if (process.env.NODE_ENV !== 'production') {
-          console.log('setLicenseTypes: fetchOrder result:', {
+          console.log('[OrderProvider] setLicenseTypes: fetchOrder result:', {
             success,
             hasOrder: !!order,
             updatedMetadata: order?.metadata?.license,
@@ -1101,13 +1109,16 @@ export function OrderProvider({
       const cl = config != null ? getCommerceLayer(config) : undefined
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log('setSelectedSkuOptions: Starting with params:', {
-          hasOrder: !!state.order,
-          orderId: state.orderId,
-          font: params.font?.shortName,
-          selectedSkuOptions: params.selectedSkuOptions,
-          currentOrderMetadata: state.order?.metadata,
-        })
+        console.log(
+          '[OrderProvider] setSelectedSkuOptions: Starting with params:',
+          {
+            hasOrder: !!state.order,
+            orderId: state.orderId,
+            font: params.font?.shortName,
+            selectedSkuOptions: params.selectedSkuOptions,
+            currentOrderMetadata: state.order?.metadata,
+          }
+        )
       }
 
       try {
@@ -1181,7 +1192,7 @@ export function OrderProvider({
           )
 
           if (process.env.NODE_ENV !== 'production') {
-            console.log('lineItemsOfFont: ', lineItemsOfFont)
+            console.log('[OrderProvider] lineItemsOfFont: ', lineItemsOfFont)
           }
 
           for (const lineItem of lineItemsOfFont) {
@@ -1196,11 +1207,14 @@ export function OrderProvider({
         const { order, success } = await fetchOrder()
 
         if (process.env.NODE_ENV !== 'production') {
-          console.log('setSelectedSkuOptions: fetchOrder result:', {
-            success,
-            hasOrder: !!order,
-            updatedMetadata: order?.metadata?.license,
-          })
+          console.log(
+            '[OrderProvider] setSelectedSkuOptions: fetchOrder result:',
+            {
+              success,
+              hasOrder: !!order,
+              updatedMetadata: order?.metadata?.license,
+            }
+          )
         }
 
         if (!success || !order) {
@@ -1315,7 +1329,7 @@ export function OrderProvider({
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(
-            '🔄 initializeProvider: Found existing order with types:',
+            '[Order Provider] 🔄 initializeProvider: Found existing order with types:',
             {
               orderId: order.id,
               existingTypes,
@@ -1328,7 +1342,7 @@ export function OrderProvider({
         // If no order is found, use empty array
         if (process.env.NODE_ENV !== 'production') {
           console.log(
-            '🔄 initializeProvider: No existing order found, using empty types array',
+            '[Order Provider] 🔄 initializeProvider: No existing order found, using empty types array',
             {
               success,
               hasOrder: !!order,
@@ -1343,7 +1357,9 @@ export function OrderProvider({
         console.warn('Failed to fetch SKU options during initialization')
       } else {
         if (process.env.NODE_ENV !== 'production') {
-          console.log('✅ initializeProvider: Successfully fetched SKU options')
+          console.log(
+            '[OrderProvider] ✅ initializeProvider: Successfully fetched SKU options'
+          )
         }
       }
     } catch (error) {

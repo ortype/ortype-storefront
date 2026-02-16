@@ -20,13 +20,13 @@ export const Input = ({
     <Field label={label} errorText={errorMessage} invalid={hasError}>
       <ChakraInput
         {...form?.register(name)}
-        {...props}
         variant={'subtle'}
         size={'lg'}
         fontSize={'lg'}
         mt={1}
         borderRadius={0}
         type={type}
+        {...props}
       />
     </Field>
   )
