@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { OrderSectionEnum } from '@/types/Account'
 
 type UseAccordionActiveSection = {

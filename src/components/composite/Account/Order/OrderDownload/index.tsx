@@ -1,4 +1,4 @@
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { Link } from '@chakra-ui/react'
 
 interface Props {

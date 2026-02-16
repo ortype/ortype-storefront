@@ -1,6 +1,6 @@
 import { CheckoutProvider } from '@/commercelayer/providers/checkout'
 import { fetchOrder } from '@/commercelayer/providers/checkout/utils'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'

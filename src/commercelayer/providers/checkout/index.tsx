@@ -20,7 +20,7 @@ import React, {
 } from 'react'
 
 import { type AddressInput } from '@/commercelayer/providers/address'
-import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
+import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
 import { OrderStorageContext } from '@/commercelayer/providers/Order/Storage'
 import {
   setOrderBillingAddress as attachBillingAddressToOrderUtil,

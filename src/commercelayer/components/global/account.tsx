@@ -25,7 +25,7 @@ import React, { useEffect, useState } from 'react'
 
 import { LoginForm } from '@/commercelayer/components/forms/LoginForm'
 import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { getStoredTokenKey } from '@/commercelayer/utils/oauthStorage'
 
 export const Account = ({ openLogin, setLoginOpen }) => {
@@ -70,8 +70,8 @@ export const Account = ({ openLogin, setLoginOpen }) => {
           <DialogHeader>Login</DialogHeader>
           <DialogCloseTrigger onClick={() => setLoginOpen(false)} />
           <DialogBody>
-            <LoginForm 
-              emailAddress={customer.email} 
+            <LoginForm
+              emailAddress={customer.email}
               onSuccess={() => setLoginOpen(false)}
             />
           </DialogBody>

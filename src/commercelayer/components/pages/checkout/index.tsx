@@ -1,4 +1,4 @@
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { Container, Steps, useSteps } from '@chakra-ui/react'
 import { useParams } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'

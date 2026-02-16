@@ -1,6 +1,6 @@
 import type { Settings } from 'CustomApp'
 
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { Box, Card, Container, Flex } from '@chakra-ui/react'
 import { useState } from 'react'
 

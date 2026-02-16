@@ -1,5 +1,5 @@
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
-import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
+import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
 import { ActionType, reducer } from '@/commercelayer/providers/Order/reducer'
 import utils, {
   calculateSettings,

@@ -3,7 +3,7 @@ import { createContext, FC, useContext, useReducer } from 'react'
 import { ActionType, reducer } from '@/commercelayer/providers/Buy/reducer'
 import { addLineItemLicenseTypes } from '@/commercelayer/providers/Buy/utils'
 
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import type { AddToCartError } from '@/commercelayer/providers/Order'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { toaster } from '@/components/ui/toaster'

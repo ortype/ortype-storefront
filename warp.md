@@ -152,7 +152,7 @@ The authentication system has complex state management in `src/commercelayer/com
 
 ### Key Components
 
-- `src/commercelayer/providers/Identity/` - Authentication context
+- `src/commercelayer/providers/identity/` - Authentication context
 - `src/commercelayer/components/forms/LoginForm.tsx` - Login handling
 - `src/commercelayer/components/forms/SignUpForm.tsx` - Registration + auto-login
 

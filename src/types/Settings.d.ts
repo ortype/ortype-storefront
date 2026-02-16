@@ -1,4 +1,4 @@
-import { CLayerClientConfig } from '@/commercelayer/providers/Identity/types'
+import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
 import { type LineItem, type Order } from '@commercelayer/sdk'
 
 declare module 'CustomApp' {

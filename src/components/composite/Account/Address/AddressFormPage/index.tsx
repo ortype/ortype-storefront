@@ -1,5 +1,5 @@
 'use client'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import CustomerAddressForm from '@/components/composite/Account/Address/CustomerAddressForm'
 import { CustomerAddressProvider } from '@/components/data/CustomerAddressProvider'
 import { AddressesContainer } from '@commercelayer/react-components/addresses/AddressesContainer'

@@ -1,5 +1,5 @@
 'use client'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import CustomerHeader from '@/components/composite/Account/Header/Customer'
 import GuestHeader from '@/components/composite/Account/Header/Guest'
 import Navbar from '@/components/composite/Account/Navbar'

@@ -1,6 +1,6 @@
 'use client'
 import { Input } from '@/commercelayer/components/ui/Input'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
 import { Alert } from '@/components/ui/alert'
 import {

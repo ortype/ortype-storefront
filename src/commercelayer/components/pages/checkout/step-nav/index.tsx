@@ -1,7 +1,7 @@
 'use client'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { defineStyle, Steps, useStepsContext } from '@chakra-ui/react'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'

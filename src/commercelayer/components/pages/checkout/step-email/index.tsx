@@ -1,5 +1,5 @@
 import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Box, Center, Spinner, Container } from '@chakra-ui/react'
 import { useContext, useEffect, useState } from 'react'

@@ -8,7 +8,7 @@ import {
 } from 'react'
 import type { AddressCreate, CommerceLayerClient } from '@commercelayer/sdk'
 
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import {
   createBillingAddress,

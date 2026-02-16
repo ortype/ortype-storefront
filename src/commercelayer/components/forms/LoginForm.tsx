@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
 import { Input } from '@/commercelayer/components/ui/Input'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { parseAuthError } from '@/commercelayer/utils/parseAuthError'
 import { useDevLogger } from '@/hooks/useDevLogger'
 

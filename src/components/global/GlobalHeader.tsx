@@ -8,7 +8,7 @@ import { Font } from 'sanity.types'
 import { Nav } from './Nav'
 import { SessionId } from './SessionId'
 
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import {
   MenuContent,
   MenuItem,

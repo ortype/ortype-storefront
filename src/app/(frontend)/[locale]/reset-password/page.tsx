@@ -20,7 +20,7 @@ import {
   PasswordInput,
   PasswordStrengthMeter,
 } from '@/components/ui/password-input'
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'

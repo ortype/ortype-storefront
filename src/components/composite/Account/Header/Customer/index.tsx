@@ -2,7 +2,7 @@ import type { Settings } from 'CustomApp'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { Container, Flex, Heading, Text } from '@chakra-ui/react'
 
 type Props = Pick<Settings, 'logoUrl' | 'companyName'>

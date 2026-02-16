@@ -1,5 +1,5 @@
 'use client'
-import { IdentityProvider } from '@/commercelayer/providers/Identity'
+import { IdentityProvider } from '@/commercelayer/providers/identity'
 import { OrderProvider } from '@/commercelayer/providers/Order'
 import OrderStorage from '@/commercelayer/providers/Order/Storage'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'

@@ -16,7 +16,7 @@ import ShipmentStatusChip from '@/components/composite/Account/Order/ShipmentSta
 import { OrderContext } from '@/components/data/OrderProvider'
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react'
 
-import { useIdentityContext } from '@/commercelayer/providers/Identity'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import {
   AccordionItem,
   AccordionItemContent,
