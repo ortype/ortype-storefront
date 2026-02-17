@@ -16,7 +16,6 @@ import {
 } from 'react'
 import { reducer } from './reducer'
 import type {
-  CLayerClientConfig,
   CustomerStateData,
   IdentityProviderState,
   IdentityProviderValue,
@@ -29,6 +28,8 @@ const initialCustomerState: CustomerStateData = {
   hasPassword: false,
   isLoading: true,
   userMode: false,
+  checkoutEmail: '',
+  checkoutEmailHasAccount: false,
 }
 
 interface IdentityProviderProps {
@@ -47,6 +48,20 @@ interface IdentityProviderProps {
     | ChildrenElement
   config: CommerceLayerAppConfig
 }
+
+/*
+@TODO: DRY up config, clientConfig, settings, customer
+Current:
+- config (static)
+- clientConfig which is a mix of `config` + accessToken
+- settings which is accessToken + customerId + + isGuest + isValid
+- customer which is `email, hasPassword, isLoading, userMode, checkoutEmail, checkoutEmailHasAccount`
+Future:
+- config (static)
+- settings.accessToken (or accessToken directly as a prop)
+-- review any usage of `customerId` `isGuest` in consuming components
+- customer (review overlap of email and checkoutEmail)
+*/
 
 const IdentityContext = createContext<IdentityProviderValue>(
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -75,7 +90,7 @@ export function IdentityProvider({
   const clientConfig = {
     accessToken: state.settings.accessToken,
     domain: config.domain,
-    organization: config.slug,
+    organization: config.slug, // known as `slug` as well
   }
 
   // get global CL settings and accessToken
@@ -153,7 +168,7 @@ export function IdentityProvider({
 
     setCustomer((prev) => ({
       ...prev,
-      isCheckingEmail: true,
+      isLoading: true,
       checkoutEmail: email,
     }))
 
@@ -175,7 +190,7 @@ export function IdentityProvider({
         ...prev,
         checkoutEmail: email,
         checkoutEmailHasAccount: hasAccount,
-        isCheckingEmail: false,
+        isLoading: false,
       }))
 
       return hasAccount
@@ -185,7 +200,7 @@ export function IdentityProvider({
         ...prev,
         checkoutEmail: email,
         checkoutEmailHasAccount: false,
-        isCheckingEmail: false,
+        isLoading: false,
       }))
       return false
     }
@@ -236,7 +251,6 @@ export function IdentityProvider({
               // Sync checkout state - user just logged in, so they have an account
               checkoutEmail: customerEmail,
               checkoutEmailHasAccount: true,
-              isCheckingEmail: false,
             })
           } catch (error) {
             console.error(
@@ -250,7 +264,6 @@ export function IdentityProvider({
               isLoading: false,
               // Still mark as having account since login succeeded
               checkoutEmailHasAccount: true,
-              isCheckingEmail: false,
             }))
           }
         } else {
@@ -259,7 +272,6 @@ export function IdentityProvider({
             userMode: true,
             isLoading: false,
             checkoutEmailHasAccount: true,
-            isCheckingEmail: false,
           }))
         }
       } else {
@@ -268,7 +280,6 @@ export function IdentityProvider({
           userMode: true,
           isLoading: false,
           checkoutEmailHasAccount: true,
-          isCheckingEmail: false,
         }))
       }
     },
@@ -286,7 +297,6 @@ export function IdentityProvider({
         // Reset checkout state on logout
         checkoutEmail: undefined,
         checkoutEmailHasAccount: undefined,
-        isCheckingEmail: false,
       })
     },
     fetchCustomerHandle,

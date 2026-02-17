@@ -33,5 +33,4 @@ export interface CustomerStateData {
   userMode: boolean
   checkoutEmail?: string
   checkoutEmailHasAccount?: boolean
-  isCheckingEmail?: boolean
 }

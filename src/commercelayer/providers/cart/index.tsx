@@ -39,9 +39,8 @@ export const CartContext = createContext<CartProviderData | null>(null)
 export const CartProvider: FC<CartProviderProps> = ({ children }) => {
   const {
     settings: { accessToken },
-    config,
   } = useIdentityContext()
-  const { orderId, order, refetchOrder } = useOrderContext()
+  const { orderId } = useOrderContext()
 
   const [state, dispatch] = useReducer(reducer, initialState)
 

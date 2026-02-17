@@ -90,7 +90,6 @@ export const getSettings = async ({
     accessToken: storedToken?.access_token ?? '',
     isGuest: !customerId,
     customerId: customerId,
-    endpoint: config.domain,
     isValid: true,
     language: 'en',
     companyName: organization?.name ?? defaultSettings.companyName,

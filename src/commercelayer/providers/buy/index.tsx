@@ -47,9 +47,9 @@ export const useBuyContext = (): BuyProviderData => useContext(BuyContext)
 export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { clientConfig: config } = useIdentityContext()
+  const { clientConfig } = useIdentityContext()
 
-  const { order, addToCart, refetchOrder, selectedSkuOptions, licenseSize } =
+  const { addToCart, refetchOrder, selectedSkuOptions, licenseSize } =
     useOrderContext()
 
   /**
@@ -72,10 +72,10 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     error?: AddToCartError
   }> => {
     dispatch({ type: ActionType.START_LOADING })
-    const cl = config != null ? getCommerceLayer(config) : undefined
+    const cl = clientConfig != null ? getCommerceLayer(clientConfig) : undefined
 
     try {
-      if (config == null) {
+      if (clientConfig == null) {
         throw new Error('Commerce Layer client not initialized')
       }
 

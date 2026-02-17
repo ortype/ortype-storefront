@@ -46,7 +46,7 @@ export const StepEmail: React.FC<Props> = () => {
   // Provide graceful fallback: show Sign-Up if order.guest is undefined
   const requiresLogin = customer.checkoutEmailHasAccount && hasEmailAddress
 
-  if (customer.isCheckingEmail) {
+  if (customer.isLoading) {
     return (
       <Box pos="fixed" inset="0" bg="bg/80">
         <Center h="full">

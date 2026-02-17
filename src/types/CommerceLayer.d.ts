@@ -1,7 +1,55 @@
 import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
 import { type LineItem, type Order } from '@commercelayer/sdk'
 
+import { z } from 'zod'
+
+/**
+ * OrderSectionEnum represents all the possible identifiers of accordion sections available in order's detail page.
+ */
+type OrderSectionEnum = 'Summary' | 'Addresses' | 'Shipments' | 'Payments'
+
+export type AddressFormFields =
+  | 'first_name'
+  | 'last_name'
+  | 'line_1'
+  | 'line_2'
+  | 'city'
+  | 'country_code'
+  | 'state_code'
+  | 'zip_code'
+  | 'phone'
+  | 'billing_info'
+
 declare module 'CustomApp' {
+  export type ChildrenElement = JSX.Element | JSX.Element[] | null
+
+  interface CommerceLayerAppConfig {
+    clientId: string
+    /**
+     * Specific domain to use for Commerce Layer API requests.
+     * It must be set as `commercelayer.io`.
+     */
+    domain: string
+    /**
+     * The organization slug that generates the accessToken.
+     * When null it means the app is hosted by Commerce Layer.
+     */
+    selfHostedSlug?: string | null
+
+    scope?: string | null
+
+    slug?: string
+    endpoint: string
+    persistKey: string
+  }
+
+  interface Window {
+    /**
+     * Commerce Layer app configuration available from global window object
+     */
+    clAppConfig: CommerceLayerAppConfig
+  }
+
   interface CheckoutSettings {
     accessToken: string
     config: CLayerClientConfig
@@ -91,18 +139,18 @@ declare module 'CustomApp' {
      * Example: `https://yourdomain.commercelayer.io`
      * Read more at {@link https://docs.commercelayer.io/core/api-specification#base-endpoint}.
      */
-    endpoint: string
+    // endpoint: string
     /**
      * Organization name.
      * Read more at {@link https://docs.commercelayer.io/core/v/api-reference/organization/object}.
      */
-    companyName: string
+    companyName?: string
     /**
      * Primary color HEX code found, if set, in current organization.
      * It will be used to generate custom CSS (example: primary button style).
      * Read more at {@link https://docs.commercelayer.io/core/v/api-reference/organization/object}.
      */
-    primaryColor: string
+    primaryColor?: string
     /**
      * Logo URL found in current organization (if set).
      * Read more at {@link https://docs.commercelayer.io/core/v/api-reference/organization/object}.
@@ -112,7 +160,7 @@ declare module 'CustomApp' {
      * Favicon URL found, if set, in current organization.
      * Read more at {@link https://docs.commercelayer.io/core/v/api-reference/organization/object}.
      */
-    faviconUrl: string
+    faviconUrl?: string
     /**
      * The organization's Google Tag Manager ID.
      * Read more at {@link https://docs.commercelayer.io/core/v/api-reference/organization/object}.
@@ -154,4 +202,65 @@ declare module 'CustomApp' {
      */
     retryable: boolean
   }
+
+  interface ShipmentSelected {
+    shipmentId: string
+    shippingMethodId?: string
+    shippingMethodName?: string
+  }
+
+  type SingleStepEnum =
+    //  | 'Cart'
+    | 'Email'
+    | 'Address'
+    | 'License'
+    | 'Customer'
+    | 'Shipping'
+    | 'Payment'
+    | 'Complete'
 }
+
+declare module 'Forms' {
+  export interface LoginFormValues {
+    customerEmail: string
+    customerPassword: string
+  }
+
+  export interface SignUpFormValues {
+    customerEmail: string
+    customerPassword: string
+    customerConfirmPassword: string
+  }
+}
+
+const trackingLocationSchema = z.object({
+  zip: z.string().nullable(),
+  city: z.string().nullable(),
+  state: z.string().nullable(),
+  object: z.string().nullable(),
+  country: z.string().nullable(),
+})
+
+const dateSchema = z.preprocess((arg) => {
+  if (typeof arg === 'string' || arg instanceof Date) return new Date(arg)
+}, z.date())
+export type DateTimeSchema = z.infer<typeof dateSchema>
+
+const parcelDetailSchema = z.object({
+  object: z.string().nullable(),
+  source: z.string().nullable(),
+  status: z.string().nullable(),
+  message: z.string().nullable(),
+  datetime: z.string().nullable(),
+  description: z.string().nullable(),
+  carrier_code: z.string().nullable(),
+  status_detail: z.string().nullable(),
+  tracking_location: trackingLocationSchema,
+})
+
+const parcelDetailsSchema = z.array(parcelDetailSchema)
+
+export const rawDataParcelDetailsSchema = parcelDetailsSchema
+
+export type RawDataParcelDetail = z.infer<typeof parcelDetailSchema>
+export type RawDataParcelDetails = z.infer<typeof parcelDetailsSchema>

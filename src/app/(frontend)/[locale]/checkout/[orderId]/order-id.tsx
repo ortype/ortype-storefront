@@ -1,5 +1,4 @@
 'use client'
-import { useIdentityContext } from '@/commercelayer/providers/identity'
 import dynamic from 'next/dynamic'
 
 const DynamicCheckoutContainer: any = dynamic(
@@ -20,11 +19,6 @@ const DynamicCheckout: any = dynamic(
 )
 
 const Order = () => {
-  const {
-    clientConfig: { accessToken },
-    config,
-  } = useIdentityContext()
-
   return (
     <DynamicCheckoutContainer>
       <DynamicCheckout />
