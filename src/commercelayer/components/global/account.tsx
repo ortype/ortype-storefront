@@ -81,6 +81,9 @@ export const Account = ({ openLogin, setLoginOpen }) => {
                 <Button
                   as={Link}
                   href={`/account`}
+                  variant={'text'}
+                  size={'sm'}
+                  fontSize={'md'}
                   // href={`http://localhost:3001/orders?accessToken=${customerCtx?.accessToken}`}
                   // isExternal
                 >
@@ -88,9 +91,27 @@ export const Account = ({ openLogin, setLoginOpen }) => {
                 </Button>
               )}
               {customer?.email ? (
-                <Button onClick={handleLogout}>{'Logout'}</Button>
+                <Button
+                  variant={'outline'}
+                  bg={'white'}
+                  borderRadius={'5rem'}
+                  size={'sm'}
+                  fontSize={'md'}
+                  onClick={handleLogout}
+                >
+                  {'Logout'}
+                </Button>
               ) : (
-                <Button onClick={handleRegisterClick}>{'Register'}</Button>
+                <Button
+                  variant={'outline'}
+                  bg={'white'}
+                  borderRadius={'5rem'}
+                  size={'sm'}
+                  fontSize={'md'}
+                  onClick={handleRegisterClick}
+                >
+                  {'Register'}
+                </Button>
               )}
             </Group>
           </DialogFooter>

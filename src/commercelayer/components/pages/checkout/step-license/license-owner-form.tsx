@@ -88,7 +88,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
   const { licenseSize, setLicenseSize } = useOrderContext()
 
   return (
-    <VStack gap={1} alignItems={'stretch'}>
+    <VStack gap={1} alignItems={'stretch'} w={'full'}>
       {showProjectTypeSelection && (
         <RadioCardRoot
           value={projectType}

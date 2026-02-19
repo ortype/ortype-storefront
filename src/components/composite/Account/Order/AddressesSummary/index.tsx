@@ -1,14 +1,14 @@
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { OrderContext } from '@/components/data/OrderProvider'
+import { CustomerOrderContext } from '@/commercelayer/providers/customer-order'
 import { AddressCard } from '@/components/ui/Account/AddressCard'
 import { Box, Flex, Heading } from '@chakra-ui/react'
 
 function AddressesSummary(): JSX.Element {
   const { t } = useTranslation()
 
-  const ctx = useContext(OrderContext)
+  const ctx = useContext(CustomerOrderContext)
   const order = ctx?.order
 
   if (!order || !order?.billing_address || !order?.shipping_address)

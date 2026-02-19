@@ -1,4 +1,4 @@
-import AccountContainer from '@/components/composite/AccountContainer'
+import AccountContainer from '@/commercelayer/components/pages/account/container'
 
 // This is a Server Component
 export default async function Layout({

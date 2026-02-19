@@ -1,8 +1,8 @@
-import OrderPage from '@/components/composite/OrderPage'
+// import OrderPage from '@/commercelayer/components/pages/account/order'
 import dynamic from 'next/dynamic'
 
 const DynamicOrderPage: any = dynamic(
-  () => import('@/components/composite/OrderPage'),
+  () => import('@/commercelayer/components/pages/account/order'),
   {
     loading: function LoadingSkeleton() {
       return <div />

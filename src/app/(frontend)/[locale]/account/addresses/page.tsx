@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic'
 
 const DynamicAddressesPage: any = dynamic(
-  () => import('@/components/composite/AddressesPage'),
+  () => import('@/commercelayer/components/pages/account/addresses'),
   {
     loading: function LoadingSkeleton() {
       return <div />

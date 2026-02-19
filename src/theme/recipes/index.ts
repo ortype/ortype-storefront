@@ -1,4 +1,4 @@
-// import { badgeRecipe } from './badge'
+import { badgeRecipe } from './badge'
 import { buttonRecipe } from './button'
 // import { codeRecipe } from './code'
 // import { containerRecipe } from './container'
@@ -19,7 +19,7 @@ import { linkRecipe } from './link'
 // import { colorSwatchRecipe } from './color-swatch'
 
 export const recipes = {
-  // badge: badgeRecipe,
+  badge: badgeRecipe,
   button: buttonRecipe,
   // code: codeRecipe,
   // container: containerRecipe,

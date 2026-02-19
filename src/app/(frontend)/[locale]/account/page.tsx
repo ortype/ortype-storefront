@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import dynamic from 'next/dynamic'
 
 const DynamicAccount: any = dynamic(
-  () => import('@/components/composite/Account/Orders'),
+  () => import('@/commercelayer/components/pages/account'),
   {
     loading: function LoadingSkeleton() {
       return <div />

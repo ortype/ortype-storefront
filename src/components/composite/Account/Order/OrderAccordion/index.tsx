@@ -12,18 +12,17 @@ function OrderSections(): JSX.Element {
 
   return (
     <Box mt={12}>
-      <Tabs.Root>
+      <LineItemList />
+      <OrderSummary />
+      <Tabs.Root variant={'plain'}>
         <Tabs.List>
           <Tabs.Trigger value={'1'}>
-            <span>{t('order.summary.title')}</span>
-          </Tabs.Trigger>
-          <Tabs.Trigger value={'2'}>
             <span>{t('order.addresses.title')}</span>
           </Tabs.Trigger>
-          <Tabs.Trigger value={'3'}>
+          <Tabs.Trigger value={'2'}>
             <span>{t('order.shipments.title')}</span>
           </Tabs.Trigger>
-          <Tabs.Trigger value={'4'}>
+          <Tabs.Trigger value={'3'}>
             <span>{t('order.payments.title')}</span>
           </Tabs.Trigger>
 
@@ -31,13 +30,9 @@ function OrderSections(): JSX.Element {
         </Tabs.List>
 
         <Tabs.Content value={'1'}>
-          <LineItemList />
-          <OrderSummary />
-        </Tabs.Content>
-        <Tabs.Content value={'2'}>
           <AddressesSummary />
         </Tabs.Content>
-        <Tabs.Content value={'3'}>
+        <Tabs.Content value={'2'}>
           <OrderShipments />
         </Tabs.Content>
         <Tabs.Content value={'3'}>

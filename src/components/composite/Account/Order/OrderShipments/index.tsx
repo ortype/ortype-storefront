@@ -11,9 +11,9 @@ import { useRouter } from 'next/router'
 import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
+import { CustomerOrderContext } from '@/commercelayer/providers/customer-order'
 import type { ShipmentStatus } from '@/components/composite/Account/Order/ShipmentStatusChip'
 import ShipmentStatusChip from '@/components/composite/Account/Order/ShipmentStatusChip'
-import { OrderContext } from '@/components/data/OrderProvider'
 import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react'
 
 import { useIdentityContext } from '@/commercelayer/providers/identity'
@@ -46,7 +46,7 @@ function ParcelLink(): JSX.Element {
   const { t } = useTranslation()
   const ctx = useIdentityContext()
   const accessToken = ctx?.settings?.accessToken
-  const orderCtx = useContext(OrderContext)
+  const orderCtx = useContext(CustomerOrderContext)
   const orderId = orderCtx?.order?.id
   return (
     <ParcelField attribute="id" tagElement="span">

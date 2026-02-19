@@ -5,6 +5,9 @@ type CustomerContainerProviderProps = Pick<Settings, 'isGuest'> & {
   children: JSX.Element | JSX.Element[] | null
 }
 
+// @TODO: in this file recreate `@commercelayer/react-components/customers/CustomerContainer`
+// and drop the `isGuest` conditional
+
 export function CustomerContainerProvider({
   children,
   isGuest,

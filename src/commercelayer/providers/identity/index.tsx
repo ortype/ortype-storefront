@@ -61,6 +61,16 @@ Future:
 - settings.accessToken (or accessToken directly as a prop)
 -- review any usage of `customerId` `isGuest` in consuming components
 - customer (review overlap of email and checkoutEmail)
+
+like `getSdk` we can just pass `accessToken` and `endpoint`, then use this util 
+const org = getOrganizationSlug(endpoint)
+
+```
+export interface CommerceLayerConfig {
+  accessToken?: string
+  endpoint?: string
+}
+```
 */
 
 const IdentityContext = createContext<IdentityProviderValue>(

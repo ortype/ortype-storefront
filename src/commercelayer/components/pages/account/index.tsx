@@ -1,9 +1,15 @@
 'use client'
+import Empty from '@/commercelayer/components/pages/account/empty'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import Empty from '@/components/composite/Account/Empty'
 import OrderStatusChip from '@/components/composite/Account/Order/OrderStatusChip'
 import { formatDate, shortDate } from '@/utils/dateTimeFormats'
-import { Link as ChakraLink, Container, Heading, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Link as ChakraLink,
+  Container,
+  Heading,
+  Text,
+} from '@chakra-ui/react'
 import { OrderList } from '@commercelayer/react-components/orders/OrderList'
 import { OrderListEmpty } from '@commercelayer/react-components/orders/OrderListEmpty'
 import { OrderListPaginationButtons } from '@commercelayer/react-components/orders/OrderListPaginationButtons'
@@ -50,8 +56,20 @@ function OrdersPage(): JSX.Element {
 
   return (
     <>
-      <Container>
-        <Heading>{t('orders.title')}</Heading>
+      <Heading
+        as={'h5'}
+        fontSize={'xl'}
+        textTransform={'uppercase'}
+        fontWeight={'normal'}
+      >
+        {t('orders.title')}
+      </Heading>
+      <Box bg={'brand.50'} p={4}>
+        {/*
+          CustomerContext provides an `orders` array to render the Order List
+          - After we migrate the CustomerProvider into our project we can use 
+          a Chakra UI Table to render the list https://www.chakra-ui.com/docs/components/table
+        */}
         <OrderList
           className="w-full mb-8 table-fixed md:-mx-0"
           columns={columns}
@@ -138,13 +156,13 @@ function OrdersPage(): JSX.Element {
               if (!order) return <></>
               const cols = cell?.map((cell) => {
                 return (
-                  <OrderData
+                  <Box
                     key={order.number}
                     {...p}
                     // {...cell.getCellProps()}
                   >
                     <OrderStatusChip status={order.status} />
-                  </OrderData>
+                  </Box>
                 )
               })
               return <>{cols}</>
@@ -177,7 +195,7 @@ function OrdersPage(): JSX.Element {
             className="p-2"
           />
         </OrderList>
-      </Container>
+      </Box>
     </>
   )
 }

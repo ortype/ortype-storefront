@@ -353,6 +353,8 @@ export const fetchPaymentMethods = async ({
       ],
     })
 
+    console.log('[CheckoutProvider] utils: fetchPaymentMethods: ', order)
+
     return { success: true, order }
   } catch (error) {
     return { success: false, error }

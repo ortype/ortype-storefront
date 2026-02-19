@@ -1,7 +1,7 @@
 'use client'
+import CustomerAddressForm from '@/commercelayer/components/pages/account/address/customer-address-form'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import CustomerAddressForm from '@/components/composite/Account/Address/CustomerAddressForm'
-import { CustomerAddressProvider } from '@/components/data/CustomerAddressProvider'
+import { CustomerAddressProvider } from '@/commercelayer/providers/customer-address'
 import { AddressesContainer } from '@commercelayer/react-components/addresses/AddressesContainer'
 
 export default function AddressFormPage({ addressId }: { addressId: string }) {

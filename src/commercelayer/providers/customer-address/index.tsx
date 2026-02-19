@@ -1,7 +1,6 @@
+import type { AddressFormFields } from '@/types/CommerceLayer'
 import CommerceLayer, { Address } from '@commercelayer/sdk'
 import { createContext, useEffect, useState } from 'react'
-import type { AddressFormFields } from 'types/Account'
-import { getInfoFromJwt } from '@/utils/getInfoFromJwt'
 
 type CustomerAddressProviderData = {
   address?: Pick<Address, 'id' | Extract<keyof Address, AddressFormFields>>

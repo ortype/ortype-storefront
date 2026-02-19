@@ -7,7 +7,7 @@ import {
   CountrySelect,
   StateSelect,
 } from '@/commercelayer/components/ui/address'
-import type { AddressFormFields } from '@/types/Account'
+import type { AddressFormFields } from '@/types/CommerceLayer'
 
 interface Props {
   type: string

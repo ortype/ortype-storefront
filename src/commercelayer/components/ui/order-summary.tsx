@@ -141,6 +141,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       }
     }, [order?.line_items])
 
+  console.log({ displayLineItems })
+
   return (
     <Show
       when={hasLineItems}
@@ -195,7 +197,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           </SimpleGrid>
           {displayLineItems.map((lineItem) => (
             <SimpleGrid key={lineItem.id} columns={3} py={1.5} fontSize={'sm'}>
-              <Box>{lineItem.item?.name}</Box>
+              <Box>{lineItem.name || lineItem.item?.name}</Box>
               <Box>
                 {
                   // @TODO: these should be sorted in the same order as the 'license types' data source

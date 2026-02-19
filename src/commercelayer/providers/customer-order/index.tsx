@@ -1,10 +1,11 @@
 import CommerceLayer, { Order } from '@commercelayer/sdk'
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useEffect, useState } from 'react'
 
 import { getInfoFromJwt } from '@/utils/getInfoFromJwt'
-import { getOrder } from '@/utils/getOrder'
+// import { getOrder } from '@/utils/getOrder'
+import { getOrder } from '@/commercelayer/providers/Order/utils/getOrder'
 
-type OrderProviderData = {
+type CustomerOrderProviderData = {
   order?: Order
   isLoading: boolean
   isInvalid: boolean
@@ -22,28 +23,33 @@ const initialState: OrderStateData = {
   isInvalid: false,
 }
 
-export const OrderContext = createContext<OrderProviderData | null>(null)
+export const CustomerOrderContext =
+  createContext<CustomerOrderProviderData | null>(null)
 
-type OrderProviderProps = {
+type CustomerOrderProviderProps = {
   orderId: string
   accessToken: string
   domain: string
-  children: ((props: OrderProviderData) => React.ReactNode) | React.ReactNode
+  children:
+    | ((props: CustomerOrderProviderData) => React.ReactNode)
+    | React.ReactNode
 }
 
-export function OrderProvider({
+export function CustomerOrderProvider({
   children,
   orderId,
   slug,
   accessToken,
   domain,
-}: OrderProviderProps): JSX.Element {
+}: CustomerOrderProviderProps): JSX.Element {
   const [state, setState] = useState(initialState)
 
   const fetchInitialOrder = async (orderId?: string, accessToken?: string) => {
     if (!orderId || !accessToken) {
       return
     }
+
+    // const cl = config != null ? getCommerceLayer(config) : undefined
 
     const { slug } = getInfoFromJwt(accessToken)
     if (!slug) {
@@ -80,8 +86,8 @@ export function OrderProvider({
   }
 
   return (
-    <OrderContext.Provider value={value}>
+    <CustomerOrderContext.Provider value={value}>
       {typeof children === 'function' ? children(value) : children}
-    </OrderContext.Provider>
+    </CustomerOrderContext.Provider>
   )
 }

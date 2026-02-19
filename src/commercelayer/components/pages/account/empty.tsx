@@ -1,7 +1,3 @@
-import NoAddressesIcon from '@/components/ui/Account/icons/NoAddressesIcon'
-import NoOrdersIcon from '@/components/ui/Account/icons/NoOrdersIcon'
-import NoPaymentMethodsIcon from '@/components/ui/Account/icons/NoPaymentMethodsIcon'
-import NoReturnsIcon from '@/components/ui/Account/icons/NoReturnsIcon'
 import { Button, Flex, Heading, Text } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
@@ -15,30 +11,32 @@ interface Props {
 const emptyTypes = [
   {
     type: 'Addresses',
-    icon: <NoAddressesIcon />,
   },
   {
     type: 'Orders',
-    icon: <NoOrdersIcon />,
   },
   {
     type: 'PaymentMethods',
-    icon: <NoPaymentMethodsIcon />,
   },
   {
     type: 'Returns',
-    icon: <NoReturnsIcon />,
   },
 ]
 
 function Empty({ type, buttonClick }: Props): JSX.Element {
   const { t } = useTranslation()
-  const icon = emptyTypes.find((emptyType) => emptyType.type === type)?.icon
 
   return (
-    <Flex alignItems={'center'} justifyContent={'center'}>
-      {icon}
-      <Heading>{t(`no${type}.title`)}</Heading>
+    <Flex
+      direction={'column'}
+      gap={2}
+      mb={4}
+      alignItems={'flex-start'}
+      justifyContent={'flex-start'}
+    >
+      <Heading fontWeight={'normal'} size={'2xl'}>
+        {t(`no${type}.title`)}
+      </Heading>
       <Text>{t(`no${type}.description`)}</Text>
       {buttonClick && (
         <Button onClick={buttonClick}>
