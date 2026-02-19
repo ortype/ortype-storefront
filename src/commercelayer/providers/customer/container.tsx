@@ -1,5 +1,6 @@
 import { CustomerContainer } from '@commercelayer/react-components/customers/CustomerContainer'
 import type { Settings } from 'CustomApp'
+import { useIdentityContext } from '../identity'
 
 type CustomerContainerProviderProps = Pick<Settings, 'isGuest'> & {
   children: JSX.Element | JSX.Element[] | null
@@ -12,10 +13,13 @@ export function CustomerContainerProvider({
   children,
   isGuest,
 }: CustomerContainerProviderProps): JSX.Element {
+  const { clientConfig, settings } = useIdentityContext()
   return isGuest ? (
     <>{children}</>
   ) : (
-    <CustomerContainer>{children}</CustomerContainer>
+    <CustomerContainer customerId={settings.customerId} config={clientConfig}>
+      {children}
+    </CustomerContainer>
   )
 }
 
