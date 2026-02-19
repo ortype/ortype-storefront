@@ -54,9 +54,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
     }
   }, [order?.line_items])
 
-  const placedAt = order?.placed_at
-    ? format(parseISO(order?.placed_at), 'yyyy-MM-dd')
-    : '0000-00-00'
+  const placedAt =
+    (order?.placed_at && format(parseISO(order?.placed_at), 'yyyy-MM-dd')) || ''
 
   if (!order) {
     return null

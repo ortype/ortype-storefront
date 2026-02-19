@@ -6,21 +6,20 @@ import React, {
   type JSX,
 } from 'react'
 
-import customerReducer, {
+import {
   createCustomerAddress,
   customerInitialState,
-  CustomerState,
+  reducer as customerReducer,
   deleteCustomerAddress,
   getCustomerAddresses,
   getCustomerInfo,
   getCustomerOrders,
   getCustomerPayments,
-  getCustomerPaymentSources,
   getCustomerSubscriptions,
-  saveCustomerUser,
   setCustomerEmail,
   setCustomerErrors,
   SetCustomerErrors,
+  type CustomerState,
   type TCustomerAddress,
 } from './reducer'
 
@@ -90,7 +89,6 @@ export interface BaseError {
   status?: string
 }
 
-// import type { DefaultChildrenType } from '#typings/globals'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
@@ -98,10 +96,8 @@ import type { QueryPageSize } from '@commercelayer/sdk'
 
 export type InitialCustomerContext = Partial<
   {
-    saveCustomerUser: (customerEmail: string) => Promise<void>
     setCustomerErrors: SetCustomerErrors
     setCustomerEmail: typeof setCustomerEmail
-    getCustomerPaymentSources: typeof getCustomerPaymentSources
     deleteCustomerAddress: typeof deleteCustomerAddress
     getCustomerAddresses: typeof getCustomerAddresses
     createCustomerAddress: (address: TCustomerAddress) => Promise<void>
@@ -192,9 +188,10 @@ export function CustomerProvider(props: Props): JSX.Element {
           // isOrderAvailable: withoutIncludes != null,
           pageSize,
         })
+        console.log('state.addresses == null, ')
       }
       async function getCustomerData(): Promise<void> {
-        await getCustomerOrders({ cl, config, dispatch })
+        await getCustomerOrders({ customerId, cl, config, dispatch })
         await getCustomerSubscriptions({ cl, customerId, dispatch })
         await getCustomerPayments({ cl, customerId, dispatch })
       }
@@ -235,6 +232,7 @@ export function CustomerProvider(props: Props): JSX.Element {
       }) => {
         await getCustomerOrders({
           config,
+          customerId,
           cl,
           dispatch,
           pageNumber,

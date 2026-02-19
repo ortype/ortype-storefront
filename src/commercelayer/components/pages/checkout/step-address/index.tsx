@@ -175,6 +175,8 @@ export const StepAddress: React.FC<Props> = () => {
 
   // Removed handleSave - SaveBillingAddressButton now handles this directly
 
+  // @TODO: test re-integrating AddresssesContainer into this step
+
   return (
     <VStack gap={2} align="start" w="full">
       <CheckoutSummary

@@ -1,7 +1,7 @@
 'use client'
 import { LoginForm } from '@/commercelayer/components/forms/LoginForm'
 import Navbar from '@/commercelayer/components/pages/account/navbar'
-import { CustomerContainerProvider } from '@/commercelayer/providers/customer/container'
+import CustomerProvider from '@/commercelayer/providers/customer'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
 import {
   Box,
@@ -31,13 +31,9 @@ function MyAccountContainer({
   children,
 }: Props): JSX.Element {
   const { t } = useTranslation()
-  const {
-    isLoading,
-    settings,
-    clientConfig: { accessToken },
-    config,
-    customer,
-  } = useIdentityContext()
+  const { isLoading, settings, clientConfig, config, customer } =
+    useIdentityContext()
+
   const email = customer?.email as string
   if (isLoading || !settings)
     return (
@@ -78,10 +74,13 @@ function MyAccountContainer({
         }}
       >
         <CommerceLayer
-          accessToken={accessToken || ''}
+          accessToken={clientConfig.accessToken || ''}
           endpoint={config.endpoint}
         >
-          <CustomerContainerProvider isGuest={settings.isGuest}>
+          <CustomerProvider
+            customerId={settings.customerId}
+            config={clientConfig}
+          >
             <Container mt={6} maxW="60rem" position={'relative'}>
               <Heading
                 textAlign={'center'}
@@ -167,7 +166,7 @@ function MyAccountContainer({
                 <GridItem colSpan={2}>{children}</GridItem>
               </SimpleGrid>
             </Container>
-          </CustomerContainerProvider>
+          </CustomerProvider>
         </CommerceLayer>
       </IconContext.Provider>
     </>
