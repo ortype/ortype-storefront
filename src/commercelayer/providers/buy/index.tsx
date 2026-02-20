@@ -1,7 +1,7 @@
 import { createContext, FC, useContext, useReducer } from 'react'
 
-import { ActionType, reducer } from '@/commercelayer/providers/Buy/reducer'
-import { addLineItemLicenseTypes } from '@/commercelayer/providers/Buy/utils'
+import { ActionType, reducer } from '@/commercelayer/providers/buy/reducer'
+import { addLineItemLicenseTypes } from '@/commercelayer/providers/buy/utils'
 
 import { useIdentityContext } from '@/commercelayer/providers/identity'
 import type { AddToCartError } from '@/commercelayer/providers/Order'
