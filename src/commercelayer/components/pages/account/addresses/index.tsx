@@ -2,18 +2,18 @@
 import Empty from '@/commercelayer/components/pages/account/empty'
 import { AddButton } from '@/commercelayer/components/ui/add-button'
 import CustomerAddressCard from '@/components/ui/Account/CustomerAddressCard'
-import { Box, Flex, Grid, Heading, VStack } from '@chakra-ui/react'
-import { AddressesContainer } from '@commercelayer/react-components/addresses/AddressesContainer'
-import { AddressesEmpty } from '@commercelayer/react-components/addresses/AddressesEmpty'
+import { Box, Flex, Grid, Heading, Stack, VStack } from '@chakra-ui/react'
+// import { AddressesContainer } from '@commercelayer/react-components/addresses/AddressesContainer'
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
+import AddressesContainer from '@/commercelayer/providers/addresses'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
+import AddressesEmpty from './addresses-empty'
 
 function AddressesPage(): JSX.Element {
   const { t } = useTranslation()
   const router = useRouter()
 
-  // @TODO: check if user is logged in, if not show auth page
-  // @TODO: rename to "Profile" and call menu item "Account"
   // @TODO: "Your details": with `name`, `Company name / Studio`, `Email`
   // we can use customer metadata to store fields like `name`
   // and password change functionality
@@ -21,7 +21,7 @@ function AddressesPage(): JSX.Element {
 
   return (
     <AddressesContainer>
-      <VStack gap={4} w={'full'} alignItems={'flex-start'}>
+      <VStack gap={2} w={'full'} alignItems={'flex-start'}>
         <Heading
           as={'h5'}
           fontSize={'xl'}
@@ -30,9 +30,44 @@ function AddressesPage(): JSX.Element {
         >
           {'Your details'}
         </Heading>
-        <Box bg={'brand.50'} p={4}>
-          {'Name, Company name / Studio, Email, Password management'}
-        </Box>
+        <Stack direction="column" gap={2} mb={2} w={'full'}>
+          <FloatingLabelInput
+            label={'Name'}
+            value={''}
+            // onChange={(e) => setCardholderName(e.target.value)}
+            variant="subtle"
+            size="lg"
+            fontSize="md"
+            borderRadius={0}
+          />
+          <FloatingLabelInput
+            label={'Company name / Studio'}
+            value={''}
+            // onChange={(e) => setCardholderName(e.target.value)}
+            variant="subtle"
+            size="lg"
+            fontSize="md"
+            borderRadius={0}
+          />
+          <FloatingLabelInput
+            label={'Email'}
+            value={''}
+            // onChange={(e) => setCardholderName(e.target.value)}
+            variant="subtle"
+            size="lg"
+            fontSize="md"
+            borderRadius={0}
+          />
+          <FloatingLabelInput
+            label={'Password'}
+            value={''}
+            // onChange={(e) => setCardholderName(e.target.value)}
+            variant="subtle"
+            size="lg"
+            fontSize="md"
+            borderRadius={0}
+          />
+        </Stack>
         <Heading
           as={'h5'}
           fontSize={'xl'}
@@ -41,13 +76,13 @@ function AddressesPage(): JSX.Element {
         >
           {t('addresses.title')}
         </Heading>
-        <Box bg={'brand.50'} p={4}>
+        <Box bg={'brand.50'} p={4} w={'full'}>
           <AddressesEmpty>{() => <Empty type="Addresses" />}</AddressesEmpty>
           <Grid data-test-id="addresses-wrapper">
             <CustomerAddressCard />
           </Grid>
         </Box>
-        <Flex justifyContent={'flex-end'} my={2} w={'full'}>
+        <Flex justifyContent={'flex-start'} my={2} w={'full'}>
           <AddButton
             action={() => {
               router.push(`/account/addresses/new`)
