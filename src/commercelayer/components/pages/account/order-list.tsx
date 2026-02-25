@@ -1,7 +1,8 @@
 import { useCustomerContext } from '@/commercelayer/providers/customer'
 import { formatDate, shortDate } from '@/utils/dateTimeFormats'
+import { useRouter } from 'next/navigation'
 
-import { Link as ChakraLink, Table } from '@chakra-ui/react'
+import { Badge, Link as ChakraLink, Table } from '@chakra-ui/react'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 export type TOrderList = 'orders' | 'subscriptions'
@@ -17,10 +18,9 @@ interface Props {
 function OrderList({ id, type = 'orders' }: Props): JSX.Element {
   const { orders, subscriptions, getCustomerOrders, getCustomerSubscriptions } =
     useCustomerContext()
-
   const ctx = useCustomerContext()
   console.log('customer ctx raw:', ctx)
-
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -57,33 +57,46 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
 
   return (
     <>
-      <Table.Root>
+      <Table.Root variant={'custom'} size={'sm'} interactive>
         <Table.Header>
           <Table.Row bg={'transparent'}>
             <Table.ColumnHeader>{'Order #'}</Table.ColumnHeader>
+            <Table.ColumnHeader>{'Licensee'}</Table.ColumnHeader>
             <Table.ColumnHeader>{'Date'}</Table.ColumnHeader>
+            {/*<Table.ColumnHeader>{'Items'}</Table.ColumnHeader>*/}
             <Table.ColumnHeader>{'Status'}</Table.ColumnHeader>
-            <Table.ColumnHeader>{'Amount'}</Table.ColumnHeader>
-            <Table.ColumnHeader></Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="end">{'Amount'}</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {orders?.map((order) => (
-            <Table.Row key={order.id} bg={'transparent'}>
-              <Table.Cell>{order.number}</Table.Cell>
+            <Table.Row
+              key={order.id}
+              cursor={'pointer'}
+              onClick={() => router.push(`/account/orders/${order.id}`)}
+            >
+              <Table.Cell fontSize={'sm'}>{order.number}</Table.Cell>
+              <Table.Cell>
+                {order?.metadata?.license?.owner?.full_name}
+              </Table.Cell>
               <Table.Cell>
                 {formatDate(order?.placed_at ?? '', shortDate)}
               </Table.Cell>
+              {/*<Table.Cell>{order.skus_count}</Table.Cell>*/}
               <Table.Cell>
-                {order.status}
-                {/*order.skus_count*/}
+                <Badge
+                  variant={'solid'}
+                  color={'colorPalette.fg'}
+                  bg={'colorPalette.bg'}
+                  /*
+                  The order payment status.
+                  One of 'unpaid' (default), 'authorized', 'partially_authorized', 'paid', 'partially_paid', 'voided', 'partially_voided', 'refunded', 'partially_refunded', or 'free'.
+                  */
+                >
+                  {order.payment_status}
+                </Badge>
               </Table.Cell>
-              <Table.Cell>{`EUR ${order.total_amount_with_taxes_float}`}</Table.Cell>
-              <Table.Cell textAlign="end">
-                <ChakraLink as={Link} href={`/account/orders/${order.id}`}>
-                  {'View'}
-                </ChakraLink>
-              </Table.Cell>
+              <Table.Cell textAlign="end">{`EUR ${order.total_amount_with_taxes_float}`}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

@@ -34,7 +34,7 @@ import { selectSlotRecipe } from './select'
 // import { statSlotRecipe } from "./stat"
 import { stepsSlotRecipe } from './steps'
 // import { switchSlotRecipe } from "./switch"
-// import { tableSlotRecipe } from "./table"
+import { tableSlotRecipe } from './table'
 // import { tabsSlotRecipe } from "./tabs"
 import { tagSlotRecipe } from './tag'
 // import { toastSlotRecipe } from "./toast"
@@ -81,7 +81,7 @@ export const slotRecipes = {
   // stat: statSlotRecipe,
   steps: stepsSlotRecipe,
   // switch: switchSlotRecipe,
-  // table: tableSlotRecipe,
+  table: tableSlotRecipe,
   // tabs: tabsSlotRecipe,
   tag: tagSlotRecipe,
   // toast: toastSlotRecipe,

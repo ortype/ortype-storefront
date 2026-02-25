@@ -34,7 +34,7 @@ const LineItem: React.FC<LineItemProps> = ({ lineItem }) => {
             {lineItem.name}
           </Text>
         </Stack>
-        <Flex direction={'row'} alignItems={'center'}>
+        <Flex direction={'row'} alignItems={'center'} gap={2}>
           {selectedSkuOptions?.map(({ id, name }) => (
             <Box key={id} bg={'#fff'} p={2} fontSize={'lg'}>
               {name}
