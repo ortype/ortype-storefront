@@ -20,6 +20,15 @@ export type AddressFormFields =
   | 'phone'
   | 'billing_info'
 
+export type ChildrenFunction<P = Record<string, any>> = (
+  props: P
+) => JSX.Element | null
+
+export interface BaseState {
+  [key: string]: any
+  errors?: BaseError[]
+}
+
 declare module 'CustomApp' {
   export type ChildrenElement = JSX.Element | JSX.Element[] | null
 

@@ -1,29 +1,29 @@
+import { setCustomerOrderParam } from '@/utils/localStorage'
 import {
-  type ReactNode,
-  useContext,
   createContext,
+  useContext,
   useEffect,
   useReducer,
   type JSX,
+  type ReactNode,
 } from 'react'
+import type { BaseError } from '../customer'
+import type { TCustomerAddress } from '../customer/reducer'
+import { useIdentityContext } from '../identity'
+import { useOrderContext } from '../Order'
 import {
   ActionType,
   addressInitialState,
-  type AddressResource,
-  setAddressErrors,
-  type SetAddressParams,
-  setCloneAddress,
-  saveAddresses,
-  type ICustomerAddress,
-  type AddressState,
-  setAddress,
   reducer as addressReducer,
+  saveAddresses,
+  setAddress,
+  setAddressErrors,
+  setCloneAddress,
+  type AddressResource,
+  type AddressState,
+  type ICustomerAddress,
+  type SetAddressParams,
 } from './reducer'
-import type { BaseError } from '../customer'
-import { setCustomerOrderParam } from '@/utils/localStorage'
-import type { TCustomerAddress } from '../customer/reducer'
-import { useOrderContext } from '../Order'
-import { useIdentityContext } from '../identity'
 
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
@@ -105,8 +105,6 @@ export function AddressesContainer(props: Props): JSX.Element {
   const [state, dispatch] = useReducer(addressReducer, addressInitialState)
   const { order, orderId, updateOrder } = useOrderContext()
   const { clientConfig: config } = useIdentityContext()
-
-  const { accessToken } = config
 
   const cl = isValidCommerceLayerConfig(config)
     ? getCommerceLayer(config)

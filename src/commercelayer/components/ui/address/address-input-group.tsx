@@ -180,5 +180,5 @@ export const AddressInputGroup: React.FC<Props> = ({
     }
   }
 
-  return <Box>{renderComponent()}</Box>
+  return renderComponent()
 }

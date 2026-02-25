@@ -227,7 +227,7 @@
     }
   },
   "addresses": {
-    "title": "My addresses",
+    "title": "Your addresses",
     "edit": "Edit",
     "delete": "Delete",
     "addNewAddress": "Add new address",

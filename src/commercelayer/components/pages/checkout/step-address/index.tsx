@@ -129,9 +129,6 @@ export const StepAddress: React.FC<Props> = () => {
 
   // Removed isLocalLoader - no longer needed since SaveBillingAddressButton manages its own loading state
 
-  if (!checkoutCtx) {
-    return null
-  }
   const {
     isShipmentRequired,
     billingAddress,
@@ -176,6 +173,9 @@ export const StepAddress: React.FC<Props> = () => {
   // Removed handleSave - SaveBillingAddressButton now handles this directly
 
   // @TODO: test re-integrating AddresssesContainer into this step
+  if (!checkoutCtx) {
+    return null
+  }
 
   return (
     <VStack gap={2} align="start" w="full">

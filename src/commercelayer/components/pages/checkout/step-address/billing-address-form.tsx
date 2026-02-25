@@ -28,10 +28,6 @@ export const BillingAddressForm: React.FC<Props> = ({
   const { updateBillingAddressData } = useAddressActions()
   const checkoutCtx = useContext(CheckoutContext)
 
-  if (!checkoutCtx) {
-    return null
-  }
-
   const { requiresBillingInfo, shippingCountryCodeLock } = checkoutCtx
 
   // Initialize billing address data from props
@@ -86,6 +82,10 @@ export const BillingAddressForm: React.FC<Props> = ({
         updateBillingAddressData({ billing_info: value })
         break
     }
+  }
+
+  if (!checkoutCtx) {
+    return null
   }
 
   return (

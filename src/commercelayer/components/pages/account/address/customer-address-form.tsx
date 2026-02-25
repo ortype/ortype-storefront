@@ -1,25 +1,11 @@
-import { AddressInputGroup } from '@/commercelayer/components/pages/account/address/address-input-group'
-// @TODO: we should be able to reuse this:
-// import { AddressInputGroup } from '@/commercelayer/components/ui/address'
+import { AddressInputGroup } from '@/commercelayer/components/ui/address'
+import { useAddressesContext } from '@/commercelayer/providers/addresses'
 import { CustomerAddressContext } from '@/commercelayer/providers/customer-address'
-import {
-  Button,
-  Container,
-  Flex,
-  Grid,
-  Group,
-  Heading,
-  SimpleGrid,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-// @NOTE: throws error about useAddressState (expects AddressContext)
-// import { BillingAddressForm } from '@/commercelayer/components/pages/checkout/step-address/billing-address-form'
-import { BillingAddressForm } from '@commercelayer/react-components/addresses/BillingAddressForm'
-import { SaveAddressesButton } from '@commercelayer/react-components/addresses/SaveAddressesButton'
+import { Button, Flex, Heading, SimpleGrid, VStack } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
-import { useContext } from 'react'
+import { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
+import SaveAddressesButton from './save-addresses-button'
 
 function CustomerAddressForm({
   addressId,
@@ -27,15 +13,38 @@ function CustomerAddressForm({
   addressId: string
 }): JSX.Element | null {
   const ctx = useContext(CustomerAddressContext)
+  const {
+    setAddress,
+    billing_address: billingAddress,
+    isBusiness,
+  } = useAddressesContext()
   const { t } = useTranslation()
   const address = ctx?.address
   const router = useRouter()
 
-  console.log('CustomerAddressForm: Context: ', { address })
+  // Mirror the checkout billing-address-form pattern:
+  // each AddressInputGroup calls onChange(fieldName, value) on change,
+  // and we push the stripped field into AddressesContext.
+  // We spread the existing billingAddress so the reducer doesn't discard
+  // previously entered fields (it replaces the whole object).
+  const handleAddressInputChange = useCallback(
+    (fieldName: string, value: string) => {
+      const key = fieldName.replace('billing_address_', '')
+      setAddress({
+        values: {
+          ...billingAddress,
+          [key]: value,
+          ...(isBusiness && { business: isBusiness }),
+        },
+        resource: 'billing_address',
+      })
+    },
+    [setAddress, billingAddress, isBusiness]
+  )
 
   return address === undefined && addressId !== undefined ? null : (
     <>
-      <BillingAddressForm>
+      <form autoComplete={'off'}>
         <Heading
           as={'h5'}
           fontSize={'xl'}
@@ -51,59 +60,79 @@ function CustomerAddressForm({
             <AddressInputGroup
               fieldName="billing_address_first_name"
               type="text"
+              resource="billing_address"
               value={address?.first_name || ''}
+              onChange={handleAddressInputChange}
             />
             <AddressInputGroup
               fieldName="billing_address_last_name"
               type="text"
+              resource="billing_address"
               value={address?.last_name || ''}
+              onChange={handleAddressInputChange}
             />
           </SimpleGrid>
           <AddressInputGroup
             fieldName="billing_address_line_1"
             type="text"
+            resource="billing_address"
             value={address?.line_1 || ''}
+            onChange={handleAddressInputChange}
           />
           <AddressInputGroup
             required={false}
             fieldName="billing_address_line_2"
             type="text"
+            resource="billing_address"
             value={address?.line_2 || ''}
+            onChange={handleAddressInputChange}
           />
           <SimpleGrid w={'full'} columns={2} gap={2}>
             <AddressInputGroup
               fieldName="billing_address_city"
               type="text"
+              resource="billing_address"
               value={address?.city || ''}
+              onChange={handleAddressInputChange}
             />
             <AddressInputGroup
               fieldName="billing_address_country_code"
               type="text"
+              resource="billing_address"
               value={address?.country_code || ''}
+              onChange={handleAddressInputChange}
             />
           </SimpleGrid>
           <SimpleGrid w={'full'} columns={2} gap={2}>
             <AddressInputGroup
               fieldName="billing_address_state_code"
               type="text"
+              resource="billing_address"
               value={address?.state_code || ''}
+              onChange={handleAddressInputChange}
             />
             <AddressInputGroup
               fieldName="billing_address_zip_code"
               type="text"
+              resource="billing_address"
               value={address?.zip_code || ''}
+              onChange={handleAddressInputChange}
             />
           </SimpleGrid>
           <AddressInputGroup
             fieldName="billing_address_phone"
             type="tel"
+            resource="billing_address"
             value={address?.phone || ''}
+            onChange={handleAddressInputChange}
           />
           <AddressInputGroup
             required={false}
             fieldName="billing_address_billing_info"
             type="text"
+            resource="billing_address"
             value={address?.billing_info || ''}
+            onChange={handleAddressInputChange}
           />
           <Flex justifyContent={'flex-end'} my={2} w={'full'} gap={2}>
             <Button
@@ -123,23 +152,13 @@ function CustomerAddressForm({
               data-test-id="save-address"
               label={t('addresses.addressForm.save')}
               onClick={() => {
-                // router.push(`/account/addresses`)
-                console.log('SaveAddressesButton clicked')
+                router.push(`/account/addresses`)
               }}
               addressId={address?.id}
             />
-            {/*<Button
-              asChild
-              variant={'outline'}
-              bg={'colorPalette.fg'}
-              borderRadius={'5rem'}
-              size={'sm'}
-              fontSize={'md'}
-            >
-            </Button>*/}
           </Flex>
         </VStack>
-      </BillingAddressForm>
+      </form>
     </>
   )
 }

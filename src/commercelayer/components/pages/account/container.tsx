@@ -17,9 +17,7 @@ import {
   Spinner,
   Text,
 } from '@chakra-ui/react'
-import { CommerceLayer } from '@commercelayer/react-components'
 import type { Settings } from 'CustomApp'
-import { IconContext } from 'phosphor-react'
 import { useTranslation } from 'react-i18next'
 interface Props {
   settings: Settings
@@ -66,70 +64,56 @@ function MyAccountContainer({
 
   return (
     <>
-      <IconContext.Provider
-        value={{
-          size: 32,
-          weight: 'fill',
-          mirrored: false,
-        }}
-      >
-        <CommerceLayer
-          accessToken={clientConfig.accessToken || ''}
-          endpoint={config.endpoint}
-        >
-          <CustomerProvider
-            customerId={settings.customerId}
-            config={clientConfig}
+      <CustomerProvider customerId={settings.customerId} config={clientConfig}>
+        <Container mt={6} maxW="60rem" position={'relative'}>
+          <Heading
+            textAlign={'center'}
+            fontSize={'2rem'}
+            fontWeight={'normal'}
+            textTransform={'uppercase'}
+            mx={'auto'}
+            pb={8}
           >
-            <Container mt={6} maxW="60rem" position={'relative'}>
-              <Heading
-                textAlign={'center'}
-                fontSize={'2rem'}
-                fontWeight={'normal'}
+            {`your account or my account`}
+          </Heading>
+          <SimpleGrid columns={[1, null, 3]} gap={3}>
+            <GridItem colSpan={1} p={2}>
+              <Box
+                px={3}
+                fontSize={'xs'}
                 textTransform={'uppercase'}
-                mx={'auto'}
-                pb={8}
+                color={'#737373'}
+                mb={2}
+                asChild
               >
-                {`your account or my account`}
-              </Heading>
-              <SimpleGrid columns={[1, null, 3]} gap={3}>
-                <GridItem colSpan={1} p={2}>
-                  <Box
-                    px={3}
-                    fontSize={'xs'}
-                    textTransform={'uppercase'}
-                    color={'#737373'}
-                    mb={2}
-                    asChild
-                  >
-                    <Flex gap={1} alignItems={'center'}>
-                      {'Logged in as'}
-                    </Flex>
-                  </Box>
-                  <HStack
-                    justify="space-between"
-                    w="full"
-                    bg={'brand.50'}
-                    py={2}
-                    px={3}
-                    h={8}
-                  >
-                    <Box>{email}</Box>
-                    <Button
-                      variant="text"
-                      size="xs"
-                      // onClick={logout}
-                      fontSize="xs"
-                      px={2}
-                      py={1}
-                      h="auto"
-                      minH="auto"
-                    >
-                      {'Logout'}
-                    </Button>
-                  </HStack>
+                <Flex gap={1} alignItems={'center'}>
+                  {'Logged in as'}
+                </Flex>
+              </Box>
+              <HStack
+                justify="space-between"
+                w="full"
+                bg={'brand.50'}
+                py={2}
+                px={3}
+                h={8}
+              >
+                <Box>{email}</Box>
+                <Button
+                  variant="text"
+                  size="xs"
+                  // onClick={logout}
+                  fontSize="xs"
+                  px={2}
+                  py={1}
+                  h="auto"
+                  minH="auto"
+                >
+                  {'Logout'}
+                </Button>
+              </HStack>
 
-                  {/*<HStack
+              {/*<HStack
                     justify="space-between"
                     w="full"
                     bg={'brand.50'}
@@ -148,27 +132,25 @@ function MyAccountContainer({
                       />
                     </Box>
                   </HStack>*/}
-                  <Box
-                    px={3}
-                    fontSize={'xs'}
-                    textTransform={'uppercase'}
-                    color={'#737373'}
-                    mt={4}
-                    mb={2}
-                    asChild
-                  >
-                    <Flex gap={1} alignItems={'center'}>
-                      {'General'}
-                    </Flex>
-                  </Box>
-                  <Navbar />
-                </GridItem>
-                <GridItem colSpan={2}>{children}</GridItem>
-              </SimpleGrid>
-            </Container>
-          </CustomerProvider>
-        </CommerceLayer>
-      </IconContext.Provider>
+              <Box
+                px={3}
+                fontSize={'xs'}
+                textTransform={'uppercase'}
+                color={'#737373'}
+                mt={4}
+                mb={2}
+                asChild
+              >
+                <Flex gap={1} alignItems={'center'}>
+                  {'General'}
+                </Flex>
+              </Box>
+              <Navbar />
+            </GridItem>
+            <GridItem colSpan={2}>{children}</GridItem>
+          </SimpleGrid>
+        </Container>
+      </CustomerProvider>
     </>
   )
 }

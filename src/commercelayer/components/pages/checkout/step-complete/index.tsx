@@ -1,5 +1,4 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { CustomAddress } from '@/components/ui/CustomerAddressCard'
 import { useRouter } from 'next/navigation'
 import { useContext } from 'react'
 import { Trans, useTranslation } from 'react-i18next'

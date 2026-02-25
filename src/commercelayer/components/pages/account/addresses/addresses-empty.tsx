@@ -1,16 +1,5 @@
 import { useCustomerContext } from '@/commercelayer/providers/customer'
-import { Component, ForwardedRef, useContext, type JSX } from 'react'
-
-export interface ParentProps {
-  // Add parent ref to child
-  parentRef?: ForwardedRef<any>
-  children?: typeof Component | ((P: any) => JSX.Element | null)
-}
-
-function Parent({ children, ...p }: ParentProps): JSX.Element | null {
-  const Child = children
-  return Child !== undefined ? <Child {...p} /> : null
-}
+import Parent, { ParentProps } from '@/commercelayer/utils/Parent'
 
 interface Props extends Omit<JSX.IntrinsicElements['span'], 'children'> {
   /**
