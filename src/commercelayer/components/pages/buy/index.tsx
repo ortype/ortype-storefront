@@ -13,6 +13,7 @@ import {
   Container,
   Fieldset,
   Flex,
+  GridItem,
   Show,
   SimpleGrid,
   Spinner,
@@ -43,47 +44,53 @@ export const Buy = () => {
     <>
       <Container maxW="60rem" position={'relative'}>
         <SimpleGrid columns={[1, null, 2]} gap={3}>
-          <Stack direction={'column'} gap={4}>
+          <GridItem colSpan={2}>
             <LicenseOwnerInput />
+          </GridItem>
+          <GridItem>
             <LicenseTypeList
               font={font}
               skuOptions={skuOptions}
               selectedSkuOptions={selectedSkuOptions}
               setSelectedSkuOptions={setSelectedSkuOptions}
             />
+          </GridItem>
+          <GridItem>
             <LicenseSizeList
               setLicenseSize={setLicenseSize}
               licenseSize={licenseSize}
             />
-          </Stack>
-          <Fieldset.Root>
-            <FieldsetLegend>{'4. Single Styles'}</FieldsetLegend>
-            <Fieldset.Content asChild>
-              <Flex
-                mt={1}
-                opacity={allLicenseInfoSet ? 1 : 0.3}
-                pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
-                bg={'#EEE'}
-                p={2}
-                gap={2}
-              >
-                {font.variants?.map((variant) => (
-                  <SingleStyles
-                    key={variant._id}
-                    className={variant._id}
-                    order={order}
-                    orderId={orderId}
-                    name={`${font.shortName} ${variant.optionName}`}
-                    skuCode={variant._id}
-                    addLineItem={addLineItem}
-                    deleteLineItem={deleteLineItem}
-                    licenseSize={licenseSize}
-                    selectedSkuOptions={selectedSkuOptions}
-                  />
-                ))}
-              </Flex>
-            </Fieldset.Content>
-          </Fieldset.Root>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <Fieldset.Root>
+              <FieldsetLegend>{'4. Single Styles'}</FieldsetLegend>
+              <Fieldset.Content asChild>
+                <Flex
+                  mt={1}
+                  opacity={allLicenseInfoSet ? 1 : 0.3}
+                  pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
+                  bg={'#EEE'}
+                  p={2}
+                  gap={2}
+                >
+                  {font.variants?.map((variant) => (
+                    <SingleStyles
+                      key={variant._id}
+                      className={variant._id}
+                      order={order}
+                      orderId={orderId}
+                      name={`${font.shortName} ${variant.optionName}`}
+                      skuCode={variant._id}
+                      addLineItem={addLineItem}
+                      deleteLineItem={deleteLineItem}
+                      licenseSize={licenseSize}
+                      selectedSkuOptions={selectedSkuOptions}
+                    />
+                  ))}
+                </Flex>
+              </Fieldset.Content>
+            </Fieldset.Root>
+          </GridItem>
         </SimpleGrid>
         <StickyBottomPanel
           maxW={'60rem'}
