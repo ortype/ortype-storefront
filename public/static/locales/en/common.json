@@ -180,7 +180,7 @@
     "title": "My account"
   },
   "orders": {
-    "title": "My orders",
+    "title": "Your orders",
     "orderContains": "contains {{count}} item",
     "orderContains_other": "contains {{count}} items"
   },

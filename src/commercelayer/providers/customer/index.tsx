@@ -19,8 +19,10 @@ import {
   setCustomerEmail,
   setCustomerErrors,
   SetCustomerErrors,
+  updateCustomer,
   type CustomerState,
   type TCustomerAddress,
+  type UpdateCustomerParams,
 } from './reducer'
 
 // import type { BaseError } from '#typings/errors'
@@ -101,6 +103,9 @@ export type InitialCustomerContext = Partial<
     deleteCustomerAddress: typeof deleteCustomerAddress
     getCustomerAddresses: typeof getCustomerAddresses
     createCustomerAddress: (address: TCustomerAddress) => Promise<void>
+    updateCustomer: (
+      updates: UpdateCustomerParams['updates']
+    ) => Promise<void>
     getCustomerOrders: (
       props: Partial<Parameters<typeof getCustomerOrders>[0]>
     ) => Promise<void>
@@ -257,6 +262,16 @@ export function CustomerProvider(props: Props): JSX.Element {
           pageSize,
           id,
         })
+      },
+      updateCustomer: async (updates: UpdateCustomerParams['updates']) => {
+        if (state.customers?.id) {
+          await updateCustomer({
+            cl,
+            dispatch,
+            customerId: state.customers.id,
+            updates,
+          })
+        }
       },
       reloadCustomerAddresses: async () => {
         await getCustomerAddresses({

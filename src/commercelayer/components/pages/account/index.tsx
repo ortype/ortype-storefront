@@ -11,14 +11,16 @@ function OrdersPage(): JSX.Element {
   if (isLoading || !settings) return <div />
   return (
     <>
-      {/*<Heading
+      <Heading
         as={'h5'}
         fontSize={'xl'}
         textTransform={'uppercase'}
         fontWeight={'normal'}
+        textAlign={'center'}
+        mb={2}
       >
         {t('orders.title')}
-      </Heading>*/}
+      </Heading>
       <OrderList />
       {/*<Box bg={'brand.50'} p={4}>
       </Box>*/}

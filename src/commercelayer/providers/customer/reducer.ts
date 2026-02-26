@@ -8,6 +8,7 @@ import type {
   CommerceLayerConfig,
   Customer,
   CustomerPaymentSource,
+  CustomerUpdate,
   ListResponse,
   Order,
   OrderSubscription,
@@ -573,6 +574,44 @@ export async function getCustomerInfo({
       payload: {
         customers,
         customerEmail,
+      },
+    })
+  } catch (error) {
+    dispatch({
+      type: ActionType.SET_ERRORS,
+      payload: { errors: normalizeErrors(error) },
+    })
+  }
+}
+
+export interface UpdateCustomerParams {
+  cl: CommerceLayerClient
+  dispatch: Dispatch<Action>
+  customerId: string
+  updates: Omit<CustomerUpdate, 'id'>
+}
+
+export async function updateCustomer({
+  cl,
+  dispatch,
+  customerId,
+  updates,
+}: UpdateCustomerParams): Promise<void> {
+  if (!cl || !customerId) return
+
+  dispatch({ type: ActionType.START_LOADING })
+
+  try {
+    const customer = await cl.customers.update({
+      id: customerId,
+      ...updates,
+    })
+
+    dispatch({
+      type: ActionType.SET_CUSTOMERS,
+      payload: {
+        customers: customer,
+        customerEmail: customer.email,
       },
     })
   } catch (error) {

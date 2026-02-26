@@ -1,7 +1,6 @@
 'use client'
 import Empty from '@/commercelayer/components/pages/account/empty'
 import { AddButton } from '@/commercelayer/components/ui/add-button'
-import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import AddressesContainer from '@/commercelayer/providers/addresses'
 import { useCustomerContext } from '@/commercelayer/providers/customer'
 import {
@@ -10,77 +9,29 @@ import {
   Grid,
   GridItem,
   Heading,
-  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import AddressesEmpty from './addresses-empty'
+import { CustomerDetailsForm } from './customer-details-form'
 
 function AddressesPage(): JSX.Element {
   const { t } = useTranslation()
   const router = useRouter()
-  const { addresses, customers } = useCustomerContext()
+  const { addresses, deleteCustomerAddress } = useCustomerContext()
 
-  // @TODO: "Your details": with `name`, `Company name / Studio`, `Email`
-  // we can use customer metadata to store fields like `name`
-  // and password change functionality
-  // @TOOD: "Your Addresses" card with Edit Address modal and New Address modal
+  // On address cards enable a menu to trigger:
+  // navigation to edit screen
+  // deleteCustomerAddress
 
-  // change handler connected to customer ctx?
+  // @TODO: "Your Addresses" card with Edit Address modal and New Address modal
 
   return (
     <AddressesContainer>
       <VStack gap={2} w={'full'} alignItems={'flex-start'}>
-        <Heading
-          as={'h5'}
-          fontSize={'xl'}
-          textTransform={'uppercase'}
-          fontWeight={'normal'}
-        >
-          {'Your details'}
-        </Heading>
-        <Stack direction="column" gap={2} mb={2} w={'full'}>
-          <FloatingLabelInput
-            label={'Name'}
-            value={customers?.metadata?.full_name}
-            // onChange={(e) => setCardholderName(e.target.value)}
-            variant="subtle"
-            size="lg"
-            fontSize="md"
-            borderRadius={0}
-          />
-          <FloatingLabelInput
-            label={'Company name / Studio'}
-            value={customers?.metadata?.company_name}
-            // onChange={(e) => setCardholderName(e.target.value)}
-            variant="subtle"
-            size="lg"
-            fontSize="md"
-            borderRadius={0}
-          />
-          <FloatingLabelInput
-            label={'Email'}
-            value={customers?.email}
-            // onChange={(e) => setCardholderName(e.target.value)}
-            variant="subtle"
-            size="lg"
-            fontSize="md"
-            borderRadius={0}
-          />
-          <FloatingLabelInput
-            label={'Password'}
-            value={''} // @TODO
-            // customers.has_password
-            // hook this into an update password API call
-            // onChange={(e) => setCardholderName(e.target.value)}
-            variant="subtle"
-            size="lg"
-            fontSize="md"
-            borderRadius={0}
-          />
-        </Stack>
+        <CustomerDetailsForm />
         <Heading
           as={'h5'}
           fontSize={'xl'}
