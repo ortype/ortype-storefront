@@ -3,14 +3,14 @@ import { useAddressesContext } from '@/commercelayer/providers/addresses'
 import { CustomerAddressContext } from '@/commercelayer/providers/customer-address'
 import { Button, Flex, Heading, SimpleGrid, VStack } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import SaveAddressesButton from './save-addresses-button'
 
 function CustomerAddressForm({
   addressId,
 }: {
-  addressId: string
+  addressId?: string
 }): JSX.Element | null {
   const ctx = useContext(CustomerAddressContext)
   const {
@@ -22,6 +22,29 @@ function CustomerAddressForm({
   const address = ctx?.address
   const router = useRouter()
 
+  // When editing, seed AddressesContext with the fetched address so that
+  // fields the user hasn't touched are still included on save.
+  useEffect(() => {
+    if (address) {
+      console.log('setAddress in useEffect')
+      setAddress({
+        values: {
+          first_name: address.first_name || '',
+          last_name: address.last_name || '',
+          line_1: address.line_1 || '',
+          line_2: address.line_2 || '',
+          city: address.city || '',
+          country_code: address.country_code || '',
+          state_code: address.state_code || '',
+          zip_code: address.zip_code || '',
+          phone: address.phone || '',
+          billing_info: address.billing_info || '',
+        },
+        resource: 'billing_address',
+      })
+    }
+  }, [address])
+
   // Mirror the checkout billing-address-form pattern:
   // each AddressInputGroup calls onChange(fieldName, value) on change,
   // and we push the stripped field into AddressesContext.
@@ -29,6 +52,8 @@ function CustomerAddressForm({
   // previously entered fields (it replaces the whole object).
   const handleAddressInputChange = useCallback(
     (fieldName: string, value: string) => {
+      console.log('handleAddressInputChange: ', { fieldName, value })
+
       const key = fieldName.replace('billing_address_', '')
       setAddress({
         values: {
@@ -122,6 +147,7 @@ function CustomerAddressForm({
           <AddressInputGroup
             fieldName="billing_address_phone"
             type="tel"
+            // @TODO: allow only numeric input with javascript
             resource="billing_address"
             value={address?.phone || ''}
             onChange={handleAddressInputChange}

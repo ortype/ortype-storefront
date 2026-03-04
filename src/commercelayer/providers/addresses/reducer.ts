@@ -245,8 +245,8 @@ function normalizeErrors(error: unknown): BaseError[] {
     error instanceof Error
       ? error.message
       : typeof error === 'string'
-        ? error
-        : 'Unknown error'
+      ? error
+      : 'Unknown error'
 
   return [
     {
@@ -436,7 +436,9 @@ export async function saveAddresses({
 
           const billingAddressWithMeta = sanitizeMetadataFields(billingAddress)
           const address = await cl.addresses.create(billingAddressWithMeta)
-          orderAttributes.billing_address = cl.addresses.relationship(address.id)
+          orderAttributes.billing_address = cl.addresses.relationship(
+            address.id
+          )
         }
 
         if (shipToDifferentAddress) {
@@ -445,12 +447,18 @@ export async function saveAddresses({
           if (shippingAddressCloneId)
             orderAttributes._shipping_address_clone_id = shippingAddressCloneId
 
-          if (shippingAddress != null && Object.keys(shippingAddress).length > 0) {
+          if (
+            shippingAddress != null &&
+            Object.keys(shippingAddress).length > 0
+          ) {
             delete orderAttributes._shipping_address_clone_id
 
-            const shippingAddressWithMeta = sanitizeMetadataFields(shippingAddress)
+            const shippingAddressWithMeta =
+              sanitizeMetadataFields(shippingAddress)
             const address = await cl.addresses.create(shippingAddressWithMeta)
-            orderAttributes.shipping_address = cl.addresses.relationship(address.id)
+            orderAttributes.shipping_address = cl.addresses.relationship(
+              address.id
+            )
           }
         }
       }
