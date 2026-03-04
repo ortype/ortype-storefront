@@ -16,7 +16,6 @@ export const WireTransferForm: React.FC<WireTransferFormProps> = () => {
               'After placing the order, you will need to manually complete the payment with your bank',
           }) ||
           'After placing the order, you will need to manually complete the payment with your bank',
-        className: 'text-sm text-blue-700',
       }}
     />
   )

@@ -1,5 +1,4 @@
-import { BuyProvider } from '@/commercelayer/providers/Buy'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { BuyProvider } from '@/commercelayer/providers/buy'
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -11,7 +10,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Box, Button, Heading } from '@chakra-ui/react'
-import { OrderContainer } from '@commercelayer/react-components'
 
 interface Props {
   font: object

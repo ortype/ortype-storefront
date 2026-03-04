@@ -1,4 +1,4 @@
-import { AppStateData } from '@/commercelayer/providers/Buy'
+import { AppStateData } from '@/commercelayer/providers/buy'
 import { Order } from '@commercelayer/sdk'
 export enum ActionType {
   START_LOADING = 'START_LOADING',

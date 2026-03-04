@@ -6,28 +6,21 @@ import { CheckoutContext } from '@/commercelayer/providers/checkout'
 // import { GTMContext } from '@/components/data/GTMProvider'
 import { PlaceOrderButton } from '@/commercelayer/components'
 import { Button } from '@/components/ui/chakra-button'
-import { Field } from '@/components/ui/field'
-import { Checkbox, Flex, Link } from '@chakra-ui/react'
+import { Box, Card, Checkbox, Field, Flex, Link } from '@chakra-ui/react'
 
 interface Props {
-  isActive: boolean
   termsUrl?: string
   privacyUrl?: string
 }
 
-const StepPlaceOrder: React.FC<Props> = ({
-  isActive,
-  termsUrl,
-  privacyUrl,
-}) => {
+const StepPlaceOrder: React.FC<Props> = ({ termsUrl, privacyUrl }) => {
   const { t } = useTranslation()
-
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
-
-  const [checked, setChecked] = useState(false)
-
   const checkoutCtx = useContext(CheckoutContext)
   // const gtmCtx = useContext(GTMContext)
+
+  const [checked, setChecked] = useState(false)
+  const [invalid, setInvalid] = useState(false)
 
   if (!checkoutCtx) {
     return null
@@ -42,7 +35,6 @@ const StepPlaceOrder: React.FC<Props> = ({
     placed: boolean
     order?: Order
   }) => {
-    if (!checked) return
     if (placed) {
       setIsPlacingOrder(true)
       await placeOrder(order)
@@ -52,66 +44,87 @@ const StepPlaceOrder: React.FC<Props> = ({
       //   await gtmCtx.firePurchase()
       // }
       setIsPlacingOrder(false)
+    } else {
+      if (!checked) {
+        setInvalid(true)
+      }
     }
   }
 
   return (
-    <Flex justifyContent={'space-between'} alignItems={'start'} w={'full'}>
-      {/* <Heading
-        as={'h5'}
-        fontSize={'xl'}
-        textTransform={'uppercase'}
-        fontWeight={'normal'}
-        mb={0}
-      >
-        {'Terms of use'}
-      </Heading>*/}
+    <>
+      <Box w={'full'}>
+        <Field.Root invalid={invalid} gap={2}>
+          <Field.Label asChild>
+            <Box
+              px={3}
+              fontSize={'xs'}
+              lineHeight={1}
+              textTransform={'uppercase'}
+              color={'#737373'}
+              asChild
+            >
+              <Flex gap={1} alignItems={'center'}>
+                {'Terms of use'}
+              </Flex>
+            </Box>
+          </Field.Label>
+          <Card.Root w={'full'}>
+            <Card.Body
+              p={3}
+              css={
+                invalid
+                  ? {
+                      // boxShadow: '1px 1px -1px 1px red',
+                      bg: 'var(--or-colors-red-200)',
+                    }
+                  : {}
+              }
+            >
+              {/*<Card.Title mb={2}>{'Terms of use'}</Card.Title>*/}
 
-      {/*<Box
-        px={3}
-        mb={1}
-        fontSize={'xs'}
-        textTransform={'uppercase'}
-        color={'#737373'}
-        asChild
-      >
-        <Flex gap={1} alignItems={'center'}>
-          {'Terms of use'}
+              <Checkbox.Root
+                checked={checked}
+                onCheckedChange={(e) => {
+                  setChecked(!!e.checked)
+                  e.checked && setInvalid(false)
+                }}
+                variant={'outline'}
+                size={'sm'}
+
+                // py={1}
+              >
+                <Checkbox.HiddenInput />
+                <Checkbox.Control />
+                <Checkbox.Label>
+                  {"I agree with Or Type's"}{' '}
+                  <Link
+                    href="https://assets.ortype.is/pdfs/Or-Type-EULA-2022.pdf"
+                    variant={'underline'}
+                  >
+                    {'Licensing Terms'}
+                  </Link>{' '}
+                  {'and confirm that all the information provided is truthful.'}
+                </Checkbox.Label>
+              </Checkbox.Root>
+              <Field.ErrorText>
+                {'Please check this box if you want to proceed.'}
+              </Field.ErrorText>
+            </Card.Body>
+          </Card.Root>
+        </Field.Root>
+        <Flex my={4} justifyContent={'center'} alignItems={'start'} w={'full'}>
+          <PlaceOrderButton
+            data-testid="save-payment-button"
+            onClick={handlePlaceOrder}
+            termsChecked={checked}
+            // disabled={!checked} // @NOTE: do not disable button, but alert user to the checkbox with a red outline
+            // label={t('stepPayment.submit')}
+            label={`Pay ${order?.total_amount_with_taxes_float} EUR`}
+          />
         </Flex>
-      </Box>*/}
-
-      <Checkbox.Root
-        checked={checked}
-        onCheckedChange={(e) => setChecked(!!e.checked)}
-        variant={'outline'}
-        size={'sm'}
-      >
-        <Checkbox.HiddenInput />
-        <Checkbox.Control />
-        <Checkbox.Label>
-          I agree with Or Type's{' '}
-          <Link
-            href="https://assets.ortype.is/pdfs/Or-Type-EULA-2022.pdf"
-            variant={'underline'}
-          >
-            EULA
-          </Link>{' '}
-          {/*and confirm that all the information provided is truthful.*/}
-        </Checkbox.Label>
-      </Checkbox.Root>
-      {/*<Field h={11} px={3} mb={2} bg={'brand.50'} justifyContent={'center'}>
-      </Field>*/}
-      <Button
-        as={PlaceOrderButton}
-        data-testid="save-payment-button"
-        isActive={isActive}
-        onClick={handlePlaceOrder}
-        gap={1}
-        // disabled={!checked} // @NOTE: do not disable button, but alert user to the checkbox with a red outline
-        // label={t('stepPayment.submit')}
-        label={`Pay ${order?.total_amount_with_taxes_float} EUR`}
-      />
-    </Flex>
+      </Box>
+    </>
   )
 }
 

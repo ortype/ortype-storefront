@@ -56,7 +56,7 @@ export const StepNav: React.FC<Props> = ({
   if (!ctx) {
     return null
   }
-  return (
+  return stepsContext.isCompleted ? null : (
     <Steps.List css={listStyles}>
       {steps.map((step, index) => {
         const stepComplete = isStepComplete(step.key, ctx, customer)

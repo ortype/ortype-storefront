@@ -3,7 +3,6 @@ import {
   PaymentSource,
   type CustomerSaveToWalletProps,
 } from '@/commercelayer/components'
-import { Box, VStack } from '@chakra-ui/react'
 import {
   memo,
   MouseEvent,
@@ -15,12 +14,11 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PaymentDetails } from './payment-details'
-import { PaymentMethodContainer } from './payment-method-container'
-
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field } from '@/components/ui/field'
+import { Card } from '@chakra-ui/react'
+import { PaymentMethodContainer } from './payment-method-container'
 
 interface Props {
   selectPayment: any
@@ -67,27 +65,23 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
 
       // Use uncontrolled checkbox to prevent parent re-renders
       return (
-        <Field
-          //bg={'brand.50'}
-          mt={1}
-          // h={11}
-
-          justifyContent={'center'}
-        >
-          <Checkbox
-            name={name}
-            id={name}
-            data-testid="save-to-wallet"
-            className="form-checkbox"
-            defaultChecked={false}
-            onClick={handleClick}
-            variant={'outline'}
-            size={'sm'}
-            // Remove onChange handler to prevent state updates
-          >
-            {t('stepPayment.saveToWallet') || 'Save to wallet'}
-          </Checkbox>
-        </Field>
+        <Card.Root w={'full'}>
+          <Card.Body p={3}>
+            <Checkbox
+              name={name}
+              id={name}
+              data-testid="save-to-wallet"
+              className="form-checkbox"
+              defaultChecked={false}
+              onClick={handleClick}
+              variant={'outline'}
+              size={'sm'}
+              // Remove onChange handler to prevent state updates
+            >
+              {t('stepPayment.saveToWallet') || 'Save to wallet'}
+            </Checkbox>
+          </Card.Body>
+        </Card.Root>
       )
     }
 

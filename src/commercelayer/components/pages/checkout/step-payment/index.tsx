@@ -1,7 +1,16 @@
 import { Errors } from '@/commercelayer/components'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import '@adyen/adyen-web/dist/adyen.css'
-import { Box, Container, Heading, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Card,
+  Checkbox,
+  Container,
+  Flex,
+  Heading,
+  Link,
+  VStack,
+} from '@chakra-ui/react'
 import { PaymentMethod as PaymentMethodType } from '@commercelayer/sdk'
 import { useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
@@ -25,8 +34,10 @@ export const StepPayment: React.FC = () => {
   const [hasMultiplePaymentMethods, setHasMultiplePaymentMethods] =
     useState(false)
   const [autoSelected, setAutoselected] = useState(false)
+  const [checked, setChecked] = useState(false)
 
-  const { isPaymentRequired, setPayment, order } = checkoutCtx
+  const { isPaymentRequired, setPayment, setIsPaymentActive, order } =
+    checkoutCtx
 
   const { t } = useTranslation()
 
@@ -65,17 +76,19 @@ export const StepPayment: React.FC = () => {
         showLicenseOwner={true}
         heading={t('stepPayment.summaryHeading', 'Your Details')}
       />
-
       <Box w="full">
-        <Heading
-          as={'h5'}
-          fontSize={'xl'}
+        <Box
+          px={3}
+          fontSize={'xs'}
           textTransform={'uppercase'}
-          fontWeight={'normal'}
-          mb={1}
+          color={'#737373'}
+          mb={2}
+          asChild
         >
-          {'Secure payment'}
-        </Heading>
+          <Flex gap={1} alignItems={'center'}>
+            {'Secure payment'}
+          </Flex>
+        </Box>
         {isPaymentRequired ? (
           <CheckoutCustomerPayment
             selectPayment={selectPayment}

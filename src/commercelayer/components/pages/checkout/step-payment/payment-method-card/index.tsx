@@ -12,13 +12,13 @@ interface PaymentMethodCardProps {
 // Helper function to get payment method display name
 function getPaymentMethodDisplayName(paymentSourceType: string): string {
   const nameMap: Record<string, string> = {
-    credit_cards: 'Pay with card',
-    stripe_payments: 'Pay with card',
+    credit_cards: 'Credit card',
+    stripe_payments: 'Credit card',
     paypal_payments: 'PayPal',
-    wire_transfers: 'Wire Transfer',
-    adyen_payments: 'Pay with card',
-    braintree_payments: 'Pay with card',
-    checkout_com_payments: 'Pay with card',
+    wire_transfers: 'Bank transfer',
+    adyen_payments: 'Credit card',
+    braintree_payments: 'Credit card',
+    checkout_com_payments: 'Credit card',
     external_payments: 'External Payment',
   }
 
@@ -90,9 +90,8 @@ export const PaymentMethodCard: React.FC<PaymentMethodCardProps> = memo(
         </Flex>*/}
           </Flex>
         )}
-        <Box mb={1} pt={1}>
-          <Show when={isSelected}>{children}</Show>
-        </Box>
+        <Box pt={1} />
+        <Show when={isSelected}>{children}</Show>
       </VStack>
     )
   }

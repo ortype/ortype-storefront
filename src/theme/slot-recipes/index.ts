@@ -1,10 +1,10 @@
 // import { accordionSlotRecipe } from "./accordion"
 // import { actionBarSlotRecipe } from "./action-bar"
-// import { alertSlotRecipe } from "./alert"
+import { alertSlotRecipe } from './alert'
 // import { avatarSlotRecipe } from "./avatar"
 // import { blockquoteSlotRecipe } from "./blockquote"
 // import { breadcrumbSlotRecipe } from "./breadcrumb"
-// import { cardSlotRecipe } from "./card"
+import { customCardRecipe } from './card'
 import { checkboxSlotRecipe } from './checkbox'
 import { checkboxCardSlotRecipe } from './checkbox-card'
 // import { collapsibleSlotRecipe } from "./collapsible"
@@ -47,11 +47,11 @@ import { tagSlotRecipe } from './tag'
 export const slotRecipes = {
   // accordion: accordionSlotRecipe,
   // actionBar: actionBarSlotRecipe,
-  // alert: alertSlotRecipe,
+  alert: alertSlotRecipe,
   // avatar: avatarSlotRecipe,
   // blockquote: blockquoteSlotRecipe,
   // breadcrumb: breadcrumbSlotRecipe,
-  // card: cardSlotRecipe,
+  card: customCardRecipe,
   checkbox: checkboxSlotRecipe,
   checkboxCard: checkboxCardSlotRecipe,
   // collapsible: collapsibleSlotRecipe,

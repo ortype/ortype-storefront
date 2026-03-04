@@ -25,8 +25,8 @@ export const checkboxSlotRecipe = defineSlotRecipe({
         boxSize: 'full',
       },
       _invalid: {
-        colorPalette: 'red',
-        borderColor: 'border.error',
+        colorPalette: 'default',
+        // borderColor: 'border.error',
       },
       _disabled: {
         opacity: '0.5',
@@ -111,6 +111,9 @@ export const checkboxSlotRecipe = defineSlotRecipe({
             color: 'colorPalette.fg',
             borderColor: 'colorPalette.fg',
             bg: 'colorPalette.fg',
+          },
+          _invalid: {
+            borderColor: 'colorPalette.fg',
           },
         },
       },

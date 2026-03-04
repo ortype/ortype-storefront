@@ -8,6 +8,7 @@ import {
   Box,
   Button,
   Flex,
+  Heading,
   HStack,
   Text,
   VStack,
@@ -93,7 +94,7 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
   }
 
   return (
-    <VStack gap={2} align="start" w="full">
+    <VStack my={8} gap={2} align="start" w="full">
       {/*<Heading
         textAlign={'center'}
         fontSize={'2rem'}
@@ -102,6 +103,17 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
       >
         {t('stepComplete.title')}
       </Heading>*/}
+      <Heading
+        textAlign={'center'}
+        fontSize={'4rem'}
+        lineHeight={1}
+        fontWeight={'normal'}
+        textTransform={'uppercase'}
+        mx={'auto'}
+        pb={4}
+      >
+        {'Thank you for your order!!'}
+      </Heading>
 
       {/* Checkout Summary */}
       <VStack gap={2} align="start" w="full">

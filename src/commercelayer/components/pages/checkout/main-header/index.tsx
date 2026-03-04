@@ -19,7 +19,7 @@ export const MainHeader: React.FC<Props> = ({ orderNumber, steps }) => {
   const currentStep = steps[stepsContext.value] || steps[0]
   const displayTitle = currentStep?.title || t('general.checkoutTitle')
 
-  return (
+  return stepsContext.isCompleted ? null : (
     <>
       <Heading
         textAlign={'center'}
@@ -29,7 +29,7 @@ export const MainHeader: React.FC<Props> = ({ orderNumber, steps }) => {
         mx={'auto'}
         pb={4}
       >
-        {stepsContext.isCompleted ? 'Thank you for your order!' : displayTitle}
+        {displayTitle}
       </Heading>
     </>
   )

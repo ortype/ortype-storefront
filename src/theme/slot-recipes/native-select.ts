@@ -69,6 +69,20 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
           focusRingColor: 'black',
         },
       },
+      flushed: {
+        field: {
+          bg: 'transparent',
+          borderBottomWidth: '1px',
+          borderBottomColor: 'black',
+          borderRadius: '0',
+          px: '0',
+          focusRingWidth: '0',
+          _focusVisible: {
+            borderColor: 'black',
+            boxShadow: '0px 1px 0px 0px black',
+          },
+        },
+      },
       plain: {
         field: {
           bg: 'transparent',

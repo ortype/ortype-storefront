@@ -3,7 +3,7 @@ import {
   useAddressState,
 } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Box, Button, Heading, useStepsContext, VStack } from '@chakra-ui/react'
+import { Box, Button, Flex, useStepsContext, VStack } from '@chakra-ui/react'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckoutSummary } from '../checkout-summary'
@@ -73,6 +73,18 @@ const StepAddressContainer: React.FC<{
 
   return (
     <VStack gap={2} mb={4} align={'start'} w={'full'}>
+      <Box
+        px={3}
+        fontSize={'xs'}
+        textTransform={'uppercase'}
+        color={'#737373'}
+        mb={0}
+        asChild
+      >
+        <Flex gap={1} alignItems={'center'}>
+          {'Billing address'}
+        </Flex>
+      </Box>
       <BillingAddressForm
         billingAddress={billingAddress}
         openShippingAddress={openShippingAddress}
@@ -185,14 +197,14 @@ export const StepAddress: React.FC<Props> = () => {
         showLicenseOwner={false}
         heading={t('stepPayment.summaryHeading', 'Your Details')}
       />
-      <Heading
+      {/*<Heading
         as={'h5'}
         fontSize={'xl'}
         textTransform={'uppercase'}
         fontWeight={'normal'}
       >
         {'Billing address'}
-      </Heading>
+      </Heading>*/}
       <AddressProvider>
         <StepAddressContainer
           isShipmentRequired={isShipmentRequired}

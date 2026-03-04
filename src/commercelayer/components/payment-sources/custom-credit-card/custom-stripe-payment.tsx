@@ -246,7 +246,7 @@ const CustomStripeElementsForm: React.FC<{
       )}
 
       {error && (
-        <Alert status="error" mb={4} size="sm">
+        <Alert startElement={<></>} size={'sm'} status="error" my={1} mb={2}>
           {error}
         </Alert>
       )}
@@ -258,7 +258,7 @@ const CustomStripeElementsForm: React.FC<{
           transition: 'opacity 0.2s',
         }}
       >
-        <Stack gap={1}>
+        <Stack gap={1} mb={2}>
           {/* Card Number */}
           <StripeElementField
             label="Card Number"
@@ -349,7 +349,7 @@ const CustomStripeElementsForm: React.FC<{
               })}
             </>
           ) : (
-            <Box display="flex" alignItems="center" gap={2}>
+            <Box display="flex" alignItems="center" gap={2} pl={3}>
               <input
                 type="checkbox"
                 id="save_payment_source_to_customer_wallet"

@@ -190,9 +190,11 @@ export const radioCardSlotRecipe = defineSlotRecipe({
         item: {
           bg: 'brand.50',
           borderRadius: 0,
+          opacity: 0.8,
         },
         itemControl: {
           _checked: {
+            opacity: 1,
             bg: 'brand.50',
             color: 'colorPalette.fg',
           },

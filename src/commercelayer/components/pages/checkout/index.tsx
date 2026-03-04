@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation'
 import { useContext, useEffect, useState } from 'react'
 
 import { MainHeader } from '@/commercelayer/components/pages/checkout/main-header'
-import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
 import { StepAddress } from '@/commercelayer/components/pages/checkout/step-address'
 import { StepComplete } from '@/commercelayer/components/pages/checkout/step-complete'
 import { StepEmail } from '@/commercelayer/components/pages/checkout/step-email'
@@ -14,6 +13,7 @@ import { StepPayment } from '@/commercelayer/components/pages/checkout/step-paym
 import StepPlaceOrder from '@/commercelayer/components/pages/checkout/step-place-order'
 import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shipping'
 import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
+import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
 import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 
@@ -198,7 +198,12 @@ const Checkout: React.FC<Props> = ({
               {step.key === 'Address' && <StepAddress />}
               {step.key === 'License' && <StepLicense />}
               {step.key === 'Shipping' && <StepShipping />}
-              {step.key === 'Payment' && <StepPayment />}
+              {step.key === 'Payment' && (
+                <>
+                  <StepPayment />
+                  <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
+                </>
+              )}
             </Steps.Content>
           )
         })}
@@ -208,10 +213,10 @@ const Checkout: React.FC<Props> = ({
 
         {/* Sticky bottom panel with OrderSummary and conditional StepPlaceOrder */}
         <StickyBottomPanel
-          showFooter={stepperHook.count - 1 === stepperHook.value}
+        /*showFooter={stepperHook.count - 1 === stepperHook.value}
           footer={() => (
             <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
-          )}
+          )}*/
         >
           {({ isExpanded, toggleBox }) => (
             <OrderSummary

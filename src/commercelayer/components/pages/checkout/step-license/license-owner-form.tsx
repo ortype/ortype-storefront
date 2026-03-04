@@ -6,19 +6,14 @@ import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
 import {
   Box,
   Button,
+  Grid,
   Group,
   HStack,
   RadioCard,
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Controller,
-  FormProvider,
-  useForm,
-  UseFormReturn,
-} from 'react-hook-form'
+import { Controller, FormProvider, UseFormReturn } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
@@ -99,6 +94,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
           <RadioCard.Label
             px={3}
             fontSize={'xs'}
+            lineHeight={1.2}
             textTransform={'uppercase'}
             fontVariantNumeric={'tabular-nums'}
             color={'#737373'}
@@ -121,6 +117,10 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 flex="1"
                 alignSelf="stretch"
                 indicatorPlacement="end"
+                _checked={{
+                  bg: '#D3D3D3',
+                }}
+                bg={projectType === type.value ? 'brand.100' : 'brand.50'}
               />
             ))}
           </Group>
@@ -129,7 +129,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
 
       <FormProvider {...form}>
         <Box as="form" w="full" onSubmit={handleSubmit(onSubmit)}>
-          <VStack gap={1} alignItems={'flex-start'}>
+          <VStack gap={1} alignItems={'flex-start'} w={'full'}>
             {projectType === 'client' || isDialog ? (
               <>
                 {isDialog && (
@@ -203,57 +203,68 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   )}
                 />
 
-                <Controller
-                  name="city"
-                  render={({ field, fieldState: { error } }) => (
-                    <AddressField
-                      label={String(t('stepLicense.cityLabel', 'City*'))}
-                      type="text"
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={error?.message}
-                    />
-                  )}
-                />
+                <Grid templateColumns="repeat(2, 1fr)" gap={1} w={'full'}>
+                  <Controller
+                    name="city"
+                    render={({ field, fieldState: { error } }) => (
+                      <AddressField
+                        label={String(t('stepLicense.cityLabel', 'City*'))}
+                        type="text"
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={error?.message}
+                      />
+                    )}
+                  />
 
-                <Controller
-                  name="zip_code"
-                  render={({ field, fieldState: { error } }) => (
-                    <AddressField
-                      label={String(t('stepLicense.zipCodeLabel', 'Zip Code*'))}
-                      type="text"
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={error?.message}
-                    />
-                  )}
-                />
+                  <Controller
+                    name="zip_code"
+                    render={({ field, fieldState: { error } }) => (
+                      <AddressField
+                        label={String(
+                          t('stepLicense.zipCodeLabel', 'Zip Code*')
+                        )}
+                        type="text"
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={error?.message}
+                      />
+                    )}
+                  />
 
-                <Controller
-                  name="state_code"
-                  render={({ field, fieldState: { error } }) => (
-                    <AddressField
-                      label={String(
-                        t('stepLicense.stateLabel', 'State/Province')
-                      )}
-                      type="text"
-                      value={field.value || ''}
-                      onChange={field.onChange}
-                      error={error?.message}
-                    />
-                  )}
-                />
+                  <Controller
+                    name="state_code"
+                    render={({ field, fieldState: { error } }) => (
+                      <AddressField
+                        label={String(
+                          t('stepLicense.stateLabel', 'State/Province')
+                        )}
+                        type="text"
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        error={error?.message}
+                      />
+                    )}
+                  />
 
-                <Controller
-                  name="country_code"
-                  render={({ field, fieldState: { error } }) => (
-                    <CountrySelect
-                      label={String(t('stepLicense.countryLabel', 'Country*'))}
-                      value={field.value}
-                      onChange={field.onChange}
-                      error={error?.message}
-                    />
-                  )}
+                  <Controller
+                    name="country_code"
+                    render={({ field, fieldState: { error } }) => (
+                      <CountrySelect
+                        label={String(
+                          t('stepLicense.countryLabel', 'Country*')
+                        )}
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={error?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <LicenseSizeNativeSelect
+                  setLicenseSize={setLicenseSize}
+                  licenseSize={licenseSize}
+                  label={'Your clients company size'}
                 />
               </>
             ) : (
@@ -293,8 +304,8 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
 
             {showSubmitButton && (
               <HStack
-                mt={4}
-                gap={3}
+                mt={2}
+                gap={2}
                 w="full"
                 justify={onCancel ? 'flex-end' : 'flex-start'}
               >

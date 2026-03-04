@@ -16,6 +16,7 @@ interface PlaceOrderButtonProps {
   label?: string
   onClick?: (params: { placed: boolean; order?: Order }) => void
   disabled?: boolean
+  termsChecked: boolean
 }
 
 export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
@@ -23,6 +24,7 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
   children,
   label = 'Place Order',
   onClick,
+  termsChecked,
   disabled,
   ...props
 }) => {
@@ -43,6 +45,11 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
 
     if (!canPlaceOrder || !order) {
       return
+    }
+
+    if (!termsChecked) {
+      // highlight the Terms of Use box in case it isn't
+      onClick && onClick({ placed: false, order })
     }
 
     try {
@@ -94,12 +101,13 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
     <Button
       type="submit"
       variant={'solid'}
-      bg={'red'}
+      bg={'blue'}
       borderRadius={'5rem'}
       size={'xl'}
       color={'white'}
       onClick={handleClick}
       disabled={!canPlaceOrder}
+      gap={1}
       {...props}
     >
       <LockIcon /> {children || (isPlacing ? 'Placing Order...' : label)}

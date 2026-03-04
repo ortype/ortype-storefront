@@ -192,12 +192,16 @@ export function StickyBottomPanel({
         px={px}
         pb={pb}
         maxW={maxW}
-        gap={gap}
-        animate={{ y: yOffset }}
+        gap={0}
+        //animate={{ y: yOffset }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         {children(renderProps)}
-        {showFooter && footer?.(renderProps)}
+        {showFooter && (
+          <Box pt={2} w={'full'} bg={'white'}>
+            {footer?.(renderProps)}
+          </Box>
+        )}
       </MotionVStack>
     </>
   )

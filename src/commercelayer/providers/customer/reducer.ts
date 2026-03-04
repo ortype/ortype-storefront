@@ -296,7 +296,7 @@ export async function getCustomerAddresses({
 }
 
 export interface DeleteCustomerAddress {
-  cl: CommerceLayerClient
+  cl?: CommerceLayerClient
   config?: CommerceLayerConfig
   dispatch?: Dispatch<Action>
   customerAddressId: string
