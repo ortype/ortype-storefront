@@ -143,7 +143,6 @@ export function CustomerDetailsForm() {
           </ButtonGroup>
         )}
       </Stack>
-      {/* @TODO: Password update — wire up with react-hook-form (confirm field + explicit submit) */}
       <Stack gap={2} my={2} w={'full'}>
         <ChangePassword />
       </Stack>
