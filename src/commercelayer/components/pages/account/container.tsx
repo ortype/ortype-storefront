@@ -16,6 +16,7 @@ import {
   SimpleGrid,
   Spinner,
   Text,
+  VStack,
 } from '@chakra-ui/react'
 import type { Settings } from 'CustomApp'
 import { useTranslation } from 'react-i18next'
@@ -65,90 +66,55 @@ function MyAccountContainer({
   return (
     <>
       <CustomerProvider customerId={settings.customerId} config={clientConfig}>
-        <Container pt={6} maxW="60rem" position={'relative'}>
+        <Container
+          mt={6}
+          mb={0}
+          maxW="50rem"
+          centerContent
+          position={'relative'}
+        >
           <Heading
             textAlign={'center'}
             fontSize={'2.5rem'}
             fontWeight={'normal'}
             textTransform={'uppercase'}
             mx={'auto'}
-            pb={12}
+            pb={6}
           >
             {`your account or my account`}
           </Heading>
-          <SimpleGrid columns={[1, null, 3]} gap={3}>
-            <GridItem colSpan={1} p={2}>
-              <Box
-                px={3}
-                fontSize={'xs'}
-                textTransform={'uppercase'}
-                color={'#737373'}
-                mb={2}
-                asChild
-              >
-                <Flex gap={1} alignItems={'center'}>
-                  {'Logged in as'}
-                </Flex>
+          <VStack gap={4} w={'full'}>
+            <Navbar />
+            {children}
+            <HStack
+              mt={4}
+              justify="space-between"
+              w="full"
+              bg={'brand.50'}
+              py={2}
+              px={3}
+              h={8}
+            >
+              <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
+                {'Logged in as'}
+              </Text>
+              <Box flexGrow={1} pl={4}>
+                {email}
               </Box>
-              <HStack
-                justify="space-between"
-                w="full"
-                bg={'brand.50'}
-                py={2}
-                px={3}
-                h={8}
+              <Button
+                variant="text"
+                size="xs"
+                // onClick={logout}
+                fontSize="xs"
+                px={2}
+                py={1}
+                h="auto"
+                minH="auto"
               >
-                <Box>{email}</Box>
-                <Button
-                  variant="text"
-                  size="xs"
-                  // onClick={logout}
-                  fontSize="xs"
-                  px={2}
-                  py={1}
-                  h="auto"
-                  minH="auto"
-                >
-                  {'Logout'}
-                </Button>
-              </HStack>
-
-              {/*<HStack
-                    justify="space-between"
-                    w="full"
-                    bg={'brand.50'}
-                    py={2}
-                    px={3}
-                    h={8}
-                  >
-                    <Text fontSize={'sm'} color={'brand.500'}>
-                      {t('menu.loggedInAs')}
-                    </Text>{' '}
-                    <Box flexGrow={1} pl={4}>
-                      <CustomerField
-                        name="email"
-                        attribute="email"
-                        tagElement="span"
-                      />
-                    </Box>
-                  </HStack>*/}
-              <Box
-                px={3}
-                fontSize={'xs'}
-                textTransform={'uppercase'}
-                color={'#737373'}
-                mt={4}
-                mb={2}
-                asChild
-              >
-                <Flex gap={1} alignItems={'center'}>
-                  {'General'}
-                </Flex>
-              </Box>
-              <Navbar />
-            </GridItem>
-            <GridItem colSpan={2}>{children}</GridItem>
-          </SimpleGrid>
+                {'Logout'}
+              </Button>
+            </HStack>
+          </VStack>
         </Container>
       </CustomerProvider>
     </>

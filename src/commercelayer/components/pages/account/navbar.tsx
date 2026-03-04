@@ -1,7 +1,7 @@
 import NavLink from '@/commercelayer/components/pages/account/navlink'
 import { useTranslation } from 'react-i18next'
 
-import { Box, Flex, VStack } from '@chakra-ui/react'
+import { Box, ButtonGroup, Flex, HStack } from '@chakra-ui/react'
 
 interface Props {
   onClick?: () => void
@@ -43,10 +43,10 @@ function Navbar({ onClick }: Props): JSX.Element {
   }
 
   return (
-    <VStack my={2} bg={'brand.50'} p={4} gap={3} alignItems={'flex-start'}>
+    <ButtonGroup size={'sm'} my={2} gap={1}>
       <NavLink id="orders" {...menu.orders} />
       <NavLink id="addresses" {...menu.addresses} />
-    </VStack>
+    </ButtonGroup>
   )
 }
 

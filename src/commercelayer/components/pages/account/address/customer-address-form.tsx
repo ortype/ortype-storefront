@@ -1,15 +1,7 @@
 import { AddressInputGroup } from '@/commercelayer/components/ui/address'
 import { useAddressesContext } from '@/commercelayer/providers/addresses'
 import { CustomerAddressContext } from '@/commercelayer/providers/customer-address'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Heading,
-  SimpleGrid,
-  VStack,
-} from '@chakra-ui/react'
+import { Box, Button, Flex, SimpleGrid, VStack } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -78,7 +70,7 @@ function CustomerAddressForm({
 
   return address === undefined && addressId !== undefined ? null : (
     <>
-      <form autoComplete={'off'}>
+      <Box as={'form'} w={'full'}>
         <Box
           px={3}
           fontSize={'xs'}
@@ -210,7 +202,7 @@ function CustomerAddressForm({
             />
           </Flex>
         </VStack>
-      </form>
+      </Box>
     </>
   )
 }

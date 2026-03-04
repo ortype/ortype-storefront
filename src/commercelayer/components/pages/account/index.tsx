@@ -11,7 +11,7 @@ function OrdersPage(): JSX.Element {
   if (isLoading || !settings) return <div />
   return (
     <>
-      <Heading
+      {/*<Heading
         as={'h5'}
         fontSize={'xl'}
         textTransform={'uppercase'}
@@ -20,7 +20,7 @@ function OrdersPage(): JSX.Element {
         mb={2}
       >
         {t('orders.title')}
-      </Heading>
+      </Heading>*/}
       <OrderList />
       {/*<Box bg={'brand.50'} p={4}>
       </Box>*/}

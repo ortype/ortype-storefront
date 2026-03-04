@@ -1,4 +1,4 @@
-import { Badge, Link as ChakraLink, Flex, Text } from '@chakra-ui/react'
+import { Badge, Button } from '@chakra-ui/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -14,45 +14,26 @@ function ComingSoonBadge(): JSX.Element {
   return <Badge>Soon</Badge>
 }
 
-function NavLinkButton(props: Props): JSX.Element {
-  const { title, comingSoon, onClick } = props
-  return (
-    <Flex alignItems={'flex-start'} onClick={onClick}>
-      <Text>{title}</Text>
-      {comingSoon && <ComingSoonBadge />}
-    </Flex>
-  )
-}
-
 function NavLink(props: Props): JSX.Element {
-  const { href, comingSoon } = props
+  const { href, title } = props
   const pathname = usePathname() || ''
-  // const hrefWithoutBase = href.split('?')[0]
-  // const isCurrentPage = pathname.indexOf(hrefWithoutBase) >= 0
   const isCurrentPage = href === pathname
 
-  /*
-  const title = props.title
-  console.log('NavLink: ', isCurrentPage, {
-    title,
-    href,
-    pathname,
-    hrefWithoutBase,
-    isCurrentPage,
-  })
-  */
-
-  if (comingSoon) return <NavLinkButton {...props} />
+  // if (comingSoon) return <NavLinkButton {...props} />
 
   return (
-    <ChakraLink
-      as={Link}
+    <Button
+      asChild
       aria-current={isCurrentPage && 'page'}
-      _currentPage={{ textDecoration: 'underline' }}
-      href={`${href}`}
+      _currentPage={{ bg: 'black', color: 'white' }}
+      variant={'outline'}
+      borderRadius={'full'}
+      h={'1.7rem'}
+      textStyle={'sm'}
+      px={'0.5rem'}
     >
-      <NavLinkButton {...props} />
-    </ChakraLink>
+      <Link href={`${href}`}>{title}</Link>
+    </Button>
   )
 }
 
