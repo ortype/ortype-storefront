@@ -15,7 +15,8 @@ export const inputRecipe = defineRecipe({
     },
     height: 'var(--input-height)',
     minW: 'var(--input-height)',
-    '--focus-color': 'colors.colorPalette.focusRing',
+    // '--focus-color': 'colors.colorPalette.focusRing',
+    '--focus-color': 'colors.colorPalette.fg',
     '--error-color': 'colors.border.error',
     _invalid: {
       focusRingColor: 'var(--error-color)',
@@ -72,6 +73,12 @@ export const inputRecipe = defineRecipe({
         focusVisibleRing: 'inside',
         focusRingWidth: '2px',
         focusRingColor: 'black',
+        _hover: {
+          outlineWidth: '1px',
+          outlineColor: 'black',
+          outlineStyle: 'solid',
+          borderColor: 'black',
+        },
       },
       flushed: {
         bg: 'transparent',

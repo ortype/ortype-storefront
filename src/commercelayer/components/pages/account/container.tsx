@@ -44,7 +44,7 @@ function MyAccountContainer({
 
   if (!customer.userMode) {
     return (
-      <Container mt={6} maxW="60rem" position={'relative'}>
+      <Container pt={6} maxW="60rem" position={'relative'}>
         <Heading
           textAlign={'center'}
           fontSize={'2rem'}
@@ -65,14 +65,14 @@ function MyAccountContainer({
   return (
     <>
       <CustomerProvider customerId={settings.customerId} config={clientConfig}>
-        <Container mt={6} maxW="60rem" position={'relative'}>
+        <Container pt={6} maxW="60rem" position={'relative'}>
           <Heading
             textAlign={'center'}
-            fontSize={'2rem'}
+            fontSize={'2.5rem'}
             fontWeight={'normal'}
             textTransform={'uppercase'}
             mx={'auto'}
-            pb={8}
+            pb={12}
           >
             {`your account or my account`}
           </Heading>

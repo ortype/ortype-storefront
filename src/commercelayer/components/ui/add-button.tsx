@@ -15,11 +15,16 @@ export function AddButton(props: Props): JSX.Element {
     <Button
       onClick={action}
       data-test-id={testId}
-      variant={'outline'}
-      bg={'white'}
+      variant={'subtle'}
+      // borderColor={'brand.50'}
+      // borderWidth={'2px'}
+      // bg={'white'}
+      bg={'brand.50'}
+      // _hover={{ bg: 'black', color: 'white' }}
+      // borderRadius={0}
       borderRadius={'5rem'}
       size={'sm'}
-      fontSize={'md'}
+      fontSize={'lg'}
     >
       <Text as={'span'}>{t('addresses.addNewAddress')}</Text>
     </Button>

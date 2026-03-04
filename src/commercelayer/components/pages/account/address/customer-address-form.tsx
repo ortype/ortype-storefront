@@ -1,7 +1,15 @@
 import { AddressInputGroup } from '@/commercelayer/components/ui/address'
 import { useAddressesContext } from '@/commercelayer/providers/addresses'
 import { CustomerAddressContext } from '@/commercelayer/providers/customer-address'
-import { Button, Flex, Heading, SimpleGrid, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Heading,
+  SimpleGrid,
+  VStack,
+} from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +34,6 @@ function CustomerAddressForm({
   // fields the user hasn't touched are still included on save.
   useEffect(() => {
     if (address) {
-      console.log('setAddress in useEffect')
       setAddress({
         values: {
           first_name: address.first_name || '',
@@ -67,10 +74,28 @@ function CustomerAddressForm({
     [setAddress, billingAddress, isBusiness]
   )
 
+  // @TODO: on mount focus on the first input
+
   return address === undefined && addressId !== undefined ? null : (
     <>
       <form autoComplete={'off'}>
-        <Heading
+        <Box
+          px={3}
+          fontSize={'xs'}
+          textTransform={'uppercase'}
+          color={'#737373'}
+          mb={2}
+          mt={2}
+          asChild
+        >
+          <Flex gap={1} alignItems={'center'}>
+            {addressId === undefined
+              ? t('addresses.addressForm.new_address_title')
+              : t('addresses.addressForm.edit_address_title')}
+          </Flex>
+        </Box>
+
+        {/*<Heading
           as={'h5'}
           fontSize={'xl'}
           textTransform={'uppercase'}
@@ -79,8 +104,9 @@ function CustomerAddressForm({
           {addressId === undefined
             ? t('addresses.addressForm.new_address_title')
             : t('addresses.addressForm.edit_address_title')}
-        </Heading>
-        <VStack gap={2} bg={'white'} alignItems={'flex-start'}>
+        </Heading>*/}
+
+        <VStack gap={2} alignItems={'flex-start'}>
           <SimpleGrid w={'full'} columns={2} gap={2}>
             <AddressInputGroup
               fieldName="billing_address_first_name"

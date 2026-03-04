@@ -3,18 +3,32 @@
 import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import { useCustomerContext } from '@/commercelayer/providers/customer'
 import {
+  Box,
   Button,
   ButtonGroup,
+  Card,
+  Field,
+  Flex,
   Heading,
+  Input,
+  InputGroup,
   Stack,
 } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import ChangePassword from './change-password'
 
 interface CustomerDetailsValues {
   full_name: string
   company_name: string
   email: string
+}
+
+const inputProps = {
+  variant: 'subtle' as const,
+  size: 'lg' as const,
+  fontSize: 'md',
+  borderRadius: 0,
 }
 
 export function CustomerDetailsForm() {
@@ -58,23 +72,20 @@ export function CustomerDetailsForm() {
     })
   })
 
-  const inputProps = {
-    variant: 'subtle' as const,
-    size: 'lg' as const,
-    fontSize: 'md',
-    borderRadius: 0,
-  }
-
   return (
-    <>
-      <Heading
-        as={'h5'}
-        fontSize={'xl'}
+    <Stack gap={2} w={'full'}>
+      <Box
+        px={3}
+        fontSize={'xs'}
         textTransform={'uppercase'}
-        fontWeight={'normal'}
+        color={'#737373'}
+        // mb={2}
+        asChild
       >
-        {'Your details'}
-      </Heading>
+        <Flex gap={1} alignItems={'center'}>
+          {'Your details'}
+        </Flex>
+      </Box>
       <Stack direction="column" gap={2} mb={2} w={'full'}>
         <Controller
           name="full_name"
@@ -126,11 +137,7 @@ export function CustomerDetailsForm() {
             >
               Save
             </Button>
-            <Button
-              bg={'white'}
-              borderRadius={'5rem'}
-              onClick={() => reset()}
-            >
+            <Button bg={'white'} borderRadius={'5rem'} onClick={() => reset()}>
               Cancel
             </Button>
           </ButtonGroup>
@@ -138,13 +145,8 @@ export function CustomerDetailsForm() {
       </Stack>
       {/* @TODO: Password update — wire up with react-hook-form (confirm field + explicit submit) */}
       <Stack gap={2} my={2} w={'full'}>
-        <FloatingLabelInput
-          label={'Password'}
-          value={'************'}
-          readOnly
-          {...inputProps}
-        />
+        <ChangePassword />
       </Stack>
-    </>
+    </Stack>
   )
 }
