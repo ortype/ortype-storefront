@@ -73,7 +73,7 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
             <Table.Row
               key={order.id}
               cursor={'pointer'}
-              onClick={() => router.push(`/account/orders/${order.id}`)}
+              onClick={() => router.push(`/account/purchases/${order.id}`)}
             >
               <Table.Cell fontSize={'sm'}>{order.number}</Table.Cell>
               <Table.Cell>
@@ -87,7 +87,11 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
                 <Badge
                   variant={'solid'}
                   color={'colorPalette.fg'}
-                  bg={'colorPalette.bg'}
+                  bg={
+                    order.payment_status === 'paid'
+                      ? 'green.400'
+                      : 'colorPalette.bg'
+                  }
                   /*
                   The order payment status.
                   One of 'unpaid' (default), 'authorized', 'partially_authorized', 'paid', 'partially_paid', 'voided', 'partially_voided', 'refunded', 'partially_refunded', or 'free'.
