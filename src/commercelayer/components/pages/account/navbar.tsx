@@ -1,7 +1,7 @@
 import NavLink from '@/commercelayer/components/pages/account/navlink'
 import { useTranslation } from 'react-i18next'
 
-import { Box, ButtonGroup, Flex, HStack } from '@chakra-ui/react'
+import { ButtonGroup } from '@chakra-ui/react'
 
 interface Props {
   onClick?: () => void
@@ -11,15 +11,15 @@ function Navbar({ onClick }: Props): JSX.Element {
   const { t } = useTranslation()
 
   const menu = {
-    orders: {
-      title: t('menu.orders'),
+    purchases: {
+      title: t('menu.purchases'),
       href: '/account',
       comingSoon: false,
       onClick,
     },
     addresses: {
       title: t('menu.addresses'),
-      href: '/account/addresses',
+      href: '/account/profile',
       comingSoon: false,
       onClick,
     },
@@ -44,7 +44,7 @@ function Navbar({ onClick }: Props): JSX.Element {
 
   return (
     <ButtonGroup size={'sm'} my={2} gap={1}>
-      <NavLink id="orders" {...menu.orders} />
+      <NavLink id="orders" {...menu.purchases} />
       <NavLink id="addresses" {...menu.addresses} />
     </ButtonGroup>
   )

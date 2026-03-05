@@ -162,6 +162,7 @@
   },
 
   "menu": {
+    "purchases": "Purchases",
     "orders": "Orders",
     "ordersDescription": "See your placed orders",
     "addresses": "Addresses",
