@@ -309,6 +309,7 @@ export async function deleteCustomerAddress({
   customerAddressId,
   addresses,
 }: DeleteCustomerAddress): Promise<void> {
+  if (!cl || !customerAddressId) return
   if (addresses && dispatch) {
     dispatch({ type: ActionType.START_LOADING })
 

@@ -1,7 +1,15 @@
 import { AddressInputGroup } from '@/commercelayer/components/ui/address'
 import { useAddressesContext } from '@/commercelayer/providers/addresses'
 import { CustomerAddressContext } from '@/commercelayer/providers/customer-address'
-import { Box, Button, Flex, SimpleGrid, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  SimpleGrid,
+  Spinner,
+  VStack,
+} from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,8 +17,12 @@ import SaveAddressesButton from './save-addresses-button'
 
 function CustomerAddressForm({
   addressId,
+  closeButton,
+  saveButton,
 }: {
   addressId?: string
+  closeButton?: React.ReactNode
+  saveButton?: React.ReactNode
 }): JSX.Element | null {
   const ctx = useContext(CustomerAddressContext)
   const {
@@ -68,10 +80,16 @@ function CustomerAddressForm({
 
   // @TODO: on mount focus on the first input
 
-  return address === undefined && addressId !== undefined ? null : (
+  return address === undefined && addressId !== undefined ? (
+    <Box inset="0" minH={16}>
+      <Center h="full">
+        <Spinner color="black" size={'xl'} />
+      </Center>
+    </Box>
+  ) : (
     <>
       <Box as={'form'} w={'full'}>
-        <Box
+        {/*<Box
           px={3}
           fontSize={'xs'}
           textTransform={'uppercase'}
@@ -86,7 +104,7 @@ function CustomerAddressForm({
               : t('addresses.addressForm.edit_address_title')}
           </Flex>
         </Box>
-
+*/}
         {/*<Heading
           as={'h5'}
           fontSize={'xl'}
@@ -179,27 +197,35 @@ function CustomerAddressForm({
             onChange={handleAddressInputChange}
           />
           <Flex justifyContent={'flex-end'} my={2} w={'full'} gap={2}>
-            <Button
-              onClick={() => {
-                router.push('/account/addresses')
-              }}
-              variant={'outline'}
-              bg={'white'}
-              borderRadius={'5rem'}
-              size={'sm'}
-              fontSize={'md'}
-            >
-              {t('addresses.addressForm.discard_changes')}
-            </Button>
+            {closeButton ? (
+              closeButton
+            ) : (
+              <Button
+                onClick={() => {
+                  router.push('/account/addresses')
+                }}
+                variant={'outline'}
+                bg={'white'}
+                borderRadius={'5rem'}
+                size={'sm'}
+                fontSize={'md'}
+              >
+                {t('addresses.addressForm.discard_changes')}
+              </Button>
+            )}
 
-            <SaveAddressesButton
-              data-test-id="save-address"
-              label={t('addresses.addressForm.save')}
-              onClick={() => {
-                router.push(`/account/addresses`)
-              }}
-              addressId={address?.id}
-            />
+            {saveButton ? (
+              saveButton
+            ) : (
+              <SaveAddressesButton
+                data-test-id="save-address"
+                label={t('addresses.addressForm.save')}
+                onClick={() => {
+                  router.push(`/account/addresses`)
+                }}
+                addressId={address?.id}
+              />
+            )}
           </Flex>
         </VStack>
       </Box>

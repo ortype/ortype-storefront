@@ -20,14 +20,20 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import AddressFormDialog from '../address/address-form-dialog'
 import AddressesEmpty from './addresses-empty'
 import { CustomerDetailsForm } from './customer-details-form'
 
 function AddressesPage(): JSX.Element {
   const { t } = useTranslation()
   const router = useRouter()
+  const [addressId, setAddressId] = useState(undefined)
+  const [open, setOpen] = useState(false)
   const { addresses, deleteCustomerAddress } = useCustomerContext()
+
+  const colSpan = addresses ? (addresses?.length % 2 === 1 ? 1 : 2) : 2
 
   // On address cards enable a menu to trigger:
   // navigation to edit screen
@@ -55,13 +61,6 @@ function AddressesPage(): JSX.Element {
         <Card.Root w={'full'}>
           {/*<Card.Header>{t('addresses.title')}</Card.Header>*/}
           <Card.Body bg={'white'} p={0}>
-            <AddressesEmpty>
-              {() => (
-                <Box bg={'brand.50'} p={4} w={'full'}>
-                  <Empty type="Addresses" />
-                </Box>
-              )}
-            </AddressesEmpty>
             <Grid
               templateColumns={'1fr 1fr'}
               gridGap={2}
@@ -69,6 +68,13 @@ function AddressesPage(): JSX.Element {
               w={'full'}
               mb={2}
             >
+              <AddressesEmpty>
+                {() => (
+                  <GridItem bg={'brand.50'} p={4} pos={'relative'}>
+                    <Empty type="Addresses" />
+                  </GridItem>
+                )}
+              </AddressesEmpty>
               {addresses &&
                 addresses?.map((address, i) => {
                   // @TODO: add context menu to:
@@ -77,8 +83,6 @@ function AddressesPage(): JSX.Element {
                   // delete address
                   return (
                     <GridItem
-                      // borderRadius={'l2'}
-                      // border={'1px solid #d2d2d2'}
                       key={address.id}
                       bg={'brand.50'}
                       p={4}
@@ -124,11 +128,10 @@ function AddressesPage(): JSX.Element {
                             <Menu.Content>
                               <Menu.Item
                                 value={'edit'}
-                                onClick={() =>
-                                  router.push(
-                                    `/account/addresses/${address.id}/edit`
-                                  )
-                                }
+                                onClick={() => {
+                                  address.id && setAddressId(address.id)
+                                  setOpen(true)
+                                }}
                               >
                                 {'Edit address'}
                               </Menu.Item>
@@ -136,8 +139,9 @@ function AddressesPage(): JSX.Element {
                                 value={'delete'}
                                 onClick={() =>
                                   deleteCustomerAddress &&
+                                  address.reference &&
                                   deleteCustomerAddress({
-                                    customerAddressId: address.id,
+                                    customerAddressId: address.reference,
                                   })
                                 }
                               >
@@ -150,15 +154,42 @@ function AddressesPage(): JSX.Element {
                     </GridItem>
                   )
                 })}
+              <GridItem
+                bg={'brand.50'}
+                p={4}
+                minH={24}
+                pos={'relative'}
+                justifyContent={'center'}
+                alignItems={'center'}
+                colSpan={colSpan}
+                asChild
+              >
+                <AddButton
+                  h={'full'}
+                  onClick={() => {
+                    setAddressId(undefined)
+                    setOpen(true)
+                  }}
+                  // action={() => {
+                  //   router.push(`/account/addresses/new`)
+                  // }}
+                  testId="show-new-address"
+                />
+              </GridItem>
             </Grid>
-            <Flex justify={'flex-end'}>
+            <AddressFormDialog
+              open={open}
+              setOpen={setOpen}
+              addressId={addressId}
+            />
+            {/*<Flex justify={'flex-start'}>
               <AddButton
                 action={() => {
                   router.push(`/account/addresses/new`)
                 }}
                 testId="show-new-address"
               />
-            </Flex>
+            </Flex>*/}
           </Card.Body>
           {/*<Card.Footer py={0}></Card.Footer>*/}
         </Card.Root>

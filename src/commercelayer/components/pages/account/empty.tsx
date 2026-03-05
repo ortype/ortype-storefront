@@ -29,15 +29,15 @@ function Empty({ type, buttonClick }: Props): JSX.Element {
   return (
     <Flex
       direction={'column'}
-      gap={2}
-      mb={4}
+      gap={1}
+      mb={0}
       alignItems={'flex-start'}
       justifyContent={'flex-start'}
     >
-      <Heading fontWeight={'normal'} size={'2xl'}>
+      <Heading fontWeight={'normal'} size={'lg'}>
         {t(`no${type}.title`)}
       </Heading>
-      <Text>{t(`no${type}.description`)}</Text>
+      <Text textStyle={'sm'}>{t(`no${type}.description`)}</Text>
       {buttonClick && (
         <Button onClick={buttonClick}>
           {t(`no${type}.buttonLabel`) as string}
