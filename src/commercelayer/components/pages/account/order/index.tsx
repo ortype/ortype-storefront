@@ -30,7 +30,7 @@ function OrderPage({ orderId }: OrderPageProps): JSX.Element {
             <div />
           ) : (
             <>
-              <VStack mt={6} gap={12} w={'full'} alignItems={'flex-start'}>
+              <VStack gap={6} w={'full'} alignItems={'flex-start'}>
                 <OrderSummary order={order} />
                 <FontLicenses order={order} />
                 <LicenseSummary

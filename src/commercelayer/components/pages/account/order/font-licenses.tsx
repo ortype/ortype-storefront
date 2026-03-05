@@ -24,8 +24,6 @@ const LineItem: React.FC<LineItemProps> = ({ lineItem }) => {
     ({ sku_option }) => sku_option
   )
 
-  console.log({ selectedSkuOptions })
-
   return (
     <>
       <SimpleGrid columns={[1, null, 2]} gap={3} bg={'brand.50'} p={3}>
@@ -34,7 +32,7 @@ const LineItem: React.FC<LineItemProps> = ({ lineItem }) => {
             {lineItem.name}
           </Text>
         </Stack>
-        <Flex direction={'row'} alignItems={'center'} gap={2}>
+        <Flex direction={'row'} px={3} alignItems={'center'} gap={2}>
           {selectedSkuOptions?.map(({ id, name }) => (
             <Box key={id} bg={'#fff'} p={2} fontSize={'lg'}>
               {name}

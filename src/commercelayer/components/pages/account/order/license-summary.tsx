@@ -29,61 +29,51 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
 
   return (
     <VStack gap={2} w={'full'} align={'start'}>
-      {/*<Heading
-        as={'h5'}
-        fontSize={'xl'}
+      <Box
+        px={3}
+        fontSize={'xs'}
         textTransform={'uppercase'}
-        fontWeight={'normal'}
+        color={'#737373'}
+        asChild
       >
-        {'License Owner & Metrics'}
-      </Heading>*/}
-      <SimpleGrid columns={2} gap={2} w="full">
-        <Box>
-          <Box
-            px={3}
-            fontSize={'xs'}
-            textTransform={'uppercase'}
-            color={'#737373'}
-            asChild
-            mb={2}
-          >
-            <Flex gap={1} alignItems={'center'}>
-              {'License Owner'}
-            </Flex>
-          </Box>
-          <VStack p={4} align="start" gap={2} bg={'brand.50'}>
-            {owner.company && <Text>{owner.company}</Text>}
-
-            <Text>{owner.full_name}</Text>
-
-            <Text>
-              {owner.line_1}
-              {owner.line_2 && `, ${owner.line_2}`}
+        <Flex gap={1} alignItems={'center'}>
+          {'License Details'}
+        </Flex>
+      </Box>
+      <SimpleGrid columns={2} gap={2} w="full" bg={'brand.50'}>
+        <VStack p={4} align="start" gap={2}>
+          {owner.company && (
+            <Text
+              textDecoration={'underline'}
+              textDecorationThickness={2}
+              textUnderlineOffset={'0.1rem'}
+            >
+              {owner.company}
             </Text>
+          )}
 
-            <Text>
-              {owner.city}, {owner.state_code} {owner.zip_code}
-            </Text>
+          <Text>{owner.full_name}</Text>
 
-            <Text>{owner.country_code}</Text>
-          </VStack>
-        </Box>
-        <Box>
-          <Box
-            px={3}
-            fontSize={'xs'}
-            textTransform={'uppercase'}
-            color={'#737373'}
-            asChild
-            mb={2}
-          >
-            <Flex gap={1} alignItems={'center'}>
-              {'License Metrics'}
-            </Flex>
-          </Box>
-          <Badge variant={'solid'} size={'md'}>
+          <Text>
+            {owner.line_1}
+            {owner.line_2 && `, ${owner.line_2}`}
+            {', '}
+            {owner.city}
+          </Text>
+
+          <Text>
+            {owner.zip_code} {owner.state_code} ({owner.country_code})
+          </Text>
+
+          <Text></Text>
+        </VStack>
+        <Box p={4}>
+          <Box display={'inline-block'} bg={'#fff'} p={2} fontSize={'lg'}>
             {size.label}
-          </Badge>
+          </Box>
+          {/*<Badge variant={'solid'} size={'md'}>
+            {size.label}
+          </Badge>*/}
         </Box>
       </SimpleGrid>
     </VStack>

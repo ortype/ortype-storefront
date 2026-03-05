@@ -23,7 +23,6 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import AddressFormDialog from '../address/address-form-dialog'
-import AddressesEmpty from './addresses-empty'
 import { CustomerDetailsForm } from './customer-details-form'
 
 function AddressesPage(): JSX.Element {
@@ -68,19 +67,8 @@ function AddressesPage(): JSX.Element {
               w={'full'}
               mb={2}
             >
-              <AddressesEmpty>
-                {() => (
-                  <GridItem bg={'brand.50'} p={4} pos={'relative'}>
-                    <Empty type="Addresses" />
-                  </GridItem>
-                )}
-              </AddressesEmpty>
               {addresses &&
                 addresses?.map((address, i) => {
-                  // @TODO: add context menu to:
-                  // edit address
-                  // (if there is more then 1 address)
-                  // delete address
                   return (
                     <GridItem
                       key={address.id}
@@ -99,24 +87,32 @@ function AddressesPage(): JSX.Element {
                         </Text>
 
                         <Text>
-                          {address.city}, {address.state_code}{' '}
-                          {address.zip_code}
+                          {address.zip_code} {address.city}
                         </Text>
-
-                        <Text>{address.country_code}</Text>
+                        <Text>
+                          {address.state_code} ({address.country_code})
+                        </Text>
+                        {/*<Text>{address.phone}</Text>*/}
+                        <Text mt={1}>{address.billing_info}</Text>
                       </VStack>
-                      <Menu.Root variant={'subtle'}>
+                      <Menu.Root
+                        variant={'right'}
+                        size={'sm'}
+                        positioning={{ placement: 'bottom-end' }}
+                      >
                         <Menu.Trigger
                           asChild
                           pos={'absolute'}
-                          right={1}
-                          top={1}
+                          right={2}
+                          top={2}
                         >
                           <IconButton
                             borderRadius={'full'}
                             variant="ghost"
+                            bg={'white'}
                             _hover={{
-                              bg: 'white',
+                              bg: 'black',
+                              color: 'white',
                             }}
                             size="sm"
                           >
@@ -132,8 +128,11 @@ function AddressesPage(): JSX.Element {
                                   address.id && setAddressId(address.id)
                                   setOpen(true)
                                 }}
+                                asChild
                               >
-                                {'Edit address'}
+                                <Button variant={'plain'}>
+                                  {'Edit address'}
+                                </Button>
                               </Menu.Item>
                               <Menu.Item
                                 value={'delete'}
@@ -144,8 +143,9 @@ function AddressesPage(): JSX.Element {
                                     customerAddressId: address.reference,
                                   })
                                 }
+                                asChild
                               >
-                                {'Delete'}
+                                <Button variant={'plain'}>{'Delete'}</Button>
                               </Menu.Item>
                             </Menu.Content>
                           </Menu.Positioner>

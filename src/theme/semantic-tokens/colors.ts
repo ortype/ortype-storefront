@@ -321,7 +321,7 @@ export const colors = defineSemanticTokens.colors({
     },
     fg: {
       value: {
-        _light: '{colors.green.700}',
+        _light: '{colors.green.500}',
         _dark: '{colors.green.300}',
       },
     },
@@ -333,7 +333,7 @@ export const colors = defineSemanticTokens.colors({
     },
     muted: {
       value: {
-        _light: '{colors.green.200}',
+        _light: '{colors.green.400}',
         _dark: '{colors.green.800}',
       },
     },

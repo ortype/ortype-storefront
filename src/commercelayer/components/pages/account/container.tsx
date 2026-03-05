@@ -66,13 +66,7 @@ function MyAccountContainer({
   return (
     <>
       <CustomerProvider customerId={settings.customerId} config={clientConfig}>
-        <Container
-          mt={6}
-          mb={0}
-          maxW="50rem"
-          centerContent
-          position={'relative'}
-        >
+        <Container my={6} maxW="50rem" centerContent position={'relative'}>
           <Heading
             textAlign={'center'}
             fontSize={'2.5rem'}

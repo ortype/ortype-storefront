@@ -129,7 +129,7 @@
     "billing_address_state_code_placeholder": "Select a province/state",
     "billing_address_zip_code": "Zip Code",
     "billing_address_phone": "Phone",
-    "billing_address_billing_info": "Billing info",
+    "billing_address_billing_info": "VAT (for EU) or COMPANY TAX ID (other countries)",
     "ship_to_different_address": "Ship to different address",
     "shipping_address_title": "Shipping Address",
     "shipping_address_first_name": "First name",
@@ -253,7 +253,7 @@
         "billing_address_state_code_placeholder": "Select a province/state",
         "billing_address_zip_code": "Zip Code",
         "billing_address_phone": "Phone",
-        "billing_address_billing_info": "Billing info"
+        "billing_address_billing_info": "VAT (for EU) or COMPANY TAX ID (other countries)"
       }
     }
   },

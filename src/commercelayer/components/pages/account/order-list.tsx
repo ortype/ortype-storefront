@@ -19,7 +19,6 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
   const { orders, subscriptions, getCustomerOrders, getCustomerSubscriptions } =
     useCustomerContext()
   const ctx = useCustomerContext()
-  console.log('customer ctx raw:', ctx)
   const router = useRouter()
   const [loading, setLoading] = useState(true)
 
@@ -85,13 +84,17 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
               {/*<Table.Cell>{order.skus_count}</Table.Cell>*/}
               <Table.Cell>
                 <Badge
-                  variant={'solid'}
-                  color={'colorPalette.fg'}
-                  bg={
-                    order.payment_status === 'paid'
-                      ? 'green.400'
-                      : 'colorPalette.bg'
+                  variant={'outline'}
+                  size={'sm'}
+                  fontFamily={'Alltaf-Bold'}
+                  colorPalette={
+                    order.payment_status === 'paid' ? 'green' : 'gray'
                   }
+                  // bg={
+                  //   order.payment_status === 'paid'
+                  //     ? 'green.400'
+                  //     : 'colorPalette.bg'
+                  // }
                   /*
                   The order payment status.
                   One of 'unpaid' (default), 'authorized', 'partially_authorized', 'paid', 'partially_paid', 'voided', 'partially_voided', 'refunded', 'partially_refunded', or 'free'.

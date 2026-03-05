@@ -42,6 +42,7 @@ function CustomerAddressForm({
         values: {
           first_name: address.first_name || '',
           last_name: address.last_name || '',
+          // company: address.company || '',
           line_1: address.line_1 || '',
           line_2: address.line_2 || '',
           city: address.city || '',
@@ -133,6 +134,15 @@ function CustomerAddressForm({
               onChange={handleAddressInputChange}
             />
           </SimpleGrid>
+          {/*
+          <AddressInputGroup
+            fieldName="billing_address_company"
+            type="text"
+            resource="billing_address"
+            value={address?.company || ''}
+            onChange={handleAddressInputChange}
+          />
+          */}
           <AddressInputGroup
             fieldName="billing_address_line_1"
             type="text"
@@ -189,6 +199,13 @@ function CustomerAddressForm({
             onChange={handleAddressInputChange}
           />
           <AddressInputGroup
+            // Customer's billing information (i.e. VAT number, codice fiscale).
+            /*
+            Customers need to enter their local tax id when purchasing fonts.
+            A VAT number is required for all EU companies. Each EU member country has a slightly different VAT number formatting system. You can use <a href="https://ec.europa.eu/taxation_customs/vies/vatRequest.html">this website</a> to check if your VAT format is valid, and <a href="https://ec.europa.eu/taxation_customs/vies/faq.html?locale=en">this website</a> helps with country-specific formats (its usually Country Code directly followed by digits).
+            Customers from non-EU countries need to enter their company tax number.
+            Customers from Germany do not need a VAT number (German local tax will be added).
+            */
             required={false}
             fieldName="billing_address_billing_info"
             type="text"
