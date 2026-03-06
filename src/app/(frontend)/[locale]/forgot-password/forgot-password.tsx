@@ -1,7 +1,5 @@
 'use client'
 import { Input } from '@/commercelayer/components/ui/Input'
-import { useIdentityContext } from '@/commercelayer/providers/identity'
-import { isValidCommerceLayerConfig } from '@/commercelayer/utils/getCommerceLayer'
 import { Alert } from '@/components/ui/alert'
 import {
   Box,
@@ -14,6 +12,7 @@ import {
 } from '@chakra-ui/react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
@@ -29,8 +28,9 @@ interface FormData {
   email: string
 }
 
-export default function ForgotPassword({ accessToken }) {
-  const { clientConfig, config, isLoading } = useIdentityContext()
+export default function ForgotPassword() {
+  const params = useParams()
+  const locale = (params?.locale as string) || 'en'
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
 
@@ -43,71 +43,28 @@ export default function ForgotPassword({ accessToken }) {
   const onSubmit = form.handleSubmit(async (formData) => {
     setApiError(null)
 
-    // @TODO check for valid access token
-    /*
-    if (!isValidCommerceLayerConfig(clientConfig)) {
-      setApiError('Configuration error. Please try again later.')
-      return
-    }
-    */
-
     try {
-      if (accessToken) {
-        const response = await fetch(
-          `${config.endpoint}/api/customer_password_resets`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/vnd.api+json',
-              Accept: 'application/vnd.api+json',
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({
-              data: {
-                type: 'customer_password_resets',
-                attributes: {
-                  customer_email: formData.email,
-                },
-              },
-            }),
-          }
-        )
+      const response = await fetch('/api/password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, locale }),
+      })
 
-        console.log({ response })
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-      } else {
-        // If no access token but no error thrown, treat as invalid credentials
-        form.setError('root', {
-          type: 'INVALID_CREDENTIALS',
-          message: 'The email or password you entered is incorrect.',
-        })
+      const data = await response.json()
+
+      if (!response.ok && !data.success) {
+        setApiError(
+          data.error || 'Unable to process your request. Please try again.'
+        )
+        return
       }
 
       setIsSubmitted(true)
     } catch (error: any) {
       console.error('Password reset error:', error)
-      // Check if it's a real error or just Commerce Layer's security behavior
-      if (error?.errors?.[0]?.code === 'UNAUTHORIZED') {
-        setApiError(
-          'Unable to send password reset email. Please try again later.'
-        )
-      } else {
-        // Commerce Layer returns success even for non-existent emails for security
-        // So we'll show success message for most errors
-        setIsSubmitted(true)
-      }
+      setApiError('Something went wrong. Please try again later.')
     }
   })
-
-  if (isLoading) {
-    return (
-      <Container maxW="md" py={8}>
-        <Text>Loading...</Text>
-      </Container>
-    )
-  }
 
   if (isSubmitted) {
     return (
@@ -131,11 +88,6 @@ export default function ForgotPassword({ accessToken }) {
   return (
     <Container maxW="md" py={8}>
       <Box>
-        <Alert status="warning">
-          {
-            'Not ready for use! The reset password link is not yet being sent via email.'
-          }
-        </Alert>
         <Heading size="lg" mb={2}>
           Forgot your password?
         </Heading>

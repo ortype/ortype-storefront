@@ -61,6 +61,7 @@ export default function ResetPassword() {
   const router = useRouter()
   const [isSuccess, setIsSuccess] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [resetId, setResetId] = useState<string | null>(null)
   const [token, setToken] = useState<string | null>(null)
 
   const form = useForm<FormData>({
@@ -86,12 +87,14 @@ export default function ResetPassword() {
   const passwordStrength = calculatePasswordStrength(watchedPassword || '')
 
   useEffect(() => {
+    const idParam = searchParams.get('id')
     const tokenParam = searchParams.get('token')
-    if (!tokenParam) {
+    if (!idParam || !tokenParam) {
       setApiError(
-        'Invalid or missing reset token. Please request a new password reset.'
+        'Invalid or missing reset link. Please request a new password reset.'
       )
     } else {
+      setResetId(idParam)
       setToken(tokenParam)
     }
   }, [searchParams])
@@ -99,8 +102,10 @@ export default function ResetPassword() {
   const onSubmit = form.handleSubmit(async (formData) => {
     setApiError(null)
 
-    if (!token) {
-      setApiError('Invalid reset token. Please request a new password reset.')
+    if (!resetId || !token) {
+      setApiError(
+        'Invalid reset link. Please request a new password reset.'
+      )
       return
     }
 
@@ -112,9 +117,10 @@ export default function ResetPassword() {
     try {
       const client = getCommerceLayer(clientConfig)
 
-      await client.customer_password_resets.update(token, {
+      await client.customer_password_resets.update({
+        id: resetId,
         customer_password: formData.password,
-        customer_password_confirmation: formData.confirmPassword,
+        _reset_password_token: token,
       })
 
       setIsSuccess(true)
@@ -158,7 +164,7 @@ export default function ResetPassword() {
     )
   }
 
-  if (!token && apiError) {
+  if ((!resetId || !token) && apiError) {
     return (
       <Container maxW="md" py={8}>
         <Box textAlign="center">
