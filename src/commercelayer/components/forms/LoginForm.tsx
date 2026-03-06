@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
-import { Input } from '@/commercelayer/components/ui/Input'
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { parseAuthError } from '@/commercelayer/utils/parseAuthError'
 import { useDevLogger } from '@/hooks/useDevLogger'
@@ -155,7 +155,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         <Fieldset.Root size="lg" maxW="sm">
           <Fieldset.Content>
             <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
-              <Input name="customerEmail" label="Email" type="email" />
+              <FloatingLabelInput name="customerEmail" label="Email" type="email" variant="subtle" size="lg" fontSize="lg" borderRadius={0} />
               <PasswordInput name="customerPassword" label="Password" />
 
               {resetPasswordUrl.length > 0 && (

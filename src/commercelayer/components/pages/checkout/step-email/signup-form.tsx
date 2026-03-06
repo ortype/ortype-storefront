@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
-import { Input } from '@/commercelayer/components/ui/Input'
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
 import getCommerceLayer, {
@@ -229,7 +229,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
         <Fieldset.Root size="lg" maxW="lg">
           <Fieldset.Content asChild>
             <Stack gap="2" align="flex-start" minW={'sm'} maxW="sm">
-              <Input name="customerEmail" label="Email" type="email" />
+              <FloatingLabelInput name="customerEmail" label="Email" type="email" variant="subtle" size="lg" fontSize="lg" borderRadius={0} />
               <PasswordInput name="customerPassword" label="Password" />
               <PasswordInput
                 name="customerConfirmPassword"

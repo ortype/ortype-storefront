@@ -1,29 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { useForm, FormProvider } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  Stack,
-  Text,
-  Link as ChakraLink,
-} from '@chakra-ui/react'
-import Link from 'next/link'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
+import getCommerceLayer, {
+  isValidCommerceLayerConfig,
+} from '@/commercelayer/utils/getCommerceLayer'
 import { Alert } from '@/components/ui/alert'
 import {
   PasswordInput,
   PasswordStrengthMeter,
 } from '@/components/ui/password-input'
-import { useIdentityContext } from '@/commercelayer/providers/identity'
-import getCommerceLayer, {
-  isValidCommerceLayerConfig,
-} from '@/commercelayer/utils/getCommerceLayer'
+import {
+  Box,
+  Button,
+  Card,
+  Link as ChakraLink,
+  Container,
+  Group,
+  Heading,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import * as yup from 'yup'
 
 const validationSchema = yup.object().shape({
   password: yup
@@ -103,9 +105,7 @@ export default function ResetPassword() {
     setApiError(null)
 
     if (!resetId || !token) {
-      setApiError(
-        'Invalid reset link. Please request a new password reset.'
-      )
+      setApiError('Invalid reset link. Please request a new password reset.')
       return
     }
 
@@ -147,93 +147,170 @@ export default function ResetPassword() {
 
   if (isSuccess) {
     return (
-      <Container maxW="md" py={8}>
-        <Box textAlign="center">
-          <Heading size="lg" mb={4} color="green.500">
-            Password reset successful!
-          </Heading>
-          <Text mb={6} color="gray.600">
-            Your password has been updated. You'll be redirected to the login
-            page shortly.
-          </Text>
-          <ChakraLink as={Link} href="/" color="blue.500">
-            Go to login now
-          </ChakraLink>
-        </Box>
+      <Container
+        my={6}
+        maxW="40rem"
+        minH={'40rem'}
+        justifyContent={'center'}
+        centerContent
+        position={'relative'}
+      >
+        <Heading
+          textAlign={'center'}
+          fontSize={'2.5rem'}
+          fontWeight={'normal'}
+          textTransform={'uppercase'}
+          mx={'auto'}
+          pb={6}
+        >
+          {`Password reset successful!`}
+        </Heading>
+        <Card.Root my={2} w={'full'}>
+          <Card.Body p={4}>
+            <Text textStyle={'md'}>
+              {
+                "Your password has been updated. You'll be redirected to the login page shortly."
+              }
+            </Text>
+          </Card.Body>
+        </Card.Root>
+        <Stack gap={4}>
+          <Button
+            asChild
+            size={'2xs'}
+            bg={'brand.50'}
+            variant={'subtle'}
+            borderRadius={'full'}
+          >
+            <ChakraLink as={Link} href="/">
+              Go to login now
+            </ChakraLink>
+          </Button>
+        </Stack>
       </Container>
     )
   }
 
   if ((!resetId || !token) && apiError) {
     return (
-      <Container maxW="md" py={8}>
-        <Box textAlign="center">
-          <Heading size="lg" mb={4} color="red.500">
-            Invalid Reset Link
-          </Heading>
-          <Text mb={6} color="gray.600">
-            This password reset link is invalid or has expired.
-          </Text>
-          <ChakraLink as={Link} href="/forgot-password" color="blue.500">
-            Request a new reset link
-          </ChakraLink>
-        </Box>
+      <Container
+        my={6}
+        maxW="40rem"
+        minH={'40rem'}
+        justifyContent={'center'}
+        centerContent
+        position={'relative'}
+      >
+        <Heading
+          textAlign={'center'}
+          fontSize={'2.5rem'}
+          fontWeight={'normal'}
+          textTransform={'uppercase'}
+          mx={'auto'}
+          pb={6}
+        >
+          {`Invalid Reset Link`}
+        </Heading>
+        <Card.Root my={2} w={'full'}>
+          <Card.Body p={4}>
+            <Text textStyle={'md'}>
+              {'This password reset link is invalid or has expired.'}
+            </Text>
+          </Card.Body>
+        </Card.Root>
+        <Stack gap={4}>
+          <Button
+            asChild
+            size={'2xs'}
+            bg={'brand.50'}
+            variant={'subtle'}
+            borderRadius={'full'}
+          >
+            <ChakraLink as={Link} href="/forgot-password">
+              Request a new reset link
+            </ChakraLink>
+          </Button>
+        </Stack>
       </Container>
     )
   }
 
   return (
-    <Container maxW="md" py={8}>
-      <Box>
-        <Heading size="lg" mb={2}>
-          Reset your password
-        </Heading>
-        <Text mb={6} color="gray.600">
-          Enter your new password below.
-        </Text>
+    <Container
+      my={6}
+      maxW="40rem"
+      minH={'40rem'}
+      justifyContent={'center'}
+      centerContent
+      position={'relative'}
+    >
+      <Heading
+        textAlign={'center'}
+        fontSize={'2.5rem'}
+        fontWeight={'normal'}
+        textTransform={'uppercase'}
+        mx={'auto'}
+        pb={6}
+      >
+        {`Reset your password`}
+      </Heading>
+      <Card.Root my={2} w={'full'}>
+        <Card.Body p={4}>
+          <Text textStyle={'md'}>{'Enter your new password below.'}</Text>
+        </Card.Body>
+      </Card.Root>
+      <FormProvider {...form}>
+        <Box as={'form'} w={'full'} onSubmit={onSubmit}>
+          <Stack gap={2}>
+            <PasswordInput
+              name="password"
+              label="New password"
+              placeholder="Enter your new password"
+            />
 
-        <FormProvider {...form}>
-          <form onSubmit={onSubmit}>
-            <Stack gap={4}>
-              <PasswordInput
-                name="password"
-                label="New password"
-                placeholder="Enter your new password"
-              />
+            <Box w={'100%'}>
+              <PasswordStrengthMeter value={passwordStrength} py={1} />
+            </Box>
 
-              <Box w={'50%'}>
-                <PasswordStrengthMeter value={passwordStrength} py={1} />
-              </Box>
+            <PasswordInput
+              name="confirmPassword"
+              label="Confirm new password"
+              placeholder="Confirm your new password"
+            />
 
-              <PasswordInput
-                name="confirmPassword"
-                label="Confirm new password"
-                placeholder="Confirm your new password"
-              />
+            {apiError && <Alert status="error">{apiError}</Alert>}
 
-              {apiError && <Alert status="error">{apiError}</Alert>}
-
-              <Button
-                type="submit"
-                loading={isSubmitting}
-                loadingText="Updating..."
-                disabled={isSubmitting}
-                variant="solid"
-                colorScheme="blue"
-              >
-                Update password
-              </Button>
-
-              <Text textAlign="center">
+            <Button
+              type="submit"
+              loading={isSubmitting}
+              loadingText="Updating..."
+              disabled={isSubmitting}
+              variant={'outline'}
+              // bg={'white'}
+              borderRadius={'full'}
+            >
+              Update password
+            </Button>
+            {apiError && <Alert status="error">{apiError}</Alert>}
+            <Group gap={2} justifyContent={'center'}>
+              <Text textStyle={'xs'} textAlign="center">
                 Remember your password?{' '}
-                <ChakraLink as={Link} href="/" color="blue.500">
+              </Text>
+              <Button
+                asChild
+                size={'2xs'}
+                bg={'brand.50'}
+                variant={'subtle'}
+                borderRadius={'full'}
+              >
+                <ChakraLink as={Link} href="/">
                   Sign in
                 </ChakraLink>
-              </Text>
-            </Stack>
-          </form>
-        </FormProvider>
-      </Box>
+              </Button>
+            </Group>
+          </Stack>
+        </Box>
+      </FormProvider>
     </Container>
   )
 }

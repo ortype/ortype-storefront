@@ -1,5 +1,4 @@
-import { Input } from '@/commercelayer/components/ui/Input'
-// import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
 import { Button } from '@/components/ui/chakra-button'
 import { Box, Center, Container, Fieldset, VStack } from '@chakra-ui/react'
@@ -76,28 +75,18 @@ export const Email: React.FC<Props> = ({
         <Fieldset.Root size="lg" maxW="lg">
           <Fieldset.Content asChild>
             <VStack gap={2}>
-              <Input
+              <FloatingLabelInput
                 name="customer_email"
                 label={t('addressForm.customer_email')}
                 type="email"
                 data-testid="customer_email"
                 disabled={readonly || isLoading}
+                variant="subtle"
                 size={'2xl'}
                 minW={'30rem'}
                 fontSize={'2xl'}
+                borderRadius={0}
               />
-              {/* @TODO: test floatinglabelinput
-                // it's a controlled input however
-             */}
-              {/*<FloatingLabelInput
-              label="Cardholder Name"
-              value={cardholderName}
-              onChange={(e) => setCardholderName(e.target.value)}
-              variant="subtle"
-              size="lg"
-              fontSize="md"
-              borderRadius={0}
-            />*/}
               {error && (
                 <Box color="red.500" fontSize="sm" mt={2}>
                   {error}

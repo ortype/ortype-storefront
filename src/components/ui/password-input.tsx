@@ -1,7 +1,6 @@
 'use client'
 
 import { useValidationFeedback } from '@/commercelayer/components/forms/useValidationFeedback'
-import { Field } from '@/components/ui/field'
 import type {
   ButtonProps,
   GroupProps,
@@ -10,12 +9,13 @@ import type {
 } from '@chakra-ui/react'
 import {
   Box,
+  Field,
   Input as ChakraInput,
   HStack,
   IconButton,
   InputGroup,
   Stack,
-  mergeRefs,
+  defineStyle,
   useControllableState,
 } from '@chakra-ui/react'
 import * as React from 'react'
@@ -34,6 +34,7 @@ export interface PasswordInputProps
   rootProps?: GroupProps
   label?: string
   name?: string
+  error?: string
 }
 
 export const PasswordInput = React.forwardRef<
@@ -44,6 +45,7 @@ export const PasswordInput = React.forwardRef<
     rootProps,
     label,
     name = '',
+    error: errorProp,
     defaultVisible,
     visible: visibleProp,
     onVisibleChange,
@@ -57,41 +59,89 @@ export const PasswordInput = React.forwardRef<
     onChange: onVisibleChange,
   })
 
-  const form = useFormContext()
-  const { hasError, errorMessage } = useValidationFeedback(name)
-  const registration = form?.register(name)
+  // Try to connect to react-hook-form context when name is provided
+  let formContext: ReturnType<typeof useFormContext> | null = null
+  try {
+    formContext = useFormContext()
+  } catch {
+    // No FormProvider in tree
+  }
+
+  const isRegistered = !!(name && formContext)
+  const registration = isRegistered ? formContext!.register(name) : null
+  const { errorMessage } = isRegistered
+    ? useValidationFeedback(name)
+    : { errorMessage: undefined }
+  const error = errorProp ?? errorMessage
+
+  // Watch form value to drive floating label
+  const formValue = isRegistered ? formContext!.watch(name) : undefined
+  const currentValue = isRegistered ? (formValue ?? '') : ''
+  const hasValue = String(currentValue).length > 0
+  const [hasInteracted, setHasInteracted] = React.useState(false)
 
   return (
-    <Field label={label} errorText={errorMessage} invalid={hasError}>
-      <InputGroup
-        w="full"
-        endElement={
-          <VisibilityTrigger
-            disabled={rest.disabled}
-            onPointerDown={(e) => {
-              if (rest.disabled) return
-              if (e.button !== 0) return
-              e.preventDefault()
-              setVisible(!visible)
+    <Field.Root invalid={!!error}>
+      <Box pos="relative" w="full">
+        <InputGroup
+          w="full"
+          endElement={
+            <VisibilityTrigger
+              disabled={rest.disabled}
+              onPointerDown={(e) => {
+                if (rest.disabled) return
+                if (e.button !== 0) return
+                e.preventDefault()
+                setVisible(!visible)
+              }}
+            >
+              {visible ? visibilityIcon.off : visibilityIcon.on}
+            </VisibilityTrigger>
+          }
+          gap={0}
+          {...rootProps}
+        >
+          <ChakraInput
+            {...(registration ?? {})}
+            {...rest}
+            ref={(node) => {
+              registration?.ref(node)
+              if (typeof ref === 'function') ref(node)
+              else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = node
             }}
+            placeholder={label}
+            variant={'subtle'}
+            size={'lg'}
+            fontSize={'lg'}
+            borderRadius={0}
+            type={visible ? 'text' : 'password'}
+            onFocus={(e) => {
+              setHasInteracted(true)
+              rest.onFocus?.(e)
+            }}
+            onBlur={(e) => {
+              setHasInteracted(true)
+              registration?.onBlur(e)
+              rest.onBlur?.(e)
+            }}
+            onChange={(e) => {
+              registration?.onChange(e)
+              rest.onChange?.(e)
+            }}
+            css={hasValue ? inputStyles : undefined}
+          />
+        </InputGroup>
+        {hasValue && (
+          <Field.Label
+            css={floatingStyles}
+            animationStyle={hasInteracted ? 'slide-up-fade-in' : undefined}
           >
-            {visible ? visibilityIcon.off : visibilityIcon.on}
-          </VisibilityTrigger>
-        }
-        gap={0}
-        {...rootProps}
-      >
-        <ChakraInput
-          {...registration}
-          {...rest}
-          variant={'subtle'}
-          size={'lg'}
-          fontSize={'lg'}
-          borderRadius={0}
-          type={visible ? 'text' : 'password'}
-        />
-      </InputGroup>
-    </Field>
+            {label}
+          </Field.Label>
+        )}
+      </Box>
+      {error && <Field.ErrorText>{error}</Field.ErrorText>}
+    </Field.Root>
   )
 })
 
@@ -149,6 +199,23 @@ export const PasswordStrengthMeter = React.forwardRef<
       {label && <HStack textStyle="xs">{label}</HStack>}
     </Stack>
   )
+})
+
+const inputStyles = defineStyle({
+  paddingTop: '3',
+  paddingBottom: '1',
+})
+
+const floatingStyles = defineStyle({
+  pos: 'absolute',
+  bg: 'transparent',
+  px: '0.05rem',
+  top: '0',
+  insetStart: '3',
+  fontWeight: 'normal',
+  pointerEvents: 'none',
+  color: 'fg',
+  fontSize: '2xs',
 })
 
 function getColorPalette(percent: number) {

@@ -1,12 +1,15 @@
 'use client'
-import { Input } from '@/commercelayer/components/ui/Input'
+import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import { Alert } from '@/components/ui/alert'
 import {
   Box,
   Button,
+  Card,
   Link as ChakraLink,
   Container,
+  Group,
   Heading,
+  InputGroup,
   Stack,
   Text,
 } from '@chakra-ui/react'
@@ -68,67 +71,135 @@ export default function ForgotPassword() {
 
   if (isSubmitted) {
     return (
-      <Container maxW="md" py={8}>
-        <Box textAlign="center">
-          <Heading size="lg" mb={4}>
-            Check your email
-          </Heading>
-          <Text mb={6} color="gray.600">
-            If an account with that email exists, we've sent you a password
-            reset link.
-          </Text>
-          <ChakraLink as={Link} href="/" color="blue.500">
-            Return to homepage
-          </ChakraLink>
-        </Box>
+      <Container
+        my={6}
+        maxW="40rem"
+        minH={'40rem'}
+        justifyContent={'center'}
+        centerContent
+        position={'relative'}
+      >
+        <Heading
+          textAlign={'center'}
+          fontSize={'2.5rem'}
+          fontWeight={'normal'}
+          textTransform={'uppercase'}
+          mx={'auto'}
+          pb={6}
+        >
+          {`Check your email`}
+        </Heading>
+        <Card.Root my={2} w={'full'}>
+          <Card.Body p={4}>
+            <Text textStyle={'md'}>
+              {
+                "If an account with that email exists, we've sent you a password reset link."
+              }
+            </Text>
+          </Card.Body>
+        </Card.Root>
+        <Stack gap={4}>
+          <Button
+            asChild
+            size={'2xs'}
+            bg={'brand.50'}
+            variant={'subtle'}
+            borderRadius={'full'}
+          >
+            <ChakraLink as={Link} href="/">
+              Return to homepage
+            </ChakraLink>
+          </Button>
+        </Stack>
       </Container>
     )
   }
 
   return (
-    <Container maxW="md" py={8}>
-      <Box>
-        <Heading size="lg" mb={2}>
-          Forgot your password?
-        </Heading>
-        <Text mb={6} color="gray.600">
-          Enter your email address and we'll send you a link to reset your
-          password.
-        </Text>
-
-        <FormProvider {...form}>
-          <form onSubmit={onSubmit}>
-            <Stack gap={4}>
-              <Input
+    <Container
+      my={6}
+      maxW="40rem"
+      minH={'40rem'}
+      justifyContent={'center'}
+      centerContent
+      position={'relative'}
+    >
+      <Heading
+        textAlign={'center'}
+        fontSize={'2.5rem'}
+        fontWeight={'normal'}
+        textTransform={'uppercase'}
+        mx={'auto'}
+        pb={6}
+      >
+        {`Forgot your password?`}
+      </Heading>
+      <Card.Root my={2} w={'full'}>
+        <Card.Body p={4}>
+          <Text textStyle={'md'}>
+            {
+              "Enter your email address and we'll send you a link to reset your password."
+            }
+          </Text>
+        </Card.Body>
+      </Card.Root>
+      <FormProvider {...form}>
+        <Box as={'form'} w={'full'} onSubmit={onSubmit}>
+          <Stack gap={4}>
+            <InputGroup
+              attached
+              w={'full'}
+              flex="1"
+              endElement={
+                <Button
+                  variant={'outline'}
+                  type="submit"
+                  bg={'white'}
+                  borderRadius={'full'}
+                  size={'xs'}
+                  borderColor={'transparent'}
+                  fontSize={'xs'}
+                  alignSelf={'center'}
+                  loading={isSubmitting}
+                  loadingText="Sending..."
+                  disabled={isSubmitting}
+                >
+                  Send reset link
+                </Button>
+              }
+            >
+              <FloatingLabelInput
+                minW={'30rem'}
                 name="email"
                 label="Email address"
                 type="email"
-                placeholder="Enter your email"
+                variant="subtle"
+                size="lg"
+                fontSize="lg"
+                borderRadius={0}
               />
+            </InputGroup>
 
-              {apiError && <Alert status="error">{apiError}</Alert>}
-
-              <Button
-                type="submit"
-                loading={isSubmitting}
-                loadingText="Sending..."
-                disabled={isSubmitting}
-                variant="solid"
-                colorScheme="blue"
-              >
-                Send reset link
-              </Button>
-
-              <Text textAlign="center">
+            {apiError && <Alert status="error">{apiError}</Alert>}
+            <Group gap={2} justifyContent={'center'}>
+              <Text textStyle={'xs'} textAlign="center">
                 Remember your password?{' '}
-                <ChakraLink as={Link} href="/" color="blue.500">
+              </Text>
+              <Button
+                asChild
+                size={'2xs'}
+                bg={'brand.50'}
+                variant={'subtle'}
+                borderRadius={'full'}
+              >
+                <ChakraLink as={Link} href="/">
                   Sign in
                 </ChakraLink>
-              </Text>
-            </Stack>
-          </form>
-        </FormProvider>
-      </Box>
+              </Button>
+            </Group>
+          </Stack>
+        </Box>
+      </FormProvider>
     </Container>
   )
 }
