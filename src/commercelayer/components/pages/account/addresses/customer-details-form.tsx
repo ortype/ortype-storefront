@@ -2,6 +2,7 @@
 
 import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
 import { useCustomerContext } from '@/commercelayer/providers/customer'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import {
   Box,
   Button,
@@ -33,6 +34,7 @@ const inputProps = {
 
 export function CustomerDetailsForm() {
   const { customers, updateCustomer } = useCustomerContext()
+  const { fetchCustomerHandle } = useIdentityContext()
 
   const {
     control,
@@ -70,6 +72,8 @@ export function CustomerDetailsForm() {
         company_name: data.company_name,
       },
     })
+
+    customers && fetchCustomerHandle(customers.id)
   })
 
   return (
