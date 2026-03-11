@@ -35,6 +35,7 @@ export const getAsyncOrder = async (
         'id',
         'status',
         'placed_at',
+        'editable',
         'number',
         'guest',
         'line_items',

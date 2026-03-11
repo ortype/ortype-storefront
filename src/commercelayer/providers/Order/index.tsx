@@ -370,6 +370,31 @@ export function OrderProvider({
         const orderResponse = await getOrder({ client: cl, orderId })
         const order = orderResponse?.object
 
+        // If clearWhenPlaced is enabled and the order has been placed (not editable),
+        // clear it from localStorage and reset state
+        const shouldClearPlacedOrder = !!(persistKey && clearWhenPlaced)
+        if (shouldClearPlacedOrder && order && order.editable === false) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(
+              '[OrderProvider] fetchOrder: Order has been placed, clearing local storage',
+              { orderId, persistKey }
+            )
+          }
+          deleteLocalOrder(persistKey)
+          dispatch({
+            type: ActionType.SET_ORDER,
+            payload: {
+              order: undefined,
+              others: {
+                orderId: undefined,
+                itemsCount: 0,
+                isInvalid: false,
+              },
+            },
+          })
+          return { success: true, order: undefined }
+        }
+
         // Handle order metadata after initial creation
         if (order && !order.metadata?.license) {
           const settings = calculateSettings(order)
@@ -407,7 +432,7 @@ export function OrderProvider({
         return { success: false }
       }
     },
-    [config, persistKey, getLocalOrder]
+    [config, persistKey, clearWhenPlaced, getLocalOrder, deleteLocalOrder]
   )
 
   const updateOrder = useCallback(
