@@ -32,6 +32,10 @@ import {
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
+import {
+  getSaveBillingAddressToAddressBook,
+  getSavePaymentSourceToCustomerWallet,
+} from '@/utils/localStorage'
 import { ActionType, reducer } from './reducer'
 import {
   calculateSettings,
@@ -602,6 +606,18 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         // when the user submitted the payment form before clicking Place Order
       }
 
+      // Save billing address to customer address book if requested (before placing)
+      console.log(
+        'getSaveBillingAddressToAddressBook: ',
+        getSaveBillingAddressToAddressBook
+      )
+      if (getSaveBillingAddressToAddressBook()) {
+        await cl.orders.update({
+          id: currentOrder.id,
+          _save_billing_address_to_customer_address_book: true,
+        })
+      }
+
       // Place the order via Commerce Layer API (following official pattern)
       console.log('Placing order via API...', currentOrder.id)
 
@@ -621,6 +637,19 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       )
 
       console.log('Order placed successfully:', placedOrder)
+
+      // Save payment source to customer wallet if requested (after placing,
+      // per CL reference — payment source must be captured first)
+      if (getSavePaymentSourceToCustomerWallet()) {
+        await cl.orders
+          .update({
+            id: currentOrder.id,
+            _save_payment_source_to_customer_wallet: true,
+          })
+          .catch((error) => {
+            console.error('Error saving payment source to wallet:', error)
+          })
+      }
 
       // Update the order ref with the placed order
       orderRef.current = placedOrder

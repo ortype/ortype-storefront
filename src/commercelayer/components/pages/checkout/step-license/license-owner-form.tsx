@@ -117,10 +117,6 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 flex="1"
                 alignSelf="stretch"
                 indicatorPlacement="end"
-                _checked={{
-                  bg: '#D3D3D3',
-                }}
-                bg={projectType === type.value ? 'brand.100' : 'brand.50'}
               />
             ))}
           </Group>

@@ -7,6 +7,7 @@ import { Box, Button, Flex, useStepsContext, VStack } from '@chakra-ui/react'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckoutSummary } from '../checkout-summary'
+import { AddressFormBottom } from './address-form-bottom'
 import { BillingAddressForm } from './billing-address-form'
 
 interface Props {
@@ -89,6 +90,7 @@ const StepAddressContainer: React.FC<{
         billingAddress={billingAddress}
         openShippingAddress={openShippingAddress}
       />
+      <AddressFormBottom addressType={'billing'} hasCustomerAddresses={false} />
       {/* TODO: Replace with shipping address form when implementing shipping flow
        * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
        * Components needed:

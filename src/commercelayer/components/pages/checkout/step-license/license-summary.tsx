@@ -80,6 +80,7 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
           <DialogRoot
             lazyMount
             open={editing}
+            placement={'center'}
             onOpenChange={(e) => setEditing(e.open)}
           >
             <DialogTrigger asChild>

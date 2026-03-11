@@ -28,6 +28,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       userSelect: 'none',
       position: 'relative',
       borderRadius: 'l2',
+      cursor: 'pointer',
       _focus: {
         bg: 'colorPalette.muted/20',
       },
@@ -190,7 +191,13 @@ export const radioCardSlotRecipe = defineSlotRecipe({
         item: {
           bg: 'brand.50',
           borderRadius: 0,
-          opacity: 0.8,
+          _hover: {
+            opacity: 1,
+          },
+          opacity: 0.6,
+          _checked: {
+            opacity: 1,
+          },
         },
         itemControl: {
           _checked: {

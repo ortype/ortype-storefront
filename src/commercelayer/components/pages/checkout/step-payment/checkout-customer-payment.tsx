@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Field } from '@/components/ui/field'
+import { setCustomerOrderParam } from '@/utils/localStorage'
 import { Card } from '@chakra-ui/react'
 import { PaymentMethodContainer } from './payment-method-container'
 
@@ -63,7 +63,13 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
         e: MouseEvent<HTMLLabelElement, globalThis.MouseEvent>
       ) => e?.stopPropagation()
 
-      // Use uncontrolled checkbox to prevent parent re-renders
+      const handleChange = (e: { checked: boolean }) => {
+        setCustomerOrderParam(
+          '_save_payment_source_to_customer_wallet',
+          e.checked ? 'true' : 'false'
+        )
+      }
+
       return (
         <Card.Root w={'full'}>
           <Card.Body p={3}>
@@ -74,9 +80,9 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
               className="form-checkbox"
               defaultChecked={false}
               onClick={handleClick}
+              onCheckedChange={handleChange}
               variant={'outline'}
               size={'sm'}
-              // Remove onChange handler to prevent state updates
             >
               {t('stepPayment.saveToWallet') || 'Save to wallet'}
             </Checkbox>

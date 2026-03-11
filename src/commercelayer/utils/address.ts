@@ -254,20 +254,6 @@ export const setOrderBillingAddress = async ({
       include: ['billing_address', 'shipping_address'],
     })
 
-    // Set localStorage flags to match existing pattern
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        '_save_billing_address_to_customer_address_book',
-        'false'
-      )
-      if (useAsShipping) {
-        localStorage.setItem(
-          '_save_shipping_address_to_customer_address_book',
-          'false'
-        )
-      }
-    }
-
     return {
       success: true,
       data: order,

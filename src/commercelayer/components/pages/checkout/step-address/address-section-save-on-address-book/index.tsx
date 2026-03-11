@@ -1,6 +1,6 @@
-import { Field } from '@/components/ui/field'
-import { Flex } from '@chakra-ui/react'
 import { Checkbox } from '@/components/ui/checkbox'
+import { setCustomerOrderParam } from '@/utils/localStorage'
+import { Card } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 interface Props {
@@ -21,14 +21,34 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
       ? 'billing_address_save_to_customer_address_book'
       : 'shipping_address_save_to_customer_address_book'
 
+  const storageKey =
+    addressType === 'billing'
+      ? '_save_billing_address_to_customer_address_book'
+      : '_save_shipping_address_to_customer_address_book'
+
+  const handleChange = (e: { checked: boolean }) => {
+    setCustomerOrderParam(
+      storageKey as '_save_billing_address_to_customer_address_book' | '_save_shipping_address_to_customer_address_book',
+      e.checked ? 'true' : 'false'
+    )
+  }
+
   return (
-    <Flex className="items-center">
-      <Checkbox
-        data-testid={dataTestId}
-        name={fieldName}
-        id={fieldName}
-        label={t('stepCustomer.saveAddressBook')}
-      />
-    </Flex>
+    <Card.Root w={'full'}>
+      <Card.Body p={3}>
+        <Checkbox
+          data-testid={dataTestId}
+          name={fieldName}
+          id={fieldName}
+          className="form-checkbox"
+          defaultChecked={false}
+          onCheckedChange={handleChange}
+          variant={'outline'}
+          size={'sm'}
+        >
+          {t('stepCustomer.saveAddressBook')}
+        </Checkbox>
+      </Card.Body>
+    </Card.Root>
   )
 }
