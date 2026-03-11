@@ -1,7 +1,17 @@
-import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
+import { LoginForm } from '@/commercelayer/components/forms/LoginForm'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import { Box, Text, Center, Container, Spinner } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Center,
+  Link as ChakraLink,
+  Container,
+  Spinner,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
+import Link from 'next/link'
 import { useContext, useEffect } from 'react'
 import { Email } from './Email'
 import { SignUpForm } from './signup-form'
@@ -18,10 +28,10 @@ export interface ShippingToggleProps {
 
 export const StepEmail: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
-  const { customer, checkCustomerEmail, setCustomerEmail, settings } =
+  const { customer, config, checkCustomerEmail, setCustomerEmail, settings } =
     useIdentityContext()
   const { hasEmailAddress, emailAddress } = checkoutCtx
-
+  const { resetPasswordUrl } = config
   useEffect(() => {
     if (emailAddress && !customer.checkoutEmail) {
       checkCustomerEmail(emailAddress)
@@ -72,7 +82,28 @@ export const StepEmail: React.FC<Props> = () => {
               <Spinner color="black" size={'xl'} />
             </Center>
           ) : requiresLogin ? (
-            <LoginFormNew emailAddress={email} />
+            <>
+              <VStack gap={2}>
+                <LoginForm emailAddress={email} />
+                {resetPasswordUrl.length > 0 && (
+                  <Button
+                    asChild
+                    size={'2xs'}
+                    bg={'brand.50'}
+                    variant={'subtle'}
+                    borderRadius={'full'}
+                  >
+                    <ChakraLink
+                      target="_blank"
+                      as={Link}
+                      href={`${resetPasswordUrl}`}
+                    >
+                      Forgot password?
+                    </ChakraLink>
+                  </Button>
+                )}{' '}
+              </VStack>
+            </>
           ) : (
             <SignUpForm emailAddress={email} />
           )}
