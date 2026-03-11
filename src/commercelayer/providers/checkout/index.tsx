@@ -607,10 +607,6 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       }
 
       // Save billing address to customer address book if requested (before placing)
-      console.log(
-        'getSaveBillingAddressToAddressBook: ',
-        getSaveBillingAddressToAddressBook
-      )
       if (getSaveBillingAddressToAddressBook()) {
         await cl.orders.update({
           id: currentOrder.id,
@@ -686,18 +682,27 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         const updatedOrder = await cl.orders.update(resource, { include })
         console.log('updateOrder util: ', updatedOrder)
 
+        const mergedOrder = {
+          ...orderRef.current, // Keep existing order data
+          ...updatedOrder, // Overlay order data
+          // Ensure we preserve specific fields that might be newer in currentOrder
+          id: orderRef.current.id,
+        }
+
+        console.log('updateOrder util merged: ', mergedOrder)
+
         // Update the order ref with the fresh data from API
-        orderRef.current = updatedOrder
+        orderRef.current = mergedOrder
 
         // Dispatch the updated order to update the state
         dispatch({
           type: ActionType.UPDATE_ORDER,
           payload: {
-            order: updatedOrder,
+            order: mergedOrder,
           },
         })
 
-        return { success: true, order: updatedOrder }
+        return { success: true, order: mergedOrder }
       } catch (error: any) {
         return { success: false, error }
       }
@@ -944,6 +949,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     [cl]
   )
 
+  // @NOTE: What is this used for? It's naming is confusing with a util imported from @/commercelayer/utils/address
   const attachBillingAddressToOrder = useCallback(
     async (
       addressId: string,
@@ -973,7 +979,15 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
       // If successful, refresh the order state using setAddresses
       if (result.success && result.data) {
-        await setAddresses(result.data)
+        const currentOrder = await getOrderFromRef()
+        const mergedOrder = {
+          ...currentOrder, // Keep existing order data
+          ...result.data, // Overlay address data
+          // Ensure we preserve specific fields that might be newer in currentOrder
+          id: currentOrder.id,
+        }
+
+        await setAddresses(mergedOrder)
       }
 
       return result
@@ -1078,9 +1092,18 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           return { success: false, error: errorMessage }
         }
 
+        // If successful, refresh the order state using setAddresses
+        const currentOrder = await getOrderFromRef()
+        const mergedOrder = {
+          ...currentOrder, // Keep existing order data
+          ...attachResult.data, // Overlay address data
+          // Ensure we preserve specific fields that might be newer in currentOrder
+          id: currentOrder.id,
+        }
+
         // Step 4: Update the checkout provider state with the updated order
-        await setAddresses(attachResult.data)
-        return { success: true, order: attachResult.data }
+        await setAddresses(mergedOrder)
+        return { success: true, order: mergedOrder }
       } catch (error: any) {
         const errorMessage = error?.message || 'Failed to save address'
         return { success: false, error: errorMessage }
