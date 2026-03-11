@@ -1,4 +1,5 @@
 import { useCustomerContext } from '@/commercelayer/providers/customer'
+import { Alert } from '@/components/ui/alert'
 import {
   DialogBody,
   DialogContent,
@@ -10,7 +11,6 @@ import {
   PasswordInput,
   PasswordStrengthMeter,
 } from '@/components/ui/password-input'
-import { Alert } from '@/components/ui/alert'
 import {
   Box,
   Button,
@@ -107,6 +107,7 @@ const ChangePassword = () => {
     <>
       <DialogRoot
         lazyMount
+        placement={'center'}
         open={editing}
         onOpenChange={(e) => {
           if (!e.open) handleClose()

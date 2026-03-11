@@ -1,7 +1,8 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { isValidCart } from '@/commercelayer/utils/isValidCart'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
-import { Button, Text } from '@chakra-ui/react'
+import { Button, Circle, Float, Text } from '@chakra-ui/react'
+import Link from 'next/link'
 
 interface Props {
   // settings: CheckoutSettings
@@ -22,6 +23,23 @@ const CartContainer = ({
     // @TODO: if orderId does not exist, show an empty cart instead of an error
     return (
       <Button
+        variant={'block'}
+        borderWidth={'3px'}
+        fontSize={'xl'}
+        px={2}
+        // borderRadius={'full'}
+        bg={'white'}
+        _hover={{ color: 'white', bg: 'black' }}
+        fontVariantNumeric={'tabular-nums'}
+        // onClick={() => setCartOpen(true)}
+        asChild
+      >
+        <Link href={'/cart'}>{`Cart`}</Link>
+      </Button>
+    )
+    /*
+    return (
+      <Button
         size={'md'}
         _hover={{
           bg: 'black',
@@ -33,24 +51,33 @@ const CartContainer = ({
         onMouseEnter={() => setMenuOpen(true)}
       >{`0`}</Button>
     )
+    */
   }
 
   return (
     children || (
-      <IconButton
-        size={'md'}
-        variant={'circle'}
-        onMouseEnter={() => setMenuOpen(true)}
-        // onMouseLeave={handleCloseMenu}
-        data-active={openMenu ? 'true' : undefined}
-        transition={'none'}
+      <Button
+        variant={'block'}
+        // borderRadius={'full'}
         bg={'white'}
-        _hover={{
-          bg: 'black',
-          color: 'white',
-        }}
+        _hover={{ color: 'white', bg: 'black' }}
+        borderWidth={'3px'}
+        fontSize={'xl'}
+        px={2}
+        fontVariantNumeric={'tabular-nums'}
+        position={'relative'}
+        // onClick={() => setCartOpen(true)}
         asChild
-      >{`${itemsCount}`}</IconButton>
+      >
+        <Link href={'/cart'}>
+          {`Cart`}
+          <Float>
+            <Circle fontSize={'md'} size={5} bg={'blue'} color={'white'}>
+              {itemsCount}
+            </Circle>
+          </Float>
+        </Link>
+      </Button>
     )
   )
 }

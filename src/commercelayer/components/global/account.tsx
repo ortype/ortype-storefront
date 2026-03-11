@@ -9,27 +9,25 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import {
-  Box,
   Button,
-  Container,
+  ButtonGroup,
+  Link as ChakraLink,
   Group,
   Heading,
-  Input,
-  Link,
-  SimpleGrid,
-  Stack,
-  Switch,
-  useDisclosure,
+  Text,
 } from '@chakra-ui/react'
+import Link from 'next/link'
+
 import React, { useEffect, useState } from 'react'
 
 import { LoginForm } from '@/commercelayer/components/forms/LoginForm'
 import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import { getStoredTokenKey } from '@/commercelayer/utils/oauthStorage'
 
 export const Account = ({ openLogin, setLoginOpen }) => {
   const { settings, config, customer, handleLogout } = useIdentityContext()
+
+  const { resetPasswordUrl } = config
 
   const [registerOpen, setRegisterOpen] = useState(false)
 
@@ -49,69 +47,142 @@ export const Account = ({ openLogin, setLoginOpen }) => {
 
   return (
     <>
-      <DialogRoot open={registerOpen} size={'md'}>
+      <DialogRoot
+        placement={'center'}
+        motionPreset={'slide-in-bottom'}
+        open={registerOpen}
+        size={'md'}
+      >
         {/*<DialogBackdrop />*/}
-        <DialogContent bg={'white'}>
-          <DialogHeader>Register</DialogHeader>
+        <DialogContent bg={'white'} borderRadius={'2rem'}>
+          <DialogHeader asChild>
+            <Heading
+              textAlign={'center'}
+              fontSize={'2.5rem'}
+              lineHeight={1}
+              fontWeight={'normal'}
+              textTransform={'uppercase'}
+              mx={'auto'}
+              pb={6}
+            >
+              {`Register`}
+            </Heading>
+          </DialogHeader>
           <DialogCloseTrigger onClick={() => setRegisterOpen(false)} />
-          <DialogBody>
-            <SignUpForm emailAddress={customer.email} />
+          <DialogBody pb={2}>
+            <SignUpForm
+              emailAddress={customer.email}
+              onSuccess={() => setRegisterOpen(false)}
+            />
           </DialogBody>
-          <DialogFooter>
-            <Button size={'sm'} onClick={handleLoginClick}>
-              {'Login'}
-            </Button>
+          <DialogFooter asChild>
+            <Group gap={2} justifyContent={'center'}>
+              <Text textStyle={'xs'} textAlign="center">
+                Already have an account?{' '}
+              </Text>
+              <Button
+                variant={'outline'}
+                borderRadius={'full'}
+                size={'2xs'}
+                bg={'black'}
+                color={'white'}
+                _hover={{ bg: 'white', color: 'black' }}
+                onClick={handleLoginClick}
+              >
+                {'Login'}
+              </Button>
+            </Group>
           </DialogFooter>
         </DialogContent>
       </DialogRoot>
-      <DialogRoot open={openLogin} size={'md'}>
+      <DialogRoot
+        placement={'center'}
+        motionPreset={'slide-in-bottom'}
+        open={openLogin}
+        size={'md'}
+      >
         {/*<DialogBackdrop />*/}
-        <DialogContent bg={'white'}>
-          <DialogHeader>Login</DialogHeader>
+        <DialogContent bg={'white'} borderRadius={'2rem'}>
+          <DialogHeader asChild>
+            <Heading
+              textAlign={'center'}
+              fontSize={'2.5rem'}
+              lineHeight={1}
+              fontWeight={'normal'}
+              textTransform={'uppercase'}
+              mx={'auto'}
+              pb={6}
+            >
+              {settings?.customerId ? `Account` : 'Login'}
+            </Heading>
+          </DialogHeader>
           <DialogCloseTrigger onClick={() => setLoginOpen(false)} />
-          <DialogBody>
+          <DialogBody pb={2}>
             <LoginForm
               emailAddress={customer.email}
               onSuccess={() => setLoginOpen(false)}
             />
           </DialogBody>
-          <DialogFooter>
+          <DialogFooter justifyContent={'center'}>
             <Group gap={2}>
               {settings?.customerId && (
                 <Button
                   as={Link}
                   href={`/account`}
-                  variant={'text'}
-                  size={'sm'}
-                  fontSize={'md'}
-                  // href={`http://localhost:3001/orders?accessToken=${customerCtx?.accessToken}`}
-                  // isExternal
+                  variant={'outline'}
+                  borderRadius={'full'}
+                  size={'2xs'}
+                  bg={'black'}
+                  color={'white'}
+                  _hover={{ bg: 'white', color: 'black' }}
                 >
                   {'My account'}
                 </Button>
               )}
               {customer?.email ? (
-                <Button
-                  variant={'outline'}
-                  bg={'white'}
-                  borderRadius={'5rem'}
-                  size={'sm'}
-                  fontSize={'md'}
-                  onClick={handleLogout}
-                >
-                  {'Logout'}
-                </Button>
+                <ButtonGroup gap={1} variant={'subtle'}>
+                  <Button
+                    borderRadius={'full'}
+                    size={'2xs'}
+                    bg={'black'}
+                    color={'white'}
+                    _hover={{ bg: 'white', color: 'black' }}
+                    onClick={handleLogout}
+                  >
+                    {'Logout'}
+                  </Button>
+                </ButtonGroup>
               ) : (
-                <Button
-                  variant={'outline'}
-                  bg={'white'}
-                  borderRadius={'5rem'}
-                  size={'sm'}
-                  fontSize={'md'}
-                  onClick={handleRegisterClick}
-                >
-                  {'Register'}
-                </Button>
+                <ButtonGroup gap={1} variant={'subtle'}>
+                  {resetPasswordUrl.length > 0 && (
+                    <Button
+                      asChild
+                      size={'2xs'}
+                      bg={'brand.50'}
+                      variant={'subtle'}
+                      borderRadius={'full'}
+                    >
+                      <ChakraLink
+                        target="_blank"
+                        as={Link}
+                        href={`${resetPasswordUrl}`}
+                      >
+                        Forgot password?
+                      </ChakraLink>
+                    </Button>
+                  )}
+                  <Button
+                    variant={'outline'}
+                    borderRadius={'full'}
+                    size={'2xs'}
+                    bg={'black'}
+                    color={'white'}
+                    _hover={{ bg: 'white', color: 'black' }}
+                    onClick={handleRegisterClick}
+                  >
+                    {'Register'}
+                  </Button>
+                </ButtonGroup>
               )}
             </Group>
           </DialogFooter>

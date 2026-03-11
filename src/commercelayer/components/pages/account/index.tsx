@@ -1,14 +1,28 @@
 'use client'
 import Empty from '@/commercelayer/components/pages/account/empty'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import { Box, Container, Heading, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Center,
+  Spinner,
+  Container,
+  Heading,
+  Text,
+} from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import OrderList from './order-list'
 
 function OrdersPage(): JSX.Element {
   const { t } = useTranslation()
   const { isLoading, settings } = useIdentityContext()
-  if (isLoading || !settings) return <div />
+  if (isLoading || !settings)
+    return (
+      <Box pos="fixed" inset="0" bg="bg/80">
+        <Center h="full">
+          <Spinner color="black" size={'xl'} />
+        </Center>
+      </Box>
+    )
   return (
     <>
       {/*<Heading

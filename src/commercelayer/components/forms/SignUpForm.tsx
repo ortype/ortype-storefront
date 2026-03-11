@@ -17,7 +17,10 @@ import { Alert } from '@/components/ui/alert'
 import {
   Box,
   Button,
+  Center,
+  Spinner,
   Link as ChakraLink,
+  Container,
   Fieldset,
   Stack,
 } from '@chakra-ui/react'
@@ -55,7 +58,15 @@ const validationSchema = yup.object().shape({
     .oneOf([yup.ref('customerPassword'), ''], 'Passwords must match'),
 })
 
-export const SignUpForm = ({ emailAddress }): JSX.Element => {
+interface SignUpFormProps {
+  emailAddress?: string
+  onSuccess?: () => void
+}
+
+export const SignUpForm: React.FC<SignUpFormProps> = ({
+  emailAddress,
+  onSuccess,
+}): JSX.Element => {
   const { settings, clientConfig, config, isLoading, handleLogin, customer } =
     useIdentityContext()
 
@@ -110,6 +121,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
       .create({
         email: formData.customerEmail,
         password: formData.customerPassword,
+        metadata: { full_name: formData.customerName },
       })
       .catch((e) => {
         const apiError = { errors: e.errors }
@@ -127,6 +139,9 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
         .then(async (tokenData) => {
           if (tokenData.accessToken != null) {
             await handleLogin(tokenData)
+            if (onSuccess) {
+              onSuccess()
+            }
           }
         })
         .catch((err) => {
@@ -140,7 +155,22 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
 
   // Loading IdentityProvider settings
   if (isLoading) {
-    return <div>Loading</div>
+    return (
+      <Container
+        my={6}
+        maxW={'30rem'}
+        minH={'40rem'}
+        justifyContent={'center'}
+        centerContent
+        position={'relative'}
+      >
+        <Box inset="0" minH={16}>
+          <Center h="full">
+            <Spinner color="black" size={'xl'} />
+          </Center>
+        </Box>
+      </Container>
+    )
   }
 
   // Loading IdentityProvider settings are valid?
@@ -150,33 +180,60 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
 
   return (
     <FormProvider {...form}>
-      <form
+      <Box
+        as={'form'}
         onSubmit={(e) => {
           void onSubmit(e)
         }}
       >
-        <Fieldset.Root size="lg" maxW="sm">
+        <Fieldset.Root>
           <Fieldset.Content>
-            <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
-              <FloatingLabelInput name="customerEmail" label="Email" type="email" variant="subtle" size="lg" fontSize="lg" borderRadius={0} />
+            <Stack gap={2} minW={'sm'}>
+              <FloatingLabelInput
+                name="customerEmail"
+                label="Email"
+                type="email"
+                variant="subtle"
+                size="lg"
+                fontSize="lg"
+                borderRadius={0}
+              />
+              <FloatingLabelInput
+                name="customerName"
+                label="Full name"
+                type="text"
+                variant="subtle"
+                size="lg"
+                fontSize="lg"
+                borderRadius={0}
+              />
               <PasswordInput name="customerPassword" label="Password" />
               <PasswordInput
                 name="customerConfirmPassword"
                 label="Confirm Password"
               />
-              <Box w={'50%'}>
-                <PasswordStrengthMeter value={passwordStrength} py={1} />
-              </Box>
+
               <Button
-                variant={'outline'}
+                variant={'subtle'}
+                w={'full'}
+                borderColor={'brand.50'}
+                borderWidth={'2px'}
+                bg={'brand.50'}
+                _hover={{ bg: 'brand.50', borderColor: 'black' }}
+                borderRadius={'full'}
+                size={'sm'}
+                py={5}
+                fontSize={'lg'}
                 type="submit"
-                alignSelf={'flex-end'}
                 loadingText={'Submitting'}
                 disabled={isSubmitting}
                 loading={isSubmitting}
               >
-                {'Sign Up'}
+                {'Register now'}
               </Button>
+              <Box w={'full'}>
+                <PasswordStrengthMeter value={passwordStrength} pt={1} />
+              </Box>
 
               {form.formState.errors.root && (
                 <Alert status="error" my="4">
@@ -186,7 +243,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
             </Stack>
           </Fieldset.Content>
         </Fieldset.Root>
-      </form>
+      </Box>
     </FormProvider>
   )
 }

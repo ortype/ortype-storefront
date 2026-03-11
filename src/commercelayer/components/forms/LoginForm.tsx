@@ -13,9 +13,15 @@ import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/chakra-button'
 import { PasswordInput } from '@/components/ui/password-input'
 import {
+  Box,
+  Center,
   Link as ChakraLink,
+  Container,
   Fieldset,
+  Flex,
+  Spinner,
   Stack,
+  Text,
   useStepsContext,
 } from '@chakra-ui/react'
 import type { LoginFormValues } from 'Forms'
@@ -51,8 +57,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const log = useDevLogger()
   const [rateLimitCountdown, setRateLimitCountdown] = useState<number>(0)
 
-  const { resetPasswordUrl } = config
-
   const form: UseFormReturn<LoginFormValues, UseFormProps> =
     useForm<LoginFormValues>({
       resolver: yupResolver(validationSchema),
@@ -84,7 +88,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
   // Loading IdentityProvider settings
   if (isLoading) {
-    return <div>Loading</div>
+    return (
+      <Container
+        my={6}
+        maxW={'30rem'}
+        minH={'40rem'}
+        justifyContent={'center'}
+        centerContent
+        position={'relative'}
+      >
+        <Box inset="0" minH={16}>
+          <Center h="full">
+            <Spinner color="black" size={'xl'} />
+          </Center>
+        </Box>
+      </Container>
+    )
   }
 
   // Loading IdentityProvider settings are valid?
@@ -147,35 +166,38 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
   return settings.isGuest ? (
     <FormProvider {...form}>
-      <form
+      <Box
+        as={'form'}
+        w={'full'}
         onSubmit={(e) => {
           void onSubmit(e)
         }}
       >
-        <Fieldset.Root size="lg" maxW="sm">
+        <Fieldset.Root>
           <Fieldset.Content>
-            <Stack gap="4" align="flex-start" minW={'sm'} maxW="sm">
-              <FloatingLabelInput name="customerEmail" label="Email" type="email" variant="subtle" size="lg" fontSize="lg" borderRadius={0} />
+            <Stack gap={2} align="flex-start" minW={'sm'}>
+              <FloatingLabelInput
+                name="customerEmail"
+                label="Email"
+                type="email"
+                variant="subtle"
+                size="lg"
+                fontSize="lg"
+                borderRadius={0}
+              />
               <PasswordInput name="customerPassword" label="Password" />
-
-              {resetPasswordUrl.length > 0 && (
-                <ChakraLink
-                  as={Link}
-                  href={`${resetPasswordUrl}`}
-                  target="_blank"
-                >
-                  Forgot password?
-                </ChakraLink>
-              )}
-
               <Button
-                variant={'outline'}
-                bg={'white'}
-                borderRadius={'5rem'}
+                variant={'subtle'}
+                w={'full'}
+                borderColor={'brand.50'}
+                borderWidth={'2px'}
+                bg={'brand.50'}
+                _hover={{ bg: 'brand.50', borderColor: 'black' }}
+                borderRadius={'full'}
                 size={'sm'}
-                fontSize={'md'}
+                py={5}
+                fontSize={'lg'}
                 type="submit"
-                alignSelf={'flex-end'}
                 loadingText={'Submitting'}
                 disabled={isSubmitting || isRateLimited}
                 loading={isSubmitting}
@@ -194,9 +216,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             </Stack>
           </Fieldset.Content>
         </Fieldset.Root>
-      </form>
+      </Box>
     </FormProvider>
   ) : (
-    <>{`Logged in as ${emailAddress}`}</>
+    <Flex justifyContent={'center'}>
+      <Text textStyle={'md'}>{`Logged in as ${emailAddress}`}</Text>
+    </Flex>
   )
 }

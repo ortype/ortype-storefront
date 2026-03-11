@@ -26,12 +26,12 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
       </DynamicBuyContainer>*/}
       <Button
         // @TODO: look into how to set this up in button.ts
-        bg={'red'}
+        bg={'blue'}
         color={'white'}
         pos={'fixed'}
         size={'md'}
         top={4}
-        right={14}
+        left={'50%'}
         fontSize={'lg'}
         px={'0.75rem'}
         minW={'auto'}

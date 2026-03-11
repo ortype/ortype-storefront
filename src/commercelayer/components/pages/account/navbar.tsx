@@ -17,8 +17,8 @@ function Navbar({ onClick }: Props): JSX.Element {
       comingSoon: false,
       onClick,
     },
-    addresses: {
-      title: t('menu.addresses'),
+    profile: {
+      title: t('menu.profile'),
       href: '/account/profile',
       comingSoon: false,
       onClick,
@@ -45,7 +45,7 @@ function Navbar({ onClick }: Props): JSX.Element {
   return (
     <ButtonGroup size={'sm'} my={2} gap={1}>
       <NavLink id="orders" {...menu.purchases} />
-      <NavLink id="addresses" {...menu.addresses} />
+      <NavLink id="profile" {...menu.profile} />
     </ButtonGroup>
   )
 }

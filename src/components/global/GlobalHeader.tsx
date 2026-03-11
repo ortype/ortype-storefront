@@ -45,7 +45,9 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
   const [openCart, setCartOpen] = useState(false)
   const [openLogin, setLoginOpen] = useState(false)
 
-  const { settings } = useIdentityContext()
+  const { settings, customer } = useIdentityContext()
+  const { full_name } = customer?.metadata
+  const firstLetter = full_name?.charAt(0)
 
   const ref = useRef<HTMLDivElement | null>(null)
   const getAnchorRect = () => ref.current!.getBoundingClientRect()
@@ -56,18 +58,54 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
       <Box p={4} pos={'fixed'} left={0} top={0} zIndex={'docked'}>
         <Nav fonts={fonts} />
       </Box>
-      <Box p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
-        <DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu}>
-          {/*<DynamicCart
+      <Group gap={0} p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
+        {settings.customerId ? (
+          <Button
+            _hover={{
+              bg: 'black',
+              color: 'white',
+            }}
+            variant={'circle'}
+            bg={'white'}
+            px={2}
+            mr={1}
+            fontSize={'3xl'}
+            className={'fontVariant-Ejdp7jjphH9hhnST6'}
+            textTransform={'uppercase'}
+            asChild
+          >
+            <Link href={'/account'}>{firstLetter}</Link>
+          </Button>
+        ) : (
+          <Button
+            //mr={'-3px'}
+            bg={'white'}
+            _hover={{ color: 'white', bg: 'black' }}
+            mr={1}
+            variant={'block'}
+            borderRadius={'full'}
+            borderWidth={'3px'}
+            fontSize={'lg'}
+            size={'md'}
+            px={2}
+            onClick={() => setLoginOpen(true)}
+          >
+            {'Login'}
+          </Button>
+        )}
+        <DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu} />
+        {/*<DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu}>
+        <DynamicCart
             openCart={openCart}
             openMenu={openMenu}
             setCartOpen={setCartOpen}
             setMenuOpen={setMenuOpen}
-          />*/}
-        </DynamicCartContainer>
-        <Box ref={ref} pos={'absolute'} bottom={'20px'} right={'20px'}></Box>
-      </Box>
+          />
+        </DynamicCartContainer>*/}
+        {/*<Box ref={ref} pos={'absolute'} bottom={'20px'} right={'20px'}></Box>*/}
+      </Group>
       <Account setLoginOpen={setLoginOpen} openLogin={openLogin} />
+      {/*
       <MenuRoot
         open={openMenu}
         onOpenChange={(e) => setMenuOpen(e.open)}
@@ -94,6 +132,7 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
           </MenuItem>
         </MenuContent>
       </MenuRoot>
+      */}
     </>
   )
 }

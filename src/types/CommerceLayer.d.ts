@@ -237,6 +237,7 @@ declare module 'Forms' {
 
   export interface SignUpFormValues {
     customerEmail: string
+    customerName: string
     customerPassword: string
     customerConfirmPassword: string
   }

@@ -68,6 +68,14 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
           </Table.Row>
         </Table.Header>
         <Table.Body>
+          {!orders ||
+            (orders?.length === 0 && (
+              <Table.Row>
+                <Table.Cell colSpan={5} py={3} fontSize={'lg'}>
+                  {'No purchases yet'}
+                </Table.Cell>
+              </Table.Row>
+            ))}
           {orders?.map((order) => (
             <Table.Row
               key={order.id}

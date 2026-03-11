@@ -163,6 +163,7 @@
 
   "menu": {
     "purchases": "Purchases",
+    "profile": "Profile",
     "orders": "Orders",
     "ordersDescription": "See your placed orders",
     "addresses": "Addresses",

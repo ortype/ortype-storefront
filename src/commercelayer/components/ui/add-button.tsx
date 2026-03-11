@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 interface Props {
   action: () => void
   testId: string
+  height?: string
 }
 
 export function AddButton(props: Props): JSX.Element {
@@ -18,11 +19,9 @@ export function AddButton(props: Props): JSX.Element {
       variant={'subtle'}
       borderColor={'brand.50'}
       borderWidth={'2px'}
-      // bg={'white'}
       bg={'brand.50'}
       _hover={{ bg: 'brand.50', borderColor: 'black' }}
-      // borderRadius={0}
-      borderRadius={'5rem'}
+      borderRadius={'full'}
       size={'sm'}
       fontSize={'lg'}
       {...props}

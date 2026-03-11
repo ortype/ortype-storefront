@@ -6,19 +6,18 @@ import { useIdentityContext } from '@/commercelayer/providers/identity'
 import {
   Box,
   Button,
-  Card,
   Center,
   Container,
   Flex,
-  GridItem,
   Heading,
   HStack,
-  SimpleGrid,
   Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react'
 import type { Settings } from 'CustomApp'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 interface Props {
   settings: Settings
@@ -30,8 +29,23 @@ function MyAccountContainer({
   children,
 }: Props): JSX.Element {
   const { t } = useTranslation()
-  const { isLoading, settings, clientConfig, config, customer } =
+  const { isLoading, settings, handleLogout, clientConfig, config, customer } =
     useIdentityContext()
+
+  const router = useRouter()
+  /*
+  useEffect(() => {
+    console.log('customer.userMode: ', customer.userMode)
+    if (!isLoading && !customer.userMode) {
+      router.push('/login')
+    }
+  }, [isLoading])
+  */
+
+  const logoutHandler = () => {
+    handleLogout()
+    router.push('/')
+  }
 
   const email = customer?.email as string
   if (isLoading || !settings)
@@ -45,14 +59,22 @@ function MyAccountContainer({
 
   if (!customer.userMode) {
     return (
-      <Container pt={6} maxW="60rem" position={'relative'}>
+      <Container
+        my={6}
+        maxW={'35rem'}
+        minH={'40rem'}
+        justifyContent={'center'}
+        centerContent
+        position={'relative'}
+      >
         <Heading
           textAlign={'center'}
-          fontSize={'2rem'}
+          fontSize={'2.5rem'}
+          lineHeight={1}
           fontWeight={'normal'}
           textTransform={'uppercase'}
           mx={'auto'}
-          pb={8}
+          pb={6}
         >
           {`your account or my account`}
         </Heading>
@@ -98,7 +120,7 @@ function MyAccountContainer({
               <Button
                 variant="text"
                 size="xs"
-                // onClick={logout}
+                onClick={logoutHandler}
                 fontSize="xs"
                 px={2}
                 py={1}

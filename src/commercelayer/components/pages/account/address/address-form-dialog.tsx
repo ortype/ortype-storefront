@@ -42,6 +42,7 @@ export default function AddressFormDialog({
       onOpenChange={(e) => {
         setOpen(e.open)
       }}
+      placement={'center'}
     >
       <DialogContent borderRadius={'2rem'}>
         <DialogHeader>
