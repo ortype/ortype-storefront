@@ -1,4 +1,5 @@
-import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { useCheckoutContext } from '@/commercelayer/providers/checkout'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Button, useStepsContext } from '@chakra-ui/react'
 import { Order } from '@commercelayer/sdk'
 import { LockIcon } from '@sanity/icons'
@@ -29,15 +30,23 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
   ...props
 }) => {
   const [isPlacing, setIsPlacing] = useState(false)
-  const checkoutCtx = useContext(CheckoutContext)
+  const checkoutCtx = useCheckoutContext()
+  const { refetchOrder } = useOrderContext()
   const stepsContext = useStepsContext()
 
   if (!checkoutCtx) {
     return null
   }
 
-  const { order, isLoading, placeOrder, submitRegisteredPayment } = checkoutCtx
+  const {
+    order,
+    isLoading,
+    placeOrder,
+    hasPaymentMethod,
+    submitRegisteredPayment,
+  } = checkoutCtx
 
+  // @TODO: include checkoutCtx.hasPaymentMethod === true
   const canPlaceOrder = order && !isLoading && !isPlacing && !disabled
 
   const handleClick = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -47,13 +56,15 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
       return
     }
 
-    if (!termsChecked) {
-      // highlight the Terms of Use box in case it isn't
-      onClick && onClick({ placed: false, order })
-    }
-
     try {
       setIsPlacing(true)
+      console.error('Payment method not selected')
+      if (!hasPaymentMethod) {
+        if (onClick) {
+          onClick({ placed: false, order })
+        }
+        return
+      }
 
       // Submit any registered payment form (e.g., Stripe) before placing order
       console.log('Submitting registered payment form...')
@@ -64,6 +75,13 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
         if (onClick) {
           onClick({ placed: false, order })
         }
+        return
+      }
+
+      if (!termsChecked) {
+        // highlight the Terms of Use box in case it isn't
+        console.log('Terms not checked...')
+        onClick && onClick({ placed: false, order })
         return
       }
 
@@ -93,6 +111,7 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
         onClick({ placed: false, order })
       }
     } finally {
+      refetchOrder()
       setIsPlacing(false)
     }
   }

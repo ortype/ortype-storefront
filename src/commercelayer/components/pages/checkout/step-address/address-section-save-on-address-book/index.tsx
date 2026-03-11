@@ -1,5 +1,11 @@
+import { useState } from 'react'
+
 import { Checkbox } from '@/components/ui/checkbox'
-import { setCustomerOrderParam } from '@/utils/localStorage'
+import {
+  getSaveBillingAddressToAddressBook,
+  getSaveShippingAddressToAddressBook,
+  setCustomerOrderParam,
+} from '@/utils/localStorage'
 import { Card } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
@@ -26,7 +32,14 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
       ? '_save_billing_address_to_customer_address_book'
       : '_save_shipping_address_to_customer_address_book'
 
+  const [checked, setChecked] = useState(() =>
+    addressType === 'billing'
+      ? getSaveBillingAddressToAddressBook()
+      : getSaveShippingAddressToAddressBook()
+  )
+
   const handleChange = (e: { checked: boolean }) => {
+    setChecked(e.checked)
     setCustomerOrderParam(
       storageKey as '_save_billing_address_to_customer_address_book' | '_save_shipping_address_to_customer_address_book',
       e.checked ? 'true' : 'false'
@@ -41,7 +54,7 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
           name={fieldName}
           id={fieldName}
           className="form-checkbox"
-          defaultChecked={false}
+          checked={checked}
           onCheckedChange={handleChange}
           variant={'outline'}
           size={'sm'}
