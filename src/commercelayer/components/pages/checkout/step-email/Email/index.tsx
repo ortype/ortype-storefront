@@ -82,9 +82,10 @@ export const Email: React.FC<Props> = ({
                 data-testid="customer_email"
                 disabled={readonly || isLoading}
                 variant="subtle"
-                size={'2xl'}
+                fontSize="lg"
                 minW={'30rem'}
-                fontSize={'2xl'}
+                size="lg"
+                fontSize="lg"
                 borderRadius={0}
               />
               {error && (
@@ -94,7 +95,7 @@ export const Email: React.FC<Props> = ({
               )}
               <Button
                 type="submit"
-                alignSelf="flex-end"
+                alignSelf="flex-start"
                 loading={isLoading}
                 disabled={readonly}
                 variant={'outline'}

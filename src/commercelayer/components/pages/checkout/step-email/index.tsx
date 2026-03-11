@@ -1,8 +1,8 @@
 import { LoginForm as LoginFormNew } from '@/commercelayer/components/forms/LoginForm'
-import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Box, Center, Spinner, Container } from '@chakra-ui/react'
-import { useContext, useEffect, useState } from 'react'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
+import { Box, Text, Center, Container, Spinner } from '@chakra-ui/react'
+import { useContext, useEffect } from 'react'
 import { Email } from './Email'
 import { SignUpForm } from './signup-form'
 
@@ -22,9 +22,6 @@ export const StepEmail: React.FC<Props> = () => {
     useIdentityContext()
   const { hasEmailAddress, emailAddress } = checkoutCtx
 
-  // @NOTE: not doing anything yet with this state
-  const [isLocalLoader, setIsLocalLoader] = useState(false)
-
   useEffect(() => {
     if (emailAddress && !customer.checkoutEmail) {
       checkCustomerEmail(emailAddress)
@@ -42,9 +39,11 @@ export const StepEmail: React.FC<Props> = () => {
   const email = emailAddress || customer.email
 
   // Derive which auth form to show (Login vs Sign-Up)
-  // Use IdentityProvider's customer.checkoutEmailHasAccount property: false = customer has password (show Login), true = guest (show Sign-Up)
-  // Provide graceful fallback: show Sign-Up if order.guest is undefined
-  const requiresLogin = customer.checkoutEmailHasAccount && hasEmailAddress
+  // Wait until the email check completes before deciding
+  const requiresLogin =
+    !customer.isCheckingEmail &&
+    customer.checkoutEmailHasAccount &&
+    hasEmailAddress
 
   if (customer.isLoading) {
     return (
@@ -58,18 +57,21 @@ export const StepEmail: React.FC<Props> = () => {
 
   if (customer.userMode) {
     return (
-      <Container
-        centerContent
-        my={4}
-      >{`Logged in as ${emailAddress}`}</Container>
+      <Container centerContent my={4} textAlign={'center'}>
+        <Text textStyle={'2xl'}>{`Logged in as ${emailAddress}`}</Text>
+      </Container>
     )
   }
 
   return (
-    <Container centerContent my={4}>
+    <Container centerContent my={4} maxW={'30rem'} position={'relative'}>
       {hasEmailAddress ? (
         <>
-          {requiresLogin ? (
+          {customer.isCheckingEmail ? (
+            <Center h="full">
+              <Spinner color="black" size={'xl'} />
+            </Center>
+          ) : requiresLogin ? (
             <LoginFormNew emailAddress={email} />
           ) : (
             <SignUpForm emailAddress={email} />

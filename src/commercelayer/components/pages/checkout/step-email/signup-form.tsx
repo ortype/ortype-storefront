@@ -8,8 +8,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
 import { FloatingLabelInput } from '@/commercelayer/components/ui/floating-label-input'
-import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
+import { useIdentityContext } from '@/commercelayer/providers/identity'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
@@ -17,8 +17,9 @@ import getCommerceLayer, {
 import { Alert } from '@/components/ui/alert'
 import {
   Box,
+  Center,
+  Spinner,
   Button,
-  Link as ChakraLink,
   Container,
   Fieldset,
   Stack,
@@ -26,7 +27,6 @@ import {
 } from '@chakra-ui/react'
 
 import type { SignUpFormValues } from 'Forms'
-import { useState } from 'react'
 import type { UseFormProps, UseFormReturn } from 'react-hook-form'
 
 const validationSchema = yup.object().shape({
@@ -34,6 +34,10 @@ const validationSchema = yup.object().shape({
     .string()
     .email('Email is invalid')
     .required('Email is required'),
+  customerName: yup
+    .string()
+    .required('Full name is required')
+    .min(2, 'Name must be at least 2 characters'),
   customerPassword: yup
     .string()
     .required('Password is required')
@@ -59,12 +63,11 @@ const validationSchema = yup.object().shape({
 })
 
 export const SignUpForm = ({ emailAddress }): JSX.Element => {
-  const { settings, clientConfig, config, isLoading, handleLogin, customer } =
+  const { settings, clientConfig, config, isLoading, handleLogin } =
     useIdentityContext()
 
-  const { setCustomerPassword, hasEmailAddress } = useCheckoutContext()
+  const { setCustomerPassword } = useCheckoutContext()
   const stepsContext = useStepsContext()
-  const [apiError, setApiError] = useState({})
 
   const form: UseFormReturn<SignUpFormValues, UseFormProps> =
     useForm<SignUpFormValues>({
@@ -102,116 +105,86 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
 
   const onSubmit = form.handleSubmit(async (formData) => {
     if (!isValidCommerceLayerConfig(clientConfig)) {
-      setApiError({
-        errors: [{ detail: 'Invalid Commerce Layer configuration' }],
+      form.setError('root', {
+        type: 'custom',
+        message: 'Invalid Commerce Layer configuration',
       })
       return
     }
 
-    // Check if we're in checkout context with existing customer that needs password setup
-    // isGuest: true +  = customer exists but has no password (use shortcut signup)
-    if (setCustomerPassword && settings.isGuest && hasEmailAddress) {
-      try {
-        // Use Commerce Layer's shortcut to sign up the associated customer
-        const result = await setCustomerPassword(formData.customerPassword)
+    try {
+      // Step 1: Set password on the guest customer via order shortcut
+      const result = await setCustomerPassword(formData.customerPassword)
 
-        if (result.success) {
-          // After successful password setup, authenticate the customer
-          await authenticate('password', {
-            clientId: config.clientId,
-            domain: config.domain,
-            scope: config.scope,
-            username: formData.customerEmail,
-            password: formData.customerPassword,
-          })
-            .then(async (tokenData) => {
-              if (tokenData.accessToken != null) {
-                await handleLogin(tokenData)
-                console.log('✅ Sign up successful - advancing to next step')
-                // Advance to next step using Chakra UI Steps context
-                if (stepsContext && stepsContext.goToNextStep) {
-                  console.log(
-                    '🚀 Advancing to next step after successful signup'
-                  )
-                  stepsContext.goToNextStep()
-                } else {
-                  console.warn(
-                    '⚠️ Steps context not available for step advancement'
-                  )
-                }
-              }
-            })
-            .catch((err) => {
-              form.setError('root', {
-                type: 'custom',
-                message: 'Authentication failed after password setup',
-              })
-            })
-        } else {
-          form.setError('root', {
-            type: 'custom',
-            message: 'Failed to set customer password',
-          })
-        }
-      } catch (error) {
+      if (!result.success) {
         form.setError('root', {
           type: 'custom',
           message: 'Failed to set customer password',
         })
+        return
       }
-      return
-    }
 
-    // Regular customer creation flow
-    const client = getCommerceLayer(clientConfig)
-
-    const createCustomerResponse = await client.customers
-      .create({
-        email: formData.customerEmail,
-        password: formData.customerPassword,
-      })
-      .catch((e) => {
-        const apiError = { errors: e.errors }
-        setApiError(apiError)
-      })
-
-    if (createCustomerResponse?.id != null) {
-      await authenticate('password', {
+      // Step 2: Authenticate with the new password to get a customer-scoped token
+      const tokenData = await authenticate('password', {
         clientId: config.clientId,
         domain: config.domain,
         scope: config.scope,
         username: formData.customerEmail,
         password: formData.customerPassword,
       })
-        .then(async (tokenData) => {
-          if (tokenData.accessToken != null) {
-            await handleLogin(tokenData)
-            console.log('✅ Regular signup successful - advancing to next step')
-            // Advance to next step using Chakra UI Steps context
-            if (stepsContext && stepsContext.goToNextStep) {
-              console.log(
-                '🚀 Advancing to next step after successful customer creation'
-              )
-              stepsContext.goToNextStep()
-            } else {
-              console.warn(
-                '⚠️ Steps context not available for step advancement'
-              )
-            }
-          }
+
+      if (!tokenData.accessToken) {
+        form.setError('root', {
+          type: 'custom',
+          message: 'Authentication failed after password setup',
         })
-        .catch((err) => {
-          form.setError('root', {
-            type: 'custom',
-            message: 'Invalid credentials',
-          })
+        return
+      }
+
+      // Step 3: Update customer metadata using the customer-scoped token
+      if (tokenData.ownerId && formData.customerName) {
+        const authenticatedClient = getCommerceLayer({
+          ...clientConfig,
+          accessToken: tokenData.accessToken,
         })
+        await authenticatedClient.customers.update({
+          id: tokenData.ownerId,
+          metadata: { full_name: formData.customerName },
+        })
+      }
+
+      // Step 4: Complete login and advance to next step
+      await handleLogin(tokenData)
+
+      if (stepsContext?.goToNextStep) {
+        stepsContext.goToNextStep()
+      }
+    } catch (error) {
+      form.setError('root', {
+        type: 'custom',
+        message: 'Registration failed. Please try again.',
+      })
     }
   })
 
   // Loading IdentityProvider settings
   if (isLoading) {
-    return <div>Loading</div>
+    return (
+      <Container
+        my={6}
+        maxW={'30rem'}
+        minH={'40rem'}
+        justifyContent={'center'}
+        centerContent
+        position={'relative'}
+      >
+        <Box inset="0" minH={16}>
+          <Center h="full">
+            <Spinner color="black" size={'xl'} />
+          </Center>
+        </Box>
+      </Container>
+    )
   }
 
   // Loading IdentityProvider settings are valid?
@@ -229,31 +202,50 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
         <Fieldset.Root size="lg" maxW="lg">
           <Fieldset.Content asChild>
             <Stack gap="2" align="flex-start" minW={'sm'} maxW="sm">
-              <FloatingLabelInput name="customerEmail" label="Email" type="email" variant="subtle" size="lg" fontSize="lg" borderRadius={0} />
+              <FloatingLabelInput
+                name="customerEmail"
+                label="Email"
+                type="email"
+                variant="subtle"
+                size="lg"
+                fontSize="lg"
+                borderRadius={0}
+              />
+              <FloatingLabelInput
+                name="customerName"
+                label="Full name"
+                type="text"
+                variant="subtle"
+                size="lg"
+                fontSize="lg"
+                borderRadius={0}
+              />
               <PasswordInput name="customerPassword" label="Password" />
               <PasswordInput
                 name="customerConfirmPassword"
                 label="Confirm Password"
               />
-              <Box w={'50%'}>
-                <PasswordStrengthMeter value={passwordStrength} py={1} />
-              </Box>
               <Button
-                variant={'outline'}
+                variant={'subtle'}
+                w={'full'}
+                borderColor={'brand.50'}
+                borderWidth={'2px'}
+                bg={'brand.50'}
+                _hover={{ bg: 'brand.50', borderColor: 'black' }}
+                borderRadius={'full'}
+                size={'sm'}
+                py={5}
+                fontSize={'lg'}
                 type="submit"
-                alignSelf={'flex-end'}
                 loadingText={'Submitting'}
                 disabled={isSubmitting}
                 loading={isSubmitting}
-                variant={'outline'}
-                bg={'white'}
-                borderRadius={'5rem'}
-                size={'sm'}
-                fontSize={'md'}
               >
-                {'Sign Up'}
+                {'Register now'}
               </Button>
-
+              <Box w={'100%'}>
+                <PasswordStrengthMeter value={passwordStrength} py={1} />
+              </Box>
               {form.formState.errors.root && (
                 <Alert status="error" my="4">
                   {form.formState.errors.root.message}

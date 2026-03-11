@@ -25,7 +25,7 @@ const getAsyncCustomer = async (
 ) => {
   return await client.customers.retrieve(customerId, {
     fields: {
-      customers: ['email', 'has_password'],
+      customers: ['email', 'has_password', 'metadata'],
     },
   })
 }

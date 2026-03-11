@@ -27,7 +27,9 @@ const initialCustomerState: CustomerStateData = {
   email: '',
   hasPassword: false,
   isLoading: true,
+  isCheckingEmail: false,
   userMode: false,
+  metadata: {},
   checkoutEmail: '',
   checkoutEmailHasAccount: false,
 }
@@ -147,6 +149,7 @@ export function IdentityProvider({
         userMode: true,
         email: customerDetails?.email ?? '',
         hasPassword: customerDetails?.has_password ?? false,
+        metadata: customerDetails?.metadata ?? {},
         isLoading: false,
       })
     })
@@ -178,7 +181,7 @@ export function IdentityProvider({
 
     setCustomer((prev) => ({
       ...prev,
-      isLoading: true,
+      isCheckingEmail: true,
       checkoutEmail: email,
     }))
 
@@ -200,7 +203,7 @@ export function IdentityProvider({
         ...prev,
         checkoutEmail: email,
         checkoutEmailHasAccount: hasAccount,
-        isLoading: false,
+        isCheckingEmail: false,
       }))
 
       return hasAccount
@@ -210,7 +213,7 @@ export function IdentityProvider({
         ...prev,
         checkoutEmail: email,
         checkoutEmailHasAccount: false,
-        isLoading: false,
+        isCheckingEmail: false,
       }))
       return false
     }
@@ -303,6 +306,7 @@ export function IdentityProvider({
       setCustomer({
         ...initialCustomerState,
         isLoading: false,
+        isCheckingEmail: false,
         userMode: false,
         // Reset checkout state on logout
         checkoutEmail: undefined,

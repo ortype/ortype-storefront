@@ -26,11 +26,18 @@ export interface IdentityProviderValue {
   checkCustomerEmail: (email: string) => Promise<boolean>
 }
 
+interface CustomerMetadata {
+  full_name?: string
+  company_name?: string
+}
+
 export interface CustomerStateData {
   email: string
   hasPassword: boolean
   isLoading: boolean
+  isCheckingEmail: boolean
   userMode: boolean
+  metadata: CustomerMetadata
   checkoutEmail?: string
   checkoutEmailHasAccount?: boolean
 }
