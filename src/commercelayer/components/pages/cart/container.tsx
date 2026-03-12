@@ -72,7 +72,7 @@ const CartContainer = ({
         <Link href={'/cart'}>
           {`Cart`}
           <Float>
-            <Circle fontSize={'md'} size={5} bg={'blue'} color={'white'}>
+            <Circle fontSize={'md'} size={5} bg={'red'} color={'white'}>
               {itemsCount}
             </Circle>
           </Float>

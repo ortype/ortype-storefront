@@ -120,7 +120,7 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
     <Button
       type="submit"
       variant={'solid'}
-      bg={'blue'}
+      bg={'black'}
       borderRadius={'5rem'}
       size={'xl'}
       color={'white'}

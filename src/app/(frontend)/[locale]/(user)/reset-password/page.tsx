@@ -16,6 +16,7 @@ import {
   Center,
   Link as ChakraLink,
   Container,
+  Flex,
   Group,
   Heading,
   Spinner,
@@ -271,11 +272,24 @@ export default function ResetPassword() {
       >
         {`Reset your password`}
       </Heading>
-      <Card.Root my={2} w={'full'}>
+      {/*<Card.Root my={2} w={'full'}>
         <Card.Body py={2} px={3}>
           <Text textStyle={'lg'}>{'Enter your new password below.'}</Text>
         </Card.Body>
-      </Card.Root>
+      </Card.Root>*/}
+      <Box
+        px={3}
+        fontSize={'xs'}
+        textTransform={'uppercase'}
+        color={'#737373'}
+        mb={2}
+        w={'full'}
+        asChild
+      >
+        <Flex gap={1} textAlign={'left'} alignItems={'flex-start'}>
+          {'Enter your new password below'}
+        </Flex>
+      </Box>
       <FormProvider {...form}>
         <Box as={'form'} w={'full'} onSubmit={onSubmit}>
           <Stack gap={2}>

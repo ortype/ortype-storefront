@@ -78,7 +78,8 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
           pos={'relative'}
           variant="square"
           size="md"
-          bg={'white'}
+          bg={typeTrigger || openMenu ? 'white' : 'black'}
+          color={typeTrigger || openMenu ? 'black' : 'white'}
           h={11}
           w={11}
           onMouseEnter={() => {
@@ -89,8 +90,8 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
           data-active={openMenu ? 'true' : undefined}
           transition={'none'}
           _hover={{
-            bg: 'black',
-            color: 'white',
+            bg: 'white',
+            color: 'black',
           }}
           asChild
         >
