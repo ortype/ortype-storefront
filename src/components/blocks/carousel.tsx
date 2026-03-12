@@ -77,9 +77,9 @@ const Carousel = ({ value = {} }) => {
       base: wHeight * 0.3,
       sm: wHeight * 0.3,
       md: wHeight * 0.35,
-      lg: wHeight * 0.4,
-      xl: wHeight * 0.45,
-      '2xl': wHeight * 0.5,
+      lg: wHeight * 0.5,
+      xl: wHeight * 0.55,
+      '2xl': wHeight * 0.65,
     },
     {
       fallback: 'md',

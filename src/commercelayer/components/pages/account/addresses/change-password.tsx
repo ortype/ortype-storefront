@@ -2,6 +2,7 @@ import { useCustomerContext } from '@/commercelayer/providers/customer'
 import { Alert } from '@/components/ui/alert'
 import {
   DialogBody,
+  DialogCloseTrigger,
   DialogContent,
   DialogHeader,
   DialogRoot,
@@ -107,14 +108,13 @@ const ChangePassword = () => {
     <>
       <DialogRoot
         lazyMount
-        placement={'center'}
         open={editing}
         onOpenChange={(e) => {
           if (!e.open) handleClose()
           else setEditing(true)
         }}
       >
-        <DialogContent borderRadius={'2rem'}>
+        <DialogContent maxW={'40rem'}>
           <DialogHeader>
             <DialogTitle
               textAlign={'center'}
@@ -126,6 +126,7 @@ const ChangePassword = () => {
             >
               {'Choose new password'}
             </DialogTitle>
+            <DialogCloseTrigger />
           </DialogHeader>
           <DialogBody>
             <FormProvider {...form}>
@@ -140,7 +141,7 @@ const ChangePassword = () => {
                     name="customerConfirmPassword"
                     label="Confirm Password"
                   />
-                  <Box w={'50%'}>
+                  <Box w={'100%'}>
                     <PasswordStrengthMeter value={passwordStrength} py={1} />
                   </Box>
                   {form.formState.errors.root && (
@@ -148,27 +149,26 @@ const ChangePassword = () => {
                       {form.formState.errors.root.message}
                     </Alert>
                   )}
-                  <ButtonGroup
-                    gap={1}
-                    variant={'outline'}
-                    size={'sm'}
-                    fontSize={'md'}
-                  >
+                  <ButtonGroup gap={1}>
                     <Button
-                      borderRadius={'5rem'}
+                      variant={'rounded'}
+                      size={'sm'}
+                      fontSize={'md'}
+                      bg={'white'}
+                      onClick={handleClose}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size={'sm'}
+                      fontSize={'md'}
+                      variant={'rounded'}
                       bg={'colorPalette.fg'}
                       color={'colorPalette.bg'}
                       type="submit"
                       loading={isSubmitting}
                     >
                       Save
-                    </Button>
-                    <Button
-                      bg={'white'}
-                      borderRadius={'5rem'}
-                      onClick={handleClose}
-                    >
-                      Cancel
                     </Button>
                   </ButtonGroup>
                 </Stack>

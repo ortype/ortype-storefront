@@ -131,18 +131,6 @@ export const buttonRecipe = defineRecipe({
           bg: 'colorPalette.muted',
         },
       },
-      surface: {
-        bg: 'colorPalette.subtle',
-        color: 'colorPalette.fg',
-        shadow: '0 0 0px 1px var(--shadow-color)',
-        shadowColor: 'colorPalette.muted',
-        _hover: {
-          bg: 'colorPalette.muted',
-        },
-        _expanded: {
-          bg: 'colorPalette.muted',
-        },
-      },
       outline: {
         borderWidth: '2px',
         borderColor: 'colorPalette.border',
@@ -180,8 +168,9 @@ export const buttonRecipe = defineRecipe({
       },
       // custom
       rounded: {
-        borderRadius: 5,
+        borderRadius: 'full',
         borderWidth: '2px',
+        bg: 'colorPalette.bg',
         color: 'colorPalette.fg',
         _hover: {
           bg: 'colorPalette.subtle',

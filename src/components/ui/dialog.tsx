@@ -39,6 +39,7 @@ export const DialogCloseTrigger = React.forwardRef<
   return (
     <ChakraDialog.CloseTrigger
       position="absolute"
+      zIndex={'skipNav'}
       top="4"
       insetEnd="4"
       {...props}

@@ -307,9 +307,8 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
               >
                 {onCancel && (
                   <Button
-                    variant={'outline'}
+                    variant={'rounded'}
                     bg={'white'}
-                    borderRadius={'5rem'}
                     size={'sm'}
                     fontSize={'md'}
                     onClick={onCancel}
@@ -327,8 +326,9 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   }
                   loading={isLocalLoader}
                   disabled={isLocalLoader}
-                  variant={'outline'}
-                  bg={'white'}
+                  variant={'rounded'}
+                  bg={'black'}
+                  color={'white'}
                   borderRadius={'5rem'}
                   size={'sm'}
                   fontSize={'md'}

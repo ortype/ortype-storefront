@@ -36,7 +36,7 @@ export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
       <Button
         asChild
         variant={'solid'}
-        bg={'blue'}
+        bg={'black'}
         borderRadius={'5rem'}
         size={'sm'}
         fontSize={'md'}

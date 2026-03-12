@@ -47,14 +47,8 @@ export const Account = ({ openLogin, setLoginOpen }) => {
 
   return (
     <>
-      <DialogRoot
-        placement={'center'}
-        motionPreset={'slide-in-bottom'}
-        open={registerOpen}
-        size={'md'}
-      >
-        {/*<DialogBackdrop />*/}
-        <DialogContent bg={'white'} borderRadius={'2rem'}>
+      <DialogRoot open={registerOpen}>
+        <DialogContent maxW={'35rem'}>
           <DialogHeader asChild>
             <Heading
               textAlign={'center'}
@@ -95,14 +89,8 @@ export const Account = ({ openLogin, setLoginOpen }) => {
           </DialogFooter>
         </DialogContent>
       </DialogRoot>
-      <DialogRoot
-        placement={'center'}
-        motionPreset={'slide-in-bottom'}
-        open={openLogin}
-        size={'md'}
-      >
-        {/*<DialogBackdrop />*/}
-        <DialogContent bg={'white'} borderRadius={'2rem'}>
+      <DialogRoot open={openLogin}>
+        <DialogContent maxW={'35rem'}>
           <DialogHeader asChild>
             <Heading
               textAlign={'center'}

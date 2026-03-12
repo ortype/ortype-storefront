@@ -1,6 +1,7 @@
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
 import {
   DialogBody,
+  DialogCloseTrigger,
   DialogContent,
   DialogHeader,
   DialogRoot,
@@ -80,7 +81,6 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
           <DialogRoot
             lazyMount
             open={editing}
-            placement={'center'}
             onOpenChange={(e) => setEditing(e.open)}
           >
             <DialogTrigger asChild>
@@ -88,7 +88,7 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
                 {t('stepLicense.editButton', 'Edit address')}
               </Button>
             </DialogTrigger>
-            <DialogContent borderRadius={'2rem'}>
+            <DialogContent maxW={'50rem'}>
               <DialogHeader>
                 <DialogTitle
                   textAlign={'center'}
@@ -100,6 +100,7 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
                 >
                   {'Edit license owner'}
                 </DialogTitle>
+                <DialogCloseTrigger />
               </DialogHeader>
               <DialogBody>
                 <LicenseOwnerForm

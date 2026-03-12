@@ -62,10 +62,9 @@ export function SaveAddressesButton(props: Props): JSX.Element {
   return (
     <Button
       type="button"
-      variant={'outline'}
+      variant={'rounded'}
       bg={'colorPalette.fg'}
       color={'colorPalette.bg'}
-      borderRadius={'5rem'}
       size={'sm'}
       fontSize={'md'}
       disabled={disable || forceDisable}

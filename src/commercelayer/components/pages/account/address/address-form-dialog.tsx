@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DialogBody,
+  DialogCloseTrigger,
   DialogContent,
   DialogHeader,
   DialogRoot,
@@ -37,14 +38,12 @@ export default function AddressFormDialog({
   return (
     <DialogRoot
       lazyMount
-      size={'lg'}
       open={open}
       onOpenChange={(e) => {
         setOpen(e.open)
       }}
-      placement={'center'}
     >
-      <DialogContent borderRadius={'2rem'}>
+      <DialogContent maxW={'50rem'}>
         <DialogHeader>
           <DialogTitle
             textAlign={'center'}
@@ -58,6 +57,7 @@ export default function AddressFormDialog({
               ? t('addresses.addressForm.new_address_title')
               : t('addresses.addressForm.edit_address_title')}
           </DialogTitle>
+          <DialogCloseTrigger onClick={handleClose} />
         </DialogHeader>
         <DialogBody>
           <CustomerAddressProvider
@@ -72,9 +72,7 @@ export default function AddressFormDialog({
                 closeButton={
                   <Button
                     onClick={handleClose}
-                    variant={'outline'}
-                    bg={'white'}
-                    borderRadius={'5rem'}
+                    variant={'rounded'}
                     size={'sm'}
                     fontSize={'md'}
                   >

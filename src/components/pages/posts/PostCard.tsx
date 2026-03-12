@@ -5,6 +5,7 @@ import Carousel from '@/components/blocks/carousel'
 import Image from '@/components/global/Image'
 import {
   DialogActionTrigger,
+  DialogBackdrop,
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
@@ -62,7 +63,13 @@ const PostCard = ({
         opacity: { duration: 0.2 },
       }}
     >
-      <Card.Root maxW="md" overflow="hidden" borderRadius={0} border={'none'}>
+      <Card.Root
+        bg={'transparent'}
+        maxW="md"
+        overflow="hidden"
+        borderRadius={0}
+        border={'none'}
+      >
         <Card.Body p={0} onClick={() => setOpen(true)} cursor={'pointer'}>
           <Image
             image={post.coverImage}
@@ -120,20 +127,25 @@ const PostCard = ({
         lazyMount
         open={open}
         onOpenChange={(e) => setOpen(e.open)}
-        scrollBehavior={'outside'}
-        motionPreset={'scale'}
         closeOnEscape={true}
-        placement={'center'}
-        size={'container'}
+        size={'full'}
+        motionPreset={'slide-in-bottom'}
       >
-        <DialogContent backdrop={true} borderRadius={5}>
+        <DialogContent bg={'white'}>
           {/*<DialogHeader>
             <DialogTitle>{post.title}</DialogTitle>
           </DialogHeader>*/}
-          <DialogBody p={0} overflow={'hidden'} borderRadius={5}>
+          <DialogCloseTrigger right={4} top={4} />
+          <DialogBody p={0} overflow={'hidden'}>
             {post.gallery && <Carousel value={{ images: post.gallery }} />}
             {post.content && (
-              <SimpleGrid columns={3} gap={'2rem'} mx={'2rem'} mb={'2rem'}>
+              <SimpleGrid
+                // maxW={'80rem'}
+                columns={3}
+                gap={'2rem'}
+                mx={'2rem'}
+                mb={'2rem'}
+              >
                 <GridItem py={'1rem'}>
                   {/*<Button variant="outline" asChild>
                     <a href={`/archive/${post?.slug}`}>Learn more</a>
@@ -183,6 +195,7 @@ const PostCard = ({
               </SimpleGrid>
             )}
           </DialogBody>
+
           {/*post.content && (
             <DialogFooter>
               <DialogActionTrigger asChild>
@@ -192,7 +205,6 @@ const PostCard = ({
               </DialogActionTrigger>
             </DialogFooter>
             )*/}
-          <DialogCloseTrigger insetEnd={'-12'} top={0} bg="bg" />
         </DialogContent>
       </DialogRoot>
     </motion.div>

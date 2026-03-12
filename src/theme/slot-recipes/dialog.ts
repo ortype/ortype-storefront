@@ -17,14 +17,14 @@ export const dialogSlotRecipe = defineSlotRecipe({
   className: 'chakra-dialog',
   base: {
     backdrop: {
-      bg: 'blackAlpha.500',
+      bg: 'blackAlpha.200',
       pos: 'fixed',
       left: 0,
       top: 0,
       w: '100vw',
       h: '100dvh',
       zIndex: 'modal',
-      backdropFilter: 'blur(8px)',
+      backdropFilter: 'blur(40px)',
       _open: {
         animationName: 'fade-in',
         animationDuration: 'slow',
@@ -57,8 +57,8 @@ export const dialogSlotRecipe = defineSlotRecipe({
       my: 'var(--dialog-margin, var(--dialog-base-margin))',
       '--dialog-z-index': 'zIndex.modal',
       zIndex: 'calc(var(--dialog-z-index) + var(--layer-index, 0))',
-      bg: 'bg.panel',
-      boxShadow: 'lg',
+      bg: 'transparent',
+      boxShadow: 'none',
       _open: {
         animationDuration: 'moderate',
       },
@@ -185,7 +185,7 @@ export const dialogSlotRecipe = defineSlotRecipe({
         },
         content: {
           width: '100%',
-          height: '100%',
+          height: 'auto',
           '--dialog-margin': '0',
         },
       },
@@ -253,9 +253,9 @@ export const dialogSlotRecipe = defineSlotRecipe({
     },
   },
   defaultVariants: {
-    size: 'md',
+    size: 'cover',
     scrollBehavior: 'outside',
-    placement: 'top',
+    placement: 'center',
     motionPreset: 'scale',
   },
 })
