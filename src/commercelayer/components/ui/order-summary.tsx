@@ -210,15 +210,28 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               <Box
                 textAlign={'right'}
                 fontVariantNumeric={'tabular-nums'}
-              >{`EUR ${lineItem.unit_amount_float}`}</Box>
+              >{`${lineItem.unit_amount_float} EUR`}</Box>
             </SimpleGrid>
           ))}
           <SimpleGrid
-            columns={3}
-            py={3}
+            columns={2}
+            pt={3}
+            pb={2}
             mt={1.5}
             borderTop={'1px solid #E7E0BF'}
           >
+            <Box fontSize={'lg'} fontWeight={'normal'}>
+              {'Subtotal (excl. discounts)'}
+            </Box>
+            <Box
+              fontSize={'lg'}
+              textAlign={'right'}
+              fontVariantNumeric={'tabular-nums'}
+            >
+              {`${order?.total_amount_with_taxes_float} EUR`}
+            </Box>
+          </SimpleGrid>
+          <SimpleGrid columns={2} py={3}>
             <Box
               fontSize={'xl'}
               textTransform={'uppercase'}
@@ -226,13 +239,12 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             >
               {'Total'}
             </Box>
-            <Box></Box>
             <Box
               fontSize={'xl'}
               textAlign={'right'}
               fontVariantNumeric={'tabular-nums'}
             >
-              {`EUR ${order?.total_amount_with_taxes_float}`}
+              {`${order?.total_amount_with_taxes_float} EUR`}
             </Box>
           </SimpleGrid>
         </MotionBox>

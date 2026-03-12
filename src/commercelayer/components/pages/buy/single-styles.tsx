@@ -47,7 +47,6 @@ export const SingleStyles: React.FC<Props> = ({
           selectedSkuOptions.length > 0 &&
           licenseSize && (
             <Text as={'span'} fontSize={'xs'}>
-              EUR{' '}
               {(selectedSkuOptions.reduce(
                 (total, { price_amount_cents }) =>
                   total + Number(price_amount_cents),
@@ -55,6 +54,7 @@ export const SingleStyles: React.FC<Props> = ({
               ) *
                 licenseSize.modifier) /
                 100}{' '}
+              EUR
             </Text>
           )
         ) : (

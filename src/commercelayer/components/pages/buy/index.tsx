@@ -114,13 +114,13 @@ export const Buy = () => {
           )}
         </StickyBottomPanel>
       </Container>
-      <Show when={isLoading}>
+      {/*<Show when={isLoading}>
         <Box pos="absolute" inset="0" bg="bg/80">
           <Center h="full">
             <Spinner color="black" size={'xl'} />
           </Center>
         </Box>
-      </Show>
+      </Show>*/}
     </>
   )
 }

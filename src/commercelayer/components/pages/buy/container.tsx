@@ -14,7 +14,7 @@ const BuyContainer = ({ font, children }: Props): JSX.Element => {
   const hasInitializedRef = useRef(false)
   const { orderId, isLoading, skuOptions } = useOrderContext()
 
-  const isReady = !isLoading && skuOptions && skuOptions.length > 0
+  const isReady = skuOptions && skuOptions.length > 0
 
   // Once ready, never show spinner again
   if (isReady) {

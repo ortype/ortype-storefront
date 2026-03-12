@@ -216,7 +216,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             textAlign={'right'}
             fontVariantNumeric={'tabular-nums'}
           >
-            {`${order?.total_amount_with_taxes_float}EUR`}
+            {`${order?.total_amount_with_taxes_float} EUR`}
           </Box>
         </SimpleGrid>
         <SimpleGrid columns={2} py={3}>
@@ -232,7 +232,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             textAlign={'right'}
             fontVariantNumeric={'tabular-nums'}
           >
-            {`${order?.total_amount_with_taxes_float}EUR`}
+            {`${order?.total_amount_with_taxes_float} EUR`}
           </Box>
         </SimpleGrid>
       </Box>

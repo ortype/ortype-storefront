@@ -39,6 +39,7 @@ export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
         bg={'blue'}
         borderRadius={'5rem'}
         size={'sm'}
+        fontSize={'md'}
         color={'white'}
         disabled={isDisabled}
         gap={1}

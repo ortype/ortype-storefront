@@ -1,6 +1,5 @@
-import { LicenseSize } from '@/commercelayer/providers/Order'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { toaster } from '@/components/ui/toaster'
+import { LicenseSize } from '@/commercelayer/providers/Order'
 import { Size, sizes } from '@/lib/settings'
 import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'

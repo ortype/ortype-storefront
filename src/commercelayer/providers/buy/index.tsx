@@ -161,6 +161,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         console.log('addLineItem lineItem: ', lineItem)
       }
 
+      // @TODO: we need more try/catch blocks and error reporting
       // Update line item with license types
       await addLineItemLicenseTypes({
         cl,

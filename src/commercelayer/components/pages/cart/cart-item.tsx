@@ -112,7 +112,12 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     <>
       <SimpleGrid columns={[1, null, 2]} gap={3} bg={'brand.50'} p={3}>
         <Stack direction={'row'} gap={2} alignItems={'center'}>
-          <Text fontSize={'2xl'} as={'span'} className={lineItem.sku_code}>
+          <Text
+            fontSize={'2xl'}
+            lineHeight={1}
+            as={'span'}
+            className={lineItem.sku_code}
+          >
             {lineItem.name}
           </Text>
           <Text>
@@ -146,7 +151,6 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
           <Box minW={24} textAlign={'right'}>
             {selectedSkuOptions?.length > 0 && licenseSize && (
               <Text as={'span'} fontVariantNumeric={'tabular-nums'}>
-                EUR{' '}
                 {(selectedSkuOptions.reduce(
                   (total, { price_amount_cents }) =>
                     total + Number(price_amount_cents),
@@ -154,6 +158,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
                 ) *
                   licenseSize.modifier) /
                   100}{' '}
+                EUR
               </Text>
             )}
           </Box>
