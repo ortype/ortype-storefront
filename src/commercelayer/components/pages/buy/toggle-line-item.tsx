@@ -16,6 +16,8 @@ export const ToggleLineItem: React.FC<Props> = ({
   order,
   skuCode,
   name,
+  price,
+  className,
   addLineItem,
   deleteLineItem,
   quantity,
@@ -35,7 +37,7 @@ export const ToggleLineItem: React.FC<Props> = ({
       await deleteLineItem({ lineItemId: isLineItem.id })
     } else {
       try {
-        await addLineItem({ name, skuCode })
+        await addLineItem({ name, skuCode, price, className })
         setIsLoading(false)
       } catch (e) {
         console.log('addToCart error: ', e)

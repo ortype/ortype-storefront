@@ -72,7 +72,18 @@ const CartContainer = ({
         <Link href={'/cart'}>
           {`Cart`}
           <Float>
-            <Circle fontSize={'md'} size={5} bg={'red'} color={'white'}>
+            <Circle
+              fontSize={'md'}
+              // size={5}
+              width={
+                itemsCount < 10
+                  ? 'var(--or-sizes-5) !important'
+                  : 'var(--or-sizes-7) !important'
+              }
+              height={5}
+              bg={'red'}
+              color={'white'}
+            >
               {itemsCount}
             </Circle>
           </Float>

@@ -3,23 +3,30 @@ import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeLis
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
+import {
+  getFontReferenceCounts,
+  OrderSummary,
+} from '@/commercelayer/components/ui/order-summary'
 import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
+  ActionBar,
   Box,
   Center,
+  Circle,
   Container,
   Fieldset,
   Flex,
   GridItem,
+  Portal,
   Show,
   SimpleGrid,
   Spinner,
   Stack,
+  Text,
 } from '@chakra-ui/react'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
 
 export const Buy = () => {
@@ -37,6 +44,38 @@ export const Buy = () => {
     hasLineItems,
   } = useOrderContext()
   const { font, addLineItem } = useBuyContext()
+
+  // Memoize line item filtering and font reference calculations
+  const { displayLineItems, fontRefCounts, fontCount, parentFontString } =
+    useMemo(() => {
+      if (!order?.line_items) {
+        return {
+          displayLineItems: [],
+          fontRefCounts: {},
+          fontCount: 0,
+          parentFontString: '0 fonts',
+        }
+      }
+
+      // Filter out payment method and shipping line items - only show SKUs and bundles
+      const filteredItems = order.line_items.filter(
+        (lineItem) =>
+          lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
+      )
+
+      const counts = getFontReferenceCounts(order.line_items)
+      const count = Object.keys(counts).length
+      const fontString = count + ' ' + (count === 1 ? 'font' : 'fonts')
+
+      return {
+        displayLineItems: filteredItems,
+        fontRefCounts: counts,
+        fontCount: count,
+        parentFontString: fontString,
+      }
+    }, [order?.line_items])
+
+  console.log({ displayLineItems })
 
   // @TODO: on changing selected SKU options, update all line_items on the order
 
@@ -92,7 +131,26 @@ export const Buy = () => {
             </Fieldset.Root>
           </GridItem>
         </SimpleGrid>
-        <StickyBottomPanel
+        <ActionBar.Root open={allLicenseInfoSet}>
+          <Portal>
+            <ActionBar.Positioner>
+              <ActionBar.Content>
+                <Text textStyle={'md'} pl={2} whiteSpace={'nowrap'}>
+                  {parentFontString} / {displayLineItems.length} {'styles'}
+                </Text>
+
+                <ActionBar.Separator />
+                <CheckoutButton
+                  href={`/cart/`}
+                  orderId={orderId}
+                  isDisabled={!allLicenseInfoSet}
+                />
+              </ActionBar.Content>
+            </ActionBar.Positioner>
+          </Portal>
+        </ActionBar.Root>
+
+        {/*<StickyBottomPanel
           maxW={'60rem'}
           showFooter={order && hasLineItems}
           footer={() => (
@@ -112,7 +170,7 @@ export const Buy = () => {
               heading="What's in your cart"
             />
           )}
-        </StickyBottomPanel>
+        </StickyBottomPanel>*/}
       </Container>
       {/*<Show when={isLoading}>
         <Box pos="absolute" inset="0" bg="bg/80">

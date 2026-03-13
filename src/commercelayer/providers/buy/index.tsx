@@ -8,6 +8,7 @@ import type { AddToCartError } from '@/commercelayer/providers/Order'
 import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
 import { toaster } from '@/components/ui/toaster'
 import { Font } from '@/sanity/lib/queries'
+import { Box, Stack, Text } from '@chakra-ui/react'
 import { useOrderContext } from '../Order'
 
 export interface BuyProviderData {
@@ -67,6 +68,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const addLineItem = async (params: {
     skuCode: string
     name: string
+    price?: string
+    className?: string
   }): Promise<{
     success: boolean
     error?: AddToCartError
@@ -115,6 +118,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         }
       }
 
+      console.log('addLineItem: ', { result })
+
       // Format license types for display
       const licenseTypes = selectedSkuOptions
         ?.map((option) => option.name)
@@ -126,10 +131,66 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       // Show success notification with item details
       toaster.create({
         title: 'Added to cart',
-        description: `${params.name}${
+        /*description: `${params.name}${
           licenseTypes ? ` (${licenseTypes})` : ''
-        }${licenseSizeLabel ? ` - ${licenseSizeLabel}` : ''}`,
-        type: 'success',
+        }${licenseSizeLabel ? ` - ${licenseSizeLabel}` : ''}`,*/
+        description: (
+          <Stack gap={1}>
+            <Stack
+              direction={'row'}
+              justify="space-between"
+              w="full"
+              pt={1}
+              borderTop={'1px solid #E7E0BF'}
+            >
+              <Text
+                // minW={'8rem'}
+                fontSize={'sm'}
+                // color={'brand.500'}
+              >
+                {params.name}
+              </Text>
+              <Box pl={4} fontVariantNumeric={'tabular-nums'}>
+                {`${params.price} EUR`}
+              </Box>
+            </Stack>
+
+            {licenseTypes && (
+              <Stack
+                direction={'row'}
+                justify="space-between"
+                w="full"
+                pt={1}
+                borderTop={'1px solid #E7E0BF'}
+              >
+                <Text minW={'6rem'} fontSize={'sm'} color={'brand.500'}>
+                  {'Media types'}
+                </Text>
+                <Box flexGrow={1} pl={4}>
+                  {licenseTypes}
+                </Box>
+              </Stack>
+            )}
+            {licenseSizeLabel && (
+              <Stack
+                direction={'row'}
+                justify="space-between"
+                w="full"
+                pt={1}
+                borderTop={'1px solid #E7E0BF'}
+              >
+                <Text minW={'6rem'} fontSize={'sm'} color={'brand.500'}>
+                  {'Company size'}
+                </Text>
+                <Box flexGrow={1} pl={4}>
+                  {licenseSizeLabel}
+                </Box>
+              </Stack>
+            )}
+          </Stack>
+        ),
+        type: 'info',
+        closable: true,
         duration: 3000,
       })
 

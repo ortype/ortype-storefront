@@ -680,11 +680,11 @@ export function OrderProvider({
         })
 
         // Show success notification
-        toaster.create({
+        /*toaster.create({
           title: 'License owner updated successfully',
           type: 'success',
           duration: 2000,
-        })
+        })*/
 
         return { success: true, order }
       } catch (error) {
@@ -902,11 +902,11 @@ export function OrderProvider({
         })
 
         // Show success notification
-        toaster.create({
+        /*toaster.create({
           title: 'License size updated successfully',
           type: 'success',
           duration: 2000,
-        })
+        })*/
 
         return { success: true, order }
       } catch (error) {
@@ -1011,11 +1011,11 @@ export function OrderProvider({
         })
 
         // Show success notification
-        toaster.create({
+        /*toaster.create({
           title: 'License types updated successfully',
           type: 'success',
           duration: 2000,
-        })
+        })*/
 
         return { success: true, order }
       } catch (error) {
@@ -1282,11 +1282,11 @@ export function OrderProvider({
         })
 
         // Show success notification
-        toaster.create({
+        /*toaster.create({
           title: 'License types updated successfully',
           type: 'success',
           duration: 2000,
-        })
+        })*/
 
         return { success: true, order }
       } catch (error) {

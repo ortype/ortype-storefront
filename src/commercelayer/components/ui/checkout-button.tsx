@@ -32,22 +32,22 @@ export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
         >
           {'Save as PDF'}
         </Button>
+        <Button
+          asChild
+          variant={'solid'}
+          bg={'black'}
+          borderRadius={'5rem'}
+          size={'sm'}
+          fontSize={'md'}
+          color={'white'}
+          disabled={isDisabled}
+          gap={1}
+        >
+          <Link href={href || `/checkout/${orderId}`}>
+            <LockIcon /> {label || 'Proceed to Checkout'}
+          </Link>
+        </Button>
       </HStack>
-      <Button
-        asChild
-        variant={'solid'}
-        bg={'black'}
-        borderRadius={'5rem'}
-        size={'sm'}
-        fontSize={'md'}
-        color={'white'}
-        disabled={isDisabled}
-        gap={1}
-      >
-        <Link href={href || `/checkout/${orderId}`}>
-          <LockIcon /> {label || 'Proceed to Checkout'}
-        </Link>
-      </Button>
     </Flex>
   )
 }

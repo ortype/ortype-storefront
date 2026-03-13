@@ -27,12 +27,24 @@ export const SingleStyles: React.FC<Props> = ({
   deleteLineItem,
   className,
 }) => {
+  const price =
+    orderId && selectedSkuOptions.length > 0 && licenseSize
+      ? (selectedSkuOptions.reduce(
+          (total, { price_amount_cents }) => total + Number(price_amount_cents),
+          0
+        ) *
+          licenseSize.modifier) /
+        100
+      : '90'
+
   return (
     <Flex justifyContent={'space-between'}>
       <Stack direction={'row'} gap={2} alignItems={'center'}>
         <ToggleLineItem
           order={order}
           skuCode={skuCode}
+          price={price}
+          className={className}
           quantity={1}
           name={name}
           addLineItem={addLineItem}
@@ -43,25 +55,9 @@ export const SingleStyles: React.FC<Props> = ({
         </Text>
       </Stack>
       <Flex alignItems={'center'}>
-        {orderId ? (
-          selectedSkuOptions.length > 0 &&
-          licenseSize && (
-            <Text as={'span'} fontSize={'xs'}>
-              {(selectedSkuOptions.reduce(
-                (total, { price_amount_cents }) =>
-                  total + Number(price_amount_cents),
-                0
-              ) *
-                licenseSize.modifier) /
-                100}{' '}
-              EUR
-            </Text>
-          )
-        ) : (
-          <Text as={'span'} fontSize={'xs'}>
-            <b>90 EUR</b>
-          </Text>
-        )}
+        <Text as={'span'} fontSize={'xs'}>
+          {`${price} EUR`}
+        </Text>
       </Flex>
     </Flex>
   )

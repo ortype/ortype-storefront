@@ -1,5 +1,5 @@
 // import { accordionSlotRecipe } from "./accordion"
-// import { actionBarSlotRecipe } from "./action-bar"
+import { actionBarSlotRecipe } from './action-bar'
 import { alertSlotRecipe } from './alert'
 // import { avatarSlotRecipe } from "./avatar"
 // import { blockquoteSlotRecipe } from "./blockquote"
@@ -37,7 +37,7 @@ import { stepsSlotRecipe } from './steps'
 import { tableSlotRecipe } from './table'
 // import { tabsSlotRecipe } from "./tabs"
 import { tagSlotRecipe } from './tag'
-// import { toastSlotRecipe } from "./toast"
+import { toastSlotRecipe } from './toast'
 // import { tooltipSlotRecipe } from "./tooltip"
 // import { statusSlotRecipe } from "./status"
 // import { timelineSlotRecipe } from "./timeline"
@@ -46,7 +46,7 @@ import { tagSlotRecipe } from './tag'
 
 export const slotRecipes = {
   // accordion: accordionSlotRecipe,
-  // actionBar: actionBarSlotRecipe,
+  actionBar: actionBarSlotRecipe,
   alert: alertSlotRecipe,
   // avatar: avatarSlotRecipe,
   // blockquote: blockquoteSlotRecipe,
@@ -84,7 +84,7 @@ export const slotRecipes = {
   table: tableSlotRecipe,
   // tabs: tabsSlotRecipe,
   tag: tagSlotRecipe,
-  // toast: toastSlotRecipe,
+  toast: toastSlotRecipe,
   // tooltip: tooltipSlotRecipe,
   // status: statusSlotRecipe,
   // timeline: timelineSlotRecipe,

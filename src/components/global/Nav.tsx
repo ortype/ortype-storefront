@@ -90,8 +90,8 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
           data-active={openMenu ? 'true' : undefined}
           transition={'none'}
           _hover={{
-            bg: 'white',
-            color: 'black',
+            bg: typeTrigger || openMenu ? 'black' : 'white',
+            color: typeTrigger || openMenu ? 'white' : 'black',
           }}
           asChild
         >
