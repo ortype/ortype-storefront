@@ -37,6 +37,8 @@ const StepAddressContainer: React.FC<{
     return null
   }
 
+  // @TODO: when checkoutCtx.customerAddresses is populated we should show a Address Book style UI
+
   const handleProceed = async () => {
     setIsLoading(true)
     setError(null)

@@ -1,7 +1,7 @@
 'use client'
 
 import type { CollectionItem } from '@chakra-ui/react'
-import { Select as ChakraSelect, Box, Portal, Group } from '@chakra-ui/react'
+import { Box, Select as ChakraSelect, Group, Portal } from '@chakra-ui/react'
 import * as React from 'react'
 import { CloseButton } from './close-button'
 
@@ -92,14 +92,14 @@ export const SelectValueText = React.forwardRef<
   const { children, ...rest } = props
   return (
     <ChakraSelect.ValueText {...rest} ref={ref} lineClamp={0}>
-      <Group>
+      <Group flexWrap={'wrap'}>
         <ChakraSelect.Context>
           {(select) => {
             const items = select.selectedItems
             if (items.length === 0) return props.placeholder
             if (children) return children(items)
             return items.map((item) => (
-              <Box bg={'#fff'} p={2} fontSize={'lg'}>
+              <Box _key={item.value} bg={'#fff'} p={2} fontSize={'lg'}>
                 {item.label}
               </Box>
             ))

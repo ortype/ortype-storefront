@@ -112,6 +112,7 @@ export interface CompanySize {
 }
 
 export interface MediaType {
+  _key: string
   value: number
   label: string
 }
@@ -129,7 +130,7 @@ export interface Settings {
 export const licenseMetricsQuery = defineQuery(`
 *[_type == "settings"][0]{
   "sizes": sizes[]{value, label, modifier},
-  "media": media[]{value, label}
+  "media": media[]{_key, value, label}
 }
 `)
 

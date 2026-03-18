@@ -1,8 +1,8 @@
+import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { Type } from '@/lib/settings'
 import { Checkbox, CheckboxGroup, Fieldset, Stack } from '@chakra-ui/react'
 import { SkuOption } from '@commercelayer/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
-import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 
 interface Props {
   skuOptions: SkuOption[]
@@ -15,18 +15,13 @@ interface Props {
 }
 
 const mapSkuOptionsToTypes = (options: SkuOption[]): Type[] => {
-  return options
-    .sort(
-      (a, b) =>
-        parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
-    )
-    ?.map(
-      ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
-        value,
-        label,
-        basePrice,
-      })
-    )
+  return options?.map(
+    ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
+      value,
+      label,
+      basePrice,
+    })
+  )
 }
 
 export const LicenseTypeList: React.FC<Props> = ({

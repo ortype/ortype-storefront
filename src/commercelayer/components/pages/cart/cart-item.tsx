@@ -6,7 +6,6 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui/license-type-select'
-import type { Type } from '@/lib/settings'
 import {
   Box,
   createListCollection,
@@ -24,78 +23,61 @@ interface CartItemProps {
 }
 
 export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
-  const { skuOptions, licenseSize, setLicenseTypes, deleteLineItem } =
-    useOrderContext()
+  const {
+    skuOptions,
+    mediaTypes,
+    licenseSize,
+    setLicenseTypes,
+    deleteLineItem,
+  } = useOrderContext()
 
-  const formattedTypeOptions = skuOptions
-    .sort(
+  // Sort index from mediaTypes so selections follow Sanity order
+  const mediaKeyOrder = useMemo(() => {
+    if (!mediaTypes?.length) return null
+    return new Map(mediaTypes.map((m, i) => [m._key, i]))
+  }, [mediaTypes])
+
+  const sortByReference = (options: SkuOption[]): SkuOption[] => {
+    if (!mediaKeyOrder) return options
+    return [...options].sort(
       (a, b) =>
-        parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
+        (mediaKeyOrder.get(a.reference) ?? Infinity) -
+        (mediaKeyOrder.get(b.reference) ?? Infinity)
     )
-    ?.map(
-      ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
-        value,
-        label,
-        basePrice,
-      })
-    )
-
-  const initialLineItemOptions = lineItem.line_item_options?.map(
-    ({ sku_option }) => {
-      const {
-        reference: value,
-        name: label,
-        price_amount_cents: basePrice,
-      } = sku_option
-      return {
-        value,
-        label,
-        basePrice,
-      }
-    }
-  )
-
-  // const initialTypeOption = formattedTypeOptions.find((option) => option.value === lineItem.line_item_options.)
-
-  const initialSelectedSkuOptions = lineItem.line_item_options?.map(
-    ({ sku_option }) => sku_option
-  )
-  const [selectedTypeOptionValues, setSelectedTypeOptionValues] = useState<
-    Type[]
-  >(initialLineItemOptions)
-  const [selectedSkuOptions, setSelectedSkuOptions] = useState<SkuOption[]>(
-    initialSelectedSkuOptions
-  )
-
-  const handleTypeChange = (e: { value: string[] }) => {
-    const values = e.value
-
-    // Find the corresponding options for the selected values
-    const selectedOptions = values
-      .map((value) =>
-        formattedTypeOptions.find((option) => option.value === value)
-      )
-      .filter(Boolean) as Type[]
-
-    // Find selected SkuOptions
-    const selectedSkuOptionsList = values
-      .map((value) => skuOptions.find((type) => type.reference === value))
-      .filter(Boolean) as SkuOption[]
-
-    setSelectedTypeOptionValues(selectedOptions) // Update Select
-    setSelectedSkuOptions(selectedSkuOptionsList) // Update price calculation
-    setLicenseTypes({ lineItem, selectedSkuOptions: selectedSkuOptionsList }) // Call API and update Provider state
-
-    // @TODO: loading indicator?
   }
 
-  // Create a list collection for the type options
+  // Single source of truth for selected license types
+  const [selectedSkuOptions, setSelectedSkuOptions] = useState<SkuOption[]>(
+    sortByReference(
+      lineItem.line_item_options?.map(({ sku_option }) => sku_option) ?? []
+    )
+  )
+
+  // Derive select-compatible formats from skuOptions
+  const formattedTypeOptions = skuOptions?.map((o) => ({
+    value: o.reference,
+    label: o.name,
+  }))
+
   const typeOptionsCollection = useMemo(
     () => createListCollection({ items: formattedTypeOptions }),
     [formattedTypeOptions]
   )
 
-  // @TODO: prevent all the select from removing the last option or completely clearing the selected options
+  const selectedValues = selectedSkuOptions.map((o) => o.reference)
+
+  const handleTypeChange = (e: { value: string[] }) => {
+    const next = e.value
+      .map((ref) => skuOptions.find((o) => o.reference === ref))
+      .filter(Boolean) as SkuOption[]
+
+    const sorted = sortByReference(next)
+
+    setSelectedSkuOptions(sorted)
+    setLicenseTypes({ lineItem, selectedSkuOptions: sorted })
+  }
+
+  // @TODO: prevent removing the last option / completely clearing
 
   const handleRemove = () => {
     if (deleteLineItem && lineItem.id) {
@@ -128,7 +110,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
               size={'sm'}
               fontSize={'md'}
               collection={typeOptionsCollection}
-              value={selectedTypeOptionValues.map((type) => type.value)}
+              value={selectedValues}
               onValueChange={handleTypeChange}
               multiple
             >

@@ -1,7 +1,7 @@
 'use client'
-import { Box, IconButton, Link as ChakraLink, For } from '@chakra-ui/react'
-import { FiChevronDown } from 'react-icons/fi'
-import Link from 'next/link'
+import { Box, Link as ChakraLink, For, IconButton } from '@chakra-ui/react'
+import { ChevronDownIcon } from '@sanity/icons'
+
 import {
   MenuContent,
   MenuItem,
@@ -9,6 +9,7 @@ import {
   MenuTrigger,
 } from '@/components/ui/menu'
 import type { BuyFontsQueryResult } from '@/types'
+import Link from 'next/link'
 
 interface BuyNavProps {
   font: BuyFontsQueryResult['font']
@@ -31,8 +32,12 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
             px={0}
             minW={'auto'}
             aria-label="Navigate to another font's buy page"
+            css={{
+              '& svg': { width: '3rem', height: '3rem' },
+            }}
+            w={'1.5rem'}
           >
-            <FiChevronDown width={'5rem'} height={'5rem'} />
+            <ChevronDownIcon width={'5rem'} height={'5rem'} />
           </IconButton>
         </ChakraLink>
       </MenuTrigger>

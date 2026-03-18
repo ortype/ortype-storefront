@@ -11,7 +11,7 @@ import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
 import { getLicenseMetrics } from '@/sanity/lib/client'
-import { type CompanySize } from '@/sanity/lib/queries'
+import { type CompanySize, type MediaType } from '@/sanity/lib/queries'
 import {
   LineItem,
   OrderUpdate,
@@ -113,6 +113,7 @@ type OrderProviderData = {
   isLoading: boolean
   isInvalid: boolean
   companySizes: CompanySize[]
+  mediaTypes: MediaType[]
   licenseSize: LicenseSize
   createOrder: (params?: {
     customMetadata?: Record<string, any>
@@ -225,6 +226,7 @@ export function OrderProvider({
 }: OrderProviderProps): JSX.Element {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [companySizes, setCompanySizes] = useState<CompanySize[]>([])
+  const [mediaTypes, setMediaTypes] = useState<MediaType[]>([])
 
   // Order persistence is handled through OrderStorageContext
   // using getLocalOrder/setLocalOrder for consistent storage management
@@ -488,7 +490,8 @@ export function OrderProvider({
 
   const fetchSkuOptions = useCallback(
     async (
-      existingTypes: string[] = []
+      existingTypes: string[] = [],
+      mediaTypes: MediaType[] = []
     ): Promise<{
       success: boolean
       error?: AddToCartError
@@ -500,10 +503,19 @@ export function OrderProvider({
           throw new Error('Commerce Layer client not initialized')
         }
 
-        const skuOptions = await cl.sku_options.list()
+        let skuOptions = await cl.sku_options.list()
 
-        // Use passed existingTypes parameter instead of accessing state directly
-        // This breaks the circular dependency
+        // Sort sku_options to match the order defined in Sanity media types
+        if (mediaTypes.length > 0) {
+          const mediaKeyOrder = new Map(
+            mediaTypes.map((m, i) => [m._key, i])
+          )
+          skuOptions.sort((a, b) => {
+            const aIdx = mediaKeyOrder.get(a.reference) ?? Infinity
+            const bIdx = mediaKeyOrder.get(b.reference) ?? Infinity
+            return aIdx - bIdx
+          })
+        }
 
         // Find matching sku options for existing types
         const existingSelectedOptions = skuOptions.filter((option) =>
@@ -1380,24 +1392,32 @@ export function OrderProvider({
         }
       }
 
-      const [skuResult, metricsResult] = await Promise.all([
-        fetchSkuOptions(existingTypes),
-        getLicenseMetrics(),
-      ])
-
-      if (!skuResult.success) {
-        console.warn('Failed to fetch SKU options during initialization')
-      }
+      // Fetch metrics first so we can sort sku_options by Sanity media order
+      const metricsResult = await getLicenseMetrics()
 
       if (metricsResult.sizes.length > 0) {
         setCompanySizes(metricsResult.sizes)
       }
 
+      if (metricsResult.media.length > 0) {
+        setMediaTypes(metricsResult.media)
+      }
+
+      const skuResult = await fetchSkuOptions(
+        existingTypes,
+        metricsResult.media
+      )
+
+      if (!skuResult.success) {
+        console.warn('Failed to fetch SKU options during initialization')
+      }
+
       if (process.env.NODE_ENV !== 'production') {
-        console.log(
-          '[OrderProvider] ✅ initializeProvider: Initialized with',
-          { skuOptions: skuResult.success, companySizes: metricsResult.sizes.length }
-        )
+        console.log('[OrderProvider] ✅ initializeProvider: Initialized with', {
+          skuOptions: skuResult.success,
+          companySizes: metricsResult.sizes.length,
+          mediaTypes: metricsResult.media.length,
+        })
       }
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
@@ -1432,6 +1452,7 @@ export function OrderProvider({
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
     companySizes,
+    mediaTypes,
     hasValidLicenseSize,
     hasValidLicenseType,
     allLicenseInfoSet,

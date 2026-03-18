@@ -26,31 +26,21 @@ export const LicenseTypeSelect: React.FC<Props> = ({
   selectedSkuOptions,
   setSelectedSkuOptions,
 }) => {
-  const typeOptions = skuOptions
-    .sort(
-      (a, b) =>
-        parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
-    )
-    ?.map(
-      ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
-        value,
-        label,
-        basePrice,
-      })
-    )
+  const typeOptions = skuOptions?.map(
+    ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
+      value,
+      label,
+      basePrice,
+    })
+  )
 
-  const savedSelection = selectedSkuOptions
-    .sort(
-      (a, b) =>
-        parseInt(a.reference.charAt(0)) - parseInt(b.reference.charAt(0))
-    )
-    ?.map(
-      ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
-        value,
-        label,
-        basePrice,
-      })
-    )
+  const savedSelection = selectedSkuOptions?.map(
+    ({ reference: value, name: label, price_amount_cents: basePrice }) => ({
+      value,
+      label,
+      basePrice,
+    })
+  )
 
   const [selectedTypes, setSelectedTypes] = useState<Type[]>(savedSelection)
 
