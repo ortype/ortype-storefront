@@ -1,5 +1,4 @@
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
-import { sizes } from '@/theme/tokens/sizes'
 import {
   Badge,
   Box,

@@ -10,6 +10,8 @@ import utils, {
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
+import { getLicenseMetrics } from '@/sanity/lib/client'
+import { type CompanySize } from '@/sanity/lib/queries'
 import {
   LineItem,
   OrderUpdate,
@@ -110,6 +112,7 @@ type OrderProviderData = {
   itemsCount: number
   isLoading: boolean
   isInvalid: boolean
+  companySizes: CompanySize[]
   licenseSize: LicenseSize
   createOrder: (params?: {
     customMetadata?: Record<string, any>
@@ -221,6 +224,7 @@ export function OrderProvider({
   attributes,
 }: OrderProviderProps): JSX.Element {
   const [state, dispatch] = useReducer(reducer, initialState)
+  const [companySizes, setCompanySizes] = useState<CompanySize[]>([])
 
   // Order persistence is handled through OrderStorageContext
   // using getLocalOrder/setLocalOrder for consistent storage management
@@ -1376,16 +1380,24 @@ export function OrderProvider({
         }
       }
 
-      const result = await fetchSkuOptions(existingTypes)
+      const [skuResult, metricsResult] = await Promise.all([
+        fetchSkuOptions(existingTypes),
+        getLicenseMetrics(),
+      ])
 
-      if (!result.success) {
+      if (!skuResult.success) {
         console.warn('Failed to fetch SKU options during initialization')
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          console.log(
-            '[OrderProvider] ✅ initializeProvider: Successfully fetched SKU options'
-          )
-        }
+      }
+
+      if (metricsResult.sizes.length > 0) {
+        setCompanySizes(metricsResult.sizes)
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(
+          '[OrderProvider] ✅ initializeProvider: Initialized with',
+          { skuOptions: skuResult.success, companySizes: metricsResult.sizes.length }
+        )
       }
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
@@ -1419,6 +1431,7 @@ export function OrderProvider({
     ...state,
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
+    companySizes,
     hasValidLicenseSize,
     hasValidLicenseType,
     allLicenseInfoSet,

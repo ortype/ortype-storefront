@@ -1,6 +1,6 @@
+import { getLicenseMetrics } from '@/sanity/lib/client'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
-import { sizes } from '@/lib/settings'
 import { NextRequest, NextResponse } from 'next/server'
 
 // External prices URL is mananged at
@@ -88,6 +88,7 @@ export async function POST(
     // iterate over the types in the metadata.license?.types
     // use their base price and multiply with the size.modifier
 
+    const { sizes } = await getLicenseMetrics()
     const size = sizes.find(
       ({ value }) => value === metadata.license.size.value
     )

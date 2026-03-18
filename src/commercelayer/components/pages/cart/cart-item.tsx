@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui/license-type-select'
-import { Size, sizes, Type, types } from '@/lib/settings'
+import type { Type } from '@/lib/settings'
 import {
   Box,
   createListCollection,
@@ -17,12 +17,7 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { type LineItem, type SkuOption } from '@commercelayer/sdk'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
-
-interface Props {
-  types: Type[]
-  sizes: Size[]
-}
+import React, { useMemo, useState } from 'react'
 
 interface CartItemProps {
   lineItem: LineItem

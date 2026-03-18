@@ -1,4 +1,4 @@
-import { LicenseSize } from '@/commercelayer/providers/Order'
+import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
 import {
   SelectContent,
   SelectItem,
@@ -6,13 +6,13 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui/chakra-select'
-import { Size, sizes } from '@/lib/settings'
+import { type CompanySize } from '@/sanity/lib/queries'
 import { createListCollection, Fieldset } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 
 interface Props {
-  licenseSize: Size
+  licenseSize: CompanySize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
 }
 
@@ -22,7 +22,12 @@ export const LicenseSizeSelect: React.FC<Props> = ({
 }) => {
   // *************************************
   // License size select logic
-  const [selectedSize, setSelectedSize] = useState<Size | null>(licenseSize)
+
+  const { companySizes: sizes } = useOrderContext()
+
+  const [selectedSize, setSelectedSize] = useState<CompanySize | null>(
+    licenseSize
+  )
 
   useEffect(() => {
     setSelectedSize(licenseSize) // keep component synced with data from Provider

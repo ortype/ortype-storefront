@@ -3,11 +3,7 @@ import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeLis
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import {
-  getFontReferenceCounts,
-  OrderSummary,
-} from '@/commercelayer/components/ui/order-summary'
-import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
+import { getFontReferenceCounts } from '@/commercelayer/components/ui/order-summary'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
@@ -33,7 +29,6 @@ export const Buy = () => {
   const {
     order,
     orderId,
-    isLoading,
     licenseSize,
     skuOptions,
     setLicenseSize,
@@ -41,7 +36,6 @@ export const Buy = () => {
     selectedSkuOptions,
     setSelectedSkuOptions,
     allLicenseInfoSet,
-    hasLineItems,
   } = useOrderContext()
   const { font, addLineItem } = useBuyContext()
 
@@ -149,36 +143,7 @@ export const Buy = () => {
             </ActionBar.Positioner>
           </Portal>
         </ActionBar.Root>
-
-        {/*<StickyBottomPanel
-          maxW={'60rem'}
-          showFooter={order && hasLineItems}
-          footer={() => (
-            <CheckoutButton
-              href={`/cart/`}
-              orderId={orderId}
-              isDisabled={!allLicenseInfoSet}
-            />
-          )}
-        >
-          {({ isExpanded, toggleBox }) => (
-            <OrderSummary
-              order={order}
-              hasLineItems={hasLineItems}
-              isOpen={isExpanded}
-              toggleBox={toggleBox}
-              heading="What's in your cart"
-            />
-          )}
-        </StickyBottomPanel>*/}
       </Container>
-      {/*<Show when={isLoading}>
-        <Box pos="absolute" inset="0" bg="bg/80">
-          <Center h="full">
-            <Spinner color="black" size={'xl'} />
-          </Center>
-        </Box>
-      </Show>*/}
     </>
   )
 }

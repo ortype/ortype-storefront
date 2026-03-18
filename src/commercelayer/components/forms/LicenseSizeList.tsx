@@ -1,11 +1,11 @@
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { LicenseSize } from '@/commercelayer/providers/Order'
-import { Size, sizes } from '@/lib/settings'
+import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
+import { type CompanySize } from '@/sanity/lib/queries'
 import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
 
 interface Props {
-  licenseSize: Size
+  licenseSize: CompanySize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
 }
 
@@ -13,6 +13,7 @@ export const LicenseSizeList: React.FC<Props> = ({
   licenseSize,
   setLicenseSize,
 }) => {
+  const { companySizes: sizes } = useOrderContext()
   const [selectedSize, setSelectedSize] = useState<string>(
     licenseSize?.value || ''
   )

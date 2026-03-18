@@ -105,13 +105,33 @@ export interface Post {
   }[]
 }
 
+export interface CompanySize {
+  value: string
+  label: string
+  modifier: number
+}
+
+export interface MediaType {
+  value: number
+  label: string
+}
+
 export interface Settings {
   title?: string
   description?: any[]
   ogImage?: {
     title?: string
   }
+  sizes?: CompanySize[]
+  media?: MediaType[]
 }
+
+export const licenseMetricsQuery = defineQuery(`
+*[_type == "settings"][0]{
+  "sizes": sizes[]{value, label, modifier},
+  "media": media[]{value, label}
+}
+`)
 
 const fontFields = defineQuery(`
   _id,

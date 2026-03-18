@@ -5,9 +5,12 @@ import {
   fontSlugsQuery,
   fontsQuery,
   fontVariantsQuery,
+  licenseMetricsQuery,
   visibleFontsQuery,
+  type CompanySize,
   type Font,
   type FontVariant,
+  type MediaType,
   type Post,
   type Settings,
 } from '@/sanity/lib/queries'
@@ -203,6 +206,20 @@ export async function getAllFontVariants(): Promise<FontVariant[]> {
     return (await client.fetch(fontVariantsQuery)) || []
   }
   return []
+}
+
+export async function getLicenseMetrics(): Promise<{
+  sizes: CompanySize[]
+  media: MediaType[]
+}> {
+  if (client) {
+    const result = await client.fetch(licenseMetricsQuery)
+    return {
+      sizes: result?.sizes || [],
+      media: result?.media || [],
+    }
+  }
+  return { sizes: [], media: [] }
 }
 
 // We use this on the font detail page

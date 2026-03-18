@@ -2,7 +2,6 @@ import getCommerceLayer, {
   CommerceLayerConfig,
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
-import { sizes } from '@/lib/settings'
 import {
   setCustomerOrderParam,
   type CustomerOrderParams,
@@ -17,12 +16,12 @@ import {
   type LineItemUpdate,
   type Order,
 } from '@commercelayer/sdk'
+// @TODO: replace these types from node_modules with our local types
 import {
   CustomLineItem,
   ResourceIncluded,
 } from 'node_modules/@commercelayer/react-components/lib/esm/reducers/OrderReducer'
-import { BaseMetadataObject } from 'node_modules/@commercelayer/react-components/lib/esm/typings'
-import { BaseError } from 'node_modules/@commercelayer/react-components/lib/esm/typings/errors'
+import type { BaseError } from '../customer'
 import type { Dispatch } from 'react'
 import { UpdateLineItemLicenseTypes, UpdateLineItemsLicenseSize } from './types'
 

@@ -15,7 +15,8 @@ import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shi
 import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
 import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
 import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
-import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { useCheckoutContext } from '@/commercelayer/providers/checkout'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 
 interface Props {
   logoUrl?: string
@@ -74,8 +75,9 @@ const Checkout: React.FC<Props> = ({
   termsUrl,
   privacyUrl,
 }) => {
-  const ctx = useContext(CheckoutContext)
+  const ctx = useCheckoutContext()
   const { customer } = useIdentityContext()
+  const { companySizes: sizes } = useOrderContext()
 
   const params = useParams()
   // Track when initial load step advancement has been completed
@@ -221,6 +223,7 @@ const Checkout: React.FC<Props> = ({
           {({ isExpanded, toggleBox }) => (
             <OrderSummary
               order={ctx.order}
+              sizes={sizes}
               hasLineItems={ctx.hasLineItems}
               isOpen={isExpanded}
               toggleBox={toggleBox}

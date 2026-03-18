@@ -4,11 +4,28 @@ import { defineArrayMember, defineField, defineType } from 'sanity'
 
 import OpenGraphInput from './OpenGraphInput'
 
+const GROUPS = [
+  {
+    default: true,
+    name: 'global',
+    title: 'Global',
+  },
+  {
+    name: 'fonts',
+    title: 'Fonts',
+  },
+  {
+    name: 'licenses',
+    title: 'License Metrics',
+  },
+]
+
 export default defineType({
   name: 'settings',
   title: 'Settings',
   type: 'document',
   icon: CogIcon,
+  groups: GROUPS,
   preview: { select: { title: 'title', subtitle: 'description' } },
   // Uncomment below to have edits publish automatically as you type
   // liveEdit: true,
@@ -18,6 +35,7 @@ export default defineType({
       description: 'This field is the title of your blog.',
       title: 'Title',
       type: 'string',
+      group: 'global',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -26,6 +44,7 @@ export default defineType({
         'Used both for the <meta> description tag for SEO, and the blog subheader.',
       title: 'Descriprion',
       type: 'array',
+      group: 'global',
       of: [
         defineArrayMember({
           type: 'block',
@@ -58,6 +77,7 @@ export default defineType({
       title: 'Font Style Groups',
       description: 'Used to organize large font families',
       type: 'array',
+      group: 'fonts',
       of: [{ type: 'string' }],
     }),
     defineField({
@@ -66,6 +86,7 @@ export default defineType({
       description:
         'Used for social media previews when linking to the index page.',
       type: 'object',
+      group: 'global',
       components: {
         input: OpenGraphInput as any,
       },
@@ -74,6 +95,103 @@ export default defineType({
           name: 'title',
           title: 'Title',
           type: 'string',
+        }),
+      ],
+    }),
+    defineField({
+      name: 'sizes',
+      title: 'Company sizes',
+      type: 'array',
+      description: 'Define your company size tiers',
+      validation: (rule) => rule.required(),
+      group: 'licenses',
+      of: [
+        {
+          type: 'object',
+          name: 'size',
+          title: 'Company Size',
+          fields: [
+            {
+              name: 'value',
+              title: 'Value',
+              type: 'string',
+              description: 'e.g. "small" all lowercase used for data',
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              description: 'The label we use in the UI',
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: 'modifier',
+              title: 'Modifier',
+              type: 'number',
+              validation: (rule) => rule.required(),
+              description:
+                'price modifier that this size multiplies the base price by',
+              // 0.1 to infinity
+            },
+          ],
+          preview: {
+            select: {
+              title: 'label',
+              subtitle: 'modifier',
+            },
+            prepare(selection) {
+              const { title, subtitle } = selection
+              return {
+                title: title,
+                subtitle: `Modifier: ${subtitle}`,
+              }
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'media',
+      title: 'Media types',
+      type: 'array',
+      group: 'licenses',
+      validation: (rule) => rule.required(),
+      of: [
+        defineField({
+          type: 'object',
+          name: 'type',
+          title: 'Media type',
+          description: 'e.g. Desktop / Print',
+          fields: [
+            defineField({
+              name: 'value',
+              title: 'Base Price',
+              type: 'number',
+              description: 'The base price of this "media type" in cents',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              description: 'The label we use in the UI',
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'label',
+              subtitle: 'value',
+            },
+            prepare(selection) {
+              const { title, subtitle } = selection
+              return {
+                title: title,
+                subtitle: `Base price: ${subtitle / 100} EUR`,
+              }
+            },
+          },
         }),
       ],
     }),

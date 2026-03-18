@@ -1,6 +1,6 @@
 import { Box, Flex, SimpleGrid, Stack, Text } from '@chakra-ui/react'
 // import { useOrderContainer } from '@commercelayer/react-components'
-import { Size } from '@/lib/settings'
+import type { CompanySize } from '@/sanity/lib/queries'
 import { SkuOption, type Order } from '@commercelayer/sdk'
 import React, { useState } from 'react'
 import { ToggleLineItem } from './toggle-line-item'
@@ -11,7 +11,7 @@ interface Props {
   name: string
   skuCode: string
   selectedSkuOptions: SkuOption[]
-  licenseSize: Size
+  licenseSize: CompanySize
   addLineItem: (params: { skuCode: string }) => Promise<void>
   deleteLineItem: (params: { lineItemId: string }) => Promise<void>
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { sizes } from '@/lib/settings'
+import type { CompanySize } from '@/sanity/lib/queries'
 import { Box, Heading, Show, SimpleGrid } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
@@ -81,6 +81,7 @@ interface OrderSummaryProps {
   emptyText?: string
   /** Optional readonly flag (for future use) */
   readonly?: boolean
+  sizes: CompanySize[]
 }
 
 /**
@@ -110,6 +111,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   heading = 'Order Overview',
   emptyText = 'Your cart is empty',
   readonly,
+  sizes,
 }) => {
   // Memoize line item filtering and font reference calculations
   const { displayLineItems, fontRefCounts, fontCount, parentFontString } =

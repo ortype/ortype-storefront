@@ -1,10 +1,11 @@
-import { LicenseSize } from '@/commercelayer/providers/Order'
+import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
 import { FloatingLabelSelect } from '@/commercelayer/components/ui/floating-label-select'
-import { Size, sizes } from '@/lib/settings'
+import { type CompanySize } from '@/sanity/lib/queries'
+
 import React, { useCallback, useEffect, useState } from 'react'
 
 interface Props {
-  licenseSize: Size
+  licenseSize: CompanySize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
   label?: string
 }
@@ -14,6 +15,8 @@ export const LicenseSizeNativeSelect: React.FC<Props> = ({
   setLicenseSize,
   label = 'Company size of the license owner',
 }) => {
+  const { companySizes: sizes } = useOrderContext()
+
   const [selectedSize, setSelectedSize] = useState<string>(
     licenseSize?.value || ''
   )
