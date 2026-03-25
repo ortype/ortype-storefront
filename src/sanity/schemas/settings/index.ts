@@ -87,9 +87,9 @@ export default defineType({
         'Used for social media previews when linking to the index page.',
       type: 'object',
       group: 'global',
-      components: {
+      /*components: {
         input: OpenGraphInput as any,
-      },
+      },*/
       fields: [
         defineField({
           name: 'title',

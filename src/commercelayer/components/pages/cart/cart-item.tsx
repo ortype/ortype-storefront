@@ -39,11 +39,12 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
 
   const sortByReference = (options: SkuOption[]): SkuOption[] => {
     if (!mediaKeyOrder) return options
-    return [...options].sort(
-      (a, b) =>
-        (mediaKeyOrder.get(a.reference) ?? Infinity) -
-        (mediaKeyOrder.get(b.reference) ?? Infinity)
-    )
+
+    return [...options].sort((a, b) => {
+      const aValue = mediaKeyOrder.get(a?.reference) ?? Infinity
+      const bValue = mediaKeyOrder.get(b?.reference) ?? Infinity
+      return aValue - bValue
+    })
   }
 
   // Single source of truth for selected license types
