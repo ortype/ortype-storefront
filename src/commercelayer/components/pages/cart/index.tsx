@@ -23,11 +23,12 @@ import {
 import { StickyBottomPanel } from '../../ui/sticky-bottom-panel'
 import Summary from './cart-summary'
 
+import { getParentUid } from '@/commercelayer/utils/prices'
+
 const CartComponent = () => {
   const { isLoading, orderId, order, licenseSize, setLicenseSize } =
     useOrderContext()
 
-  // Memoize line item filtering and font reference calculations
   const { displayLineItems } = useMemo(() => {
     if (!order?.line_items) {
       return {
@@ -35,14 +36,20 @@ const CartComponent = () => {
       }
     }
 
-    // Filter out payment method and shipping line items - only show SKUs and bundles
     const filteredItems = order.line_items.filter(
       (lineItem) =>
         lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
     )
 
+    const displayLineItems = [...filteredItems].sort((a, b) => {
+      const parentCompare = getParentUid(a).localeCompare(getParentUid(b))
+      if (parentCompare !== 0) return parentCompare
+
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    })
+
     return {
-      displayLineItems: filteredItems,
+      displayLineItems,
     }
   }, [order?.line_items])
 

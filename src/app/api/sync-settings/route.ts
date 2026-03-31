@@ -71,14 +71,17 @@ async function syncMedia(
     const managed = managedByRef.get(item._key)
     if (managed) {
       const nameChanged = managed.name !== item.label
-      const priceChanged = managed.price_amount_cents !== item.value
+      const priceChanged = managed.metadata?.price_amount_cents !== item.value
 
       if (nameChanged || priceChanged) {
         try {
           await cl.sku_options.update({
             id: managed.id,
             name: item.label,
-            price_amount_cents: item.value,
+            price_amount_cents: 0,
+            metadata: {
+              price_amount_cents: item.value,
+            },
             sku_code_regex: '', // empty string matches all SKUs
           })
           result.updated++
@@ -101,7 +104,10 @@ async function syncMedia(
           id: nameMatch.id,
           reference: item._key,
           reference_origin: REFERENCE_ORIGIN,
-          price_amount_cents: item.value,
+          price_amount_cents: 0,
+          metadata: {
+            price_amount_cents: item.value,
+          },
           sku_code_regex: '', // empty string matches all SKUs
         })
         // Track it as managed so orphan cleanup won't miss it
@@ -125,7 +131,10 @@ async function syncMedia(
       await cl.sku_options.create({
         name: item.label,
         currency_code: CURRENCY_CODE,
-        price_amount_cents: item.value,
+        price_amount_cents: 0,
+        metadata: {
+          price_amount_cents: item.value,
+        },
         reference: item._key,
         reference_origin: REFERENCE_ORIGIN,
         sku_code_regex: '', // empty string matches all SKUs

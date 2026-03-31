@@ -1,5 +1,10 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
+  calculateLineItemPrice,
+  formatPrice,
+  getLineItemPosition,
+} from '@/commercelayer/utils/prices'
+import {
   SelectContent,
   SelectItem,
   SelectRoot,
@@ -24,6 +29,7 @@ interface CartItemProps {
 
 export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   const {
+    order,
     skuOptions,
     mediaTypes,
     licenseSize,
@@ -66,6 +72,24 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   )
 
   const selectedValues = selectedSkuOptions.map((o) => o.reference)
+
+  // Optimistic price: compute locally so the UI updates immediately
+  const optimisticPrice = useMemo(() => {
+    if (!licenseSize || selectedSkuOptions.length === 0 || !order?.line_items) {
+      return null
+    }
+    const position = getLineItemPosition(lineItem, order.line_items)
+    return formatPrice(
+      calculateLineItemPrice({
+        skuOptions: selectedSkuOptions,
+        sizeModifier: licenseSize.modifier,
+        position,
+      })
+    )
+  }, [selectedSkuOptions, licenseSize, order?.line_items, lineItem])
+
+  // Show optimistic price immediately; falls back to server price
+  const displayPrice = optimisticPrice ?? lineItem.total_amount_float
 
   const handleTypeChange = (e: { value: string[] }) => {
     const next = e.value
@@ -126,19 +150,8 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
               </SelectContent>
             </SelectRoot>
           </Box>
-          <Box minW={24} textAlign={'right'}>
-            {selectedSkuOptions?.length > 0 && licenseSize && (
-              <Text as={'span'} fontVariantNumeric={'tabular-nums'}>
-                {(selectedSkuOptions.reduce(
-                  (total, { price_amount_cents }) =>
-                    total + Number(price_amount_cents),
-                  0
-                ) *
-                  licenseSize.modifier) /
-                  100}{' '}
-                EUR
-              </Text>
-            )}
+          <Box minW={24} textAlign={'right'} fontVariantNumeric={'tabular-nums'}>
+            {displayPrice} {lineItem.currency_code}
           </Box>
         </Flex>
       </SimpleGrid>

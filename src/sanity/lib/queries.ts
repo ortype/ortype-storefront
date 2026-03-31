@@ -218,16 +218,17 @@ export const buyFontsQuery = defineQuery(`{
   "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
     _id,
     _type,
+    uid,
     name,
     shortName,
     "slug": slug.current,
-    variants[]->{name, optionName, _id},
+    variants[]->{name, optionName, _id, parentUid},
     defaultVariant->{_id, optionName},
     styleGroups[]{
       _type,
       groupName,
-      variants[]->{_id, optionName},
-      italicVariants[]->{_id, optionName}
+      variants[]->{_id, optionName, parentUid},
+      italicVariants[]->{_id, optionName, parentUid}
     }    
   },
   "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {

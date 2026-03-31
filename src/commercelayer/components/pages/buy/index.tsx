@@ -25,6 +25,8 @@ import {
 import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
 
+import { getLineItemPosition } from '@/commercelayer/utils/prices'
+
 export const Buy = () => {
   const {
     order,
@@ -69,7 +71,11 @@ export const Buy = () => {
       }
     }, [order?.line_items])
 
-  console.log({ displayLineItems })
+  // Count how many line items already exist for this font's parentUid
+  const fontLineItemCount =
+    order?.line_items?.filter(
+      (lineItem) => font.uid === lineItem.item?.reference_origin
+    ).length ?? 0
 
   // @TODO: on changing selected SKU options, update all line_items on the order
 
@@ -106,20 +112,37 @@ export const Buy = () => {
                   p={2}
                   gap={2}
                 >
-                  {font.variants?.map((variant) => (
-                    <SingleStyles
-                      key={variant._id}
-                      className={variant._id}
-                      order={order}
-                      orderId={orderId}
-                      name={`${font.shortName} ${variant.optionName}`}
-                      skuCode={variant._id}
-                      addLineItem={addLineItem}
-                      deleteLineItem={deleteLineItem}
-                      licenseSize={licenseSize}
-                      selectedSkuOptions={selectedSkuOptions}
-                    />
-                  ))}
+                  {font.variants?.map((variant, index) => {
+                    // If this variant is already a line item, use its real position;
+                    // otherwise it would be added at the end of the group
+                    const existingLineItem = order?.line_items?.find(
+                      (li) => li.sku_code === variant._id
+                    )
+                    const position =
+                      existingLineItem && order?.line_items
+                        ? getLineItemPosition(
+                            existingLineItem,
+                            order.line_items
+                          )
+                        : fontLineItemCount
+
+                    return (
+                      <SingleStyles
+                        key={variant._id}
+                        skuCode={variant._id}
+                        className={variant._id}
+                        selectedSkuOptions={selectedSkuOptions}
+                        licenseSize={licenseSize}
+                        position={position}
+                        parentUid={variant.parentUid}
+                        addLineItem={addLineItem}
+                        deleteLineItem={deleteLineItem}
+                        order={order}
+                        orderId={orderId}
+                        name={`${font.shortName} ${variant.optionName}`}
+                      />
+                    )
+                  })}
                 </Flex>
               </Fieldset.Content>
             </Fieldset.Root>

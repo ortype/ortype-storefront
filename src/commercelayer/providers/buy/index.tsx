@@ -67,6 +67,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
    */
   const addLineItem = async (params: {
     skuCode: string
+    parentUid: string
     name: string
     price?: string
     className?: string
@@ -87,6 +88,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         lineItem: {
           externalPrice: true,
           metadata: {
+            parentUid: params.parentUid, // same as sku's reference_origin
             license: {
               size: licenseSize,
               types: selectedSkuOptions.map((option) => option.reference),
@@ -110,7 +112,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
           title: 'Failed to add to cart',
           description: errorMessage,
           type: 'error',
-          duration: 4000,
+          duration: 7500,
         })
         return {
           success: false,
@@ -150,6 +152,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
               >
                 {params.name}
               </Text>
+              {/* @TODO: get price from updated order/line_item */}
               <Box pl={4} fontVariantNumeric={'tabular-nums'}>
                 {`${params.price} EUR`}
               </Box>

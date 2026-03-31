@@ -2,10 +2,20 @@ import { getLicenseMetrics } from '@/sanity/lib/client'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { NextRequest, NextResponse } from 'next/server'
-
+import { calculateLineItemPrice, calculateSkuOptionsTotal } from '@/commercelayer/utils/prices'
 // External prices URL is mananged at
 // `${process.env.CL_SLUG}.commercelayer.io/admin/settings/markets/${marketId}/edit`
 // e.g. https://owenhoskins.ngrok.app/api/price
+
+type IncludedLineItem = {
+  type: string
+  attributes: {
+    sku_code: string
+    created_at?: string
+    metadata?: { parentUid?: string; license?: { parentUid?: string } }
+    [key: string]: any
+  }
+}
 
 type PriceCalculationRequest = {
   data: {
@@ -13,14 +23,11 @@ type PriceCalculationRequest = {
       sku_code: string
       unit_amount_cents: number
       quantity: number
-      metadata: object
+      created_at?: string
+      metadata: any
     }
   }
-  // included: []
-  // @TODO: consider including skus resource to pull sku_options from
-  // and consider including the order resource to pull license size metadata from
-  // although both of these data points we can access via the line_items metadata
-  // and via the sku_options.list (although this isn't specific to the line_item, it works)
+  included: IncludedLineItem[]
 }
 
 type PriceCalculationResponse = {
@@ -54,13 +61,52 @@ export async function POST(
   // console.log('Price req.json(): body... ', body)
   const {
     data: {
-      attributes: { quantity, sku_code, metadata },
+      attributes: { quantity, sku_code, created_at, metadata },
     },
-    // included,
+    included,
   } = body as PriceCalculationRequest
 
   // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
+
+  // Collect siblings with the same parentUid from included line items
+  const siblings = included.filter(
+    ({ type, attributes }) =>
+      type === 'line_items' &&
+      attributes.sku_code !== sku_code &&
+      attributes.metadata?.parentUid === metadata.parentUid
+  )
+
+  // Determine the current item's position in its parentUid group
+  // by sorting all items (siblings + current) by created_at ascending.
+  // Position 0 = first added (no discount), position 1 = second (33%), etc.
+  let position: number
+
+  if (created_at) {
+    // Edit case: item already exists, use created_at to find stable position
+    const allInGroup = [
+      ...siblings.map((s) => ({
+        sku_code: s.attributes.sku_code,
+        created_at: s.attributes.created_at!,
+      })),
+      { sku_code, created_at },
+    ]
+    allInGroup.sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    )
+    position = allInGroup.findIndex((item) => item.sku_code === sku_code)
+  } else {
+    // New item: no created_at yet, position is after all existing siblings
+    position = siblings.length
+  }
+
+  console.log('[PRICE API] Position in parentUid group:', {
+    sku_code,
+    position,
+    siblingCount: siblings.length,
+    isEdit: !!created_at,
+  })
 
   try {
     const token = await authenticate('client_credentials', {
@@ -80,11 +126,13 @@ export async function POST(
 
     // @TODO: use sku_code to look up sanity fontVariant by id
 
-    console.log(
+    /*console.log(
       'line item metadata: ',
+      { metadata },
       metadata.license.size,
       metadata.license.types
-    )
+    )*/
+
     // iterate over the types in the metadata.license?.types
     // use their base price and multiply with the size.modifier
 
@@ -93,25 +141,35 @@ export async function POST(
       ({ value }) => value === metadata.license.size.value
     )
 
-    console.log('price: found size: ', size)
+    // console.log('price: found size: ', size)
 
     const skuOptions = await cl.sku_options.list()
 
     const selectedTypes = skuOptions.filter(({ reference }) =>
       metadata.license.types.find((val) => val === reference)
     )
-    console.log('skuOptions: ', skuOptions) // reference: '1-licenseType-desktop',
-    console.log('selectedTypes: ', selectedTypes)
-    const total = selectedTypes.reduce((acc, { price_amount_cents }) => {
-      return acc + Number(price_amount_cents) * size.modifier
-    }, 0)
 
-    const data = {
-      sku_code,
-      unit_amount_cents: total,
-    }
+    // @REMINDER: we don't have a base price, it is derived entirely
+    // from the license media types (sku_options metadata)
+    // we store the `price_amount_cents` on the metadata b/c we want
+    // to entirely manage price calculations here, otherwise the sku_option
+    // already modifies the line_item and order price when added
 
-    console.log('Price API route data: ', data)
+    const unit_amount_cents = calculateLineItemPrice({
+      skuOptions: selectedTypes,
+      sizeModifier: size.modifier,
+      position,
+    })
+
+    const data = { sku_code, unit_amount_cents }
+
+    console.log('[PRICE API]: ', {
+      skuOptionsTotal: calculateSkuOptionsTotal(selectedTypes),
+      companySizeModifier: size.modifier,
+      position,
+      unit_amount_cents,
+    })
+    console.log('[PRICE API]: ', { data })
 
     // return result.status(200).json({ success: true, data })
     return NextResponse.json({

@@ -21,8 +21,8 @@ import {
   CustomLineItem,
   ResourceIncluded,
 } from 'node_modules/@commercelayer/react-components/lib/esm/reducers/OrderReducer'
-import type { BaseError } from '../customer'
 import type { Dispatch } from 'react'
+import type { BaseError } from '../customer'
 import { UpdateLineItemLicenseTypes, UpdateLineItemsLicenseSize } from './types'
 
 type ResourceIncludedLoaded = Partial<Record<ResourceIncluded, boolean>>
@@ -83,6 +83,7 @@ export interface AddToCartParams {
   cl: CommerceLayer
   orderId?: string
   skuCode: string
+  referenceOrigin: string
   quantity: number
   lineItemAttributes?: {
     _external_price?: boolean
@@ -130,6 +131,7 @@ export async function addToCart(
     cl,
     orderId,
     skuCode,
+    referenceOrigin,
     quantity,
     lineItemAttributes,
     createOrder,
@@ -163,6 +165,7 @@ export async function addToCart(
     const lineItem = await cl.line_items.create({
       order,
       sku_code: skuCode,
+      reference_origin: referenceOrigin,
       quantity,
       _external_price: lineItemAttributes?._external_price,
       metadata: lineItemAttributes?.metadata,
@@ -414,12 +417,14 @@ export async function updateLineItemLicenseTypes({
   lineItem,
   selectedSkuOptions,
 }: UpdateLineItemLicenseTypes) {
+  console.log('updateLineItemLicenseTypes: ', lineItem)
   const updateLineItemAttrs: LineItemUpdate = {
     id: lineItem.id,
     quantity: 1,
     _external_price: true,
     metadata: {
       license: {
+        parentUid: lineItem.item?.reference_origin,
         ...lineItem.metadata?.license,
         types: selectedSkuOptions.map((option) => option.reference),
       },
@@ -490,6 +495,7 @@ export async function updateLineItemsLicenseSize({
       _external_price: true,
       metadata: {
         license: {
+          parentUid: lineItem.item?.reference_origin,
           ...lineItem.metadata?.license, // Preserve existing license metadata
           size: licenseSize, // Update size
         },

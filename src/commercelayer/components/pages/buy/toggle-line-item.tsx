@@ -6,6 +6,7 @@ import React, { useContext, useState } from 'react'
 interface Props {
   order: Order
   skuCode: string
+  parentUid: string
   name: string
   quantity?: number
   addLineItem: (params: { skuCode: string }) => Promise<void>
@@ -15,7 +16,9 @@ interface Props {
 export const ToggleLineItem: React.FC<Props> = ({
   order,
   skuCode,
+  parentUid,
   name,
+  isLineItem,
   price,
   className,
   addLineItem,
@@ -23,11 +26,6 @@ export const ToggleLineItem: React.FC<Props> = ({
   quantity,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
-
-  // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
-  const isLineItem = order?.line_items?.find(
-    ({ sku_code }) => sku_code === skuCode
-  )
 
   const handleClick = async () => {
     setIsLoading(true)
@@ -37,7 +35,7 @@ export const ToggleLineItem: React.FC<Props> = ({
       await deleteLineItem({ lineItemId: isLineItem.id })
     } else {
       try {
-        await addLineItem({ name, skuCode, price, className })
+        await addLineItem({ name, skuCode, parentUid, price, className })
         setIsLoading(false)
       } catch (e) {
         console.log('addToCart error: ', e)

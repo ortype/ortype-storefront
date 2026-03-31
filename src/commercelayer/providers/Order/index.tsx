@@ -10,6 +10,10 @@ import utils, {
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
+import {
+  getParentUid,
+  recalculateSiblingPrices,
+} from '@/commercelayer/utils/prices'
 import { getLicenseMetrics } from '@/sanity/lib/client'
 import { type CompanySize, type MediaType } from '@/sanity/lib/queries'
 import {
@@ -507,9 +511,7 @@ export function OrderProvider({
 
         // Sort sku_options to match the order defined in Sanity media types
         if (mediaTypes.length > 0) {
-          const mediaKeyOrder = new Map(
-            mediaTypes.map((m, i) => [m._key, i])
-          )
+          const mediaKeyOrder = new Map(mediaTypes.map((m, i) => [m._key, i]))
           skuOptions.sort((a, b) => {
             const aIdx = mediaKeyOrder.get(a.reference) ?? Infinity
             const bIdx = mediaKeyOrder.get(b.reference) ?? Infinity
@@ -1101,6 +1103,12 @@ export function OrderProvider({
           throw new Error('Line item ID is required')
         }
 
+        // Read the parentUid before deleting so we can recalculate siblings
+        const deletedItem = state.order?.line_items?.find(
+          (li) => li.id === params.lineItemId
+        )
+        const parentUid = deletedItem ? getParentUid(deletedItem) : ''
+
         await cl.line_items.delete(params.lineItemId)
         const { order } = await fetchOrder()
 
@@ -1108,6 +1116,27 @@ export function OrderProvider({
           throw new Error(
             'Failed to fetch updated order after deleting line item'
           )
+        }
+
+        // Recalculate prices for remaining siblings in the same parentUid group
+        if (parentUid && order.line_items?.length) {
+          const hasSiblings = order.line_items.some(
+            (li) =>
+              (li.item_type === 'skus' || li.item_type === 'bundles') &&
+              getParentUid(li) === parentUid
+          )
+          if (hasSiblings) {
+            await recalculateSiblingPrices({ cl, order, parentUid })
+            // Refetch to get updated prices in state
+            const { order: refreshedOrder } = await fetchOrder()
+            if (refreshedOrder) {
+              dispatch({
+                type: ActionType.DELETE_LINE_ITEM,
+                payload: { order: refreshedOrder },
+              })
+              return { success: true }
+            }
+          }
         }
 
         dispatch({
@@ -1134,7 +1163,7 @@ export function OrderProvider({
         dispatch({ type: ActionType.STOP_LOADING })
       }
     },
-    [config, fetchOrder]
+    [config, fetchOrder, state.order]
   )
 
   const setSelectedSkuOptions = useCallback(
