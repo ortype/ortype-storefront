@@ -1,5 +1,6 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
+  calculateDiscount,
   calculateLineItemPrice,
   formatPrice,
   getLineItemPosition,
@@ -15,10 +16,12 @@ import {
   Box,
   createListCollection,
   Flex,
+  HStack,
   Link,
   SimpleGrid,
   Stack,
   Text,
+  VStack,
 } from '@chakra-ui/react'
 import { type LineItem, type SkuOption } from '@commercelayer/sdk'
 import React, { useMemo, useState } from 'react'
@@ -88,7 +91,13 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
         discountTiers,
       })
     )
-  }, [selectedSkuOptions, licenseSize, order?.line_items, lineItem, discountTiers])
+  }, [
+    selectedSkuOptions,
+    licenseSize,
+    order?.line_items,
+    lineItem,
+    discountTiers,
+  ])
 
   // Show optimistic price immediately; falls back to server price
   const displayPrice = optimisticPrice ?? lineItem.total_amount_float
@@ -111,6 +120,21 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
       deleteLineItem({ lineItemId: lineItem.id })
     }
   }
+
+  // calculate discount percentage
+  const position = order ? getLineItemPosition(lineItem, order?.line_items) : 0
+  const percentageDiscount =
+    discountTiers && position ? calculateDiscount(position, discountTiers) : 0
+
+  // calculate full price
+  const fullPrice =
+    (selectedSkuOptions.reduce(
+      (total, { metadata: { price_amount_cents } }) =>
+        total + Number(price_amount_cents),
+      0
+    ) *
+      licenseSize.modifier) /
+    100
 
   return (
     <>
@@ -152,9 +176,33 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
               </SelectContent>
             </SelectRoot>
           </Box>
-          <Box minW={24} textAlign={'right'} fontVariantNumeric={'tabular-nums'}>
-            {displayPrice} {lineItem.currency_code}
-          </Box>
+          <VStack
+            minW={24}
+            gap={1}
+            alignItems={'flex-end'}
+            fontVariantNumeric={'tabular-nums'}
+          >
+            <HStack gap={4}>
+              <Text
+                as={'span'}
+                fontSize={'sm'}
+                opacity={percentageDiscount > 0 ? 1 : 0}
+              >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
+              <Text as={'span'} fontSize={'sm'}>
+                {displayPrice} {lineItem.currency_code}
+              </Text>
+            </HStack>
+            {displayPrice !== fullPrice && (
+              <Text
+                as={'span'}
+                textDecoration={'line-through'}
+                fontSize={'sm'}
+                color={'brand.400'}
+              >
+                {fullPrice} {lineItem.currency_code}
+              </Text>
+            )}
+          </VStack>
         </Flex>
       </SimpleGrid>
     </>

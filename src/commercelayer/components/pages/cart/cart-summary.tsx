@@ -10,45 +10,71 @@ import { useMemo } from 'react'
 const Summary = () => {
   const { order, licenseSize, skuOptions, discountTiers } = useOrderContext()
 
-  // Optimistic total: compute from each line item's sku options and position
-  const optimisticTotal = useMemo(() => {
+  // Optimistic summary: compute from each line item's sku options and position
+  // The subtotal (before discount) is skuOptionsTotal * sizeModifier for each item — which is what calculateLineItemPrice computes at position 0. The discount is the difference between that and the discounted price.
+  // calculateLineItemPrice with position: 0 always returns the undiscounted price (it short-circuits before any discount math).
+  // So subTotalCents accumulates the full price per item, totalCents the discounted, and the difference is the total savings.
+  const { subtotal, totalDiscount, total } = useMemo(() => {
     if (!order?.line_items?.length || !licenseSize || !skuOptions?.length) {
-      return null
+      return { subtotal: null, totalDiscount: null, total: null }
     }
 
     const skuLineItems = order.line_items.filter(
       (li) => li.item_type === 'skus' || li.item_type === 'bundles'
     )
 
-    if (skuLineItems.length === 0) return null
+    if (skuLineItems.length === 0) {
+      return { subtotal: null, totalDiscount: null, total: null }
+    }
 
-    const totalCents = skuLineItems.reduce((sum, li) => {
-      // Resolve this line item's selected sku options from its line_item_options
-      const itemSkuOptions = (li.line_item_options
-        ?.map(({ sku_option }) =>
-          skuOptions.find((o) => o.id === sku_option?.id)
-        )
-        .filter((o): o is NonNullable<typeof o> => !!o)) ?? []
+    let subTotalCents = 0
+    let totalCents = 0
 
-      if (itemSkuOptions.length === 0) return sum + (li.total_amount_cents ?? 0)
+    for (const li of skuLineItems) {
+      const itemSkuOptions =
+        li.line_item_options
+          ?.map(({ sku_option }) =>
+            skuOptions.find((o) => o.id === sku_option?.id)
+          )
+          .filter((o): o is NonNullable<typeof o> => !!o) ?? []
+
+      if (itemSkuOptions.length === 0) {
+        // No resolved options — use server price for both
+        const amount = li.total_amount_cents ?? 0
+        subTotalCents += amount
+        totalCents += amount
+        continue
+      }
 
       const position = getLineItemPosition(li, order.line_items!)
-      return sum + calculateLineItemPrice({
+
+      // Subtotal: full price as if position 0 (no discount)
+      subTotalCents += calculateLineItemPrice({
+        skuOptions: itemSkuOptions,
+        sizeModifier: licenseSize.modifier,
+        position: 0,
+      })
+
+      // Total: actual discounted price at this position
+      totalCents += calculateLineItemPrice({
         skuOptions: itemSkuOptions,
         sizeModifier: licenseSize.modifier,
         position,
         discountTiers,
       })
-    }, 0)
+    }
 
-    return formatPrice(totalCents)
+    return {
+      subtotal: formatPrice(subTotalCents),
+      totalDiscount: formatPrice(subTotalCents - totalCents),
+      total: formatPrice(totalCents),
+    }
   }, [order?.line_items, licenseSize, skuOptions, discountTiers])
-
-  const displayTotal = optimisticTotal ?? order?.total_amount_with_taxes_float
+  const displayTotal = total ?? order?.total_amount_with_taxes_float
 
   return (
     <Box bg={'#FFF8D3'} px={4} py={5} borderRadius={30} w={'full'}>
-      <SimpleGrid columns={2} pt={3} pb={2} mt={1.5}>
+      <SimpleGrid columns={2} pt={3} mt={1.5}>
         <Box fontSize={'lg'} fontWeight={'normal'}>
           {'Subtotal (excl. discounts)'}
         </Box>
@@ -57,10 +83,24 @@ const Summary = () => {
           textAlign={'right'}
           fontVariantNumeric={'tabular-nums'}
         >
-          {`${displayTotal} EUR`}
+          {`${subtotal} EUR`}
         </Box>
       </SimpleGrid>
-      <SimpleGrid columns={2} py={3}>
+      {totalDiscount && totalDiscount > 0 && (
+        <SimpleGrid columns={2} pt={2} pb={2} mt={1.5}>
+          <Box fontSize={'lg'} fontWeight={'normal'}>
+            {'Discounts'}
+          </Box>
+          <Box
+            fontSize={'lg'}
+            textAlign={'right'}
+            fontVariantNumeric={'tabular-nums'}
+          >
+            {`-${totalDiscount} EUR`}
+          </Box>
+        </SimpleGrid>
+      )}
+      <SimpleGrid columns={2} pt={2}>
         <Box fontSize={'xl'} textTransform={'uppercase'} fontWeight={'normal'}>
           {'Total'}
         </Box>

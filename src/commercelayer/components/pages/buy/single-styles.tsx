@@ -1,4 +1,5 @@
 import {
+  calculateDiscount,
   calculateLineItemPrice,
   formatPrice,
 } from '@/commercelayer/utils/prices'
@@ -57,11 +58,23 @@ export const SingleStyles: React.FC<Props> = ({
     ({ sku_code }) => sku_code === skuCode
   )
 
+  const percentageDiscount =
+    discountTiers && position ? calculateDiscount(position, discountTiers) : 0
+
+  console.log('single-styles: ', { percentageDiscount })
+
   // Show optimistic price immediately; falls back to server price
   const displayPrice = optimisticPrice ?? isLineItem?.total_amount_float
 
   return (
-    <Flex justifyContent={'space-between'}>
+    <Flex
+      justifyContent={'space-between'}
+      _hover={{
+        '& .discount': {
+          opacity: !isLineItem && percentageDiscount > 0 ? 1 : 0,
+        },
+      }}
+    >
       <Stack direction={'row'} gap={2} alignItems={'center'}>
         <ToggleLineItem
           order={order}
@@ -79,7 +92,14 @@ export const SingleStyles: React.FC<Props> = ({
           {name}
         </Text>
       </Stack>
-      <Flex alignItems={'center'}>
+      <Flex gap={2} alignItems={'center'}>
+        <Text
+          className={'discount'}
+          as={'span'}
+          fontSize={'xs'}
+          opacity={0}
+        >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
+
         <Text as={'span'} fontSize={'xs'} opacity={isLineItem ? 1 : 0.6}>
           {`${displayPrice} EUR`}
         </Text>

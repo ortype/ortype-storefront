@@ -27,6 +27,7 @@ export const ToggleLineItem: React.FC<Props> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
+  // @TODO: bring handleClick up to parent single-styles
   const handleClick = async () => {
     setIsLoading(true)
     if (isLineItem) {
