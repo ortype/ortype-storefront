@@ -3,6 +3,7 @@ import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { calculateLineItemPrice, calculateSkuOptionsTotal } from '@/commercelayer/utils/prices'
+import { getPercentageDiscounts } from '@/sanity/lib/client'
 // External prices URL is mananged at
 // `${process.env.CL_SLUG}.commercelayer.io/admin/settings/markets/${marketId}/edit`
 // e.g. https://owenhoskins.ngrok.app/api/price
@@ -136,7 +137,10 @@ export async function POST(
     // iterate over the types in the metadata.license?.types
     // use their base price and multiply with the size.modifier
 
-    const { sizes } = await getLicenseMetrics()
+    const [{ sizes }, discountTiers] = await Promise.all([
+      getLicenseMetrics(),
+      getPercentageDiscounts(),
+    ])
     const size = sizes.find(
       ({ value }) => value === metadata.license.size.value
     )
@@ -159,6 +163,7 @@ export async function POST(
       skuOptions: selectedTypes,
       sizeModifier: size.modifier,
       position,
+      discountTiers,
     })
 
     const data = { sku_code, unit_amount_cents }

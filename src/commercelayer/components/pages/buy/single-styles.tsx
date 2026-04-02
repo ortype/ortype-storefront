@@ -16,6 +16,7 @@ interface Props {
   skuCode: string
   parentUid: string
   className?: string
+  discountTiers?: number[]
   selectedSkuOptions: SkuOption[]
   licenseSize: CompanySize
   addLineItem: (params: { skuCode: string }) => Promise<void>
@@ -29,6 +30,7 @@ export const SingleStyles: React.FC<Props> = ({
   skuCode,
   position,
   parentUid,
+  discountTiers,
   selectedSkuOptions,
   licenseSize,
   addLineItem,
@@ -45,9 +47,10 @@ export const SingleStyles: React.FC<Props> = ({
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
         position,
+        discountTiers,
       })
     )
-  }, [selectedSkuOptions, licenseSize, order?.line_items])
+  }, [selectedSkuOptions, licenseSize, order?.line_items, discountTiers])
 
   // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
   const isLineItem = order?.line_items?.find(

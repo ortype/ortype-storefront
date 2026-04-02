@@ -33,6 +33,7 @@ export const Buy = () => {
     orderId,
     licenseSize,
     skuOptions,
+    discountTiers,
     setLicenseSize,
     deleteLineItem,
     selectedSkuOptions,
@@ -134,6 +135,7 @@ export const Buy = () => {
                         selectedSkuOptions={selectedSkuOptions}
                         licenseSize={licenseSize}
                         position={position}
+                        discountTiers={discountTiers}
                         parentUid={variant.parentUid}
                         addLineItem={addLineItem}
                         deleteLineItem={deleteLineItem}

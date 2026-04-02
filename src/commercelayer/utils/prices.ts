@@ -5,29 +5,27 @@ import {
   type SkuOption,
 } from '@commercelayer/sdk'
 
-// How many items in the same family?
-// 2nd  3rd  4th  5th  6th  7th
-// 35%, 60%, 75%, 80%, 85%, 90%
+// Hardcoded fallback tiers (1–100 scale) used when Sanity data is unavailable
+const DEFAULT_DISCOUNT_TIERS = [33, 44, 66, 77, 88, 88]
 
-export function calculateDiscount(count: number): number {
-  switch (count) {
-    case 0:
-      return 0
-    case 1:
-      return 0.33
-    case 2:
-      return 0.44
-    case 3:
-      return 0.66
-    case 4:
-      return 0.77
-    case 5:
-      return 0.88
-    case 6:
-      return 0.88
-    default:
-      return 0.88
-  }
+/**
+ * Return the discount rate (0–1) for a given position in a parentUid group.
+ * Position 0 = first item (no discount). Position 1+ maps into the tiers array.
+ *
+ * @param position  0-based index within the sibling group
+ * @param discountTiers  Array of 1–100 integers from Sanity (index 0 = 2nd style, etc.)
+ */
+export function calculateDiscount(
+  position: number,
+  discountTiers: number[] = DEFAULT_DISCOUNT_TIERS
+): number {
+  if (position <= 0) return 0
+  const tierIndex = position - 1
+  const modifier =
+    tierIndex < discountTiers.length
+      ? discountTiers[tierIndex]
+      : discountTiers[discountTiers.length - 1] // cap at last tier
+  return (modifier ?? 0) / 100
 }
 
 /**
@@ -64,16 +62,18 @@ export function calculateLineItemPrice({
   skuOptions,
   sizeModifier,
   position,
+  discountTiers,
 }: {
   skuOptions: SkuOption[]
   sizeModifier: number
   position: number
+  discountTiers?: number[]
 }): number {
   const skuOptionsTotal = calculateSkuOptionsTotal(skuOptions)
   const total = skuOptionsTotal * sizeModifier
   if (position <= 0) return total
 
-  let discount = total * calculateDiscount(position)
+  let discount = total * calculateDiscount(position, discountTiers)
   discount = Math.ceil(discount / 100) * 100
   return total - discount
 }

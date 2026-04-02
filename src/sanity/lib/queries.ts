@@ -134,6 +134,10 @@ export const licenseMetricsQuery = defineQuery(`
 }
 `)
 
+export const percentageDiscountsQuery = defineQuery(`
+*[_type == "settings"][0].percentageDiscounts.styles[].modifier
+`)
+
 const fontFields = defineQuery(`
   _id,
   _type,

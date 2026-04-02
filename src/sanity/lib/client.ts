@@ -6,6 +6,7 @@ import {
   fontsQuery,
   fontVariantsQuery,
   licenseMetricsQuery,
+  percentageDiscountsQuery,
   visibleFontsQuery,
   type CompanySize,
   type Font,
@@ -220,6 +221,19 @@ export async function getLicenseMetrics(): Promise<{
     }
   }
   return { sizes: [], media: [] }
+}
+
+/**
+ * Fetch percentage discount tiers from Sanity.
+ * Returns an array of modifiers (1–100 integers) in position order,
+ * where index 0 = 2nd style discount, index 1 = 3rd style, etc.
+ */
+export async function getPercentageDiscounts(): Promise<number[]> {
+  if (client) {
+    const result = await client.fetch(percentageDiscountsQuery)
+    return Array.isArray(result) ? result : []
+  }
+  return []
 }
 
 // We use this on the font detail page

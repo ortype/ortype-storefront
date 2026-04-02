@@ -32,6 +32,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     order,
     skuOptions,
     mediaTypes,
+    discountTiers,
     licenseSize,
     setLicenseTypes,
     deleteLineItem,
@@ -84,9 +85,10 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
         position,
+        discountTiers,
       })
     )
-  }, [selectedSkuOptions, licenseSize, order?.line_items, lineItem])
+  }, [selectedSkuOptions, licenseSize, order?.line_items, lineItem, discountTiers])
 
   // Show optimistic price immediately; falls back to server price
   const displayPrice = optimisticPrice ?? lineItem.total_amount_float

@@ -8,7 +8,7 @@ import { Box, SimpleGrid } from '@chakra-ui/react'
 import { useMemo } from 'react'
 
 const Summary = () => {
-  const { order, licenseSize, skuOptions } = useOrderContext()
+  const { order, licenseSize, skuOptions, discountTiers } = useOrderContext()
 
   // Optimistic total: compute from each line item's sku options and position
   const optimisticTotal = useMemo(() => {
@@ -37,11 +37,12 @@ const Summary = () => {
         skuOptions: itemSkuOptions,
         sizeModifier: licenseSize.modifier,
         position,
+        discountTiers,
       })
     }, 0)
 
     return formatPrice(totalCents)
-  }, [order?.line_items, licenseSize, skuOptions])
+  }, [order?.line_items, licenseSize, skuOptions, discountTiers])
 
   const displayTotal = optimisticTotal ?? order?.total_amount_with_taxes_float
 

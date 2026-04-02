@@ -2,6 +2,7 @@
 import { CogIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 
+import ArrayMemberPreview from './ArrayMemberPreview'
 import OpenGraphInput from './OpenGraphInput'
 
 const GROUPS = [
@@ -17,6 +18,10 @@ const GROUPS = [
   {
     name: 'licenses',
     title: 'License Metrics',
+  },
+  {
+    name: 'discounts',
+    title: 'Discounts',
   },
 ]
 
@@ -192,6 +197,58 @@ export default defineType({
               }
             },
           },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'percentageDiscounts', // stylePercentageDiscount
+      title: 'Percentage Discount Configuration',
+      type: 'object',
+      group: 'discounts',
+      fields: [
+        defineField({
+          name: 'styles',
+          title: 'Multi-style percentage discounts',
+          type: 'array',
+          description:
+            'Discounts for multiple items in the same family: e.g. 2nd = 35%, 3rd = 60%, 4th = 75%, 5th = 80%, 6th = 85%, 7th = 90%',
+          validation: (rule) => rule.min(4),
+          of: [
+            defineArrayMember({
+              type: 'object',
+              title: 'Percentage',
+              name: 'discount',
+              components: {
+                preview: ArrayMemberPreview, // Add custom preview component
+              },
+              fields: [
+                defineField({
+                  name: 'modifier',
+                  title: 'Modifier',
+                  type: 'number',
+                  validation: (rule) =>
+                    rule
+                      .required()
+                      .min(1)
+                      .max(100)
+                      .integer()
+                      .error('Percentage must be between 1 and 100'),
+                  description: '% integer, e.g. 30',
+                }),
+              ],
+              preview: {
+                select: {
+                  modifier: 'modifier',
+                },
+                /*prepare({ modifier }) {
+                  return {
+                    title: `Discount ${modifier}%`,
+                    media: null,
+                  }
+                },*/
+              },
+            }),
+          ],
         }),
       ],
     }),
