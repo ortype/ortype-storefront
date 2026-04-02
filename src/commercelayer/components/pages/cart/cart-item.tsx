@@ -177,7 +177,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
             </SelectRoot>
           </Box>
           <VStack
-            minW={24}
+            minW={28}
             gap={1}
             alignItems={'flex-end'}
             fontVariantNumeric={'tabular-nums'}
