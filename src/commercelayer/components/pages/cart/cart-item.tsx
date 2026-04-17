@@ -4,6 +4,7 @@ import {
   calculateLineItemPrice,
   formatPrice,
   getLineItemPosition,
+  getLineItemSibilingCount,
 } from '@/commercelayer/utils/prices'
 import {
   SelectContent,
@@ -60,7 +61,9 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   // Single source of truth for selected license types
   const [selectedSkuOptions, setSelectedSkuOptions] = useState<SkuOption[]>(
     sortByReference(
-      lineItem.line_item_options?.map(({ sku_option }) => sku_option) ?? []
+      (lineItem.line_item_options
+        ?.map(({ sku_option }) => sku_option)
+        .filter(Boolean) as SkuOption[]) ?? []
     )
   )
 
@@ -74,7 +77,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     () => createListCollection({ items: formattedTypeOptions }),
     [formattedTypeOptions]
   )
-
+  console.log({ selectedSkuOptions })
   const selectedValues = selectedSkuOptions.map((o) => o.reference)
 
   // Optimistic price: compute locally so the UI updates immediately
@@ -82,12 +85,12 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     if (!licenseSize || selectedSkuOptions.length === 0 || !order?.line_items) {
       return null
     }
-    const position = getLineItemPosition(lineItem, order.line_items)
+    const count = getLineItemSibilingCount(lineItem, order.line_items)
     return formatPrice(
       calculateLineItemPrice({
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
-        position,
+        count,
         discountTiers,
       })
     )
@@ -122,9 +125,11 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   }
 
   // calculate discount percentage
-  const position = order ? getLineItemPosition(lineItem, order?.line_items) : 0
+  const count = order
+    ? getLineItemSibilingCount(lineItem, order?.line_items)
+    : 0
   const percentageDiscount =
-    discountTiers && position ? calculateDiscount(position, discountTiers) : 0
+    discountTiers && count ? calculateDiscount(count, discountTiers) : 0
 
   // calculate full price
   const fullPrice =

@@ -9,18 +9,20 @@ import {
 const DEFAULT_DISCOUNT_TIERS = [33, 44, 66, 77, 88, 88]
 
 /**
- * Return the discount rate (0–1) for a given position in a parentUid group.
- * Position 0 = first item (no discount). Position 1+ maps into the tiers array.
+ * Return the discount rate (0–1) for a given count of a parentUid group.
+ * Count 0 = first item (no discount). Count 1+ maps into the tiers array.
  *
- * @param position  0-based index within the sibling group
+ * @param count  size of sibling group
  * @param discountTiers  Array of 1–100 integers from Sanity (index 0 = 2nd style, etc.)
  */
 export function calculateDiscount(
-  position: number,
+  count: number,
   discountTiers: number[] = DEFAULT_DISCOUNT_TIERS
 ): number {
-  if (position <= 0) return 0
-  const tierIndex = position - 1
+  // @NOTE: if we apply a tier based discount to ALL line items, then we do not track the
+  // cronological `position` of the line item, but apply a tier discount equally to all items
+  if (count <= 0) return 0
+  const tierIndex = count - 1
   const modifier =
     tierIndex < discountTiers.length
       ? discountTiers[tierIndex]
@@ -45,6 +47,8 @@ export function getParentUid(lineItem: LineItem): string {
  * Returns value in cents.
  */
 export function calculateSkuOptionsTotal(skuOptions: SkuOption[]): number {
+  // @NOTE: if we use a percentage tier based discount system similar to calculateLineItemPrice
+  // we would add another `calculateMediaDiscount` helper which accepts the `mediaDiscountTiers`
   return skuOptions.reduce(
     (acc, { metadata }) => acc + Number(metadata?.price_amount_cents ?? 0),
     0
@@ -61,19 +65,19 @@ export function calculateSkuOptionsTotal(skuOptions: SkuOption[]): number {
 export function calculateLineItemPrice({
   skuOptions,
   sizeModifier,
-  position,
+  count,
   discountTiers,
 }: {
   skuOptions: SkuOption[]
   sizeModifier: number
-  position: number
+  count: number
   discountTiers?: number[]
 }): number {
   const skuOptionsTotal = calculateSkuOptionsTotal(skuOptions)
   const total = skuOptionsTotal * sizeModifier
-  if (position <= 0) return total
+  if (count <= 0) return total
 
-  let discount = total * calculateDiscount(position, discountTiers)
+  let discount = total * calculateDiscount(count, discountTiers)
   discount = Math.ceil(discount / 100) * 100
   return total - discount
 }
@@ -86,8 +90,29 @@ export function formatPrice(cents: number): number {
 }
 
 /**
+ * Get the 0-based count of a line item's siblings in a parentUid group,
+ * Count 0 = first added (no discount).
+ */
+export function getLineItemSibilingCount(
+  lineItem: LineItem,
+  allLineItems: LineItem[]
+): number {
+  const parentUid = getParentUid(lineItem)
+  if (!parentUid) return 0
+
+  const siblings = allLineItems.filter(
+    (li) =>
+      (li.item_type === 'skus' || li.item_type === 'bundles') &&
+      getParentUid(li) === parentUid
+  )
+
+  return siblings.length
+}
+
+/**
  * Get the 0-based position of a line item within its parentUid sibling group,
  * sorted by created_at ascending. Position 0 = first added (no discount).
+ * DEPRECATED
  */
 export function getLineItemPosition(
   lineItem: LineItem,

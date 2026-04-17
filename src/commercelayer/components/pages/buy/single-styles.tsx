@@ -13,7 +13,7 @@ interface Props {
   orderId: string
   order: Order
   name: string
-  position: number
+  siblingCount: number
   skuCode: string
   parentUid: string
   className?: string
@@ -29,7 +29,7 @@ export const SingleStyles: React.FC<Props> = ({
   orderId,
   name,
   skuCode,
-  position,
+  siblingCount,
   parentUid,
   discountTiers,
   selectedSkuOptions,
@@ -41,13 +41,13 @@ export const SingleStyles: React.FC<Props> = ({
   // Optimistic price: compute locally so the UI updates immediately
   const optimisticPrice = useMemo(() => {
     if (!licenseSize || selectedSkuOptions.length === 0 || !order?.line_items) {
-      return 9000
+      return formatPrice(9000)
     }
     return formatPrice(
       calculateLineItemPrice({
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
-        position,
+        count: siblingCount,
         discountTiers,
       })
     )
@@ -59,7 +59,9 @@ export const SingleStyles: React.FC<Props> = ({
   )
 
   const percentageDiscount =
-    discountTiers && position ? calculateDiscount(position, discountTiers) : 0
+    discountTiers && siblingCount
+      ? calculateDiscount(siblingCount + 1, discountTiers)
+      : 0
 
   console.log('single-styles: ', { percentageDiscount })
 
@@ -99,10 +101,15 @@ export const SingleStyles: React.FC<Props> = ({
           fontSize={'xs'}
           opacity={0}
         >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
-
-        <Text as={'span'} fontSize={'xs'} opacity={isLineItem ? 1 : 0.6}>
-          {`${displayPrice} EUR`}
-        </Text>
+        {isLineItem ? (
+          <Text as={'span'} fontSize={'xs'} opacity={0.6}>
+            {`ADDED`}
+          </Text>
+        ) : (
+          <Text as={'span'} fontSize={'xs'}>
+            {`${displayPrice} EUR`}
+          </Text>
+        )}
       </Flex>
     </Flex>
   )

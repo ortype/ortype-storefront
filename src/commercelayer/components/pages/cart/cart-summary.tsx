@@ -3,6 +3,7 @@ import {
   calculateLineItemPrice,
   formatPrice,
   getLineItemPosition,
+  getLineItemSibilingCount,
 } from '@/commercelayer/utils/prices'
 import { Box, SimpleGrid } from '@chakra-ui/react'
 import { useMemo } from 'react'
@@ -46,20 +47,20 @@ const Summary = () => {
         continue
       }
 
-      const position = getLineItemPosition(li, order.line_items!)
+      const count = getLineItemSibilingCount(li, order.line_items!)
 
-      // Subtotal: full price as if position 0 (no discount)
+      // Subtotal: full price as if count 0 (no discount)
       subTotalCents += calculateLineItemPrice({
         skuOptions: itemSkuOptions,
         sizeModifier: licenseSize.modifier,
-        position: 0,
+        count: 0,
       })
 
-      // Total: actual discounted price at this position
+      // Total: actual discounted price at this count
       totalCents += calculateLineItemPrice({
         skuOptions: itemSkuOptions,
         sizeModifier: licenseSize.modifier,
-        position,
+        count,
         discountTiers,
       })
     }

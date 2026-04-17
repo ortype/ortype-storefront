@@ -29,6 +29,7 @@ import {
   calculateLineItemPrice,
   formatPrice,
   getLineItemPosition,
+  getLineItemSibilingCount,
 } from '@/commercelayer/utils/prices'
 
 export const Buy = () => {
@@ -69,13 +70,13 @@ export const Buy = () => {
 
       if (itemSkuOptions.length === 0) return sum + (li.total_amount_cents ?? 0)
 
-      const position = getLineItemPosition(li, order.line_items!)
+      const count = getLineItemSibilingCount(li, order.line_items!)
       return (
         sum +
         calculateLineItemPrice({
           skuOptions: itemSkuOptions,
           sizeModifier: licenseSize.modifier,
-          position,
+          count,
           discountTiers,
         })
       )
@@ -163,9 +164,9 @@ export const Buy = () => {
                     const existingLineItem = order?.line_items?.find(
                       (li) => li.sku_code === variant._id
                     )
-                    const position =
+                    const count =
                       existingLineItem && order?.line_items
-                        ? getLineItemPosition(
+                        ? getLineItemSibilingCount(
                             existingLineItem,
                             order.line_items
                           )
@@ -178,7 +179,7 @@ export const Buy = () => {
                         className={variant._id}
                         selectedSkuOptions={selectedSkuOptions}
                         licenseSize={licenseSize}
-                        position={position}
+                        siblingCount={count}
                         discountTiers={discountTiers}
                         parentUid={variant.parentUid}
                         addLineItem={addLineItem}

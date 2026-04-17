@@ -2,7 +2,10 @@ import { getLicenseMetrics } from '@/sanity/lib/client'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { NextRequest, NextResponse } from 'next/server'
-import { calculateLineItemPrice, calculateSkuOptionsTotal } from '@/commercelayer/utils/prices'
+import {
+  calculateLineItemPrice,
+  calculateSkuOptionsTotal,
+} from '@/commercelayer/utils/prices'
 import { getPercentageDiscounts } from '@/sanity/lib/client'
 // External prices URL is mananged at
 // `${process.env.CL_SLUG}.commercelayer.io/admin/settings/markets/${marketId}/edit`
@@ -78,13 +81,13 @@ export async function POST(
       attributes.metadata?.parentUid === metadata.parentUid
   )
 
-  // Determine the current item's position in its parentUid group
+  // Determine the sibiling count of the current items parentUid group
   // by sorting all items (siblings + current) by created_at ascending.
-  // Position 0 = first added (no discount), position 1 = second (33%), etc.
-  let position: number
+  // Count 0 = first added (no discount), count 1 = second (33%), etc.
+  let count: number
 
   if (created_at) {
-    // Edit case: item already exists, use created_at to find stable position
+    // Edit case: item already exists, use created_at to find stable count
     const allInGroup = [
       ...siblings.map((s) => ({
         sku_code: s.attributes.sku_code,
@@ -92,20 +95,15 @@ export async function POST(
       })),
       { sku_code, created_at },
     ]
-    allInGroup.sort(
-      (a, b) =>
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    )
-    position = allInGroup.findIndex((item) => item.sku_code === sku_code)
+    count = allInGroup.length
   } else {
-    // New item: no created_at yet, position is after all existing siblings
-    position = siblings.length
+    // New item: no created_at yet
+    count = siblings.length
   }
 
-  console.log('[PRICE API] Position in parentUid group:', {
+  console.log('[PRICE API] count in parentUid group:', {
     sku_code,
-    position,
-    siblingCount: siblings.length,
+    count,
     isEdit: !!created_at,
   })
 
@@ -162,7 +160,7 @@ export async function POST(
     const unit_amount_cents = calculateLineItemPrice({
       skuOptions: selectedTypes,
       sizeModifier: size.modifier,
-      position,
+      count,
       discountTiers,
     })
 
@@ -171,7 +169,7 @@ export async function POST(
     console.log('[PRICE API]: ', {
       skuOptionsTotal: calculateSkuOptionsTotal(selectedTypes),
       companySizeModifier: size.modifier,
-      position,
+      count,
       unit_amount_cents,
     })
     console.log('[PRICE API]: ', { data })
