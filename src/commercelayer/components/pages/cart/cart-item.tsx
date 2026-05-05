@@ -36,7 +36,6 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     order,
     skuOptions,
     mediaTypes,
-    discountTiers,
     licenseSize,
     setLicenseTypes,
     deleteLineItem,
@@ -91,7 +90,6 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
         count,
-        discountTiers,
       })
     )
   }, [
@@ -99,7 +97,6 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     licenseSize,
     order?.line_items,
     lineItem,
-    discountTiers,
   ])
 
   // Show optimistic price immediately; falls back to server price
@@ -128,8 +125,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
   const count = order
     ? getLineItemSibilingCount(lineItem, order?.line_items)
     : 0
-  const percentageDiscount =
-    discountTiers && count ? calculateDiscount(count, discountTiers) : 0
+  const percentageDiscount = count ? calculateDiscount(count) : 0
 
   // calculate full price
   const fullPrice =

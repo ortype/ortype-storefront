@@ -38,7 +38,6 @@ export const Buy = () => {
     orderId,
     licenseSize,
     skuOptions,
-    discountTiers,
     setLicenseSize,
     deleteLineItem,
     selectedSkuOptions,
@@ -77,13 +76,12 @@ export const Buy = () => {
           skuOptions: itemSkuOptions,
           sizeModifier: licenseSize.modifier,
           count,
-          discountTiers,
         })
       )
     }, 0)
 
     return formatPrice(totalCents)
-  }, [order?.line_items, licenseSize, skuOptions, discountTiers])
+  }, [order?.line_items, licenseSize, skuOptions])
 
   const displayTotal = optimisticTotal ?? order?.total_amount_with_taxes_float
 
@@ -180,7 +178,6 @@ export const Buy = () => {
                         selectedSkuOptions={selectedSkuOptions}
                         licenseSize={licenseSize}
                         siblingCount={count}
-                        discountTiers={discountTiers}
                         parentUid={variant.parentUid}
                         addLineItem={addLineItem}
                         deleteLineItem={deleteLineItem}

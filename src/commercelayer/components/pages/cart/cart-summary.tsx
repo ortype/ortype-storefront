@@ -9,7 +9,7 @@ import { Box, SimpleGrid } from '@chakra-ui/react'
 import { useMemo } from 'react'
 
 const Summary = () => {
-  const { order, licenseSize, skuOptions, discountTiers } = useOrderContext()
+  const { order, licenseSize, skuOptions } = useOrderContext()
 
   // Optimistic summary: compute from each line item's sku options and position
   // The subtotal (before discount) is skuOptionsTotal * sizeModifier for each item — which is what calculateLineItemPrice computes at position 0. The discount is the difference between that and the discounted price.
@@ -61,7 +61,6 @@ const Summary = () => {
         skuOptions: itemSkuOptions,
         sizeModifier: licenseSize.modifier,
         count,
-        discountTiers,
       })
     }
 
@@ -70,7 +69,7 @@ const Summary = () => {
       totalDiscount: formatPrice(subTotalCents - totalCents),
       total: formatPrice(totalCents),
     }
-  }, [order?.line_items, licenseSize, skuOptions, discountTiers])
+  }, [order?.line_items, licenseSize, skuOptions])
   const displayTotal = total ?? order?.total_amount_with_taxes_float
 
   return (

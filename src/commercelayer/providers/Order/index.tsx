@@ -14,7 +14,7 @@ import {
   getParentUid,
   recalculateSiblingPrices,
 } from '@/commercelayer/utils/prices'
-import { getLicenseMetrics, getPercentageDiscounts } from '@/sanity/lib/client'
+import { getLicenseMetrics } from '@/sanity/lib/client'
 import { type CompanySize, type MediaType } from '@/sanity/lib/queries'
 import {
   LineItem,
@@ -118,7 +118,6 @@ type OrderProviderData = {
   isInvalid: boolean
   companySizes: CompanySize[]
   mediaTypes: MediaType[]
-  discountTiers: number[]
   licenseSize: LicenseSize
   createOrder: (params?: {
     customMetadata?: Record<string, any>
@@ -232,7 +231,6 @@ export function OrderProvider({
   const [state, dispatch] = useReducer(reducer, initialState)
   const [companySizes, setCompanySizes] = useState<CompanySize[]>([])
   const [mediaTypes, setMediaTypes] = useState<MediaType[]>([])
-  const [discountTiers, setDiscountTiers] = useState<number[]>([])
 
   // Order persistence is handled through OrderStorageContext
   // using getLocalOrder/setLocalOrder for consistent storage management
@@ -1423,11 +1421,8 @@ export function OrderProvider({
         }
       }
 
-      // Fetch metrics and discount tiers from Sanity
-      const [metricsResult, discountTiersResult] = await Promise.all([
-        getLicenseMetrics(),
-        getPercentageDiscounts(),
-      ])
+      // Fetch metrics from Sanity
+      const metricsResult = await getLicenseMetrics()
 
       if (metricsResult.sizes.length > 0) {
         setCompanySizes(metricsResult.sizes)
@@ -1435,10 +1430,6 @@ export function OrderProvider({
 
       if (metricsResult.media.length > 0) {
         setMediaTypes(metricsResult.media)
-      }
-
-      if (discountTiersResult.length > 0) {
-        setDiscountTiers(discountTiersResult)
       }
 
       const skuResult = await fetchSkuOptions(
@@ -1491,7 +1482,6 @@ export function OrderProvider({
     isInvalid: state.isInvalid,
     companySizes,
     mediaTypes,
-    discountTiers,
     hasValidLicenseSize,
     hasValidLicenseType,
     allLicenseInfoSet,

@@ -17,7 +17,6 @@ interface Props {
   skuCode: string
   parentUid: string
   className?: string
-  discountTiers?: number[]
   selectedSkuOptions: SkuOption[]
   licenseSize: CompanySize
   addLineItem: (params: { skuCode: string }) => Promise<void>
@@ -31,7 +30,6 @@ export const SingleStyles: React.FC<Props> = ({
   skuCode,
   siblingCount,
   parentUid,
-  discountTiers,
   selectedSkuOptions,
   licenseSize,
   addLineItem,
@@ -48,20 +46,18 @@ export const SingleStyles: React.FC<Props> = ({
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
         count: siblingCount,
-        discountTiers,
       })
     )
-  }, [selectedSkuOptions, licenseSize, order?.line_items, discountTiers])
+  }, [selectedSkuOptions, licenseSize, order?.line_items, siblingCount])
 
   // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
   const isLineItem = order?.line_items?.find(
     ({ sku_code }) => sku_code === skuCode
   )
 
-  const percentageDiscount =
-    discountTiers && siblingCount
-      ? calculateDiscount(siblingCount + 1, discountTiers)
-      : 0
+  const percentageDiscount = siblingCount
+    ? calculateDiscount(siblingCount + 1)
+    : 0
 
   console.log('single-styles: ', { percentageDiscount })
 

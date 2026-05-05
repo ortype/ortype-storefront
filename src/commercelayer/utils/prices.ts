@@ -5,29 +5,26 @@ import {
   type SkuOption,
 } from '@commercelayer/sdk'
 
-// Hardcoded fallback tiers (1–100 scale) used when Sanity data is unavailable
-const DEFAULT_DISCOUNT_TIERS = [33, 44, 66, 77, 88, 88]
+// Continuous exponential discount curve constants
+const START_DISCOUNT = 0.35 // 35% discount starting at 2 styles
+const MAX_DISCOUNT = 0.87 // asymptotic cap at 87%
+const K = 0.01 // growth rate
+const P = 1.25 // curvature exponent
 
 /**
- * Return the discount rate (0–1) for a given count of a parentUid group.
- * Count 0 = first item (no discount). Count 1+ maps into the tiers array.
+ * Return the discount rate (0–1) for a given number of styles.
+ * 1 style = no discount. 2+ styles follow a continuous exponential curve
+ * that starts at START_DISCOUNT and asymptotically approaches MAX_DISCOUNT.
  *
- * @param count  size of sibling group
- * @param discountTiers  Array of 1–100 integers from Sanity (index 0 = 2nd style, etc.)
+ * @param n  total number of styles in the parentUid group
  */
-export function calculateDiscount(
-  count: number,
-  discountTiers: number[] = DEFAULT_DISCOUNT_TIERS
-): number {
-  // @NOTE: if we apply a tier based discount to ALL line items, then we do not track the
-  // cronological `position` of the line item, but apply a tier discount equally to all items
-  if (count <= 0) return 0
-  const tierIndex = count - 1
-  const modifier =
-    tierIndex < discountTiers.length
-      ? discountTiers[tierIndex]
-      : discountTiers[discountTiers.length - 1] // cap at last tier
-  return (modifier ?? 0) / 100
+export function calculateDiscount(n: number): number {
+  if (n <= 1) return 0
+  return Math.min(
+    MAX_DISCOUNT,
+    MAX_DISCOUNT -
+      (MAX_DISCOUNT - START_DISCOUNT) * Math.exp(-K * Math.pow(n - 2, P))
+  )
 }
 
 /**
@@ -57,7 +54,7 @@ export function calculateSkuOptionsTotal(skuOptions: SkuOption[]): number {
 
 /**
  * Compute the unit price in cents for a line item given its SKU options,
- * company size modifier, and position within its parentUid group.
+ * company size modifier, and the total number of styles in the group.
  *
  * This is the single source of truth for price calculation, used by both
  * the external price API route and the frontend for optimistic display.
@@ -66,20 +63,18 @@ export function calculateLineItemPrice({
   skuOptions,
   sizeModifier,
   count,
-  discountTiers,
 }: {
   skuOptions: SkuOption[]
   sizeModifier: number
   count: number
-  discountTiers?: number[]
 }): number {
   const skuOptionsTotal = calculateSkuOptionsTotal(skuOptions)
-  const total = skuOptionsTotal * sizeModifier
-  if (count <= 0) return total
+  const basePer = skuOptionsTotal * sizeModifier
+  if (count <= 1) return basePer
 
-  let discount = total * calculateDiscount(count, discountTiers)
-  discount = Math.ceil(discount / 100) * 100
-  return total - discount
+  const discount = calculateDiscount(count)
+  const unit = basePer * (1 - discount)
+  return Math.round(unit)
 }
 
 /**
