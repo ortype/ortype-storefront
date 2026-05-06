@@ -5,6 +5,10 @@ import {
   type SkuOption,
 } from '@commercelayer/sdk'
 
+import type { Batch, Task } from '@commercelayer/sdk-utils'
+import { executeBatch } from '@commercelayer/sdk-utils'
+import { forceOrderAutorefresh } from './forceOrderAutorefresh'
+
 // Continuous exponential discount curve constants
 const START_DISCOUNT = 0.35 // 35% discount starting at 2 styles
 const MAX_DISCOUNT = 0.87 // asymptotic cap at 87%
@@ -74,14 +78,14 @@ export function calculateLineItemPrice({
 
   const discount = calculateDiscount(count)
   const unit = basePer * (1 - discount)
-  return Math.round(unit)
+  return Math.floor(unit / 100) * 100 // Math.floor(2549 / 100) * 100 → 2500 cents
 }
 
 /**
  * Convert cents to a display-friendly float (e.g. 15000 → 150).
  */
 export function formatPrice(cents: number): number {
-  return cents / 100
+  return Math.floor(cents / 100)
 }
 
 /**
@@ -169,11 +173,28 @@ export async function recalculateSiblingPrices({
     })
   }
 
-  for (const sibling of siblings) {
-    await cl.line_items.update({
+  // 1. Disable auto-refresh (prevents 140 recalculations)
+  await cl.orders.update({ id: order.id, autorefresh: false })
+
+  // 2. Build batch tasks
+  const tasks: Task[] = siblings.map((sibling) => ({
+    resourceType: 'line_items',
+    operation: 'update',
+    resource: {
       id: sibling.id,
       quantity: 1,
       _external_price: true,
-    })
-  }
+    },
+    onFailure: {
+      errorHandler: (err) => {
+        console.error(`Failed to update ${sibling.sku_code}:`, err)
+      },
+    },
+  }))
+
+  // 3. Execute with automatic rate limiting
+  await executeBatch({ tasks })
+
+  // 4. Single refresh to recalculate everything once
+  await forceOrderAutorefresh({ client: cl, order })
 }

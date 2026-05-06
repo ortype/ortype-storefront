@@ -72,7 +72,7 @@ export async function POST(
   // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
 
-  // Collect siblings with the same parentUid from included line items
+  // Count all items in the parentUid group (siblings + self)
   const siblings = included.filter(
     ({ type, attributes }) =>
       type === 'line_items' &&
@@ -80,25 +80,7 @@ export async function POST(
       attributes.metadata?.parentUid === metadata.parentUid
   )
 
-  // Determine the sibiling count of the current items parentUid group
-  // by sorting all items (siblings + current) by created_at ascending.
-  // Count 0 = first added (no discount), count 1 = second (33%), etc.
-  let count: number
-
-  if (created_at) {
-    // Edit case: item already exists, use created_at to find stable count
-    const allInGroup = [
-      ...siblings.map((s) => ({
-        sku_code: s.attributes.sku_code,
-        created_at: s.attributes.created_at!,
-      })),
-      { sku_code, created_at },
-    ]
-    count = allInGroup.length
-  } else {
-    // New item: no created_at yet
-    count = siblings.length
-  }
+  const count = siblings.length + 1
 
   console.log('[PRICE API] count in parentUid group:', {
     sku_code,

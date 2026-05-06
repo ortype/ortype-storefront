@@ -147,14 +147,13 @@ export const Buy = () => {
           <GridItem colSpan={2}>
             <Fieldset.Root>
               <FieldsetLegend>{'4. Single Styles'}</FieldsetLegend>
-              <Fieldset.Content asChild>
+              <Fieldset.Content asChild p={0}>
                 <Flex
                   mt={1}
                   opacity={allLicenseInfoSet ? 1 : 0.3}
                   pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
-                  bg={'#EEE'}
                   p={2}
-                  gap={2}
+                  gap={0.5}
                 >
                   {font.variants?.map((variant, index) => {
                     // If this variant is already a line item, use its real position;
@@ -168,7 +167,11 @@ export const Buy = () => {
                             existingLineItem,
                             order.line_items
                           )
-                        : fontLineItemCount
+                        : fontLineItemCount > 0
+                        ? fontLineItemCount + 1
+                        : 0
+
+                    // fontLineItemCount is 0 if no items are added
 
                     return (
                       <SingleStyles

@@ -32,6 +32,9 @@ importers:
       '@commercelayer/sdk':
         specifier: ^6.32.0
         version: 6.32.0
+      '@commercelayer/sdk-utils':
+        specifier: v2
+        version: 2.6.0(@commercelayer/sdk@6.32.0)
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@18.3.18)(react@18.3.1)
@@ -1160,6 +1163,12 @@ packages:
     resolution: {integrity: sha512-Wib2I83L18/7SlmeVesqDb1tzFDJWm+VUwM+YWu28TKxyDO1W89q10ZBOWP19F4gGc7wSl2r+Ix+BFLhD8KVwA==}
     peerDependencies:
       react: '>=18.0.0'
+
+  '@commercelayer/sdk-utils@2.6.0':
+    resolution: {integrity: sha512-7KfWThiY5i0xojXzvMgsgoexUGBgUQ79AiCksm58eOb5mcO3giBosm52+v14jF1xKb/blG3BwwvV0GvqkoliYw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@commercelayer/sdk': ^6
 
   '@commercelayer/sdk@6.32.0':
     resolution: {integrity: sha512-xI/ZzkEDFT97Xn3tElO95EOOj8r0a0VQqRZrJ9MBHq9al3qfRXDpBzOvmXraFjEcUQyIylwOWMbsWpN7boCb6Q==}
@@ -8930,6 +8939,10 @@ snapshots:
       - react-dom
       - rollup
       - typescript
+
+  '@commercelayer/sdk-utils@2.6.0(@commercelayer/sdk@6.32.0)':
+    dependencies:
+      '@commercelayer/sdk': 6.32.0
 
   '@commercelayer/sdk@6.32.0': {}
 

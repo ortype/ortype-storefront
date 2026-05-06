@@ -1,4 +1,5 @@
 import CommerceLayer from '@commercelayer/sdk'
+import CommerceLayerUtils, { executeBatch } from '@commercelayer/sdk-utils'
 
 export interface CommerceLayerConfig {
   accessToken?: string
@@ -27,9 +28,12 @@ export default function getCommerceLayer({
     throw new Error(
       'accessToken, domain, and organization are required parameters'
     )
-  return CommerceLayer({
+  const cl = CommerceLayer({
     accessToken,
     domain,
     organization,
   })
+  // https://github.com/commercelayer/commercelayer-sdk-utils#sdk-v6x
+  CommerceLayerUtils(cl)
+  return cl
 }

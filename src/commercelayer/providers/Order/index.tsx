@@ -803,6 +803,38 @@ export function OrderProvider({
           throw result.error
         }
 
+        // Better to get it from the result? Its the same.
+        // console.log('utils.addToCart result: ', result)
+        // const parentUid = result.lineItem?.metadata?.parentUid
+        const parentUid = params.lineItem?.metadata?.parentUid
+
+        // Recalculate prices for remaining siblings in the same parentUid group
+        if (parentUid && state.order?.line_items?.length) {
+          const hasSiblings = state.order.line_items.some(
+            (li) =>
+              (li.item_type === 'skus' || li.item_type === 'bundles') &&
+              getParentUid(li) === parentUid
+          )
+          if (hasSiblings) {
+            await recalculateSiblingPrices({
+              cl,
+              order: state.order,
+              parentUid,
+            })
+
+            // Refetch to get updated prices in state
+            // @TODO: Do we need this if recalculateSiblingPrices forces autorefresh?
+            const { order: refreshedOrder } = await fetchOrder()
+            if (refreshedOrder) {
+              dispatch({
+                type: ActionType.DELETE_LINE_ITEM,
+                payload: { order: refreshedOrder },
+              })
+              return { success: true }
+            }
+          }
+        }
+
         // Since fetchOrder was called in utils.addToCart, we should have an updated order state
         // But we still need to update our local state through the reducer
         if (state.order) {
@@ -1127,7 +1159,9 @@ export function OrderProvider({
           )
           if (hasSiblings) {
             await recalculateSiblingPrices({ cl, order, parentUid })
+
             // Refetch to get updated prices in state
+            // @TODO: Do we need this if recalculateSiblingPrices forces autorefresh?
             const { order: refreshedOrder } = await fetchOrder()
             if (refreshedOrder) {
               dispatch({
@@ -1430,6 +1464,33 @@ export function OrderProvider({
 
       if (metricsResult.media.length > 0) {
         setMediaTypes(metricsResult.media)
+      }
+
+      // Reconcile stale licenseSize with current Sanity data
+      const storedSize = order?.metadata?.license?.size
+      if (storedSize?.value && metricsResult.sizes.length > 0) {
+        const sanitySize = metricsResult.sizes.find(
+          (s) => s.value === storedSize.value
+        )
+        if (
+          sanitySize &&
+          (sanitySize.modifier !== storedSize.modifier ||
+            sanitySize.label !== storedSize.label)
+        ) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(
+              '[OrderProvider] 🔄 initializeProvider: Reconciling stale licenseSize',
+              { stored: storedSize, sanity: sanitySize }
+            )
+          }
+          await setLicenseSize({
+            licenseSize: {
+              label: sanitySize.label,
+              value: sanitySize.value,
+              modifier: sanitySize.modifier,
+            },
+          })
+        }
       }
 
       const skuResult = await fetchSkuOptions(

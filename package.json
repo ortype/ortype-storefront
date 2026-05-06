@@ -25,6 +25,7 @@
     "@commercelayer/js-auth": "^6.7.0",
     "@commercelayer/react-components": "^4.17.0",
     "@commercelayer/sdk": "^6.32.0",
+    "@commercelayer/sdk-utils": "v2",
     "@emotion/react": "^11.14.0",
     "@headlessui/react": "1.7.14",
     "@hookform/resolvers": "^3.10.0",

@@ -59,7 +59,16 @@ export const SingleStyles: React.FC<Props> = ({
     ? calculateDiscount(siblingCount + 1)
     : 0
 
-  console.log('single-styles: ', { percentageDiscount })
+  const basePrice = useMemo(() => {
+    if (!licenseSize || selectedSkuOptions.length === 0) return null
+    return formatPrice(
+      calculateLineItemPrice({
+        skuOptions: selectedSkuOptions,
+        sizeModifier: licenseSize.modifier,
+        count: 0,
+      })
+    )
+  }, [selectedSkuOptions, licenseSize])
 
   // Show optimistic price immediately; falls back to server price
   const displayPrice = optimisticPrice ?? isLineItem?.total_amount_float
@@ -67,11 +76,16 @@ export const SingleStyles: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
+      /*
       _hover={{
         '& .discount': {
           opacity: !isLineItem && percentageDiscount > 0 ? 1 : 0,
         },
-      }}
+      }}*/
+      bg={isLineItem ? '#FFF8D3' : '#EEE'}
+      borderRadius={isLineItem ? 'full' : 'none'}
+      py={2}
+      px={3}
     >
       <Stack direction={'row'} gap={2} alignItems={'center'}>
         <ToggleLineItem
@@ -91,15 +105,27 @@ export const SingleStyles: React.FC<Props> = ({
         </Text>
       </Stack>
       <Flex gap={2} alignItems={'center'}>
-        <Text
+        {/*<Text
           className={'discount'}
           as={'span'}
           fontSize={'xs'}
           opacity={0}
-        >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
+        >{`${Math.floor(percentageDiscount * 100)}%`}</Text>*/}
+        {!isLineItem && percentageDiscount > 0 && basePrice !== null && (
+          <Text
+            className={'discount'}
+            as={'span'}
+            fontSize={'xs'}
+            opacity={0.6}
+            textDecorationLine={'line-through'}
+          >
+            {`${basePrice} EUR`}
+          </Text>
+        )}
         {isLineItem ? (
           <Text as={'span'} fontSize={'xs'} opacity={0.6}>
             {`ADDED`}
+            {`(${isLineItem?.total_amount_float} EUR)`}
           </Text>
         ) : (
           <Text as={'span'} fontSize={'xs'}>

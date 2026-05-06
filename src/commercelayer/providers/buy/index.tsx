@@ -120,8 +120,6 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         }
       }
 
-      console.log('addLineItem: ', { result })
-
       // Format license types for display
       const licenseTypes = selectedSkuOptions
         ?.map((option) => option.name)
@@ -226,7 +224,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       }
 
       // @TODO: we need more try/catch blocks and error reporting
-      // Update line item with license types
+      // Update line item with license types via 'relationships'
       await addLineItemLicenseTypes({
         cl,
         lineItem,
