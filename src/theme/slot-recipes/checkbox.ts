@@ -25,8 +25,8 @@ export const checkboxSlotRecipe = defineSlotRecipe({
         boxSize: 'full',
       },
       _invalid: {
-        colorPalette: 'default',
-        // borderColor: 'border.error',
+        colorPalette: 'red',
+        borderColor: 'border.error',
       },
       _disabled: {
         opacity: '0.5',
@@ -90,29 +90,14 @@ export const checkboxSlotRecipe = defineSlotRecipe({
       },
     },
     variant: {
-      /*      radio: {
-        control: {
-          '& .dot': {
-            height: '100%',
-            width: '100%',
-            borderRadius: 'full',
-            bg: 'currentColor',
-            scale: '0.4',
-          },
-        }
-      },*/
       outline: {
         control: {
-          borderRadius: '50%',
-          borderWidth: '2px',
           bg: 'colorPalette.bg',
+          borderRadius: '0',
+          borderWidth: '2px',
           borderColor: 'colorPalette.fg',
           '&:is([data-state=checked], [data-state=indeterminate])': {
             color: 'colorPalette.fg',
-            borderColor: 'colorPalette.fg',
-            bg: 'colorPalette.fg',
-          },
-          _invalid: {
             borderColor: 'colorPalette.fg',
           },
         },

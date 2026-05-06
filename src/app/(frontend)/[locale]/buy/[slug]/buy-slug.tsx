@@ -1,7 +1,7 @@
 'use client'
 import BuyNav from '@/commercelayer/components/pages/buy/buy-nav'
 import type { BuyFontsQueryResult, FontPagePayload } from '@/types'
-import { Container, Heading } from '@chakra-ui/react'
+import { Box, Heading } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 
 export interface BuyPageProps {
@@ -31,7 +31,7 @@ export function BuyPage({ data }: BuyPageProps) {
   const { font, moreFonts } = data ?? {}
 
   return (
-    <Container mt={6} mb={24}>
+    <Box mt={6} mb={24}>
       <Heading
         textAlign={'center'}
         fontSize={'2rem'}
@@ -46,7 +46,7 @@ export function BuyPage({ data }: BuyPageProps) {
       <DynamicBuyContainer font={font}>
         <DynamicBuy />
       </DynamicBuyContainer>
-    </Container>
+    </Box>
   )
 }
 

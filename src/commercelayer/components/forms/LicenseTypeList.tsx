@@ -95,10 +95,8 @@ export const LicenseTypeList: React.FC<Props> = ({
         <CheckboxGroup
           value={selectedTypes?.map((option) => option.value) || []}
           onValueChange={(e) => handleTypeChange(e)}
-          bg={'#eee'}
           mt={1}
-          gap={2}
-          p={2}
+          gap={1}
         >
           {typeOptions.map((option) => (
             <Checkbox.Root
@@ -106,10 +104,19 @@ export const LicenseTypeList: React.FC<Props> = ({
               value={option.value}
               variant={'outline'}
               size={'lg'}
+              p={2}
+              bg={'brand.50'}
+              w={'full'}
+              _hover={{
+                bg: 'blackAlpha.50',
+                cursor: 'pointer',
+              }}
             >
               <Checkbox.HiddenInput />
               <Checkbox.Control />
-              <Checkbox.Label fontSize={'lg'}>{option.label}</Checkbox.Label>
+              <Checkbox.Label fontSize={{ base: 'lg', xl: 'md', '2xl': 'lg' }}>
+                {option.label}
+              </Checkbox.Label>
             </Checkbox.Root>
           ))}
         </CheckboxGroup>

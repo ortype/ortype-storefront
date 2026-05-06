@@ -4,19 +4,18 @@ import {
   formatPrice,
 } from '@/commercelayer/utils/prices'
 import type { CompanySize } from '@/sanity/lib/queries'
-import { Box, Flex, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import { Button, Flex, Stack, Text } from '@chakra-ui/react'
 import { SkuOption, type Order } from '@commercelayer/sdk'
-import React, { useMemo } from 'react'
-import { ToggleLineItem } from './toggle-line-item'
+import React, { useMemo, useState } from 'react'
 
 interface Props {
-  orderId: string
   order: Order
   name: string
   siblingCount: number
   skuCode: string
   parentUid: string
   className?: string
+  unitPrice: number
   selectedSkuOptions: SkuOption[]
   licenseSize: CompanySize
   addLineItem: (params: { skuCode: string }) => Promise<void>
@@ -25,7 +24,6 @@ interface Props {
 
 export const SingleStyles: React.FC<Props> = ({
   order,
-  orderId,
   name,
   skuCode,
   siblingCount,
@@ -34,22 +32,9 @@ export const SingleStyles: React.FC<Props> = ({
   licenseSize,
   addLineItem,
   deleteLineItem,
+  unitPrice,
   className,
 }) => {
-  // Optimistic price: compute locally so the UI updates immediately
-  const optimisticPrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0 || !order?.line_items) {
-      return formatPrice(9000)
-    }
-    return formatPrice(
-      calculateLineItemPrice({
-        skuOptions: selectedSkuOptions,
-        sizeModifier: licenseSize.modifier,
-        count: siblingCount,
-      })
-    )
-  }, [selectedSkuOptions, licenseSize, order?.line_items, siblingCount])
-
   // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
   const isLineItem = order?.line_items?.find(
     ({ sku_code }) => sku_code === skuCode
@@ -71,34 +56,66 @@ export const SingleStyles: React.FC<Props> = ({
   }, [selectedSkuOptions, licenseSize])
 
   // Show optimistic price immediately; falls back to server price
-  const displayPrice = optimisticPrice ?? isLineItem?.total_amount_float
+  const displayPrice = unitPrice ?? isLineItem?.total_amount_float
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  // @TODO: implement optimistic UI solution
+  const handleClick = async () => {
+    setIsLoading(true)
+    if (isLineItem) {
+      // If the line item already exists in the cart, remove it
+      // https://docs.commercelayer.io/core/v/api-reference/line_items/delete (by ID)
+      await deleteLineItem({ lineItemId: isLineItem.id })
+    } else {
+      try {
+        await addLineItem({
+          name,
+          skuCode,
+          parentUid,
+          price: displayPrice,
+          className,
+        })
+        setIsLoading(false)
+      } catch (e) {
+        console.log('addToCart error: ', e)
+      }
+    }
+    setIsLoading(false)
+  }
 
   return (
     <Flex
       justifyContent={'space-between'}
-      /*
+      bg={isLineItem ? '#FFF8D3' : 'brand.50'}
+      borderRadius={isLineItem ? 'full' : '0px'}
+      cursor={'pointer'}
       _hover={{
-        '& .discount': {
-          opacity: !isLineItem && percentageDiscount > 0 ? 1 : 0,
+        borderRadius: '100px',
+        bg: 'blackAlpha.300',
+        '& .toggle-button': {
+          borderWidth: '4px',
         },
-      }}*/
-      bg={isLineItem ? '#FFF8D3' : '#EEE'}
-      borderRadius={isLineItem ? 'full' : 'none'}
+      }}
+      onClick={handleClick}
+      transition={
+        'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+      }
       py={2}
       px={3}
     >
       <Stack direction={'row'} gap={2} alignItems={'center'}>
-        <ToggleLineItem
-          order={order}
-          isLineItem={isLineItem}
-          skuCode={skuCode}
-          parentUid={parentUid}
-          price={displayPrice}
-          className={className}
-          quantity={1}
-          name={name}
-          addLineItem={addLineItem}
-          deleteLineItem={deleteLineItem}
+        <Button
+          className={'toggle-button'}
+          variant={'circle'}
+          w={6}
+          borderWidth={'2px'}
+          h={6}
+          minW={6}
+          p={0}
+          bg={isLineItem ? 'black' : 'white'}
+          disabled={isLoading}
+          transition={'border-width 200ms ease-in-out'}
         />
         <Text fontSize={'2xl'} as={'span'} className={className}>
           {name}

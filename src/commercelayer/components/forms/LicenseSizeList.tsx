@@ -43,28 +43,28 @@ export const LicenseSizeList: React.FC<Props> = ({
       >
         <FieldsetLegend>{'3. How big is your company?'}</FieldsetLegend>
         <Fieldset.Content asChild>
-          <VStack
-            mt={1}
-            gap={2}
-            p={2}
-            alignItems={'flex-start'}
-            bg={'brand.50'}
-          >
+          <VStack mt={1} gap={1} alignItems={'flex-start'}>
             {sizes.map((size) => (
               <RadioGroup.Item
                 key={size.value}
                 value={size.value}
-                _hover={{
-                  cursor: 'pointer',
-                }}
                 _focus={{
                   ring: 2,
                   ringColor: 'blue.500',
                 }}
+                bg={'brand.50'}
+                _hover={{
+                  bg: 'blackAlpha.50',
+                  cursor: 'pointer',
+                }}
+                p={2}
+                w={'full'}
               >
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
-                <RadioGroup.ItemText fontSize={'xl'}>
+                <RadioGroup.ItemText
+                  fontSize={{ base: 'lg', xl: 'md', '2xl': 'lg' }}
+                >
                   {size.label}
                 </RadioGroup.ItemText>
               </RadioGroup.Item>

@@ -9,18 +9,21 @@ import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
   ActionBar,
   Box,
+  Button,
   Center,
   Circle,
   Container,
   Fieldset,
   Flex,
   GridItem,
+  Link,
   Portal,
   Show,
   SimpleGrid,
   Spinner,
   Stack,
   Text,
+  VStack,
 } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
@@ -121,16 +124,46 @@ export const Buy = () => {
       (lineItem) => font.uid === lineItem.item?.reference_origin
     ).length ?? 0
 
+  const stylesCount = displayLineItems.length
+  const licensesCount = selectedSkuOptions?.length
+  const basePrice = calculateLineItemPrice({
+    skuOptions: selectedSkuOptions,
+    sizeModifier: licenseSize.modifier,
+    count: 1,
+  })
+  console.log({ basePrice, stylesCount, displayTotal })
+  const costWithoutDiscounts = basePrice * stylesCount
+  const discountsTotal = formatPrice(displayTotal * 100 - costWithoutDiscounts)
+
+  // Optimistic price: compute locally so the UI updates immediately
+  const unitPrice = useMemo(() => {
+    if (!licenseSize || selectedSkuOptions.length === 0 || !order?.line_items) {
+      return formatPrice(9000)
+    }
+    return formatPrice(
+      calculateLineItemPrice({
+        skuOptions: selectedSkuOptions,
+        sizeModifier: licenseSize.modifier,
+        count: fontLineItemCount,
+      })
+    )
+  }, [selectedSkuOptions, licenseSize, order?.line_items, fontLineItemCount])
+
   // @TODO: on changing selected SKU options, update all line_items on the order
 
   return (
-    <>
-      <Container maxW="60rem" position={'relative'}>
-        <SimpleGrid columns={[1, null, 2]} gap={3}>
+    <Box pos={'relative'}>
+      <Box
+        maxW={['100%']}
+        mr={{ base: '1rem', xl: '18rem', '2xl': '20rem', '3xl': '24rem' }}
+        ml={{ base: '1rem', '3xl': '24rem' }}
+        position={'relative'}
+      >
+        <SimpleGrid columns={2} gap={[4, null, null, null, null, 8]}>
           <GridItem colSpan={2}>
             <LicenseOwnerInput />
           </GridItem>
-          <GridItem>
+          <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
             <LicenseTypeList
               font={font}
               skuOptions={skuOptions}
@@ -138,7 +171,7 @@ export const Buy = () => {
               setSelectedSkuOptions={setSelectedSkuOptions}
             />
           </GridItem>
-          <GridItem>
+          <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
             <LicenseSizeList
               setLicenseSize={setLicenseSize}
               licenseSize={licenseSize}
@@ -180,12 +213,12 @@ export const Buy = () => {
                         className={variant._id}
                         selectedSkuOptions={selectedSkuOptions}
                         licenseSize={licenseSize}
+                        unitPrice={unitPrice}
                         siblingCount={count}
                         parentUid={variant.parentUid}
                         addLineItem={addLineItem}
                         deleteLineItem={deleteLineItem}
                         order={order}
-                        orderId={orderId}
                         name={`${font.shortName} ${variant.optionName}`}
                       />
                     )
@@ -195,26 +228,110 @@ export const Buy = () => {
             </Fieldset.Root>
           </GridItem>
         </SimpleGrid>
-        <ActionBar.Root open={allLicenseInfoSet}>
-          <Portal>
-            <ActionBar.Positioner>
-              <ActionBar.Content>
-                <Text textStyle={'md'} pl={2} whiteSpace={'nowrap'}>
-                  {`${displayTotal} EUR`}
-                </Text>
-
-                <ActionBar.Separator />
-                <CheckoutButton
-                  href={`/cart/`}
-                  orderId={orderId}
-                  isDisabled={!allLicenseInfoSet}
-                />
-              </ActionBar.Content>
-            </ActionBar.Positioner>
-          </Portal>
-        </ActionBar.Root>
-      </Container>
-    </>
+      </Box>
+      <VStack
+        pos={{ base: 'relative', xl: 'fixed' }}
+        right={{ base: 'auto', xl: '1rem', '3xl': '2rem' }}
+        top={{ base: 'auto', xl: '7rem' }}
+        w={{ base: '100%', xl: '16rem', '2xl': '18rem', '3xl': '20rem' }}
+        bg={'#FFF8D3'}
+        px={4}
+        py={5}
+        my={{ base: 4, xl: 0 }}
+        borderRadius={20}
+        gap={2}
+      >
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pb={2}
+        >
+          <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
+            {'Added'}
+          </Text>
+          <Button
+            asChild
+            variant={'solid'}
+            bg={'red'}
+            borderRadius={'5rem'}
+            size={'sm'}
+            fontSize={'md'}
+            color={'white'}
+            disabled={!allLicenseInfoSet}
+            gap={1}
+          >
+            <Link href={'/cart/'}>{'Go to cart'}</Link>
+          </Button>
+        </Flex>
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pb={2}
+        >
+          <Text textStyle={'md'} w={'50%'}>
+            {' '}
+            {`Styles`}
+          </Text>
+          <Text textStyle={'md'}>{`${stylesCount}`}</Text>
+        </Flex>
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pb={2}
+        >
+          <Text textStyle={'md'} w={'50%'}>
+            {' '}
+            {`Licenses`}
+          </Text>
+          <Text textStyle={'md'}>{`${licensesCount}`}</Text>
+        </Flex>
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pb={2}
+        >
+          <Text textStyle={'md'} w={'50%'}>
+            {' '}
+            {`Unit Price`}
+          </Text>
+          <Text textStyle={'md'}>{`${unitPrice} EUR`}</Text>
+        </Flex>
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pb={2}
+        >
+          <Text textStyle={'md'} w={'50%'}>
+            {' '}
+            {`Discounts`}
+          </Text>
+          <Text textStyle={'md'}>{`${discountsTotal} EUR`}</Text>
+        </Flex>
+        <Flex
+          w={'full'}
+          mt={-1}
+          justifyContent={'space-between'}
+          borderTop={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pt={2}
+        >
+          <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
+            {`TOTAL`}
+          </Text>
+          <Text textStyle={'md'}>{`${displayTotal} EUR`}</Text>
+        </Flex>
+      </VStack>
+    </Box>
   )
 }
 
