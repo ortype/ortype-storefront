@@ -63,7 +63,7 @@ export const LicenseSizeList: React.FC<Props> = ({
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
                 <RadioGroup.ItemText
-                  fontSize={{ base: 'lg', xl: 'md', '2xl': 'lg' }}
+                  fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
                 >
                   {size.label}
                 </RadioGroup.ItemText>

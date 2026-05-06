@@ -77,7 +77,7 @@ export const Buy = () => {
         sum +
         calculateLineItemPrice({
           skuOptions: itemSkuOptions,
-          sizeModifier: licenseSize.modifier,
+          sizeModifier: licenseSize?.modifier,
           count,
         })
       )
@@ -126,13 +126,20 @@ export const Buy = () => {
 
   const stylesCount = displayLineItems.length
   const licensesCount = selectedSkuOptions?.length
-  const basePrice = calculateLineItemPrice({
-    skuOptions: selectedSkuOptions,
-    sizeModifier: licenseSize.modifier,
-    count: 1,
-  })
-  console.log({ basePrice, stylesCount, displayTotal })
+  const basePrice = useMemo(() => {
+    if (!order?.line_items?.length || !licenseSize || !skuOptions?.length) {
+      return 0
+    }
+
+    return calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: 1,
+    })
+  }, [selectedSkuOptions, licenseSize, order?.line_items])
+
   const costWithoutDiscounts = basePrice * stylesCount
+  console.log({ basePrice, stylesCount, costWithoutDiscounts })
   const discountsTotal = formatPrice(displayTotal * 100 - costWithoutDiscounts)
 
   // Optimistic price: compute locally so the UI updates immediately
@@ -155,8 +162,14 @@ export const Buy = () => {
     <Box pos={'relative'}>
       <Box
         maxW={['100%']}
-        mr={{ base: '1rem', xl: '18rem', '2xl': '20rem', '3xl': '24rem' }}
-        ml={{ base: '1rem', '3xl': '24rem' }}
+        ml={{ base: '1rem', xl: '15rem', '3xl': '21rem' }}
+        mr={{
+          base: '1rem',
+          lg: '15rem',
+          xl: '15rem',
+          '2xl': '17rem',
+          '3xl': '21rem',
+        }}
         position={'relative'}
       >
         <SimpleGrid columns={2} gap={[4, null, null, null, null, 8]}>
@@ -230,10 +243,10 @@ export const Buy = () => {
         </SimpleGrid>
       </Box>
       <VStack
-        pos={{ base: 'relative', xl: 'fixed' }}
-        right={{ base: 'auto', xl: '1rem', '3xl': '2rem' }}
-        top={{ base: 'auto', xl: '7rem' }}
-        w={{ base: '100%', xl: '16rem', '2xl': '18rem', '3xl': '20rem' }}
+        pos={{ base: 'relative', lg: 'fixed' }}
+        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
+        top={{ base: 'auto', lg: '7rem' }}
+        w={{ base: '100%', lg: '13rem', '2xl': '15rem', '3xl': '17rem' }}
         bg={'#FFF8D3'}
         px={4}
         py={5}
@@ -276,7 +289,7 @@ export const Buy = () => {
             {' '}
             {`Styles`}
           </Text>
-          <Text textStyle={'md'}>{`${stylesCount}`}</Text>
+          <Text pl={1} textStyle={'md'} w={'50%'}>{`${stylesCount}`}</Text>
         </Flex>
         <Flex
           w={'full'}
@@ -289,7 +302,7 @@ export const Buy = () => {
             {' '}
             {`Licenses`}
           </Text>
-          <Text textStyle={'md'}>{`${licensesCount}`}</Text>
+          <Text pl={1} textStyle={'md'} w={'50%'}>{`${licensesCount}`}</Text>
         </Flex>
         <Flex
           w={'full'}
@@ -302,7 +315,7 @@ export const Buy = () => {
             {' '}
             {`Unit Price`}
           </Text>
-          <Text textStyle={'md'}>{`${unitPrice} EUR`}</Text>
+          <Text pl={1} textStyle={'md'} w={'50%'}>{`${unitPrice} EUR`}</Text>
         </Flex>
         <Flex
           w={'full'}
@@ -315,7 +328,11 @@ export const Buy = () => {
             {' '}
             {`Discounts`}
           </Text>
-          <Text textStyle={'md'}>{`${discountsTotal} EUR`}</Text>
+          <Text
+            pl={1}
+            textStyle={'md'}
+            w={'50%'}
+          >{`${discountsTotal} EUR`}</Text>
         </Flex>
         <Flex
           w={'full'}
@@ -328,7 +345,7 @@ export const Buy = () => {
           <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
             {`TOTAL`}
           </Text>
-          <Text textStyle={'md'}>{`${displayTotal} EUR`}</Text>
+          <Text pl={1} textStyle={'md'} w={'50%'}>{`${displayTotal} EUR`}</Text>
         </Flex>
       </VStack>
     </Box>

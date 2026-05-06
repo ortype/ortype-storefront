@@ -114,7 +114,9 @@ export const LicenseTypeList: React.FC<Props> = ({
             >
               <Checkbox.HiddenInput />
               <Checkbox.Control />
-              <Checkbox.Label fontSize={{ base: 'lg', xl: 'md', '2xl': 'lg' }}>
+              <Checkbox.Label
+                fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
+              >
                 {option.label}
               </Checkbox.Label>
             </Checkbox.Root>

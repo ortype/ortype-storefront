@@ -92,7 +92,7 @@ const LicenseOwnerInput: React.FC<Props> = ({ label }) => {
             aria-label="License owner name"
             variant="subtle"
             size="lg"
-            fontSize={'lg'}
+            fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
             mt={1}
             borderRadius={0}
             disabled={isSubmitting}
