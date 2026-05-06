@@ -69,6 +69,12 @@ export default function FontIndex({
               pt={table ? '4rem' : '2rem'}
               flexDirection={'column'}
               alignItems={'center'}
+              _hover={{
+                '& .buy-button': {
+                  opacity: 1,
+                  pointerEvents: 'auto',
+                },
+              }}
             >
               <Tester
                 table={table}

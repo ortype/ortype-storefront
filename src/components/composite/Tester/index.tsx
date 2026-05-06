@@ -223,7 +223,7 @@ export const Tester: React.FC<Props> = (props) => {
         loading={loading}
         limiter={limiter}
       />
-      <Flex align={'center'} justify={'center'} h={'2rem'}>
+      <Flex align={'center'} justify={'center'} h={'2rem'} pos={'relative'}>
         <HStack gap={6}>
           <Button
             variant={'block'}
@@ -240,8 +240,8 @@ export const Tester: React.FC<Props> = (props) => {
               </Text>
             </Link>
           </Button>
-          <HStack gap={6} display={table ? 'none' : 'flex'}>
-            {variants.length > 1 && (
+          {variants.length > 1 && (
+            <HStack gap={6} display={table ? 'none' : 'flex'}>
               <TieredSelect
                 currentVariantId={currentVariantId}
                 variants={variants}
@@ -249,8 +249,27 @@ export const Tester: React.FC<Props> = (props) => {
                 handleVariantChange={handleVariantChange}
                 tabIndex={-1} /* Prevent tab focus */
               />
-            )}
-          </HStack>
+            </HStack>
+          )}
+          <Button
+            // @TODO: look into how to set this up in button.ts
+            opacity={0}
+            pointerEvents={'none'}
+            pos={'absolute'}
+            left={'100%'}
+            ml={6}
+            className={'buy-button'}
+            bg={'red'}
+            color={'white'}
+            size={table ? 'xs' : 'sm'}
+            fontSize={'lg'}
+            px={'0.75rem'}
+            minW={'auto'}
+            borderRadius={'3rem'}
+            asChild
+          >
+            <Link href={`/buy/${slug}`}>{`Buy`}</Link>
+          </Button>
           {/*<Box display={table ? 'none' : 'flex'}>
             <ChakraLink
               as={Link}
