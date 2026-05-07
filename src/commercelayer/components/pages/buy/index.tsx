@@ -7,7 +7,6 @@ import { getFontReferenceCounts } from '@/commercelayer/components/ui/order-summ
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
-  ActionBar,
   Box,
   Button,
   Center,
@@ -30,6 +29,7 @@ import { SingleStyles } from './single-styles'
 
 import {
   calculateLineItemPrice,
+  calculateSkuOptionsTotal,
   formatPrice,
   getLineItemPosition,
   getLineItemSibilingCount,
@@ -49,6 +49,7 @@ export const Buy = () => {
   } = useOrderContext()
   const { font, addLineItem } = useBuyContext()
 
+  /*
   // Optimistic total: compute from each line item's sku options and position
   const optimisticTotal = useMemo(() => {
     if (!order?.line_items?.length || !licenseSize || !skuOptions?.length) {
@@ -86,7 +87,7 @@ export const Buy = () => {
     return formatPrice(totalCents)
   }, [order?.line_items, licenseSize, skuOptions])
 
-  const displayTotal = optimisticTotal ?? order?.total_amount_with_taxes_float
+  const displayTotal = optimisticTotal ?? order?.total_amount_with_taxes_float*/
 
   // Memoize line item filtering and font reference calculations
   const { displayLineItems, fontRefCounts, fontCount, parentFontString } =
@@ -118,43 +119,96 @@ export const Buy = () => {
       }
     }, [order?.line_items])
 
-  // Count how many line items already exist for this font's parentUid
-  const fontLineItemCount =
-    order?.line_items?.filter(
-      (lineItem) => font.uid === lineItem.item?.reference_origin
-    ).length ?? 0
-
   const stylesCount = displayLineItems.length
   const licensesCount = selectedSkuOptions?.length
-  const basePrice = useMemo(() => {
-    if (!order?.line_items?.length || !licenseSize || !skuOptions?.length) {
-      return 0
-    }
-
-    return calculateLineItemPrice({
-      skuOptions: selectedSkuOptions,
-      sizeModifier: licenseSize.modifier,
-      count: 1,
-    })
-  }, [selectedSkuOptions, licenseSize, order?.line_items])
-
-  const costWithoutDiscounts = basePrice * stylesCount
-  console.log({ basePrice, stylesCount, costWithoutDiscounts })
-  const discountsTotal = formatPrice(displayTotal * 100 - costWithoutDiscounts)
 
   // Optimistic price: compute locally so the UI updates immediately
-  const unitPrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0 || !order?.line_items) {
-      return formatPrice(9000)
-    }
-    return formatPrice(
-      calculateLineItemPrice({
+  const { show, fontLineItemCount, unitPrice, subtotal, totalDiscount, total } =
+    useMemo(() => {
+      if (!licenseSize || !skuOptions?.length) {
+        return {
+          show: false,
+          fontLineItemCount: 0,
+          unitPrice: 0,
+          subtotal: 0,
+          totalDiscount: 0,
+          total: 0,
+        }
+      }
+
+      // Count how many line items already exist for this font's parentUid
+      const fontLineItems =
+        order?.line_items?.filter(
+          (lineItem) => font.uid === lineItem.item?.reference_origin
+        ) || []
+      // @NOTE: how is the above differnt from
+      // `const count = getLineItemSibilingCount(li, order.line_items!)`
+      // it takes a lineItem as a param which it pulls the parentUid from
+      // the above has access to the UID from the font
+
+      const unitPrice = calculateLineItemPrice({
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
-        count: fontLineItemCount,
+        count: fontLineItems.length,
       })
-    )
-  }, [selectedSkuOptions, licenseSize, order?.line_items, fontLineItemCount])
+
+      if (fontLineItems.length === 0) {
+        return {
+          show: false,
+          fontLineItemCount: 0,
+          unitPrice: formatPrice(unitPrice),
+          subtotal: 0,
+          totalDiscount: 0,
+          total: 0,
+        }
+      }
+
+      let subTotalCents = 0
+      let totalCents = 0
+      const fontLineItemCount = fontLineItems.length
+
+      for (const li of fontLineItems) {
+        const itemSkuOptions =
+          li.line_item_options
+            ?.map(({ sku_option }) =>
+              skuOptions.find((o) => o.id === sku_option?.id)
+            )
+            .filter((o): o is NonNullable<typeof o> => !!o) ?? []
+
+        if (itemSkuOptions.length === 0) {
+          // No resolved options — use server price for both
+          const amount = li.total_amount_cents ?? 0
+          subTotalCents += amount
+          totalCents += amount
+          continue
+        }
+
+        const count = getLineItemSibilingCount(li, order.line_items!)
+
+        // Subtotal: full price as if count 0 (no discount)
+        subTotalCents += calculateLineItemPrice({
+          skuOptions: itemSkuOptions,
+          sizeModifier: licenseSize.modifier,
+          count: 0,
+        })
+
+        // Total: actual discounted price at this count
+        totalCents += calculateLineItemPrice({
+          skuOptions: itemSkuOptions,
+          sizeModifier: licenseSize.modifier,
+          count,
+        })
+      }
+
+      return {
+        show: true,
+        fontLineItemCount,
+        unitPrice: formatPrice(unitPrice),
+        subtotal: formatPrice(subTotalCents),
+        totalDiscount: formatPrice(subTotalCents - totalCents),
+        total: formatPrice(totalCents),
+      }
+    }, [order?.line_items, licenseSize, skuOptions])
 
   // @TODO: on changing selected SKU options, update all line_items on the order
 
@@ -172,7 +226,7 @@ export const Buy = () => {
         }}
         position={'relative'}
       >
-        <SimpleGrid columns={2} gap={[4, null, null, null, null, 8]}>
+        <SimpleGrid columns={2} gap={[4, null, null, null, null, null, 8]}>
           <GridItem colSpan={2}>
             <LicenseOwnerInput />
           </GridItem>
@@ -242,112 +296,129 @@ export const Buy = () => {
           </GridItem>
         </SimpleGrid>
       </Box>
-      <VStack
-        pos={{ base: 'relative', lg: 'fixed' }}
-        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
-        top={{ base: 'auto', lg: '7rem' }}
-        w={{ base: '100%', lg: '13rem', '2xl': '15rem', '3xl': '17rem' }}
-        bg={'#FFF8D3'}
-        px={4}
-        py={5}
-        my={{ base: 4, xl: 0 }}
-        borderRadius={20}
-        gap={2}
-      >
-        <Flex
-          w={'full'}
-          justifyContent={'space-between'}
-          borderBottom={'1px solid #CEC9AB'}
-          alignItems={'center'}
-          pb={2}
+      <Show when={show}>
+        <VStack
+          pos={{ base: 'relative', lg: 'fixed' }}
+          right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
+          top={{ base: 'auto', lg: '7rem' }}
+          w={{ base: '100%', lg: '13rem', '2xl': '15rem', '3xl': '17rem' }}
+          bg={'#FFF8D3'}
+          px={4}
+          py={5}
+          my={{ base: 4, xl: 0 }}
+          borderRadius={20}
+          gap={2}
         >
-          <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
-            {'Added'}
-          </Text>
-          <Button
-            asChild
-            variant={'solid'}
-            bg={'red'}
-            borderRadius={'5rem'}
-            size={'sm'}
-            fontSize={'md'}
-            color={'white'}
-            disabled={!allLicenseInfoSet}
-            gap={1}
+          <Flex
+            w={'full'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #CEC9AB'}
+            alignItems={'center'}
+            pb={2}
           >
-            <Link href={'/cart/'}>{'Go to cart'}</Link>
-          </Button>
-        </Flex>
-        <Flex
-          w={'full'}
-          justifyContent={'space-between'}
-          borderBottom={'1px solid #CEC9AB'}
-          alignItems={'center'}
-          pb={2}
-        >
-          <Text textStyle={'md'} w={'50%'}>
-            {' '}
-            {`Styles`}
-          </Text>
-          <Text pl={1} textStyle={'md'} w={'50%'}>{`${stylesCount}`}</Text>
-        </Flex>
-        <Flex
-          w={'full'}
-          justifyContent={'space-between'}
-          borderBottom={'1px solid #CEC9AB'}
-          alignItems={'center'}
-          pb={2}
-        >
-          <Text textStyle={'md'} w={'50%'}>
-            {' '}
-            {`Licenses`}
-          </Text>
-          <Text pl={1} textStyle={'md'} w={'50%'}>{`${licensesCount}`}</Text>
-        </Flex>
-        <Flex
-          w={'full'}
-          justifyContent={'space-between'}
-          borderBottom={'1px solid #CEC9AB'}
-          alignItems={'center'}
-          pb={2}
-        >
-          <Text textStyle={'md'} w={'50%'}>
-            {' '}
-            {`Unit Price`}
-          </Text>
-          <Text pl={1} textStyle={'md'} w={'50%'}>{`${unitPrice} EUR`}</Text>
-        </Flex>
-        <Flex
-          w={'full'}
-          justifyContent={'space-between'}
-          borderBottom={'1px solid #CEC9AB'}
-          alignItems={'center'}
-          pb={2}
-        >
-          <Text textStyle={'md'} w={'50%'}>
-            {' '}
-            {`Discounts`}
-          </Text>
-          <Text
-            pl={1}
-            textStyle={'md'}
-            w={'50%'}
-          >{`${discountsTotal} EUR`}</Text>
-        </Flex>
-        <Flex
-          w={'full'}
-          mt={-1}
-          justifyContent={'space-between'}
-          borderTop={'1px solid #CEC9AB'}
-          alignItems={'center'}
-          pt={2}
-        >
-          <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
-            {`TOTAL`}
-          </Text>
-          <Text pl={1} textStyle={'md'} w={'50%'}>{`${displayTotal} EUR`}</Text>
-        </Flex>
-      </VStack>
+            <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
+              {'Added'}
+            </Text>
+            <Button
+              asChild
+              variant={'solid'}
+              bg={'red'}
+              borderRadius={'5rem'}
+              size={'sm'}
+              fontSize={'md'}
+              color={'white'}
+              disabled={!allLicenseInfoSet}
+              gap={1}
+            >
+              <Link href={'/cart/'}>{'Go to cart'}</Link>
+            </Button>
+          </Flex>
+          <Flex
+            w={'full'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #CEC9AB'}
+            alignItems={'center'}
+            pb={2}
+          >
+            <Text textStyle={'md'} w={'50%'}>
+              {' '}
+              {`Styles`}
+            </Text>
+            <Text pl={1} textStyle={'md'} w={'50%'}>{`${stylesCount}`}</Text>
+          </Flex>
+          <Flex
+            w={'full'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #CEC9AB'}
+            alignItems={'center'}
+            pb={2}
+          >
+            <Text textStyle={'md'} w={'50%'}>
+              {' '}
+              {`Licenses`}
+            </Text>
+            <Text pl={1} textStyle={'md'} w={'50%'}>{`${licensesCount}`}</Text>
+          </Flex>
+          <Flex
+            w={'full'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #CEC9AB'}
+            alignItems={'center'}
+            pb={2}
+          >
+            <Text textStyle={'md'} w={'50%'}>
+              {' '}
+              {`Unit Price`}
+            </Text>
+            <Text pl={1} textStyle={'md'} w={'50%'}>{`${unitPrice} EUR`}</Text>
+          </Flex>
+          <Flex
+            w={'full'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #CEC9AB'}
+            alignItems={'center'}
+            pb={2}
+          >
+            <Text textStyle={'md'} w={'50%'}>
+              {' '}
+              {`Subtotal`}
+            </Text>
+            <Text pl={1} textStyle={'md'} w={'50%'}>{`${subtotal} EUR`}</Text>
+          </Flex>
+          <Show when={totalDiscount > 0}>
+            <Flex
+              w={'full'}
+              justifyContent={'space-between'}
+              borderBottom={'1px solid #CEC9AB'}
+              alignItems={'center'}
+              pb={2}
+            >
+              <Text textStyle={'md'} w={'50%'}>
+                {' '}
+                {`Discounts`}
+              </Text>
+              <Text
+                pl={1}
+                textStyle={'md'}
+                w={'50%'}
+              >{`-${totalDiscount} EUR`}</Text>
+            </Flex>
+          </Show>
+          <Flex
+            w={'full'}
+            mt={-1}
+            justifyContent={'space-between'}
+            borderTop={'1px solid #CEC9AB'}
+            alignItems={'center'}
+            pt={2}
+          >
+            <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
+              {`TOTAL`}
+            </Text>
+            <Text pl={1} textStyle={'md'} w={'50%'}>{`${total} EUR`}</Text>
+          </Flex>
+        </VStack>
+      </Show>
     </Box>
   )
 }
