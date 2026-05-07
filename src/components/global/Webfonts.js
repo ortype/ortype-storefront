@@ -106,7 +106,7 @@ const Webfonts = ({ children }) => {
         styles={{
           '@font-face': {
             fontFamily: 'Alltaf-Regular',
-            src: 'url("https://assets.ortype.is/v3/alltaf-regular-webfont.woff2") format("woff2"), url("https://assets.ortype.is/v3/alltaf-regular-webfont.woff") format("woff")',
+            src: 'url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff2") format("woff2"), url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff") format("woff")',
             fontWeight: 'normal',
             fontStyle: 'normal',
           },
@@ -116,7 +116,7 @@ const Webfonts = ({ children }) => {
         styles={{
           '@font-face': {
             fontFamily: 'Alltaf-Bold',
-            src: 'url("https://assets.ortype.is/v3/Alltaf-Bold.woff") format("woff")',
+            src: 'url("https://assets.ortype.is/v3/OrAlltafOTF-Bold.woff2") format("woff2"), url("https://assets.ortype.is/v3/OrAlltafOTF-Bold.woff") format("woff")',
             fontWeight: 'normal',
             fontStyle: 'normal',
           },
@@ -127,6 +127,7 @@ const Webfonts = ({ children }) => {
           html: {
             fontFamily: `Alltaf-Regular`,
             fontSize: `${MIN_FONT}rem`,
+            fontVariantNumeric: 'tabular-nums',
             lineHeight: `${BASELINE / 2}rem`,
             [MQ[0]]: {
               fontSize: `calc(${MIN_FONT * M_MULTIPLIER}rem + (${
