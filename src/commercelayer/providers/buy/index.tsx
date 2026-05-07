@@ -68,6 +68,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const addLineItem = async (params: {
     skuCode: string
     parentUid: string
+    parentName: string
+    defaultVariantId: string
     name: string
     price?: string
     className?: string
@@ -89,6 +91,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
           externalPrice: true,
           metadata: {
             parentUid: params.parentUid, // same as sku's reference_origin
+            parentName: params.parentName,
+            defaultVariantId: params.defaultVariantId,
             license: {
               size: licenseSize,
               types: selectedSkuOptions.map((option) => option.reference),
@@ -129,11 +133,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       const licenseSizeLabel = licenseSize?.label
 
       // Show success notification with item details
+      /*
       toaster.create({
         title: 'Added to cart',
-        /*description: `${params.name}${
-          licenseTypes ? ` (${licenseTypes})` : ''
-        }${licenseSizeLabel ? ` - ${licenseSizeLabel}` : ''}`,*/
         description: (
           <Stack gap={1}>
             <Stack
@@ -150,7 +152,6 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
               >
                 {params.name}
               </Text>
-              {/* @TODO: get price from updated order/line_item */}
               <Box pl={4} fontVariantNumeric={'tabular-nums'}>
                 {`${params.price} EUR`}
               </Box>
@@ -193,7 +194,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         type: 'info',
         closable: true,
         duration: 3000,
-      })
+      })*/
 
       const { order } = await refetchOrder()
       if (!order?.line_items?.length) {

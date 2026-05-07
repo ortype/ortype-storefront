@@ -1,21 +1,26 @@
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
-import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { getFontReferenceCounts } from '@/commercelayer/components/ui/order-summary'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
+  calculateDiscount,
+  calculateLineItemPrice,
+  formatPrice,
+  getLineItemSibilingCount,
+} from '@/commercelayer/utils/prices'
+import {
   Box,
   Button,
   Center,
+  Link as ChakraLink,
   Circle,
   Container,
   Fieldset,
   Flex,
   GridItem,
-  Link,
   Portal,
   Show,
   SimpleGrid,
@@ -24,16 +29,9 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import Link from 'next/link'
 import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
-
-import {
-  calculateLineItemPrice,
-  calculateSkuOptionsTotal,
-  formatPrice,
-  getLineItemPosition,
-  getLineItemSibilingCount,
-} from '@/commercelayer/utils/prices'
 import Typefaces from './typefaces'
 
 interface FontVariant {
@@ -65,7 +63,7 @@ export const Buy = () => {
     setSelectedSkuOptions,
     allLicenseInfoSet,
   } = useOrderContext()
-  const { font, addLineItem } = useBuyContext()
+  const { font } = useBuyContext()
 
   /*
   // Optimistic total: compute from each line item's sku options and position
@@ -137,96 +135,115 @@ export const Buy = () => {
       }
     }, [order?.line_items])
 
-  const stylesCount = displayLineItems.length
   const licensesCount = selectedSkuOptions?.length
 
   // Optimistic price: compute locally so the UI updates immediately
-  const { show, fontLineItemCount, unitPrice, subtotal, totalDiscount, total } =
-    useMemo(() => {
-      if (!licenseSize || !skuOptions?.length) {
-        return {
-          show: false,
-          fontLineItemCount: 0,
-          unitPrice: 0,
-          subtotal: 0,
-          totalDiscount: 0,
-          total: 0,
-        }
+  const {
+    show,
+    fontLineItemCount,
+    unitPrice,
+    nextUnitPrice,
+    subtotal,
+    percentageDiscount,
+    totalDiscount,
+    total,
+  } = useMemo(() => {
+    if (!licenseSize || !skuOptions?.length) {
+      return {
+        show: false,
+        fontLineItemCount: 0,
+        unitPrice: 0,
+        nextUnitPrice: 0,
+        subtotal: 0,
+        percentageDiscount: 0,
+        totalDiscount: 0,
+        total: 0,
+      }
+    }
+
+    // Count how many line items already exist for this font's parentUid
+    const fontLineItems =
+      order?.line_items?.filter(
+        (lineItem) => font.uid === lineItem.item?.reference_origin
+      ) || []
+    // @NOTE: how is the above differnt from
+    // `const count = getLineItemSibilingCount(li, order.line_items!)`
+    // it takes a lineItem as a param which it pulls the parentUid from
+    // the above has access to the UID from the font
+
+    const unitPrice = calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: fontLineItems.length,
+    })
+
+    const nextUnitPrice = calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: fontLineItems.length + 1,
+    })
+
+    if (fontLineItems.length === 0) {
+      return {
+        show: false,
+        fontLineItemCount: 0,
+        unitPrice: formatPrice(unitPrice),
+        nextUnitPrice: formatPrice(nextUnitPrice),
+        subtotal: 0,
+        percentageDiscount: 0,
+        totalDiscount: 0,
+        total: 0,
+      }
+    }
+
+    let subTotalCents = 0
+    let totalCents = 0
+    const fontLineItemCount = fontLineItems.length
+
+    for (const li of fontLineItems) {
+      const itemSkuOptions =
+        li.line_item_options
+          ?.map(({ sku_option }) =>
+            skuOptions.find((o) => o.id === sku_option?.id)
+          )
+          .filter((o): o is NonNullable<typeof o> => !!o) ?? []
+
+      if (itemSkuOptions.length === 0) {
+        // No resolved options — use server price for both
+        const amount = li.total_amount_cents ?? 0
+        subTotalCents += amount
+        totalCents += amount
+        continue
       }
 
-      // Count how many line items already exist for this font's parentUid
-      const fontLineItems =
-        order?.line_items?.filter(
-          (lineItem) => font.uid === lineItem.item?.reference_origin
-        ) || []
-      // @NOTE: how is the above differnt from
-      // `const count = getLineItemSibilingCount(li, order.line_items!)`
-      // it takes a lineItem as a param which it pulls the parentUid from
-      // the above has access to the UID from the font
+      const count = getLineItemSibilingCount(li, order.line_items!)
 
-      const unitPrice = calculateLineItemPrice({
-        skuOptions: selectedSkuOptions,
+      // Subtotal: full price as if count 0 (no discount)
+      subTotalCents += calculateLineItemPrice({
+        skuOptions: itemSkuOptions,
         sizeModifier: licenseSize.modifier,
-        count: fontLineItems.length,
+        count: 0,
       })
 
-      if (fontLineItems.length === 0) {
-        return {
-          show: false,
-          fontLineItemCount: 0,
-          unitPrice: formatPrice(unitPrice),
-          subtotal: 0,
-          totalDiscount: 0,
-          total: 0,
-        }
-      }
+      // Total: actual discounted price at this count
+      totalCents += calculateLineItemPrice({
+        skuOptions: itemSkuOptions,
+        sizeModifier: licenseSize.modifier,
+        count,
+      })
+    }
 
-      let subTotalCents = 0
-      let totalCents = 0
-      const fontLineItemCount = fontLineItems.length
-
-      for (const li of fontLineItems) {
-        const itemSkuOptions =
-          li.line_item_options
-            ?.map(({ sku_option }) =>
-              skuOptions.find((o) => o.id === sku_option?.id)
-            )
-            .filter((o): o is NonNullable<typeof o> => !!o) ?? []
-
-        if (itemSkuOptions.length === 0) {
-          // No resolved options — use server price for both
-          const amount = li.total_amount_cents ?? 0
-          subTotalCents += amount
-          totalCents += amount
-          continue
-        }
-
-        const count = getLineItemSibilingCount(li, order.line_items!)
-
-        // Subtotal: full price as if count 0 (no discount)
-        subTotalCents += calculateLineItemPrice({
-          skuOptions: itemSkuOptions,
-          sizeModifier: licenseSize.modifier,
-          count: 0,
-        })
-
-        // Total: actual discounted price at this count
-        totalCents += calculateLineItemPrice({
-          skuOptions: itemSkuOptions,
-          sizeModifier: licenseSize.modifier,
-          count,
-        })
-      }
-
-      return {
-        show: true,
-        fontLineItemCount,
-        unitPrice: formatPrice(unitPrice),
-        subtotal: formatPrice(subTotalCents),
-        totalDiscount: formatPrice(subTotalCents - totalCents),
-        total: formatPrice(totalCents),
-      }
-    }, [order?.line_items, licenseSize, skuOptions])
+    return {
+      show: true,
+      fontLineItemCount,
+      unitPrice: formatPrice(unitPrice),
+      nextUnitPrice: formatPrice(nextUnitPrice),
+      subtotal: formatPrice(subTotalCents),
+      totalDiscount: formatPrice(subTotalCents - totalCents),
+      percentageDiscount: fontCount ? calculateDiscount(fontLineItemCount) : 0,
+      total: formatPrice(totalCents),
+    }
+  }, [order?.line_items, licenseSize, skuOptions])
 
   // @TODO: on changing selected SKU options, update all line_items on the order
 
@@ -255,6 +272,23 @@ export const Buy = () => {
               selectedSkuOptions={selectedSkuOptions}
               setSelectedSkuOptions={setSelectedSkuOptions}
             />
+            <Text
+              as={Box}
+              py={4}
+              textAlign={'center'}
+              textStyle={'xs'}
+              opacity={0.8}
+            >
+              {`Need something else? Please `}
+              <ChakraLink
+                href="mailto:info@ortype.is"
+                textDecoration={'underline'}
+                target={'_blank'}
+              >
+                {'contact us'}
+              </ChakraLink>
+              {`.`}
+            </Text>
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
             <LicenseSizeList
@@ -273,6 +307,7 @@ export const Buy = () => {
               >
                 <Typefaces
                   unitPrice={unitPrice}
+                  nextUnitPrice={nextUnitPrice}
                   fontLineItemCount={fontLineItemCount}
                 />
               </Fieldset.Content>
@@ -300,8 +335,12 @@ export const Buy = () => {
             alignItems={'center'}
             pb={2}
           >
-            <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
-              {'Added'}
+            <Text
+              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+              w={'50%'}
+              textTransform={'uppercase'}
+            >
+              {'Summary'}
             </Text>
             <Button
               asChild
@@ -313,6 +352,7 @@ export const Buy = () => {
               color={'white'}
               disabled={!allLicenseInfoSet}
               gap={1}
+              _hover={{ bg: 'black' }}
             >
               <Link href={'/cart/'}>{'Go to cart'}</Link>
             </Button>
@@ -324,11 +364,14 @@ export const Buy = () => {
             alignItems={'center'}
             pb={2}
           >
-            <Text textStyle={'md'} w={'50%'}>
+            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
               {' '}
               {`Styles`}
             </Text>
-            <Text pl={1} textStyle={'md'} w={'50%'}>{`${stylesCount}`}</Text>
+            <Text
+              pl={1}
+              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+            >{`${fontLineItemCount}`}</Text>
           </Flex>
           <Flex
             w={'full'}
@@ -337,11 +380,14 @@ export const Buy = () => {
             alignItems={'center'}
             pb={2}
           >
-            <Text textStyle={'md'} w={'50%'}>
+            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
               {' '}
               {`Licenses`}
             </Text>
-            <Text pl={1} textStyle={'md'} w={'50%'}>{`${licensesCount}`}</Text>
+            <Text
+              pl={1}
+              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+            >{`${licensesCount}`}</Text>
           </Flex>
           <Flex
             w={'full'}
@@ -350,11 +396,14 @@ export const Buy = () => {
             alignItems={'center'}
             pb={2}
           >
-            <Text textStyle={'md'} w={'50%'}>
+            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
               {' '}
               {`Unit Price`}
             </Text>
-            <Text pl={1} textStyle={'md'} w={'50%'}>{`${unitPrice} EUR`}</Text>
+            <Text
+              pl={1}
+              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+            >{`${unitPrice} EUR`}</Text>
           </Flex>
           <Flex
             w={'full'}
@@ -363,11 +412,14 @@ export const Buy = () => {
             alignItems={'center'}
             pb={2}
           >
-            <Text textStyle={'md'} w={'50%'}>
+            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
               {' '}
               {`Subtotal`}
             </Text>
-            <Text pl={1} textStyle={'md'} w={'50%'}>{`${subtotal} EUR`}</Text>
+            <Text
+              pl={1}
+              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+            >{`${subtotal} EUR`}</Text>
           </Flex>
           <Show when={totalDiscount > 0}>
             <Flex
@@ -377,14 +429,16 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text textStyle={'md'} w={'50%'}>
-                {' '}
-                {`Discounts`}
+              <Text
+                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                w={'50%'}
+                whiteSpace={'nowrap'}
+              >
+                {`Discount (${percentageDiscount * 100}%)`}
               </Text>
               <Text
                 pl={1}
-                textStyle={'md'}
-                w={'50%'}
+                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
               >{`-${totalDiscount} EUR`}</Text>
             </Flex>
           </Show>
@@ -396,10 +450,14 @@ export const Buy = () => {
             alignItems={'center'}
             pt={2}
           >
-            <Text textStyle={'md'} w={'50%'} textTransform={'uppercase'}>
+            <Text
+              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+              w={'50%'}
+              textTransform={'uppercase'}
+            >
               {`TOTAL`}
             </Text>
-            <Text pl={1} textStyle={'md'} w={'50%'}>{`${total} EUR`}</Text>
+            <Text pl={1} textStyle={'md'}>{`${total} EUR`}</Text>
           </Flex>
         </VStack>
       </Show>

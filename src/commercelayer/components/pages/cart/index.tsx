@@ -24,33 +24,81 @@ import { StickyBottomPanel } from '../../ui/sticky-bottom-panel'
 import Summary from './cart-summary'
 
 import { getParentUid } from '@/commercelayer/utils/prices'
+import CartGroups from './cart-groups'
+
+// Define your types
+interface LineItemMetadata {
+  license?: {
+    size?: {
+      label: string
+      value: string
+      modifier: number
+    }
+    types?: string[]
+    parentUid?: string
+  }
+  parentUid?: string
+  parentName?: string
+  defaultVariantId?: string
+}
+
+export interface LineItem {
+  id: string
+  type: string
+  sku_code: string
+  name: string
+  quantity: number
+  unit_amount_float: number
+  formatted_unit_amount: string
+  metadata: LineItemMetadata
+}
+
+export interface GroupedLineItems {
+  parentUid: string
+  parentName: string
+  defaultVariantId: string
+  items: LineItem[]
+}
+
+// Your helper function
+const getParentName = (item: LineItem): string | undefined => {
+  return item.metadata.parentName
+}
+
+const getDefaultVariantId = (item: LineItem): string | undefined => {
+  return item.metadata.defaultVariantId
+}
 
 const CartComponent = () => {
   const { isLoading, orderId, order, licenseSize, setLicenseSize } =
     useOrderContext()
 
-  const { displayLineItems } = useMemo(() => {
+  // The useMemo hook
+  const groupedLineItems = useMemo<GroupedLineItems[]>(() => {
     if (!order?.line_items) {
-      return {
-        displayLineItems: [],
+      return []
+    }
+    const grouped = order.line_items.reduce<GroupedLineItems[]>((acc, item) => {
+      const parentUid = getParentUid(item)
+      const parentName = getParentName(item)
+      const defaultVariantId = getDefaultVariantId(item)
+
+      if (!parentUid) {
+        return acc
       }
-    }
 
-    const filteredItems = order.line_items.filter(
-      (lineItem) =>
-        lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
-    )
+      const existing = acc.find((group) => group.parentUid === parentUid)
 
-    const displayLineItems = [...filteredItems].sort((a, b) => {
-      const parentCompare = getParentUid(a).localeCompare(getParentUid(b))
-      if (parentCompare !== 0) return parentCompare
+      if (existing) {
+        existing.items.push(item)
+      } else {
+        acc.push({ parentUid, parentName, defaultVariantId, items: [item] })
+      }
 
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    })
+      return acc
+    }, [])
 
-    return {
-      displayLineItems,
-    }
+    return grouped
   }, [order?.line_items])
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
@@ -122,12 +170,7 @@ const CartComponent = () => {
               <FieldsetLegend>{'Items'}</FieldsetLegend>
             </Box>
           </Fieldset.Root>
-
-          <Stack gap={2}>
-            {displayLineItems.map((lineItem) => (
-              <CartItem key={lineItem.id} lineItem={lineItem} />
-            ))}
-          </Stack>
+          <CartGroups groupedLineItems={groupedLineItems} />
         </Box>
         <StickyBottomPanel
           maxW={'60rem'}

@@ -54,7 +54,7 @@ export const LicenseSizeList: React.FC<Props> = ({
                 }}
                 bg={'brand.50'}
                 _hover={{
-                  bg: 'blackAlpha.50',
+                  bg: 'blackAlpha.300',
                   cursor: 'pointer',
                 }}
                 p={2}

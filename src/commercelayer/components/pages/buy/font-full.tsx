@@ -14,7 +14,8 @@ interface Props {
   unitPrice: number
 }
 
-const getMiddleIndex = (array: FontVariant[]): number => {
+const getMiddleIndex = (array: FontVariant[] | undefined): number => {
+  if (!array || array.length === 0) return -1
   return Math.floor(array.length / 2)
 }
 
@@ -82,7 +83,7 @@ export const FontFull: React.FC<Props> = ({ font, unitPrice }) => {
             as={'div'}
             className={className}
           >
-            {font.name}
+            {font.shortName + ' ' + 'Full Family'}
           </Text>
           <Text fontSize={'sm'} as={'div'}>
             {`${fontCount} Styles — Variable Font Included`}

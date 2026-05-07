@@ -1,8 +1,4 @@
-import {
-  calculateDiscount,
-  calculateLineItemPrice,
-  formatPrice,
-} from '@/commercelayer/utils/prices'
+import { calculateDiscount } from '@/commercelayer/utils/prices'
 import type { CompanySize } from '@/sanity/lib/queries'
 import { Button, Flex, Stack, Text } from '@chakra-ui/react'
 import { SkuOption, type Order } from '@commercelayer/sdk'
@@ -14,10 +10,11 @@ interface Props {
   siblingCount: number
   skuCode: string
   parentUid: string
+  parentName: string
+  defaultVariantId: string
   className?: string
   unitPrice: number
-  selectedSkuOptions: SkuOption[]
-  licenseSize: CompanySize
+  nextUnitPrice: number
   addLineItem: (params: { skuCode: string }) => Promise<void>
   deleteLineItem: (params: { lineItemId: string }) => Promise<void>
 }
@@ -28,11 +25,12 @@ export const SingleStyles: React.FC<Props> = ({
   skuCode,
   siblingCount,
   parentUid,
-  selectedSkuOptions,
-  licenseSize,
+  parentName,
+  defaultVariantId,
   addLineItem,
   deleteLineItem,
   unitPrice,
+  nextUnitPrice,
   className,
 }) => {
   // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
@@ -59,6 +57,8 @@ export const SingleStyles: React.FC<Props> = ({
           name,
           skuCode,
           parentUid,
+          parentName,
+          defaultVariantId,
           price: unitPrice,
           className,
         })
@@ -73,7 +73,7 @@ export const SingleStyles: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={isLineItem ? '#FFF8D3' : 'brand.50'}
+      bg={isLineItem ? 'blackAlpha.300' : 'brand.50'}
       borderRadius={isLineItem ? 'full' : '0px'}
       cursor={'pointer'}
       _hover={{
@@ -108,12 +108,6 @@ export const SingleStyles: React.FC<Props> = ({
         </Text>
       </Stack>
       <Flex gap={2} alignItems={'center'}>
-        {/*<Text
-          className={'discount'}
-          as={'span'}
-          fontSize={'xs'}
-          opacity={0}
-        >{`${Math.floor(percentageDiscount * 100)}%`}</Text>*/}
         {!isLineItem && percentageDiscount > 0 && unitPrice !== null && (
           <Text
             className={'discount'}
@@ -132,7 +126,7 @@ export const SingleStyles: React.FC<Props> = ({
           </Text>
         ) : (
           <Text as={'span'} fontSize={'xs'}>
-            {`${unitPrice} EUR`}
+            {`${nextUnitPrice} EUR`}
           </Text>
         )}
       </Flex>

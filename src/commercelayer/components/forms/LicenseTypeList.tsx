@@ -1,6 +1,12 @@
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { Type } from '@/lib/settings'
-import { Checkbox, CheckboxGroup, Fieldset, Stack } from '@chakra-ui/react'
+import {
+  Checkbox,
+  CheckboxGroup,
+  Fieldset,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
 import { SkuOption } from '@commercelayer/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
 
@@ -108,7 +114,7 @@ export const LicenseTypeList: React.FC<Props> = ({
               bg={'brand.50'}
               w={'full'}
               _hover={{
-                bg: 'blackAlpha.50',
+                bg: 'blackAlpha.300',
                 cursor: 'pointer',
               }}
             >

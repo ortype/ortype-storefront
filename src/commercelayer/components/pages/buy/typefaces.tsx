@@ -1,39 +1,10 @@
-import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
-import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
-import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
-import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
-import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { getFontReferenceCounts } from '@/commercelayer/components/ui/order-summary'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import {
-  Box,
-  Button,
-  Center,
-  Circle,
-  Container,
-  Fieldset,
-  Flex,
-  GridItem,
-  Link,
-  Portal,
-  Show,
-  SimpleGrid,
-  Spinner,
-  Stack,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
 
-import {
-  calculateLineItemPrice,
-  calculateSkuOptionsTotal,
-  formatPrice,
-  getLineItemPosition,
-  getLineItemSibilingCount,
-} from '@/commercelayer/utils/prices'
+import { getLineItemSibilingCount } from '@/commercelayer/utils/prices'
 import { FontFull } from './font-full'
 import { FontGroup } from './font-group'
 
@@ -53,14 +24,16 @@ export interface FontGroup {
 
 const mergeVariants = (group: FontGroup): FontVariant[] => {
   const merged: FontVariant[] = []
-  const maxLength = Math.max(group.variants.length, group.italicVariants.length)
+  const variants = group.variants || []
+  const italicVariants = group.italicVariants || []
+  const maxLength = Math.max(variants.length, italicVariants.length)
 
   for (let i = 0; i < maxLength; i++) {
-    if (i < group.variants.length) {
-      merged.push(group.variants[i])
+    if (i < variants.length) {
+      merged.push(variants[i])
     }
-    if (i < group.italicVariants.length) {
-      merged.push(group.italicVariants[i])
+    if (i < italicVariants.length) {
+      merged.push(italicVariants[i])
     }
   }
 
@@ -71,7 +44,7 @@ interface YourComponentProps {
   data: FontGroup[]
 }
 
-export const Typefaces = ({ unitPrice, fontLineItemCount }) => {
+export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
   const { font, addLineItem } = useBuyContext()
   const { order, licenseSize, deleteLineItem, selectedSkuOptions } =
     useOrderContext()
@@ -113,8 +86,11 @@ export const Typefaces = ({ unitPrice, fontLineItemCount }) => {
                 selectedSkuOptions={selectedSkuOptions}
                 licenseSize={licenseSize}
                 unitPrice={unitPrice}
+                nextUnitPrice={nextUnitPrice}
                 siblingCount={count}
                 parentUid={variant.parentUid}
+                parentName={font.shortName}
+                defaultVariantId={font.defaultVariant?._id}
                 addLineItem={addLineItem}
                 deleteLineItem={deleteLineItem}
                 order={order}
@@ -153,6 +129,8 @@ export const Typefaces = ({ unitPrice, fontLineItemCount }) => {
             unitPrice={unitPrice}
             siblingCount={count}
             parentUid={variant.parentUid}
+            parentName={font.shortName}
+            defaultVariantId={font.defaultVariant?._id}
             addLineItem={addLineItem}
             deleteLineItem={deleteLineItem}
             order={order}

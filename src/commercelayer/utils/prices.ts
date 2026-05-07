@@ -24,11 +24,12 @@ const P = 1.25 // curvature exponent
  */
 export function calculateDiscount(n: number): number {
   if (n <= 1) return 0
-  return Math.min(
+  const percentage = Math.min(
     MAX_DISCOUNT,
     MAX_DISCOUNT -
       (MAX_DISCOUNT - START_DISCOUNT) * Math.exp(-K * Math.pow(n - 2, P))
   )
+  return Math.round(percentage * 100) / 100
 }
 
 /**

@@ -5,7 +5,7 @@ import {
   getLineItemPosition,
   getLineItemSibilingCount,
 } from '@/commercelayer/utils/prices'
-import { Box, SimpleGrid } from '@chakra-ui/react'
+import { Box, Flex, SimpleGrid } from '@chakra-ui/react'
 import { useMemo } from 'react'
 
 const Summary = () => {
@@ -73,46 +73,63 @@ const Summary = () => {
   const displayTotal = total ?? order?.total_amount_with_taxes_float
 
   return (
-    <Box bg={'#FFF8D3'} px={4} py={5} borderRadius={30} w={'full'}>
-      <SimpleGrid columns={2} pt={3} mt={1.5}>
-        <Box fontSize={'lg'} fontWeight={'normal'}>
-          {'Subtotal (excl. discounts)'}
-        </Box>
-        <Box
-          fontSize={'lg'}
-          textAlign={'right'}
-          fontVariantNumeric={'tabular-nums'}
+    <Flex justifyContent={'flex-end'} w={'full'}>
+      <Box
+        bg={'#FFF8D3'}
+        px={4}
+        py={5}
+        borderRadius={30}
+        w={{ base: 'full', md: '50%' }}
+      >
+        <SimpleGrid
+          columns={2}
+          py={2}
+          mt={1.5}
+          borderBottom={'1px solid #CEC9AB'}
         >
-          {`${subtotal} EUR`}
-        </Box>
-      </SimpleGrid>
-      {totalDiscount && totalDiscount > 0 && (
-        <SimpleGrid columns={2} pt={2} pb={2} mt={1.5}>
           <Box fontSize={'lg'} fontWeight={'normal'}>
-            {'Discounts'}
+            {'Subtotal (excl. discounts)'}
           </Box>
           <Box
             fontSize={'lg'}
             textAlign={'right'}
             fontVariantNumeric={'tabular-nums'}
           >
-            {`-${totalDiscount} EUR`}
+            {`${subtotal} EUR`}
           </Box>
         </SimpleGrid>
-      )}
-      <SimpleGrid columns={2} pt={2}>
-        <Box fontSize={'xl'} textTransform={'uppercase'} fontWeight={'normal'}>
-          {'Total'}
-        </Box>
-        <Box
-          fontSize={'xl'}
-          textAlign={'right'}
-          fontVariantNumeric={'tabular-nums'}
-        >
-          {`${displayTotal} EUR`}
-        </Box>
-      </SimpleGrid>
-    </Box>
+        {totalDiscount && totalDiscount > 0 && (
+          <SimpleGrid columns={2} py={2} borderBottom={'1px solid #CEC9AB'}>
+            <Box fontSize={'lg'} fontWeight={'normal'}>
+              {'Discounts'}
+            </Box>
+            <Box
+              fontSize={'lg'}
+              textAlign={'right'}
+              fontVariantNumeric={'tabular-nums'}
+            >
+              {`-${totalDiscount} EUR`}
+            </Box>
+          </SimpleGrid>
+        )}
+        <SimpleGrid columns={2} py={2} borderBottom={'1px solid #CEC9AB'}>
+          <Box
+            fontSize={'xl'}
+            textTransform={'uppercase'}
+            fontWeight={'normal'}
+          >
+            {'Total'}
+          </Box>
+          <Box
+            fontSize={'xl'}
+            textAlign={'right'}
+            fontVariantNumeric={'tabular-nums'}
+          >
+            {`${displayTotal} EUR`}
+          </Box>
+        </SimpleGrid>
+      </Box>
+    </Flex>
   )
 }
 

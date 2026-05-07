@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/license-type-select'
 import {
   Box,
+  IconButton as ChakraIconButton,
   createListCollection,
   Flex,
   HStack,
@@ -25,6 +26,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { type LineItem, type SkuOption } from '@commercelayer/sdk'
+import { CloseIcon } from '@sanity/icons'
 import React, { useMemo, useState } from 'react'
 
 interface CartItemProps {
@@ -92,12 +94,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
         count,
       })
     )
-  }, [
-    selectedSkuOptions,
-    licenseSize,
-    order?.line_items,
-    lineItem,
-  ])
+  }, [selectedSkuOptions, licenseSize, order?.line_items, lineItem])
 
   // Show optimistic price immediately; falls back to server price
   const displayPrice = optimisticPrice ?? lineItem.total_amount_float
@@ -139,23 +136,35 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
 
   return (
     <>
-      <SimpleGrid columns={[1, null, 2]} gap={3} bg={'brand.50'} p={3}>
-        <Stack direction={'row'} gap={2} alignItems={'center'}>
+      <SimpleGrid columns={[1, null, 2]} gap={3} bg={'brand.0'} p={3}>
+        <Stack direction={'row'} gap={2} alignItems={'flex-start'}>
+          <Link onClick={handleRemove} cursor={'pointer'}>
+            <ChakraIconButton
+              variant="ghost"
+              rounded={'full'}
+              px={0}
+              size={'sm'}
+              _hover={{ bg: 'white' }}
+              aria-label="Remove"
+              css={{
+                '& svg': {
+                  color: 'brand.600',
+                },
+              }}
+            >
+              <CloseIcon width={'2rem'} height={'2rem'} />
+            </ChakraIconButton>
+          </Link>
           <Text
             fontSize={'2xl'}
-            lineHeight={1}
+            lineHeight={1.3}
             as={'span'}
             className={lineItem.sku_code}
           >
             {lineItem.name}
           </Text>
-          <Text>
-            <Link onClick={handleRemove} cursor={'pointer'}>
-              {'(Remove)'}
-            </Link>
-          </Text>
         </Stack>
-        <Flex direction={'row'} alignItems={'center'}>
+        <Flex direction={'row'} alignItems={'flex-start'}>
           <Box flexGrow={1}>
             <SelectRoot
               variant={'flushed'}
@@ -184,11 +193,11 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
             fontVariantNumeric={'tabular-nums'}
           >
             <HStack gap={4}>
-              <Text
+              {/*<Text
                 as={'span'}
                 fontSize={'sm'}
                 opacity={percentageDiscount > 0 ? 1 : 0}
-              >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
+              >{`${Math.floor(percentageDiscount * 100)}%`}</Text>*/}
               <Text as={'span'} fontSize={'sm'}>
                 {displayPrice} {lineItem.currency_code}
               </Text>

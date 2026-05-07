@@ -12,7 +12,7 @@ interface Props {
 
 export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
   return (
-    <Flex justifyContent={'space-between'} alignItems={'start'} w={'full'}>
+    <Flex justifyContent={'flex-end'} alignItems={'center'} w={'full'}>
       <HStack gap={2}>
         <Button
           variant={'outline'}
