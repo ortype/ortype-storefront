@@ -44,20 +44,6 @@ export const SingleStyles: React.FC<Props> = ({
     ? calculateDiscount(siblingCount + 1)
     : 0
 
-  const basePrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0) return null
-    return formatPrice(
-      calculateLineItemPrice({
-        skuOptions: selectedSkuOptions,
-        sizeModifier: licenseSize.modifier,
-        count: 0,
-      })
-    )
-  }, [selectedSkuOptions, licenseSize])
-
-  // Show optimistic price immediately; falls back to server price
-  const displayPrice = unitPrice ?? isLineItem?.total_amount_float
-
   const [isLoading, setIsLoading] = useState(false)
 
   // @TODO: implement optimistic UI solution
@@ -73,7 +59,7 @@ export const SingleStyles: React.FC<Props> = ({
           name,
           skuCode,
           parentUid,
-          price: displayPrice,
+          price: unitPrice,
           className,
         })
         setIsLoading(false)
@@ -117,7 +103,7 @@ export const SingleStyles: React.FC<Props> = ({
           disabled={isLoading}
           transition={'border-width 200ms ease-in-out'}
         />
-        <Text fontSize={'2xl'} as={'span'} className={className}>
+        <Text fontSize={'2xl'} lineHeight={1} as={'span'} className={className}>
           {name}
         </Text>
       </Stack>
@@ -128,7 +114,7 @@ export const SingleStyles: React.FC<Props> = ({
           fontSize={'xs'}
           opacity={0}
         >{`${Math.floor(percentageDiscount * 100)}%`}</Text>*/}
-        {!isLineItem && percentageDiscount > 0 && basePrice !== null && (
+        {!isLineItem && percentageDiscount > 0 && unitPrice !== null && (
           <Text
             className={'discount'}
             as={'span'}
@@ -136,17 +122,17 @@ export const SingleStyles: React.FC<Props> = ({
             opacity={0.6}
             textDecorationLine={'line-through'}
           >
-            {`${basePrice} EUR`}
+            {`${unitPrice} EUR`}
           </Text>
         )}
         {isLineItem ? (
           <Text as={'span'} fontSize={'xs'} opacity={0.6}>
             {`ADDED`}
-            {`(${isLineItem?.total_amount_float} EUR)`}
+            {` (${isLineItem?.total_amount_float} EUR)`}
           </Text>
         ) : (
           <Text as={'span'} fontSize={'xs'}>
-            {`${displayPrice} EUR`}
+            {`${unitPrice} EUR`}
           </Text>
         )}
       </Flex>

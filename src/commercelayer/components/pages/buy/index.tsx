@@ -34,6 +34,24 @@ import {
   getLineItemPosition,
   getLineItemSibilingCount,
 } from '@/commercelayer/utils/prices'
+import Typefaces from './typefaces'
+
+interface FontVariant {
+  _id: string
+  optionName: string
+  parentUid: string
+}
+
+interface FontGroup {
+  _type: string
+  groupName: string
+  variants: FontVariant[]
+  italicVariants: FontVariant[]
+}
+
+interface FontGroupWithMerged extends FontGroup {
+  allVariants: FontVariant[]
+}
 
 export const Buy = () => {
   const {
@@ -246,51 +264,17 @@ export const Buy = () => {
           </GridItem>
           <GridItem colSpan={2}>
             <Fieldset.Root>
-              <FieldsetLegend>{'4. Single Styles'}</FieldsetLegend>
-              <Fieldset.Content asChild p={0}>
-                <Flex
-                  mt={1}
-                  opacity={allLicenseInfoSet ? 1 : 0.3}
-                  pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
-                  p={2}
-                  gap={0.5}
-                >
-                  {font.variants?.map((variant, index) => {
-                    // If this variant is already a line item, use its real position;
-                    // otherwise it would be added at the end of the group
-                    const existingLineItem = order?.line_items?.find(
-                      (li) => li.sku_code === variant._id
-                    )
-                    const count =
-                      existingLineItem && order?.line_items
-                        ? getLineItemSibilingCount(
-                            existingLineItem,
-                            order.line_items
-                          )
-                        : fontLineItemCount > 0
-                        ? fontLineItemCount + 1
-                        : 0
-
-                    // fontLineItemCount is 0 if no items are added
-
-                    return (
-                      <SingleStyles
-                        key={variant._id}
-                        skuCode={variant._id}
-                        className={variant._id}
-                        selectedSkuOptions={selectedSkuOptions}
-                        licenseSize={licenseSize}
-                        unitPrice={unitPrice}
-                        siblingCount={count}
-                        parentUid={variant.parentUid}
-                        addLineItem={addLineItem}
-                        deleteLineItem={deleteLineItem}
-                        order={order}
-                        name={`${font.shortName} ${variant.optionName}`}
-                      />
-                    )
-                  })}
-                </Flex>
+              <FieldsetLegend>{'4. Typefaces'}</FieldsetLegend>
+              <Fieldset.Content
+                asChild
+                p={0}
+                pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
+                opacity={allLicenseInfoSet ? 1 : 0.3}
+              >
+                <Typefaces
+                  unitPrice={unitPrice}
+                  fontLineItemCount={fontLineItemCount}
+                />
               </Fieldset.Content>
             </Fieldset.Root>
           </GridItem>
