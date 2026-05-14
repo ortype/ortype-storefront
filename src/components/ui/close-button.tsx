@@ -16,8 +16,10 @@ export const CloseButton = React.forwardRef<
       px={0}
       minWidth={'3rem'}
       w={'3rem'}
-      bg={'brand.50'}
-      _hover={{ bg: 'black', color: 'white' }}
+      // bg={'brand.50'}
+      bg={'transparent'}
+      _hover={{ bg: 'transparent' }}
+      // _hover={{ bg: 'black', color: 'white' }}
       aria-label="Close"
       css={{
         '& svg': { width: '3rem', height: '3rem' },

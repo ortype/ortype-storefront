@@ -268,7 +268,7 @@ export const Tester: React.FC<Props> = (props) => {
             borderRadius={'3rem'}
             asChild
           >
-            <Link href={`/buy/${slug}`}>{`Buy`}</Link>
+            <Link href={`/fonts/${slug}/buy`}>{`Buy`}</Link>
           </Button>
           {/*<Box display={table ? 'none' : 'flex'}>
             <ChakraLink

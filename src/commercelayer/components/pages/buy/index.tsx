@@ -319,7 +319,7 @@ export const Buy = () => {
         <VStack
           pos={{ base: 'relative', lg: 'fixed' }}
           right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
-          top={{ base: 'auto', lg: '7rem' }}
+          top={{ base: 'auto', lg: 5 }}
           w={{ base: '100%', lg: '13rem', '2xl': '15rem', '3xl': '17rem' }}
           bg={'#FFF8D3'}
           px={4}

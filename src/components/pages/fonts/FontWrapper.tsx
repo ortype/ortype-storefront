@@ -21,9 +21,6 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
 
   return (
     <Box bg={'brand.900'}>
-      {/*<DynamicBuyContainer font={font}>
-        <DynamicBuy />
-      </DynamicBuyContainer>*/}
       <Button
         // @TODO: look into how to set this up in button.ts
         bg={'blue'}
@@ -39,7 +36,7 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
         zIndex={'docked'}
         asChild
       >
-        <Link href={`/buy/${font.slug}`}>{`Buy`}</Link>
+        <Link href={`/fonts/${font.slug}/buy`}>{`Buy`}</Link>
       </Button>
 
       <FontContainer font={font} moreFonts={moreFonts}>

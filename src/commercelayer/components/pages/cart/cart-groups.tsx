@@ -39,18 +39,21 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
           borderRadius={'5rem'}
           size={'xs'}
           fontSize={'md'}
+          my={4}
         >
-          <Link href={`/buy/${parentUid}`}>{'Add More Styles'}</Link>
+          <Link href={`/fonts/${parentUid}/buy`}>{'Add More Styles'}</Link>
         </Button>
-        <Text
-          as={Box}
-          py={4}
-          textAlign={'center'}
-          textStyle={'xs'}
-          opacity={0.8}
-        >
-          {`Choose more styles to unlock bundle discounts.`}
-        </Text>
+        {percentageDiscount === 0 && (
+          <Text
+            as={Box}
+            py={4}
+            textAlign={'center'}
+            textStyle={'xs'}
+            opacity={0.8}
+          >
+            {`Choose more styles to unlock bundle discounts.`}
+          </Text>
+        )}
       </HStack>
       <HStack>{`Discount (${percentageDiscount * 100}%)`}</HStack>
     </HStack>

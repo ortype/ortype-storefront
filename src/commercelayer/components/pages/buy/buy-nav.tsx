@@ -1,6 +1,13 @@
 'use client'
-import { Box, Link as ChakraLink, For, IconButton } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Link as ChakraLink,
+  For,
+  IconButton,
+} from '@chakra-ui/react'
 import { ChevronDownIcon } from '@sanity/icons'
+import NextLink from 'next/link'
 
 import {
   MenuContent,
@@ -9,7 +16,7 @@ import {
   MenuTrigger,
 } from '@/components/ui/menu'
 import type { BuyFontsQueryResult } from '@/types'
-import Link from 'next/link'
+import { useRef, useState } from 'react'
 
 interface BuyNavProps {
   font: BuyFontsQueryResult['font']
@@ -17,48 +24,62 @@ interface BuyNavProps {
 }
 
 const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
+  const typeRef = useRef<HTMLDivElement | null>(null)
+  const getTypeAnchorRect = () => typeRef.current!.getBoundingClientRect()
+  const [openTypeMenu, setTypeMenuOpen] = useState(false)
+
   return (
-    <MenuRoot>
-      <MenuTrigger asChild>
-        <ChakraLink
-          href={'#'}
-          variant={'underline'}
-          className={font ? font.defaultVariant?._id : ''}
-          gap={0.5}
+    <>
+      <Button
+        ml={'-3px'}
+        p={2}
+        variant={'square'}
+        fontSize={'1.5rem'}
+        lineHeight={'1.25rem'}
+        h={11}
+        onMouseEnter={() => {
+          console.log('setTypeMenuOpen!')
+          setTypeMenuOpen(true)
+        }}
+        className={font ? font.defaultVariant?._id : ''}
+      >
+        {font ? font.shortName : 'Type'}
+        <Box ref={typeRef} pos={'absolute'} top={'-11px'} left={'0px'}></Box>
+      </Button>
+      <MenuRoot
+        variant={'wrap'}
+        open={openTypeMenu}
+        onOpenChange={(e) => setTypeMenuOpen(e.open)}
+        positioning={{ getAnchorRect: getTypeAnchorRect }}
+      >
+        <MenuContent
+          portalled={false}
+          maxW={'60vw'}
+          zIndex={'popover'}
+          onMouseLeave={() => {
+            setTypeMenuOpen(false)
+          }}
         >
-          {font?.shortName}
-          <IconButton
-            variant={'plain'}
-            px={0}
-            minW={'auto'}
-            aria-label="Navigate to another font's buy page"
-            css={{
-              '& svg': { width: '3rem', height: '3rem' },
-            }}
-            w={'1.5rem'}
-          >
-            <ChevronDownIcon width={'5rem'} height={'5rem'} />
-          </IconButton>
-        </ChakraLink>
-      </MenuTrigger>
-      <MenuContent maxW={'60vw'}>
-        <For each={moreFonts}>
-          {(item, index) => (
-            <MenuItem
-              key={index}
-              value={item.slug}
-              className={item.defaultVariant?._id}
-              fontSize={'1.5rem'}
-              lineHeight={'1.25rem'}
-            >
-              <Box whiteSpace={'nowrap'} asChild>
-                <Link href={`/buy/${item.slug}`}>{item.shortName}</Link>
-              </Box>
-            </MenuItem>
-          )}
-        </For>
-      </MenuContent>
-    </MenuRoot>
+          <For each={moreFonts}>
+            {(item, index) => (
+              <MenuItem
+                key={index}
+                value={item.slug}
+                className={item.defaultVariant?._id}
+                fontSize={'1.5rem'}
+                lineHeight={'1.25rem'}
+              >
+                <Box whiteSpace={'nowrap'} asChild>
+                  <NextLink href={`/fonts/${item.slug}/buy`}>
+                    {item.shortName}
+                  </NextLink>
+                </Box>
+              </MenuItem>
+            )}
+          </For>
+        </MenuContent>
+      </MenuRoot>
+    </>
   )
 }
 
