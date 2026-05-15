@@ -58,11 +58,11 @@ export function BuyDialog({ data }: BuyDialogProps) {
         if (!open) handleClose()
       }}
       size={'full'}
-      motionPreset={'scale'}
+      motionPreset={'slide-in-bottom'}
     >
       <DialogContent borderRadius={0} bg={'colorPalette.bg'} h={'100vh'}>
-        <DialogHeader>
-          <HStack gap={0} position={'absolute'} top={3} left={6}>
+        <DialogBody overflow={'auto'}>
+          <HStack gap={0} position={'absolute'} top={3} left={3}>
             <DialogCloseTrigger
               position={'relative'}
               top={'auto'}
@@ -75,13 +75,20 @@ export function BuyDialog({ data }: BuyDialogProps) {
             fontSize={'2rem'}
             fontWeight={'normal'}
             textTransform={'uppercase'}
-            mx={'auto'}
+            ml={{ base: '1rem', xl: '15rem', '3xl': '21rem' }}
+            mr={{
+              base: '1rem',
+              lg: '15rem',
+              xl: '15rem',
+              '2xl': '17rem',
+              '3xl': '21rem',
+            }}
             pb={8}
+            my={4}
+            lineHeight={1}
           >
             {`you or me or they are buying fonts`}
           </DialogTitle>
-        </DialogHeader>
-        <DialogBody overflow={'auto'}>
           <DynamicBuyContainer font={font}>
             <DynamicBuy />
           </DynamicBuyContainer>
