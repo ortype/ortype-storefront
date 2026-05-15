@@ -5,7 +5,7 @@ import {
   getLineItemPosition,
   getLineItemSibilingCount,
 } from '@/commercelayer/utils/prices'
-import { Box, Flex, SimpleGrid } from '@chakra-ui/react'
+import { Box, Flex, Heading, SimpleGrid } from '@chakra-ui/react'
 import { useMemo } from 'react'
 
 const Summary = () => {
@@ -77,14 +77,25 @@ const Summary = () => {
       <Box
         bg={'#FFF8D3'}
         px={4}
-        py={5}
+        pt={5}
+        pb={6}
         borderRadius={30}
         w={{ base: 'full', md: '50%' }}
       >
+        <Heading
+          as={'h5'}
+          fontSize={'xl'}
+          textTransform={'uppercase'}
+          fontWeight={'normal'}
+          pb={2}
+        >
+          {'Cart Summary'}
+        </Heading>
+        <Box mb={1} borderBottom={'1px solid #CEC9AB'}></Box>
         <SimpleGrid
           columns={2}
-          py={2}
-          mt={1.5}
+          py={3}
+          borderTop={'1px solid #CEC9AB'}
           borderBottom={'1px solid #CEC9AB'}
         >
           <Box fontSize={'lg'} fontWeight={'normal'}>
@@ -99,7 +110,7 @@ const Summary = () => {
           </Box>
         </SimpleGrid>
         {totalDiscount && totalDiscount > 0 && (
-          <SimpleGrid columns={2} py={2} borderBottom={'1px solid #CEC9AB'}>
+          <SimpleGrid columns={2} py={3} borderBottom={'1px solid #CEC9AB'}>
             <Box fontSize={'lg'} fontWeight={'normal'}>
               {'Discounts'}
             </Box>
@@ -112,7 +123,7 @@ const Summary = () => {
             </Box>
           </SimpleGrid>
         )}
-        <SimpleGrid columns={2} py={2} borderBottom={'1px solid #CEC9AB'}>
+        <SimpleGrid columns={2} py={3} borderBottom={'1px solid #CEC9AB'}>
           <Box
             fontSize={'xl'}
             textTransform={'uppercase'}
@@ -128,6 +139,7 @@ const Summary = () => {
             {`${displayTotal} EUR`}
           </Box>
         </SimpleGrid>
+        <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>
       </Box>
     </Flex>
   )

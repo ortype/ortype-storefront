@@ -69,6 +69,7 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
             unitPrice={unitPrice}
           />
           {group.allVariants?.map((variant) => {
+            if (!variant) null
             const existingLineItem = order?.line_items?.find(
               (li) => li.sku_code === variant._id
             )
@@ -107,6 +108,7 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
       {font.variants?.map((variant) => {
         // If this variant is already a line item, use its real position;
         // otherwise it would be added at the end of the group
+        if (!variant) return null
         const existingLineItem = order?.line_items?.find(
           (li) => li.sku_code === variant._id
         )
@@ -127,6 +129,7 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
             selectedSkuOptions={selectedSkuOptions}
             licenseSize={licenseSize}
             unitPrice={unitPrice}
+            nextUnitPrice={nextUnitPrice}
             siblingCount={count}
             parentUid={variant.parentUid}
             parentName={font.shortName}

@@ -172,15 +172,10 @@ const CartComponent = () => {
           </Fieldset.Root>
           <CartGroups groupedLineItems={groupedLineItems} />
         </Box>
-        <StickyBottomPanel
-          maxW={'60rem'}
-          showFooter={true}
-          footer={(props) => (
-            <CheckoutButton orderId={orderId || ''} isDisabled={false} />
-          )}
-        >
-          {({}) => <Summary />}
-        </StickyBottomPanel>
+        <VStack maxW={'60rem'}>
+          <Summary />
+          <CheckoutButton orderId={orderId || ''} isDisabled={false} />
+        </VStack>
       </Stack>
     </Container>
   )

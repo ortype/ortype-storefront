@@ -39,7 +39,7 @@ export const FontGroup: React.FC<Props> = ({ group, name, unitPrice }) => {
   }
 
   const fullPrice = unitPrice * groupCount
-  const totalPrice = Math.round(fullPrice * percentageDiscount)
+  const totalPrice = Math.round(fullPrice - fullPrice * percentageDiscount)
   console.log({
     groupCount,
     percentageDiscount,

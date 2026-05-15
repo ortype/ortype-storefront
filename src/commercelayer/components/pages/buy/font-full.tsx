@@ -34,7 +34,7 @@ export const FontFull: React.FC<Props> = ({ font, unitPrice }) => {
   }
 
   const fullPrice = unitPrice * fontCount
-  const totalPrice = Math.round(fullPrice * percentageDiscount)
+  const totalPrice = Math.round(fullPrice - fullPrice * percentageDiscount)
   console.log({
     fontCount,
     percentageDiscount,
