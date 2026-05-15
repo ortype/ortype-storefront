@@ -57,19 +57,12 @@ export function BuyDialog({ data }: BuyDialogProps) {
       onOpenChange={({ open }) => {
         if (!open) handleClose()
       }}
+      backdrop={false}
       size={'full'}
-      motionPreset={'slide-in-bottom'}
+      motionPreset={'slide-in-bottom-custom'}
     >
       <DialogContent borderRadius={0} bg={'colorPalette.bg'} h={'100vh'}>
         <DialogBody overflow={'auto'}>
-          <HStack gap={0} position={'absolute'} top={3} left={3}>
-            <DialogCloseTrigger
-              position={'relative'}
-              top={'auto'}
-              right={'auto'}
-            />
-            <BuyNav font={font} moreFonts={moreFonts} />
-          </HStack>
           <DialogTitle
             textAlign={'center'}
             fontSize={'2rem'}
@@ -93,6 +86,14 @@ export function BuyDialog({ data }: BuyDialogProps) {
             <DynamicBuy />
           </DynamicBuyContainer>
         </DialogBody>
+        <HStack gap={0} position={'absolute'} top={3} left={3}>
+          <DialogCloseTrigger
+            position={'relative'}
+            top={'auto'}
+            right={'auto'}
+          />
+          <BuyNav font={font} moreFonts={moreFonts} />
+        </HStack>
       </DialogContent>
     </DialogRoot>
   )

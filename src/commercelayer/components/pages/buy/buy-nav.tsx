@@ -27,6 +27,7 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
   const typeRef = useRef<HTMLDivElement | null>(null)
   const getTypeAnchorRect = () => typeRef.current!.getBoundingClientRect()
   const [openTypeMenu, setTypeMenuOpen] = useState(false)
+  const sortedFonts = [font, ...moreFonts]
 
   return (
     <>
@@ -38,7 +39,6 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
         lineHeight={'1.25rem'}
         h={11}
         onMouseEnter={() => {
-          console.log('setTypeMenuOpen!')
           setTypeMenuOpen(true)
         }}
         className={font ? font.defaultVariant?._id : ''}
@@ -55,12 +55,11 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
         <MenuContent
           portalled={false}
           maxW={'60vw'}
-          zIndex={'popover'}
           onMouseLeave={() => {
             setTypeMenuOpen(false)
           }}
         >
-          <For each={moreFonts}>
+          <For each={sortedFonts}>
             {(item, index) => (
               <MenuItem
                 key={index}
