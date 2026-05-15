@@ -47,9 +47,11 @@ export const viewport: Viewport = {
 
 export default async function LocaleRoute({
   children,
+  buy,
   params,
 }: {
   children: React.ReactNode
+  buy: React.ReactNode
   params: {
     locale: string
   }
@@ -66,6 +68,7 @@ export default async function LocaleRoute({
       >
         <GlobalHeader fonts={fontData.data} />
         <Suspense>{children}</Suspense>
+        {buy}
         <Toaster />
       </TranslationsProvider>
     </>

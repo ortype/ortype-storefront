@@ -40,13 +40,18 @@ export function BuyDialog({ data }: BuyDialogProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { slug, locale } = useParams()
-  const isOpen = pathname.endsWith('/buy')
+  const isOpen = /\/buy(\/|$)/.test(pathname)
+  const isCartContext = pathname.includes('/cart/')
 
   const { font, moreFonts } = data ?? {}
 
   const handleClose = () => {
     const prefix = locale && locale !== 'en' ? `/${locale}` : ''
-    router.push(`${prefix}/fonts/${slug}`, { scroll: false })
+    if (isCartContext) {
+      router.push(`${prefix}/cart`, { scroll: false })
+    } else {
+      router.push(`${prefix}/fonts/${slug}`, { scroll: false })
+    }
   }
 
   return (

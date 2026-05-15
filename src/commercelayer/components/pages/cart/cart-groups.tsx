@@ -41,7 +41,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
           fontSize={'md'}
           my={4}
         >
-          <Link href={`/fonts/${parentUid}/buy`}>{'Add More Styles'}</Link>
+          <Link href={`/cart/buy/${parentUid}`}>{'Add More Styles'}</Link>
         </Button>
         {percentageDiscount === 0 && (
           <Text
