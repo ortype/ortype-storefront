@@ -1,3 +1,4 @@
+import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import getVideoId from '@/sanity/utils/get-video-id'
 import { AspectRatio, Box, Presence, Text } from '@chakra-ui/react'
 import {
@@ -47,6 +48,7 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
   const [service, setService] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(containerRef)
+  const { size, conversion } = useDimensions()
 
   useEffect(() => {
     if (url) {
@@ -60,6 +62,25 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
 
   // Calculate aspect ratio with fallback to 16:9
   const ratio = aspectRatio || 16 / 9
+
+  // Calculate exact pixel dimensions for the video
+  // Page layout: 680x930 design units, 46px margin on each side
+  // @TODO: pass down these values from Dimensions Context
+  const pageMargin = 46
+  const contentWidth = (680 - pageMargin * 2) * conversion
+  const contentHeight = (930 - pageMargin * 2) * conversion
+
+  let videoWidth: number
+  let videoHeight: number
+  if (ratio >= contentWidth / contentHeight) {
+    // Landscape or square: constrain by width
+    videoWidth = contentWidth
+    videoHeight = contentWidth / ratio
+  } else {
+    // Portrait: constrain by height
+    videoHeight = contentHeight
+    videoWidth = contentHeight * ratio
+  }
 
   // Use native player for Vimeo background videos
   const useNativePlayer = isBackground && service === 'vimeo'
@@ -88,47 +109,44 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
 
   return (
     <>
-      <AspectRatio 
-        ratio={ratio} 
-        ref={containerRef}
-        maxHeight="100%"
-        width="auto"
-        maxWidth="100%"
-        mx="auto"
-      >
+      <Box ref={containerRef} mx="auto">
         {useNativePlayer ? (
           <VimeoPlayerNative
             videoId={videoId}
             videoUrl={videoUrl}
             poster={poster}
-            autoplay={isInView}
+            width={videoWidth}
+            height={videoHeight}
+            autoplay={isBackground}
             loop={isBackground}
             muted={isBackground}
             controls={false}
             isBackground={isBackground}
           />
         ) : (
-          <Presence
-            present={true}
-            animationName={{ _open: 'fade-in', _closed: 'fade-out' }}
-            animationDuration="moderate"
-          >
-            <ReactPlayer
-              url={src}
-              volume={isBackground ? 0 : 1}
-              muted={isBackground}
-              playsinline
-              controls={!isBackground}
-              playing={isBackground && isInView}
-              loop={isBackground}
-              config={config}
-              width="100%"
-              height="100%"
-              style={style}
-            />
-          </Presence>
+          <AspectRatio ratio={ratio} overflow="hidden">
+            <Presence
+              present={true}
+              animationName={{ _open: 'fade-in', _closed: 'fade-out' }}
+              animationDuration="moderate"
+            >
+              <ReactPlayer
+                url={src}
+                volume={isBackground ? 0 : 1}
+                muted={isBackground}
+                playsinline
+                controls={!isBackground}
+                playing={isBackground && isInView}
+                loop={isBackground}
+                config={config}
+                width="100%"
+                height="100%"
+                style={style}
+              />
+            </Presence>
+          </AspectRatio>
         )}
-      </AspectRatio>
+      </Box>
       {caption && (
         <Box mt={4}>
           <PortableText

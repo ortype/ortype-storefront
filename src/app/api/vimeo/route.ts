@@ -5,20 +5,22 @@ interface VideoInput {
   _key: string
   url: string
   aspectRatio?: number
+  poster?: string
 }
 
 interface VideoOutput {
   _key: string
   url: string
   aspectRatio?: number
+  poster?: string
   status?: string
 }
 
 async function getVimeoDataById(item: VideoInput): Promise<VideoOutput> {
-  const { url, _key, aspectRatio } = item
+  const { url, _key, aspectRatio, poster } = item
 
-  // Skip videos that already have aspect ratio
-  if (aspectRatio) {
+  // Skip videos that already have both aspect ratio and poster
+  if (aspectRatio && poster) {
     return {
       ...item,
     }
@@ -35,7 +37,7 @@ async function getVimeoDataById(item: VideoInput): Promise<VideoOutput> {
   }
 
   const vimeoId = videoData.id
-  const apiUrl = `https://api.vimeo.com/videos/${vimeoId}?fields=width,height`
+  const apiUrl = `https://api.vimeo.com/videos/${vimeoId}?fields=width,height,pictures,name`
 
   try {
     const response = await fetch(apiUrl, {
@@ -47,13 +49,21 @@ async function getVimeoDataById(item: VideoInput): Promise<VideoOutput> {
 
     if (response.ok) {
       const data = await response.json()
-      const { width, height } = data
+      const { width, height, pictures } = data
       const calculatedAspectRatio = width / height
+
+      // Extract the largest poster image from Vimeo's picture sizes
+      let posterUrl: string | undefined
+      if (pictures?.sizes?.length) {
+        const largest = pictures.sizes[pictures.sizes.length - 1]
+        posterUrl = largest.link
+      }
 
       return {
         _key,
         url,
         aspectRatio: calculatedAspectRatio,
+        poster: posterUrl,
         status: `Data synced for Vimeo ID: ${vimeoId} on ${new Date().toISOString()}`,
       }
     } else {
@@ -93,6 +103,7 @@ export async function POST(request: Request) {
         _key: data._key,
         url: data.url,
         aspectRatio: data.aspectRatio,
+        poster: data.poster,
         status: data.status,
       })
     })

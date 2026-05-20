@@ -428,6 +428,8 @@ export type ModuleVideo = {
   url?: string
   isBackground?: boolean
   aspectRatio?: number
+  poster?: string
+  status?: string
   caption?: Array<{
     children?: Array<{
       marks?: Array<string>
@@ -1070,6 +1072,8 @@ export type HomePageQueryResult = {
                 url?: string
                 isBackground?: boolean
                 aspectRatio?: number
+                poster?: string
+                status?: string
                 caption?: Array<{
                   children?: Array<{
                     marks?: Array<string>
@@ -1354,6 +1358,8 @@ export type FontsQueryResult = Array<{
               url?: string
               isBackground?: boolean
               aspectRatio?: number
+              poster?: string
+              status?: string
               caption?: Array<{
                 children?: Array<{
                   marks?: Array<string>
@@ -1593,6 +1599,8 @@ export type FontAndMoreFontsQueryResult = {
                 url?: string
                 isBackground?: boolean
                 aspectRatio?: number
+                poster?: string
+                status?: string
                 caption?: Array<{
                   children?: Array<{
                     marks?: Array<string>
@@ -1813,6 +1821,8 @@ export type FontAndMoreFontsQueryResult = {
                 url?: string
                 isBackground?: boolean
                 aspectRatio?: number
+                poster?: string
+                status?: string
                 caption?: Array<{
                   children?: Array<{
                     marks?: Array<string>

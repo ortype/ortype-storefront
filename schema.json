@@ -2717,6 +2717,20 @@
           },
           "optional": true
         },
+        "poster": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
+        "status": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
         "caption": {
           "type": "objectAttribute",
           "value": {

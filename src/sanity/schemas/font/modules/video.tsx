@@ -61,9 +61,23 @@ export default defineType({
       type: 'number',
       title: 'Aspect Ratio',
       description:
-        'Optional aspect ratio (e.g., 1.777 for 16:9, 0.5625 for 9:16). If not provided, defaults to 16:9.',
+        'Synced from Vimeo API on publish. (e.g., 1.777 for 16:9, 0.5625 for 9:16). Defaults to 16:9 if not set.',
+      readOnly: true,
       validation: (Rule) => Rule.positive(),
-      hidden: ({ parent }) => !parent?.url,
+    }),
+    defineField({
+      name: 'poster',
+      type: 'url',
+      title: 'Poster Image',
+      description: 'Thumbnail image URL synced from Vimeo API on publish.',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'status',
+      type: 'string',
+      title: 'Sync Status',
+      description: 'Status of the last Vimeo metadata sync.',
+      readOnly: true,
     }),
     defineField({
       name: 'caption',
@@ -77,7 +91,7 @@ export default defineType({
           type: 'block',
         },
       ],
-      hidden: ({ parent }) => parent?.isBackground,
+      // hidden: ({ parent }) => parent?.isBackground,
     }),
   ],
   preview: {

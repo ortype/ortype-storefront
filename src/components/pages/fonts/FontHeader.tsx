@@ -30,7 +30,7 @@ export default function FontHeader({
       mb={'10vh'}
       position="relative"
       // the before creates the height
-      height={`${spreadAspectValue}vh`}
+      // height={`${spreadAspectValue}vh`}
       overflow={'hidden'}
       display={'flex'}
       flexDirection={'column'}

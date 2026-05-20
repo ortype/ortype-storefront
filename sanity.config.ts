@@ -8,7 +8,7 @@ import { media } from 'sanity-plugin-media'
 import { presentationTool, type DocumentLocation } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
 import { apiVersion, dataset, projectId, studioUrl } from './src/sanity/env'
-import { customDocumentActions } from './src/sanity/plugins/custom-document-actions'
+import { VimeoMetadataAction } from './src/sanity/plugins/custom-document-actions/vimeo-metadata'
 import { resolve } from './src/sanity/presentation/resolve'
 import authorType from './src/sanity/schemas/author'
 import blockContent from './src/sanity/schemas/blockContent'
@@ -66,11 +66,23 @@ export default defineConfig({
       previewUrl: { previewMode: { enable: '/api/draft-mode/enable' } },
     }),
     structureTool({ structure }),
-    customDocumentActions(),
     media(),
     // Vision lets you query your content with GROQ in the studio
     // https://www.sanity.io/docs/the-vision-plugin
     process.env.NODE_ENV === 'development' &&
       visionTool({ defaultApiVersion: apiVersion }),
   ].filter(Boolean) as PluginOptions[],
+  document: {
+    actions: (prev: any, { schemaType }: any) => {
+      const videoDocumentTypes = ['font', 'page', 'post']
+      if (videoDocumentTypes.includes(schemaType)) {
+        return prev.map((originalAction: any) =>
+          originalAction.action === 'publish'
+            ? VimeoMetadataAction
+            : originalAction,
+        )
+      }
+      return prev
+    },
+  },
 })
