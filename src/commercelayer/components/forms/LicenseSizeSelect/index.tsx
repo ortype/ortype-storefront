@@ -1,3 +1,4 @@
+import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
 import {
   SelectContent,
@@ -9,7 +10,6 @@ import {
 import { type CompanySize } from '@/sanity/lib/queries'
 import { createListCollection, Fieldset } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 
 interface Props {
   licenseSize: CompanySize
@@ -72,7 +72,18 @@ export const LicenseSizeSelect: React.FC<Props> = ({
           </SelectTrigger>
           <SelectContent portalled={false}>
             {sizes.map((option) => (
-              <SelectItem key={option.value} item={option}>
+              <SelectItem
+                key={option.value}
+                item={option}
+                _checked={{
+                  bg: 'blackAlpha.300',
+                }}
+                _hover={{
+                  cursor: 'pointer',
+                  bg: 'blackAlpha.300',
+                }}
+                transition={'background 300ms ease-in-out'}
+              >
                 {option.label}
               </SelectItem>
             ))}

@@ -40,22 +40,15 @@ export const FontGroup: React.FC<Props> = ({ group, name, unitPrice }) => {
 
   const fullPrice = unitPrice * groupCount
   const totalPrice = Math.round(fullPrice - fullPrice * percentageDiscount)
-  console.log({
-    groupCount,
-    percentageDiscount,
-    unitPrice,
-    fullPrice,
-    totalPrice,
-  })
 
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={'brand.50'}
+      bg={'blackAlpha.300'}
       borderRadius={'1rem'}
       cursor={'pointer'}
       _hover={{
-        bg: 'blackAlpha.300',
+        bg: 'brand.50',
         '& .toggle-button': {
           borderWidth: '4px',
         },

@@ -14,24 +14,17 @@ import {
 import {
   Box,
   Button,
-  Center,
   Link as ChakraLink,
-  Circle,
-  Container,
   Fieldset,
   Flex,
   GridItem,
-  Portal,
   Show,
   SimpleGrid,
-  Spinner,
-  Stack,
   Text,
   VStack,
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import React, { useMemo } from 'react'
-import { SingleStyles } from './single-styles'
 import Typefaces from './typefaces'
 
 interface FontVariant {

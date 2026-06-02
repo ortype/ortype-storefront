@@ -106,7 +106,7 @@ export const checkboxSlotRecipe = defineSlotRecipe({
         control: {
           borderColor: 'border',
           '&:is([data-state=checked], [data-state=indeterminate])': {
-            bg: 'colorPalette.solid',
+            bg: 'blackAlpha.300',
             color: 'colorPalette.contrast',
             borderColor: 'colorPalette.solid',
           },

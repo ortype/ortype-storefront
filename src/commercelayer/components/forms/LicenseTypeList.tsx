@@ -102,7 +102,7 @@ export const LicenseTypeList: React.FC<Props> = ({
           value={selectedTypes?.map((option) => option.value) || []}
           onValueChange={(e) => handleTypeChange(e)}
           mt={1}
-          gap={1}
+          gap={'3px'}
         >
           {typeOptions.map((option) => (
             <Checkbox.Root
@@ -111,12 +111,24 @@ export const LicenseTypeList: React.FC<Props> = ({
               variant={'outline'}
               size={'lg'}
               p={2}
-              bg={'brand.50'}
               w={'full'}
+              bg={'brand.50'}
               _hover={{
-                bg: 'blackAlpha.300',
+                // borderRadius: '100px',
                 cursor: 'pointer',
+                bg: 'blackAlpha.300',
+                /*
+                // @NOTE: need to work out how to select the control element
+                '&[data-part=item-control]': {
+                  borderWidth: '4px',
+                },*/
               }}
+              _checked={{
+                bg: 'blackAlpha.300',
+              }}
+              transition={
+                'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+              }
             >
               <Checkbox.HiddenInput />
               <Checkbox.Control />

@@ -43,7 +43,7 @@ export const LicenseSizeList: React.FC<Props> = ({
       >
         <FieldsetLegend>{'3. How big is your company?'}</FieldsetLegend>
         <Fieldset.Content asChild>
-          <VStack mt={1} gap={1} alignItems={'flex-start'}>
+          <VStack mt={1} gap={'3px'}>
             {sizes.map((size) => (
               <RadioGroup.Item
                 key={size.value}
@@ -54,8 +54,19 @@ export const LicenseSizeList: React.FC<Props> = ({
                 }}
                 bg={'brand.50'}
                 _hover={{
+                  // borderRadius: '100px',
                   bg: 'blackAlpha.300',
                   cursor: 'pointer',
+                  // @NOTE: need to work out how to select the control element
+                  /*'&[data-part=item-control]': {
+                    borderWidth: '4px',
+                  },*/
+                }}
+                transition={
+                  'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+                }
+                _checked={{
+                  bg: 'blackAlpha.300',
                 }}
                 p={2}
                 w={'full'}

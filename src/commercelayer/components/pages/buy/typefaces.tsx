@@ -59,10 +59,10 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
   }, [font.styleGroups])
 
   return font.styleGroups ? (
-    <Flex direction={'column'} mt={1} mb={1} gap={0.5}>
+    <Flex direction={'column'} mt={1} mb={1} gap={'3px'}>
       <FontFull font={font} unitPrice={unitPrice} />
       {mergedData.map((group) => (
-        <Flex key={font._id} direction={'column'} mt={0.5} mb={1} gap={0.5}>
+        <Flex key={font._id} direction={'column'} mt={'3px'} mb={1} gap={'3px'}>
           <FontGroup
             name={font.shortName + ' ' + group.groupName}
             group={group}

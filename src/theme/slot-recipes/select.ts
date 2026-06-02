@@ -99,7 +99,7 @@ export const selectSlotRecipe = defineSlotRecipe({
       justifyContent: 'space-between',
       flex: '1',
       textAlign: 'start',
-      borderRadius: 'l1',
+      borderRadius: '0',
       _highlighted: {
         bg: {
           _light: 'bg.muted',
