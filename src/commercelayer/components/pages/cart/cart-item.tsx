@@ -78,7 +78,6 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     () => createListCollection({ items: formattedTypeOptions }),
     [formattedTypeOptions]
   )
-  console.log({ selectedSkuOptions })
   const selectedValues = selectedSkuOptions.map((o) => o.reference)
 
   // Optimistic price: compute locally so the UI updates immediately
@@ -191,6 +190,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
             gap={1}
             alignItems={'flex-end'}
             fontVariantNumeric={'tabular-nums'}
+            pr={3}
           >
             <HStack gap={4}>
               {/*<Text

@@ -1,7 +1,6 @@
 'use client'
 import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
-import { CartItem } from '@/commercelayer/components/pages/cart/cart-item'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { useMemo, useRef } from 'react'
@@ -20,10 +19,14 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { StickyBottomPanel } from '../../ui/sticky-bottom-panel'
 import Summary from './cart-summary'
 
-import { getParentUid } from '@/commercelayer/utils/prices'
+import {
+  calculateDiscount,
+  calculateLineItemPrice,
+  formatPrice,
+  getParentUid,
+} from '@/commercelayer/utils/prices'
 import CartGroups from './cart-groups'
 
 // Define your types
@@ -51,6 +54,14 @@ export interface LineItem {
   unit_amount_float: number
   formatted_unit_amount: string
   metadata: LineItemMetadata
+  line_item_options?: Array<{
+    id: string
+    sku_option?: {
+      metadata?: {
+        price_amount_cents: number
+      }
+    }
+  }>
 }
 
 export interface GroupedLineItems {
@@ -58,6 +69,9 @@ export interface GroupedLineItems {
   parentName: string
   defaultVariantId: string
   items: LineItem[]
+  discountedPriceTotal: number
+  fullUnitPriceTotal: number
+  percentageDiscount: number
 }
 
 // Your helper function
@@ -69,6 +83,47 @@ const getDefaultVariantId = (item: LineItem): string | undefined => {
   return item.metadata.defaultVariantId
 }
 
+// Helper function to calculate full unit price for a line item
+const calculateFullUnitPrice = (
+  lineItem: LineItem,
+  modifier: number
+): number => {
+  const optionsTotal =
+    lineItem.line_item_options?.reduce(
+      (total, option) =>
+        total + Number(option.sku_option?.metadata?.price_amount_cents ?? 0),
+      0
+    ) ?? 0
+
+  return (optionsTotal * (modifier ?? 0)) / 100
+}
+
+// Helper function to calculate prices for a group
+const calculateGroupPrices = (
+  items: LineItem[],
+  modifier: number
+): {
+  fullUnitPriceTotal: number
+  discountedPriceTotal: number
+} => {
+  return items
+    .map((lineItem) => ({
+      fullUnitPrice: calculateFullUnitPrice(lineItem, modifier),
+      discountedPrice: calculateLineItemPrice({
+        skuOptions: lineItem.line_item_options,
+        sizeModifier: modifier,
+        count: items.length,
+      }),
+    }))
+    .reduce(
+      (totals, { fullUnitPrice, discountedPrice }) => ({
+        fullUnitPriceTotal: totals.fullUnitPriceTotal + fullUnitPrice,
+        discountedPriceTotal: totals.discountedPriceTotal + discountedPrice,
+      }),
+      { fullUnitPriceTotal: 0, discountedPriceTotal: 0 }
+    )
+}
+
 const CartComponent = () => {
   const { isLoading, orderId, order, licenseSize, setLicenseSize } =
     useOrderContext()
@@ -78,6 +133,7 @@ const CartComponent = () => {
     if (!order?.line_items) {
       return []
     }
+
     const grouped = order.line_items.reduce<GroupedLineItems[]>((acc, item) => {
       const parentUid = getParentUid(item)
       const parentName = getParentName(item)
@@ -98,8 +154,22 @@ const CartComponent = () => {
       return acc
     }, [])
 
-    return grouped
-  }, [order?.line_items])
+    return grouped.map((group): GroupedLineItems => {
+      const { fullUnitPriceTotal, discountedPriceTotal } = calculateGroupPrices(
+        group.items,
+        licenseSize?.modifier ?? 0
+      )
+
+      return {
+        ...group,
+        fullUnitPriceTotal,
+        percentageDiscount: group.items.length
+          ? calculateDiscount(group.items.length)
+          : 0,
+        discountedPriceTotal: formatPrice(discountedPriceTotal),
+      }
+    })
+  }, [order?.line_items, licenseSize?.modifier])
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
 
@@ -162,7 +232,9 @@ const CartComponent = () => {
                 <FieldsetLegend>{'Fonts'}</FieldsetLegend>
                 <Flex justifyContent={'space-between'}>
                   <FieldsetLegend>{'License Type'}</FieldsetLegend>
-                  <FieldsetLegend>{'Price'}</FieldsetLegend>
+                  <FieldsetLegend>
+                    <Box pr={4}>{'Price'}</Box>
+                  </FieldsetLegend>
                 </Flex>
               </SimpleGrid>
             </Box>

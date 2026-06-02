@@ -49,12 +49,14 @@ export function getParentUid(lineItem: LineItem): string {
  * Returns value in cents.
  */
 export function calculateSkuOptionsTotal(skuOptions: SkuOption[]): number {
-  // @NOTE: if we use a percentage tier based discount system similar to calculateLineItemPrice
-  // we would add another `calculateMediaDiscount` helper which accepts the `mediaDiscountTiers`
-  return skuOptions.reduce(
-    (acc, { metadata }) => acc + Number(metadata?.price_amount_cents ?? 0),
-    0
-  )
+  return skuOptions.reduce((acc, option) => {
+    // Handle both direct metadata and nested sku_option.metadata
+    const price =
+      option?.metadata?.price_amount_cents ??
+      option?.sku_option?.metadata?.price_amount_cents ??
+      0
+    return acc + Number(price)
+  }, 0)
 }
 
 /**
