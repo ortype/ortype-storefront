@@ -45,9 +45,8 @@ interface YourComponentProps {
 }
 
 export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
-  const { font, addLineItem } = useBuyContext()
-  const { order, licenseSize, deleteLineItem, selectedSkuOptions } =
-    useOrderContext()
+  const { font, addLineItem, selectedSkus } = useBuyContext()
+  const { order, licenseSize, selectedSkuOptions } = useOrderContext()
 
   // @TODO: on changing selected SKU options, update all line_items on the order
 
@@ -92,9 +91,8 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
                 parentUid={variant.parentUid}
                 parentName={font.shortName}
                 defaultVariantId={font.defaultVariant?._id}
+                selectedSkus={selectedSkus}
                 addLineItem={addLineItem}
-                deleteLineItem={deleteLineItem}
-                order={order}
                 name={`${font.shortName} ${variant.optionName}`}
               />
             )
@@ -134,9 +132,8 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
             parentUid={variant.parentUid}
             parentName={font.shortName}
             defaultVariantId={font.defaultVariant?._id}
+            selectedSkus={selectedSkus}
             addLineItem={addLineItem}
-            deleteLineItem={deleteLineItem}
-            order={order}
             name={`${font.shortName} ${variant.optionName}`}
           />
         )

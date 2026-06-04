@@ -3,6 +3,7 @@ import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
 import { ActionType, reducer } from '@/commercelayer/providers/Order/reducer'
 import utils, {
   calculateSettings,
+  computeSelectionsHash,
   createOrUpdateOrder,
   updateLineItemLicenseTypes,
   updateLineItemsLicenseSize,
@@ -10,10 +11,12 @@ import utils, {
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
+import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
 import {
   getParentUid,
   recalculateSiblingPrices,
 } from '@/commercelayer/utils/prices'
+import { executeBatch, type Task } from '@commercelayer/sdk-utils'
 import { getLicenseMetrics } from '@/sanity/lib/client'
 import { type CompanySize, type MediaType } from '@/sanity/lib/queries'
 import {
@@ -32,6 +35,7 @@ import {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   useState,
 } from 'react'
 import { OrderStorageContext } from './Storage'
@@ -53,11 +57,8 @@ import { OrderStorageContext } from './Storage'
 
 export type LicenseOwnerInput = Pick<LicenseOwner, 'is_client' | 'full_name'>
 
-export type LicenseSize = {
-  label: string
-  value: string
-  modifier: number
-}
+export type { LicenseSize, StyleEntry, SelectionBuffer } from './types'
+import type { LicenseSize, StyleEntry, SelectionBuffer } from './types'
 
 interface UpdateOrderArgs {
   id: string
@@ -162,6 +163,30 @@ type OrderProviderData = {
     success: boolean
     error?: AddToCartError
   }>
+  selections: SelectionBuffer
+  isCommitted: boolean
+  toggleStyle: (params: {
+    parentUid: string
+    skuCode: string
+    styleMetadata: StyleEntry
+  }) => void
+  toggleGroup: (params: {
+    parentUid: string
+    styles: { skuCode: string; styleMetadata: StyleEntry }[]
+  }) => void
+  setStyleLicenseTypes: (params: {
+    parentUid: string
+    skuCode: string
+    licenseTypes: string[]
+  }) => void
+  commitSelections: () => Promise<{
+    success: boolean
+    error?: AddToCartError
+  }>
+  clearCommittedItems: () => Promise<{
+    success: boolean
+    error?: AddToCartError
+  }>
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
   setSelectedSkuOptions: (params: {
@@ -190,6 +215,9 @@ export type OrderStateData = {
   itemsCount: number
   isLoading: boolean
   isInvalid: boolean
+  selections: SelectionBuffer
+  isCommitted: boolean
+  committedSelectionsHash: string
 }
 
 const initialState: OrderStateData = {
@@ -208,6 +236,9 @@ const initialState: OrderStateData = {
   itemsCount: 0,
   isLoading: true,
   isInvalid: false,
+  selections: {},
+  isCommitted: false,
+  committedSelectionsHash: '',
 }
 
 const OrderContext = createContext<OrderProviderData>(
@@ -1431,6 +1462,28 @@ export function OrderProvider({
         // If order is found, use its license types
         existingTypes = order.metadata?.license?.types || []
 
+        // Hydrate selections from order metadata if available
+        if (order.metadata?.selections) {
+          dispatch({
+            type: ActionType.HYDRATE_SELECTIONS,
+            payload: { selections: order.metadata.selections },
+          })
+
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(
+              '[OrderProvider] 🔄 initializeProvider: Hydrated selections from order metadata',
+              {
+                selectionCount: Object.values(
+                  order.metadata.selections as Record<string, Record<string, unknown>>
+                ).reduce(
+                  (total: number, group) => total + Object.keys(group).length,
+                  0
+                ),
+              }
+            )
+          }
+        }
+
         if (process.env.NODE_ENV !== 'production') {
           console.log(
             '[Order Provider] 🔄 initializeProvider: Found existing order with types:',
@@ -1523,6 +1576,438 @@ export function OrderProvider({
     initializeProvider()
   }, [initializeProvider])
 
+  // --- Background metadata sync ---
+  // Debounced write of selections to order.metadata.selections
+  // Fire-and-forget: does not block UI. React state is the source of truth.
+  const metadataSyncRef = useRef<ReturnType<typeof setTimeout>>()
+  const lastSyncedHashRef = useRef('')
+
+  useEffect(() => {
+    // Only sync when order exists and selections have changed
+    if (!state.orderId || !state.order?.id) return
+
+    const currentHash = computeSelectionsHash(state.selections)
+    if (currentHash === lastSyncedHashRef.current) return
+
+    // Clear previous debounce
+    if (metadataSyncRef.current) {
+      clearTimeout(metadataSyncRef.current)
+    }
+
+    metadataSyncRef.current = setTimeout(async () => {
+      try {
+        const cl = config != null ? getCommerceLayer(config) : undefined
+        if (!cl || !state.order?.id) return
+
+        await cl.orders.update({
+          id: state.order.id,
+          metadata: {
+            ...state.order.metadata,
+            selections: state.selections,
+          },
+        })
+
+        lastSyncedHashRef.current = currentHash
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(
+            '[OrderProvider] 📝 Metadata sync: selections written to order metadata'
+          )
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            '[OrderProvider] ⚠️ Metadata sync failed (non-blocking):',
+            error
+          )
+        }
+      }
+    }, 1500)
+
+    return () => {
+      if (metadataSyncRef.current) {
+        clearTimeout(metadataSyncRef.current)
+      }
+    }
+  }, [state.selections, state.orderId, state.order?.id, config])
+
+  // --- Selection buffer methods (pure state updates, no API calls) ---
+
+  const toggleStyle = useCallback(
+    (params: {
+      parentUid: string
+      skuCode: string
+      styleMetadata: StyleEntry
+    }) => {
+      dispatch({
+        type: ActionType.TOGGLE_STYLE,
+        payload: params,
+      })
+    },
+    []
+  )
+
+  const toggleGroup = useCallback(
+    (params: {
+      parentUid: string
+      styles: { skuCode: string; styleMetadata: StyleEntry }[]
+    }) => {
+      dispatch({
+        type: ActionType.TOGGLE_GROUP,
+        payload: params,
+      })
+    },
+    []
+  )
+
+  const setStyleLicenseTypes = useCallback(
+    (params: {
+      parentUid: string
+      skuCode: string
+      licenseTypes: string[]
+    }) => {
+      dispatch({
+        type: ActionType.SET_STYLE_LICENSE_TYPES,
+        payload: params,
+      })
+    },
+    []
+  )
+
+  const commitSelections = useCallback(async (): Promise<{
+    success: boolean
+    error?: AddToCartError
+  }> => {
+    dispatch({ type: ActionType.START_LOADING })
+
+    try {
+      const cl = config != null ? getCommerceLayer(config) : undefined
+      if (!cl) {
+        throw new Error('Commerce Layer client not initialized')
+      }
+
+      if (!state.orderId || !state.order?.id) {
+        throw new Error('Order must exist before committing selections')
+      }
+
+      const selections = state.selections
+      if (Object.keys(selections).length === 0) {
+        throw new Error('No selections to commit')
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[OrderProvider] commitSelections: Starting commit', {
+          orderId: state.orderId,
+          groupCount: Object.keys(selections).length,
+          totalStyles: Object.values(selections).reduce(
+            (total, group) => total + Object.keys(group).length,
+            0
+          ),
+        })
+      }
+
+      // 1. Disable auto-refresh to prevent N recalculations
+      await cl.orders.update({ id: state.order.id, autorefresh: false })
+
+      // 2. Build batch tasks from selections
+      const tasks: Task[] = []
+      const orderRel = cl.orders.relationship(state.orderId)
+
+      for (const [parentUid, styles] of Object.entries(selections)) {
+        const groupSize = Object.keys(styles).length
+
+        for (const [skuCode, styleEntry] of Object.entries(styles)) {
+          // Create line item task
+          tasks.push({
+            resourceType: 'line_items',
+            operation: 'create',
+            resource: {
+              order: orderRel,
+              sku_code: skuCode,
+              reference_origin: parentUid,
+              quantity: 1,
+              _external_price: true,
+              metadata: {
+                parentUid,
+                parentName: styleEntry.parentName,
+                defaultVariantId: styleEntry.defaultVariantId,
+                batchSize: groupSize,
+                license: {
+                  size: state.licenseSize,
+                  types: styleEntry.licenseTypes,
+                },
+              },
+            },
+            onFailure: {
+              errorHandler: (err) => {
+                console.error(
+                  `[commitSelections] Failed to create line item ${skuCode}:`,
+                  err
+                )
+              },
+            },
+          })
+        }
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(
+          `[OrderProvider] commitSelections: Executing batch with ${tasks.length} tasks`
+        )
+      }
+
+      // 3. Execute batch (rate-limited, sequential)
+      await executeBatch({ tasks })
+
+      // 4. After line items are created, add line_item_options for license types
+      // Fetch the order to get the created line items with their IDs
+      const { order: orderWithItems } = await fetchOrder()
+      if (orderWithItems?.line_items?.length) {
+        const optionTasks: Task[] = []
+
+        for (const lineItem of orderWithItems.line_items) {
+          if (
+            lineItem.item_type !== 'skus' &&
+            lineItem.item_type !== 'bundles'
+          )
+            continue
+
+          const parentUid = lineItem.metadata?.parentUid ?? ''
+          const skuCode = lineItem.sku_code ?? ''
+          const styleEntry = skuCode ? selections[parentUid]?.[skuCode] : undefined
+          if (!styleEntry) continue
+
+          // Find matching SKU options for this style's license types
+          const matchingOptions = state.skuOptions.filter((opt) =>
+            styleEntry.licenseTypes.includes(opt.reference)
+          )
+
+          for (const skuOption of matchingOptions) {
+            optionTasks.push({
+              resourceType: 'line_item_options',
+              operation: 'create',
+              resource: {
+                quantity: 1,
+                options: {},
+                sku_option: cl.sku_options.relationship(skuOption.id),
+                line_item: cl.line_items.relationship(lineItem.id),
+              },
+              onFailure: {
+                errorHandler: (err) => {
+                  console.error(
+                    `[commitSelections] Failed to create line_item_option for ${lineItem.sku_code}:`,
+                    err
+                  )
+                },
+              },
+            })
+          }
+        }
+
+        if (optionTasks.length > 0) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(
+              `[OrderProvider] commitSelections: Creating ${optionTasks.length} line_item_options`
+            )
+          }
+          await executeBatch({ tasks: optionTasks })
+        }
+      }
+
+      // 5. Re-enable auto-refresh and trigger a single refresh
+      await forceOrderAutorefresh({ client: cl, order: { ...state.order, autorefresh: false } })
+
+      // 6. Fetch the fully refreshed order
+      const { order: refreshedOrder } = await fetchOrder()
+      if (!refreshedOrder) {
+        throw new Error('Failed to fetch order after commit')
+      }
+
+      // 7. Mark as committed with a hash for change detection
+      const hash = computeSelectionsHash(selections)
+      dispatch({
+        type: ActionType.SET_COMMITTED,
+        payload: { committedSelectionsHash: hash },
+      })
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[OrderProvider] commitSelections: Commit complete', {
+          lineItemCount: refreshedOrder.line_items?.length,
+        })
+      }
+
+      return { success: true }
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('[OrderProvider] commitSelections error:', error)
+      }
+
+      // Attempt to re-enable autorefresh on failure
+      try {
+        const cl = config != null ? getCommerceLayer(config) : undefined
+        if (cl && state.order?.id) {
+          await cl.orders.update({
+            id: state.order.id,
+            autorefresh: true,
+          })
+        }
+      } catch {
+        // Best-effort recovery
+      }
+
+      return {
+        success: false,
+        error: {
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Failed to commit selections',
+          originalError: error,
+        },
+      }
+    } finally {
+      dispatch({ type: ActionType.STOP_LOADING })
+    }
+  }, [
+    config,
+    state.orderId,
+    state.order,
+    state.selections,
+    state.licenseSize,
+    state.skuOptions,
+    fetchOrder,
+  ])
+
+  /**
+   * Clears committed line items from the CL order when the user exits
+   * checkout and has modified selections (Option A).
+   * The selection buffer is preserved so the user can edit and return.
+   * Only deletes if selections have actually changed since last commit.
+   */
+  const clearCommittedItems = useCallback(async (): Promise<{
+    success: boolean
+    error?: AddToCartError
+  }> => {
+    // Nothing to clear if not committed
+    if (!state.isCommitted) {
+      return { success: true }
+    }
+
+    // Check if selections have changed since commit
+    const currentHash = computeSelectionsHash(state.selections)
+    if (currentHash === state.committedSelectionsHash) {
+      // Selections unchanged — committed line items are still valid
+      return { success: true }
+    }
+
+    dispatch({ type: ActionType.START_LOADING })
+
+    try {
+      const cl = config != null ? getCommerceLayer(config) : undefined
+      if (!cl) {
+        throw new Error('Commerce Layer client not initialized')
+      }
+
+      if (!state.order?.id) {
+        throw new Error('No order to clear items from')
+      }
+
+      // Get current line items to delete
+      const lineItems = state.order.line_items?.filter(
+        (li) => li.item_type === 'skus' || li.item_type === 'bundles'
+      )
+
+      if (!lineItems?.length) {
+        dispatch({ type: ActionType.CLEAR_COMMITTED })
+        return { success: true }
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(
+          '[OrderProvider] clearCommittedItems: Deleting committed line items',
+          { count: lineItems.length }
+        )
+      }
+
+      // Disable autorefresh during bulk delete
+      await cl.orders.update({ id: state.order.id, autorefresh: false })
+
+      // Batch-delete all committed line items
+      const deleteTasks: Task[] = lineItems.map((li) => ({
+        resourceType: 'line_items' as const,
+        operation: 'delete' as const,
+        resource: { id: li.id },
+        onFailure: {
+          errorHandler: (err: unknown) => {
+            console.error(
+              `[clearCommittedItems] Failed to delete ${li.sku_code}:`,
+              err
+            )
+          },
+        },
+      }))
+
+      await executeBatch({ tasks: deleteTasks })
+
+      // Re-enable autorefresh
+      await forceOrderAutorefresh({
+        client: cl,
+        order: { ...state.order, autorefresh: false },
+      })
+
+      // Fetch cleaned order
+      await fetchOrder()
+
+      // Clear committed flag — buffer is preserved for editing
+      dispatch({ type: ActionType.CLEAR_COMMITTED })
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(
+          '[OrderProvider] clearCommittedItems: Done, buffer preserved for editing'
+        )
+      }
+
+      return { success: true }
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('[OrderProvider] clearCommittedItems error:', error)
+      }
+
+      // Best-effort autorefresh recovery
+      try {
+        const cl = config != null ? getCommerceLayer(config) : undefined
+        if (cl && state.order?.id) {
+          await cl.orders.update({
+            id: state.order.id,
+            autorefresh: true,
+          })
+        }
+      } catch {
+        // Silent recovery
+      }
+
+      return {
+        success: false,
+        error: {
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Failed to clear committed items',
+          originalError: error,
+        },
+      }
+    } finally {
+      dispatch({ type: ActionType.STOP_LOADING })
+    }
+  }, [
+    config,
+    state.isCommitted,
+    state.committedSelectionsHash,
+    state.selections,
+    state.order,
+    fetchOrder,
+  ])
+
   // Compute additional state properties
   const hasValidLicenseSize = !!(state.licenseSize && state.licenseSize.value)
   const hasValidLicenseType = !!(
@@ -1557,6 +2042,14 @@ export function OrderProvider({
     setLicenseTypes,
     setSelectedSkuOptions,
     deleteLineItem,
+    // Selection buffer
+    selections: state.selections,
+    isCommitted: state.isCommitted,
+    toggleStyle,
+    toggleGroup,
+    setStyleLicenseTypes,
+    commitSelections,
+    clearCommittedItems,
   }
 
   return (

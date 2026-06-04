@@ -1,8 +1,8 @@
 import {
   LicenseOwnerInput,
-  LicenseSize,
   OrderStateData,
 } from '@/commercelayer/providers/Order'
+import type { LicenseSize, SelectionBuffer, StyleEntry } from './types'
 import { Order, SkuOption } from '@commercelayer/sdk'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
@@ -14,8 +14,17 @@ export enum ActionType {
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
   SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
+  // Legacy actions (kept for backward compat during migration)
   DELETE_LINE_ITEM = 'DELETE_LINE_ITEM',
   ADD_TO_CART = 'ADD_TO_CART',
+  // Selection buffer actions
+  TOGGLE_STYLE = 'TOGGLE_STYLE',
+  TOGGLE_GROUP = 'TOGGLE_GROUP',
+  SET_STYLE_LICENSE_TYPES = 'SET_STYLE_LICENSE_TYPES',
+  HYDRATE_SELECTIONS = 'HYDRATE_SELECTIONS',
+  CLEAR_SELECTIONS = 'CLEAR_SELECTIONS',
+  SET_COMMITTED = 'SET_COMMITTED',
+  CLEAR_COMMITTED = 'CLEAR_COMMITTED',
 }
 
 export type Action =
@@ -101,6 +110,51 @@ export type Action =
         order: Order
       }
     }
+  | {
+      type: ActionType.TOGGLE_STYLE
+      payload: {
+        parentUid: string
+        skuCode: string
+        styleMetadata: StyleEntry
+      }
+    }
+  | {
+      type: ActionType.TOGGLE_GROUP
+      payload: {
+        parentUid: string
+        styles: { skuCode: string; styleMetadata: StyleEntry }[]
+      }
+    }
+  | {
+      type: ActionType.SET_STYLE_LICENSE_TYPES
+      payload: {
+        parentUid: string
+        skuCode: string
+        licenseTypes: string[]
+      }
+    }
+  | {
+      type: ActionType.HYDRATE_SELECTIONS
+      payload: {
+        selections: SelectionBuffer
+      }
+    }
+  | { type: ActionType.CLEAR_SELECTIONS }
+  | {
+      type: ActionType.SET_COMMITTED
+      payload: {
+        committedSelectionsHash: string
+      }
+    }
+  | { type: ActionType.CLEAR_COMMITTED }
+
+/** Count total styles across all parentUid groups */
+function countSelections(selections: SelectionBuffer): number {
+  return Object.values(selections).reduce(
+    (total, group) => total + Object.keys(group).length,
+    0
+  )
+}
 
 export function reducer(state: OrderStateData, action: Action): OrderStateData {
   switch (action.type) {
@@ -241,6 +295,107 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         ...state,
         order: action.payload.order,
         isLoading: false,
+      }
+    }
+    // --- Selection buffer actions ---
+    case ActionType.TOGGLE_STYLE: {
+      const { parentUid, skuCode, styleMetadata } = action.payload
+      const group = state.selections[parentUid] ?? {}
+      let updatedGroup: typeof group
+
+      if (group[skuCode]) {
+        // Remove style
+        const { [skuCode]: _, ...rest } = group
+        updatedGroup = rest
+      } else {
+        // Add style
+        updatedGroup = { ...group, [skuCode]: styleMetadata }
+      }
+
+      // Remove empty groups
+      const updatedSelections =
+        Object.keys(updatedGroup).length === 0
+          ? (({ [parentUid]: _, ...rest }) => rest)(state.selections)
+          : { ...state.selections, [parentUid]: updatedGroup }
+
+      return {
+        ...state,
+        selections: updatedSelections,
+        itemsCount: countSelections(updatedSelections),
+      }
+    }
+    case ActionType.TOGGLE_GROUP: {
+      const { parentUid, styles } = action.payload
+      const group = state.selections[parentUid] ?? {}
+
+      // If all styles are already selected, remove them all; otherwise add them all
+      const allSelected = styles.every(({ skuCode }) => !!group[skuCode])
+
+      let updatedSelections: SelectionBuffer
+      if (allSelected) {
+        // Remove all styles in the group
+        const { [parentUid]: _, ...rest } = state.selections
+        updatedSelections = rest
+      } else {
+        // Add all styles to the group
+        const updatedGroup = { ...group }
+        for (const { skuCode, styleMetadata } of styles) {
+          updatedGroup[skuCode] = styleMetadata
+        }
+        updatedSelections = { ...state.selections, [parentUid]: updatedGroup }
+      }
+
+      return {
+        ...state,
+        selections: updatedSelections,
+        itemsCount: countSelections(updatedSelections),
+      }
+    }
+    case ActionType.SET_STYLE_LICENSE_TYPES: {
+      const { parentUid, skuCode, licenseTypes } = action.payload
+      const group = state.selections[parentUid]
+      if (!group?.[skuCode]) return state
+
+      return {
+        ...state,
+        selections: {
+          ...state.selections,
+          [parentUid]: {
+            ...group,
+            [skuCode]: { ...group[skuCode], licenseTypes },
+          },
+        },
+      }
+    }
+    case ActionType.HYDRATE_SELECTIONS: {
+      const { selections } = action.payload
+      return {
+        ...state,
+        selections,
+        itemsCount: countSelections(selections),
+      }
+    }
+    case ActionType.CLEAR_SELECTIONS: {
+      return {
+        ...state,
+        selections: {},
+        itemsCount: 0,
+        isCommitted: false,
+        committedSelectionsHash: '',
+      }
+    }
+    case ActionType.SET_COMMITTED: {
+      return {
+        ...state,
+        isCommitted: true,
+        committedSelectionsHash: action.payload.committedSelectionsHash,
+      }
+    }
+    case ActionType.CLEAR_COMMITTED: {
+      return {
+        ...state,
+        isCommitted: false,
+        committedSelectionsHash: '',
       }
     }
     default:

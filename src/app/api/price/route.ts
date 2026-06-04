@@ -72,7 +72,8 @@ export async function POST(
   // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
 
-  // Count all items in the parentUid group (siblings + self)
+  // Use batchSize from metadata if available (batch creation via commitSelections),
+  // otherwise count from included (recalculation after add/remove)
   const siblings = included.filter(
     ({ type, attributes }) =>
       type === 'line_items' &&
@@ -80,11 +81,13 @@ export async function POST(
       attributes.metadata?.parentUid === metadata.parentUid
   )
 
-  const count = siblings.length + 1
+  const count = metadata.batchSize ?? siblings.length + 1
 
   console.log('[PRICE API] count in parentUid group:', {
     sku_code,
     count,
+    batchSize: metadata.batchSize,
+    siblingCount: siblings.length + 1,
     isEdit: !!created_at,
   })
 

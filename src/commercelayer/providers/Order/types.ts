@@ -5,16 +5,50 @@ import {
   type SkuOption,
 } from '@commercelayer/sdk'
 
-export interface UpdateLineItemLicenseTypes {
-  cl: CommerceLayerClient
-  lineItem: LineItem
-  selectedSkuOptions: SkuOption[]
-}
-
 export type LicenseSize = {
   label: string
   value: string
   modifier: number
+}
+
+export type StyleEntry = {
+  licenseTypes: string[]
+  parentName: string
+  name: string
+  className: string
+  defaultVariantId: string
+}
+
+export type SelectionBuffer = {
+  [parentUid: string]: {
+    [skuCode: string]: StyleEntry
+  }
+}
+
+/** Derived price/count summary for a single font's selections */
+export type FontSelectionSummary = {
+  /** Whether to show the summary panel (has at least one selected style) */
+  show: boolean
+  /** Number of selected styles for this font */
+  fontStyleCount: number
+  /** Unit price at current selection count */
+  unitPrice: number
+  /** Unit price if one more style were added */
+  nextUnitPrice: number
+  /** Full price before discount (all styles priced at count=1) */
+  subtotal: number
+  /** Discount percentage (0–1) at current count */
+  percentageDiscount: number
+  /** Total discount amount in display units (EUR, not cents) */
+  totalDiscount: number
+  /** Final total after discount in display units */
+  total: number
+}
+
+export interface UpdateLineItemLicenseTypes {
+  cl: CommerceLayerClient
+  lineItem: LineItem
+  selectedSkuOptions: SkuOption[]
 }
 
 export interface UpdateLineItemsLicenseSize {

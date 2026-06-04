@@ -1,11 +1,10 @@
+import { StyleEntry } from '@/commercelayer/providers/Order/types'
 import { calculateDiscount } from '@/commercelayer/utils/prices'
 import type { CompanySize } from '@/sanity/lib/queries'
 import { Button, Flex, Stack, Text } from '@chakra-ui/react'
-import { SkuOption, type Order } from '@commercelayer/sdk'
 import React, { useMemo, useState } from 'react'
 
 interface Props {
-  order: Order
   name: string
   siblingCount: number
   skuCode: string
@@ -14,13 +13,13 @@ interface Props {
   defaultVariantId: string
   className?: string
   unitPrice: number
+  selectedSkus: { [skuCode: string]: StyleEntry }
   nextUnitPrice: number
   addLineItem: (params: { skuCode: string }) => Promise<void>
   deleteLineItem: (params: { lineItemId: string }) => Promise<void>
 }
 
 export const SingleStyles: React.FC<Props> = ({
-  order,
   name,
   skuCode,
   siblingCount,
@@ -28,15 +27,15 @@ export const SingleStyles: React.FC<Props> = ({
   parentName,
   defaultVariantId,
   addLineItem,
-  deleteLineItem,
+  selectedSkus,
   unitPrice,
   nextUnitPrice,
   className,
 }) => {
-  // https://github.com/commercelayer/commercelayer-sdk/blob/main/src/resources/line_items.ts
-  const isLineItem = order?.line_items?.find(
-    ({ sku_code }) => sku_code === skuCode
-  )
+  let isSelected = false
+  if (Object.keys(selectedSkus).includes(skuCode)) {
+    isSelected = true
+  }
 
   const percentageDiscount = siblingCount
     ? calculateDiscount(siblingCount + 1)
@@ -47,34 +46,24 @@ export const SingleStyles: React.FC<Props> = ({
   // @TODO: implement optimistic UI solution
   const handleClick = async () => {
     setIsLoading(true)
-    if (isLineItem) {
-      // If the line item already exists in the cart, remove it
-      // https://docs.commercelayer.io/core/v/api-reference/line_items/delete (by ID)
-      await deleteLineItem({ lineItemId: isLineItem.id })
-    } else {
-      try {
-        await addLineItem({
-          name,
-          skuCode,
-          parentUid,
-          parentName,
-          defaultVariantId,
-          price: unitPrice,
-          className,
-        })
-        setIsLoading(false)
-      } catch (e) {
-        console.log('addToCart error: ', e)
-      }
-    }
+
+    addLineItem({
+      name,
+      skuCode,
+      parentUid,
+      parentName,
+      defaultVariantId,
+      price: unitPrice,
+      className,
+    })
     setIsLoading(false)
   }
 
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={isLineItem ? 'blackAlpha.300' : 'brand.50'}
-      borderRadius={isLineItem ? 'full' : '0px'}
+      bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
+      borderRadius={isSelected ? 'full' : '0px'}
       cursor={'pointer'}
       _hover={{
         borderRadius: '100px',
@@ -99,7 +88,7 @@ export const SingleStyles: React.FC<Props> = ({
           h={6}
           minW={6}
           p={0}
-          bg={isLineItem ? 'black' : 'white'}
+          bg={isSelected ? 'black' : 'white'}
           disabled={isLoading}
           transition={'border-width 200ms ease-in-out'}
         />
@@ -108,7 +97,7 @@ export const SingleStyles: React.FC<Props> = ({
         </Text>
       </Stack>
       <Flex gap={2} alignItems={'center'}>
-        {!isLineItem && percentageDiscount > 0 && unitPrice !== null && (
+        {!isSelected && percentageDiscount > 0 && unitPrice !== null && (
           <Text
             className={'discount'}
             as={'span'}
@@ -119,10 +108,9 @@ export const SingleStyles: React.FC<Props> = ({
             {`${unitPrice} EUR`}
           </Text>
         )}
-        {isLineItem ? (
+        {isSelected ? (
           <Text as={'span'} fontSize={'xs'} opacity={0.6}>
             {`ADDED`}
-            {` (${isLineItem?.total_amount_float} EUR)`}
           </Text>
         ) : (
           <Text as={'span'} fontSize={'xs'}>

@@ -1,28 +1,32 @@
-import { createContext, FC, useContext, useReducer } from 'react'
-
 import { ActionType, reducer } from '@/commercelayer/providers/buy/reducer'
-import { addLineItemLicenseTypes } from '@/commercelayer/providers/buy/utils'
-
-import { useIdentityContext } from '@/commercelayer/providers/identity'
-import type { AddToCartError } from '@/commercelayer/providers/Order'
-import getCommerceLayer from '@/commercelayer/utils/getCommerceLayer'
-import { toaster } from '@/components/ui/toaster'
+import {
+  calculateDiscount,
+  calculateLineItemPrice,
+  formatPrice,
+} from '@/commercelayer/utils/prices'
 import { Font } from '@/sanity/lib/queries'
-import { Box, Stack, Text } from '@chakra-ui/react'
+import { createContext, FC, useContext, useMemo, useReducer } from 'react'
+import type { FontSelectionSummary, StyleEntry } from '../Order/types'
 import { useOrderContext } from '../Order'
 
+/** Minimal params for toggling a single style — font-level context is auto-filled */
+export interface ToggleStyleParams {
+  skuCode: string
+  name: string
+  className?: string
+}
+
 export interface BuyProviderData {
-  /**
-   * When `true` it means that app is fetching content from API and is not ready to return the `Settings` object.
-   * It can be used to control the UI state.
-   */
   font: Font
-  itemsCount: number
   isLoading: boolean
-  addLineItem: (params: { skuCode: string }) => Promise<{
-    success: boolean
-    error?: AddToCartError
-  }>
+  /** Selected styles for this font, keyed by skuCode */
+  selectedSkus: { [skuCode: string]: StyleEntry }
+  /** Derived price/count summary for this font's selections */
+  summary: FontSelectionSummary
+  /** Toggle a single style in/out of the buffer */
+  toggleStyle: (params: ToggleStyleParams) => void
+  /** Toggle an entire group (font family or subfamily) */
+  toggleGroup: (styles: ToggleStyleParams[]) => void
 }
 
 interface BuyProviderProps {
@@ -48,237 +52,121 @@ export const useBuyContext = (): BuyProviderData => useContext(BuyContext)
 export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { clientConfig } = useIdentityContext()
+  const {
+    selectedSkuOptions,
+    licenseSize,
+    toggleStyle: orderToggleStyle,
+    toggleGroup: orderToggleGroup,
+    selections,
+  } = useOrderContext()
 
-  const { addToCart, refetchOrder, selectedSkuOptions, licenseSize } =
-    useOrderContext()
+  const selectedSkus = selections[font.uid] ?? {}
 
-  /**
-   * Adds a line item to the cart with proper license metadata.
-   *
-   * @param params - Parameters for adding the line item
-   * @param params.skuCode - The SKU code of the item to add
-   *
-   * @returns Promise resolving to result object containing:
-   * - success: boolean indicating if operation was successful
-   * - error?: error information if operation failed, including:
-   *   - message: human-readable error message
-   *   - originalError?: the underlying error object
-   */
-  const addLineItem = async (params: {
-    skuCode: string
-    parentUid: string
-    parentName: string
-    defaultVariantId: string
-    name: string
-    price?: string
-    className?: string
-  }): Promise<{
-    success: boolean
-    error?: AddToCartError
-  }> => {
-    dispatch({ type: ActionType.START_LOADING })
-    const cl = clientConfig != null ? getCommerceLayer(clientConfig) : undefined
+  /** Build the StyleEntry metadata shared by both toggle helpers */
+  const buildStyleEntry = (params: ToggleStyleParams): StyleEntry => ({
+    licenseTypes: selectedSkuOptions.map((o) => o.reference) || [],
+    parentName: font.shortName ?? font.name,
+    className: params.className ?? '',
+    name: params.name,
+    defaultVariantId: font.defaultVariant?._id ?? '',
+  })
 
-    try {
-      if (clientConfig == null) {
-        throw new Error('Commerce Layer client not initialized')
-      }
-
-      const attrs = {
-        skuCode: params.skuCode,
-        lineItem: {
-          externalPrice: true,
-          metadata: {
-            parentUid: params.parentUid, // same as sku's reference_origin
-            parentName: params.parentName,
-            defaultVariantId: params.defaultVariantId,
-            license: {
-              size: licenseSize,
-              types: selectedSkuOptions.map((option) => option.reference),
-            },
-          },
-        },
-        orderMetadata: { license: { size: licenseSize } },
-        quantity: 1,
-      }
-
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('addLineItem addToCart attrs: ', attrs)
-      }
-
-      const result = await addToCart(attrs)
-      if (!result.success) {
-        // Show error notification
-        const errorMessage =
-          result.error?.message || 'Failed to add item to cart'
-        toaster.create({
-          title: 'Failed to add to cart',
-          description: errorMessage,
-          type: 'error',
-          duration: 7500,
-        })
-        return {
-          success: false,
-          error: result.error,
-        }
-      }
-
-      // Format license types for display
-      const licenseTypes = selectedSkuOptions
-        ?.map((option) => option.name)
-        ?.join(', ')
-
-      // Format license size for display
-      const licenseSizeLabel = licenseSize?.label
-
-      // Show success notification with item details
-      /*
-      toaster.create({
-        title: 'Added to cart',
-        description: (
-          <Stack gap={1}>
-            <Stack
-              direction={'row'}
-              justify="space-between"
-              w="full"
-              pt={1}
-              borderTop={'1px solid #E7E0BF'}
-            >
-              <Text
-                // minW={'8rem'}
-                fontSize={'sm'}
-                // color={'brand.500'}
-              >
-                {params.name}
-              </Text>
-              <Box pl={4} fontVariantNumeric={'tabular-nums'}>
-                {`${params.price} EUR`}
-              </Box>
-            </Stack>
-
-            {licenseTypes && (
-              <Stack
-                direction={'row'}
-                justify="space-between"
-                w="full"
-                pt={1}
-                borderTop={'1px solid #E7E0BF'}
-              >
-                <Text minW={'6rem'} fontSize={'sm'} color={'brand.500'}>
-                  {'Media types'}
-                </Text>
-                <Box flexGrow={1} pl={4}>
-                  {licenseTypes}
-                </Box>
-              </Stack>
-            )}
-            {licenseSizeLabel && (
-              <Stack
-                direction={'row'}
-                justify="space-between"
-                w="full"
-                pt={1}
-                borderTop={'1px solid #E7E0BF'}
-              >
-                <Text minW={'6rem'} fontSize={'sm'} color={'brand.500'}>
-                  {'Company size'}
-                </Text>
-                <Box flexGrow={1} pl={4}>
-                  {licenseSizeLabel}
-                </Box>
-              </Stack>
-            )}
-          </Stack>
-        ),
-        type: 'info',
-        closable: true,
-        duration: 3000,
-      })*/
-
-      const { order } = await refetchOrder()
-      if (!order?.line_items?.length) {
-        return {
-          success: false,
-          error: {
-            message: 'Failed to add item to cart: Order not found',
-          },
-        }
-      }
-
-      // Find the line item we just added
-      const lineItem = order.line_items.find(
-        ({ sku_code }) => sku_code === params.skuCode
-      )
-
-      if (!lineItem) {
-        return {
-          success: false,
-          error: {
-            message: 'Failed to add item to cart: Line item not found',
-          },
-        }
-      }
-
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('addLineItem lineItem: ', lineItem)
-      }
-
-      // @TODO: we need more try/catch blocks and error reporting
-      // Update line item with license types via 'relationships'
-      await addLineItemLicenseTypes({
-        cl,
-        lineItem,
-        selectedSkuOptions,
-      })
-
-      // Get updated order and update state
-      const { order: updatedOrder } = await refetchOrder()
-      if (updatedOrder) {
-        dispatch({
-          type: ActionType.ADD_LINE_ITEM,
-          payload: { order: updatedOrder },
-        })
-      }
-
-      return { success: true }
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Error adding line item:', error)
-      }
-
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to add item to cart'
-      // Show error notification
-      toaster.create({
-        title: 'Failed to add to cart',
-        description: errorMessage,
-        type: 'error',
-        duration: 4000,
-      })
-
-      return {
-        success: false,
-        error: {
-          message: errorMessage,
-          originalError: error,
-        },
-      }
-    } finally {
-      dispatch({ type: ActionType.STOP_LOADING })
-    }
+  /** Toggle a single style in/out of the selection buffer */
+  const toggleStyle = (params: ToggleStyleParams) => {
+    orderToggleStyle({
+      parentUid: font.uid!,
+      skuCode: params.skuCode,
+      styleMetadata: buildStyleEntry(params),
+    })
   }
 
-  // @TODO: consider useEffect with refetchOrder() as a path for ensuring that
-  // we have the current order object available (if we made changes to the order in the checkout)
-  // orders will be 'drafts' until they are submitted
+  /** Toggle an entire group (font family or subfamily) */
+  const toggleGroup = (styles: ToggleStyleParams[]) => {
+    if (styles.length === 0) return
+    orderToggleGroup({
+      parentUid: font.uid!,
+      styles: styles.map((s) => ({
+        skuCode: s.skuCode,
+        styleMetadata: buildStyleEntry(s),
+      })),
+    })
+  }
+
+  /** Derived price/count summary computed from the selection buffer */
+  const summary = useMemo<FontSelectionSummary>(() => {
+    const styleCount = Object.keys(selectedSkus).length
+
+    if (!licenseSize?.modifier || !selectedSkuOptions?.length || styleCount === 0) {
+      // Still compute unitPrice/nextUnitPrice even with 0 selections
+      // so the UI can show "what it would cost" for the first add
+      const baseUnit = (licenseSize?.modifier && selectedSkuOptions?.length)
+        ? calculateLineItemPrice({
+            skuOptions: selectedSkuOptions,
+            sizeModifier: licenseSize.modifier,
+            count: 1,
+          })
+        : 0
+
+      return {
+        show: false,
+        fontStyleCount: 0,
+        unitPrice: formatPrice(baseUnit),
+        nextUnitPrice: formatPrice(baseUnit),
+        subtotal: 0,
+        percentageDiscount: 0,
+        totalDiscount: 0,
+        total: 0,
+      }
+    }
+
+    // Unit price at current count
+    const unitPriceCents = calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: styleCount,
+    })
+
+    // Unit price if one more style were added
+    const nextUnitPriceCents = calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: styleCount + 1,
+    })
+
+    // Subtotal: full price as if each style had no discount (count=1)
+    const fullPriceCents = calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: 1,
+    })
+    const subtotalCents = fullPriceCents * styleCount
+
+    // Total: discounted price × count
+    const totalCents = unitPriceCents * styleCount
+
+    const discount = calculateDiscount(styleCount)
+
+    return {
+      show: true,
+      fontStyleCount: styleCount,
+      unitPrice: formatPrice(unitPriceCents),
+      nextUnitPrice: formatPrice(nextUnitPriceCents),
+      subtotal: formatPrice(subtotalCents),
+      percentageDiscount: discount,
+      totalDiscount: formatPrice(subtotalCents - totalCents),
+      total: formatPrice(totalCents),
+    }
+  }, [selectedSkus, selectedSkuOptions, licenseSize])
 
   return (
     <BuyContext.Provider
       value={{
         ...state,
         font,
-        addLineItem,
+        selectedSkus,
+        summary,
+        toggleStyle,
+        toggleGroup,
       }}
     >
       {children}

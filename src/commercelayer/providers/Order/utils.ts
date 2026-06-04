@@ -23,7 +23,19 @@ import {
 } from 'node_modules/@commercelayer/react-components/lib/esm/reducers/OrderReducer'
 import type { Dispatch } from 'react'
 import type { BaseError } from '../customer'
-import { UpdateLineItemLicenseTypes, UpdateLineItemsLicenseSize } from './types'
+import {
+  type SelectionBuffer,
+  type UpdateLineItemLicenseTypes,
+  type UpdateLineItemsLicenseSize,
+} from './types'
+
+/**
+ * Compute a stable hash of the selections buffer for change detection.
+ * Used to determine if selections have changed since last commit.
+ */
+export function computeSelectionsHash(selections: SelectionBuffer): string {
+  return JSON.stringify(selections)
+}
 
 type ResourceIncludedLoaded = Partial<Record<ResourceIncluded, boolean>>
 
