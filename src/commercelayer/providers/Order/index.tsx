@@ -1359,6 +1359,24 @@ export function OrderProvider({
       // 1. Disable auto-refresh to prevent N recalculations
       await cl.orders.update({ id: state.order.id, autorefresh: false })
 
+      // --- Concurrency helper: run promises in batches of N ---
+      const runConcurrent = async <T>(
+        items: (() => Promise<T>)[],
+        concurrency: number
+      ): Promise<PromiseSettledResult<T>[]> => {
+        const results: PromiseSettledResult<T>[] = []
+        for (let i = 0; i < items.length; i += concurrency) {
+          const batch = items.slice(i, i + concurrency)
+          const batchResults = await Promise.allSettled(
+            batch.map((fn) => fn())
+          )
+          results.push(...batchResults)
+        }
+        return results
+      }
+
+      const CONCURRENCY = 5
+
       // 2. Delete any existing shoppable line items (from a previous commit)
       const existingItems = state.order.line_items?.filter(
         (li) => li.item_type === 'skus' || li.item_type === 'bundles'
@@ -1366,27 +1384,25 @@ export function OrderProvider({
       if (existingItems?.length) {
         if (process.env.NODE_ENV !== 'production') {
           console.log(
-            `[OrderProvider] commitSelections: Clearing ${existingItems.length} existing line items`
+            `[OrderProvider] commitSelections: Clearing ${existingItems.length} existing line items (concurrency: ${CONCURRENCY})`
           )
         }
-        for (const li of existingItems) {
-          await cl.line_items.delete(li.id)
-        }
+        await runConcurrent(
+          existingItems.map((li) => () => cl.line_items.delete(li.id)),
+          CONCURRENCY
+        )
       }
 
-      // 3. Build batch tasks from selections
-      const tasks: Task[] = []
+      // 3. Create line items in parallel batches
       const orderRel = cl.orders.relationship(state.orderId)
+      const lineItemCreators: (() => Promise<any>)[] = []
 
       for (const [parentUid, styles] of Object.entries(selections)) {
         const groupSize = Object.keys(styles).length
 
         for (const [skuCode, styleEntry] of Object.entries(styles)) {
-          // Create line item task
-          tasks.push({
-            resourceType: 'line_items',
-            operation: 'create',
-            resource: {
+          lineItemCreators.push(() =>
+            cl.line_items.create({
               order: orderRel,
               sku_code: skuCode,
               reference_origin: parentUid,
@@ -1402,33 +1418,31 @@ export function OrderProvider({
                   types: styleEntry.licenseTypes,
                 },
               },
-            },
-            onFailure: {
-              errorHandler: (err) => {
-                console.error(
-                  `[commitSelections] Failed to create line item ${skuCode}:`,
-                  err
-                )
-              },
-            },
-          })
+            })
+          )
         }
       }
 
       if (process.env.NODE_ENV !== 'production') {
         console.log(
-          `[OrderProvider] commitSelections: Executing batch with ${tasks.length} tasks`
+          `[OrderProvider] commitSelections: Creating ${lineItemCreators.length} line items (concurrency: ${CONCURRENCY})`
         )
       }
 
-      // 3. Execute batch (rate-limited, sequential)
-      await executeBatch({ tasks })
+      const lineItemResults = await runConcurrent(lineItemCreators, CONCURRENCY)
+      const failedLineItems = lineItemResults.filter(
+        (r) => r.status === 'rejected'
+      )
+      if (failedLineItems.length > 0) {
+        console.error(
+          `[commitSelections] ${failedLineItems.length} line items failed to create`
+        )
+      }
 
-      // 4. After line items are created, add line_item_options for license types
-      // Fetch the order to get the created line items with their IDs
+      // 4. Create line_item_options in parallel batches
       const { order: orderWithItems } = await fetchOrder()
       if (orderWithItems?.line_items?.length) {
-        const optionTasks: Task[] = []
+        const optionCreators: (() => Promise<any>)[] = []
 
         for (const lineItem of orderWithItems.line_items) {
           if (
@@ -1439,43 +1453,34 @@ export function OrderProvider({
 
           const parentUid = lineItem.metadata?.parentUid ?? ''
           const skuCode = lineItem.sku_code ?? ''
-          const styleEntry = skuCode ? selections[parentUid]?.[skuCode] : undefined
+          const styleEntry = skuCode
+            ? selections[parentUid]?.[skuCode]
+            : undefined
           if (!styleEntry) continue
 
-          // Find matching SKU options for this style's license types
           const matchingOptions = state.skuOptions.filter((opt) =>
             styleEntry.licenseTypes.includes(opt.reference)
           )
 
           for (const skuOption of matchingOptions) {
-            optionTasks.push({
-              resourceType: 'line_item_options',
-              operation: 'create',
-              resource: {
+            optionCreators.push(() =>
+              cl.line_item_options.create({
                 quantity: 1,
                 options: {},
                 sku_option: cl.sku_options.relationship(skuOption.id),
                 line_item: cl.line_items.relationship(lineItem.id),
-              },
-              onFailure: {
-                errorHandler: (err) => {
-                  console.error(
-                    `[commitSelections] Failed to create line_item_option for ${lineItem.sku_code}:`,
-                    err
-                  )
-                },
-              },
-            })
+              })
+            )
           }
         }
 
-        if (optionTasks.length > 0) {
+        if (optionCreators.length > 0) {
           if (process.env.NODE_ENV !== 'production') {
             console.log(
-              `[OrderProvider] commitSelections: Creating ${optionTasks.length} line_item_options`
+              `[OrderProvider] commitSelections: Creating ${optionCreators.length} line_item_options (concurrency: ${CONCURRENCY})`
             )
           }
-          await executeBatch({ tasks: optionTasks })
+          await runConcurrent(optionCreators, CONCURRENCY)
         }
       }
 

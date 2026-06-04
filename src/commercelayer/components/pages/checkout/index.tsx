@@ -213,24 +213,13 @@ const Checkout: React.FC<Props> = ({
           <StepComplete orderNumber={ctx.orderNumber} />
         </Steps.CompletedContent>
 
-        {/* Sticky bottom panel with OrderSummary and conditional StepPlaceOrder */}
-        <StickyBottomPanel
-        /*showFooter={stepperHook.count - 1 === stepperHook.value}
-          footer={() => (
-            <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
-          )}*/
-        >
-          {({ isExpanded, toggleBox }) => (
-            <OrderSummary
-              order={ctx.order}
-              sizes={sizes}
-              hasLineItems={ctx.hasLineItems}
-              isOpen={isExpanded}
-              toggleBox={toggleBox}
-              heading={'Order overview'}
-            />
-          )}
-        </StickyBottomPanel>
+        <OrderSummary
+          order={ctx.order}
+          sizes={sizes}
+          hasLineItems={ctx.hasLineItems}
+          isOpen={true}
+          heading={'Order overview'}
+        />
       </Steps.RootProvider>
     </Container>
   )
