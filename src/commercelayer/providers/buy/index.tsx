@@ -6,7 +6,7 @@ import {
 } from '@/commercelayer/utils/prices'
 import { Font } from '@/sanity/lib/queries'
 import { createContext, FC, useContext, useMemo, useReducer } from 'react'
-import type { FontSelectionSummary, StyleEntry } from '../Order/types'
+import type { FontSelectionSummary, GroupPriceSummary, StyleEntry } from '../Order/types'
 import { useOrderContext } from '../Order'
 
 /** Minimal params for toggling a single style — font-level context is auto-filled */
@@ -27,6 +27,10 @@ export interface BuyProviderData {
   toggleStyle: (params: ToggleStyleParams) => void
   /** Toggle an entire group (font family or subfamily) */
   toggleGroup: (styles: ToggleStyleParams[]) => void
+  /** Pre-computed "full family" price summary */
+  fullFamilySummary: GroupPriceSummary
+  /** Pre-computed group summaries keyed by groupName */
+  groupSummaries: { [groupName: string]: GroupPriceSummary }
 }
 
 interface BuyProviderProps {
@@ -158,6 +162,63 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     }
   }, [selectedSkus, selectedSkuOptions, licenseSize])
 
+  /** Base unit price (count=1, no volume discount) — stable regardless of selection count */
+  const baseUnitPrice = useMemo(() => {
+    if (!licenseSize?.modifier || !selectedSkuOptions?.length) return 0
+    return formatPrice(
+      calculateLineItemPrice({
+        skuOptions: selectedSkuOptions,
+        sizeModifier: licenseSize.modifier,
+        count: 1,
+      })
+    )
+  }, [selectedSkuOptions, licenseSize])
+
+  /** Pre-computed "full family" group summary */
+  const fullFamilySummary = useMemo<GroupPriceSummary>(() => {
+    const styleCount = font.variants?.length || 0
+    const percentageDiscount = styleCount ? calculateDiscount(styleCount) : 0
+    const allSelected =
+      styleCount > 0 && Object.keys(selectedSkus).length === styleCount
+    const fullPrice = baseUnitPrice * styleCount
+    const totalPrice = Math.round(fullPrice - fullPrice * percentageDiscount)
+    return { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice }
+  }, [font.variants, selectedSkus, baseUnitPrice])
+
+  /** Pre-computed group summaries keyed by groupName */
+  const groupSummaries = useMemo<{ [groupName: string]: GroupPriceSummary }>(
+    () => {
+      if (!font.styleGroups) return {}
+      const result: { [groupName: string]: GroupPriceSummary } = {}
+      for (const group of font.styleGroups) {
+        const styleCount =
+          (group.variants?.length || 0) + (group.italicVariants?.length || 0)
+        const percentageDiscount = styleCount
+          ? calculateDiscount(styleCount)
+          : 0
+        const allVariantIds = [
+          ...(group.variants || []).map((v) => v._id),
+          ...(group.italicVariants || []).map((v) => v._id),
+        ]
+        const allSelected =
+          styleCount > 0 && allVariantIds.every((id) => id in selectedSkus)
+        const fullPrice = baseUnitPrice * styleCount
+        const totalPrice = Math.round(
+          fullPrice - fullPrice * percentageDiscount
+        )
+        result[group.groupName] = {
+          styleCount,
+          allSelected,
+          percentageDiscount,
+          fullPrice,
+          totalPrice,
+        }
+      }
+      return result
+    },
+    [font.styleGroups, selectedSkus, baseUnitPrice]
+  )
+
   return (
     <BuyContext.Provider
       value={{
@@ -167,6 +228,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         summary,
         toggleStyle,
         toggleGroup,
+        fullFamilySummary,
+        groupSummaries,
       }}
     >
       {children}

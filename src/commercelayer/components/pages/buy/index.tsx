@@ -51,12 +51,11 @@ export const Buy = () => {
     licenseSize,
     skuOptions,
     setLicenseSize,
-    deleteLineItem,
     selectedSkuOptions,
     setSelectedSkuOptions,
     allLicenseInfoSet,
   } = useOrderContext()
-  const { font } = useBuyContext()
+  const { font, selectedSkus, summary } = useBuyContext()
 
   /*
   // Optimistic total: compute from each line item's sku options and position
@@ -130,113 +129,17 @@ export const Buy = () => {
 
   const licensesCount = selectedSkuOptions?.length
 
-  // Optimistic price: compute locally so the UI updates immediately
+  // All pricing now derived from the selection buffer via BuyProvider
   const {
     show,
-    fontLineItemCount,
+    fontStyleCount: fontLineItemCount,
     unitPrice,
     nextUnitPrice,
     subtotal,
     percentageDiscount,
     totalDiscount,
     total,
-  } = useMemo(() => {
-    if (!licenseSize || !skuOptions?.length) {
-      return {
-        show: false,
-        fontLineItemCount: 0,
-        unitPrice: 0,
-        nextUnitPrice: 0,
-        subtotal: 0,
-        percentageDiscount: 0,
-        totalDiscount: 0,
-        total: 0,
-      }
-    }
-
-    // Count how many line items already exist for this font's parentUid
-    const fontLineItems =
-      order?.line_items?.filter(
-        (lineItem) => font.uid === lineItem.item?.reference_origin
-      ) || []
-    // @NOTE: how is the above differnt from
-    // `const count = getLineItemSibilingCount(li, order.line_items!)`
-    // it takes a lineItem as a param which it pulls the parentUid from
-    // the above has access to the UID from the font
-
-    const unitPrice = calculateLineItemPrice({
-      skuOptions: selectedSkuOptions,
-      sizeModifier: licenseSize.modifier,
-      count: fontLineItems.length,
-    })
-
-    const nextUnitPrice = calculateLineItemPrice({
-      skuOptions: selectedSkuOptions,
-      sizeModifier: licenseSize.modifier,
-      count: fontLineItems.length + 1,
-    })
-
-    if (fontLineItems.length === 0) {
-      return {
-        show: false,
-        fontLineItemCount: 0,
-        unitPrice: formatPrice(unitPrice),
-        nextUnitPrice: formatPrice(nextUnitPrice),
-        subtotal: 0,
-        percentageDiscount: 0,
-        totalDiscount: 0,
-        total: 0,
-      }
-    }
-
-    let subTotalCents = 0
-    let totalCents = 0
-    const fontLineItemCount = fontLineItems.length
-
-    for (const li of fontLineItems) {
-      const itemSkuOptions =
-        li.line_item_options
-          ?.map(({ sku_option }) =>
-            skuOptions.find((o) => o.id === sku_option?.id)
-          )
-          .filter((o): o is NonNullable<typeof o> => !!o) ?? []
-
-      if (itemSkuOptions.length === 0) {
-        // No resolved options — use server price for both
-        const amount = li.total_amount_cents ?? 0
-        subTotalCents += amount
-        totalCents += amount
-        continue
-      }
-
-      const count = getLineItemSibilingCount(li, order.line_items!)
-
-      // Subtotal: full price as if count 0 (no discount)
-      subTotalCents += calculateLineItemPrice({
-        skuOptions: itemSkuOptions,
-        sizeModifier: licenseSize.modifier,
-        count: 0,
-      })
-
-      // Total: actual discounted price at this count
-      totalCents += calculateLineItemPrice({
-        skuOptions: itemSkuOptions,
-        sizeModifier: licenseSize.modifier,
-        count,
-      })
-    }
-
-    return {
-      show: true,
-      fontLineItemCount,
-      unitPrice: formatPrice(unitPrice),
-      nextUnitPrice: formatPrice(nextUnitPrice),
-      subtotal: formatPrice(subTotalCents),
-      totalDiscount: formatPrice(subTotalCents - totalCents),
-      percentageDiscount: fontCount ? calculateDiscount(fontLineItemCount) : 0,
-      total: formatPrice(totalCents),
-    }
-  }, [order?.line_items, licenseSize, skuOptions])
+  } = summary
 
   // @TODO: on changing selected SKU options, update all line_items on the order
 
@@ -298,11 +201,7 @@ export const Buy = () => {
                 pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
                 opacity={allLicenseInfoSet ? 1 : 0.3}
               >
-                <Typefaces
-                  unitPrice={unitPrice}
-                  nextUnitPrice={nextUnitPrice}
-                  fontLineItemCount={fontLineItemCount}
-                />
+                <Typefaces />
               </Fieldset.Content>
             </Fieldset.Root>
           </GridItem>

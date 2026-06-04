@@ -1,8 +1,6 @@
-import { calculateDiscount } from '@/commercelayer/utils/prices'
-import type { CompanySize } from '@/sanity/lib/queries'
-import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
-import { SkuOption, type Order } from '@commercelayer/sdk'
-import React, { useMemo, useState } from 'react'
+import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
+import { Button, Flex, Stack, Text } from '@chakra-ui/react'
+import React, { useState } from 'react'
 import type { FontGroup as FontGroupType } from './typefaces'
 
 interface FontVariant {
@@ -14,32 +12,29 @@ interface FontVariant {
 interface Props {
   name: string
   group: FontGroupType
-  unitPrice: number
+  summary: GroupPriceSummary
+  onToggle: () => void
 }
 
 const getMiddleIndex = (array: FontVariant[]): number => {
   return Math.floor(array.length / 2)
 }
 
-export const FontGroup: React.FC<Props> = ({ group, name, unitPrice }) => {
+export const FontGroup: React.FC<Props> = ({ group, name, summary, onToggle }) => {
   const middleIndex = getMiddleIndex(group.variants)
   const middleVariant = group.variants[middleIndex]
   const className = middleVariant._id
 
-  const groupCount = group.allVariants?.length || 0
+  const { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice } =
+    summary
 
-  const percentageDiscount = groupCount ? calculateDiscount(groupCount) : 0
-
-  const isLineItem = false
   const [isLoading, setIsLoading] = useState(false)
-  // @TODO: implement optimistic UI solution
-  const handleClick = async () => {
+
+  const handleClick = () => {
     setIsLoading(true)
+    onToggle()
     setIsLoading(false)
   }
-
-  const fullPrice = unitPrice * groupCount
-  const totalPrice = Math.round(fullPrice - fullPrice * percentageDiscount)
 
   return (
     <Flex
@@ -58,7 +53,6 @@ export const FontGroup: React.FC<Props> = ({ group, name, unitPrice }) => {
       py={4}
       pb={4}
       px={3}
-      // mb={1}
     >
       <Stack direction={'row'} gap={2} alignItems={'flex-start'}>
         <Button
@@ -69,7 +63,7 @@ export const FontGroup: React.FC<Props> = ({ group, name, unitPrice }) => {
           h={6}
           minW={6}
           p={0}
-          bg={isLineItem ? 'black' : 'white'}
+          bg={allSelected ? 'black' : 'white'}
           disabled={isLoading}
           transition={'border-width 200ms ease-in-out'}
         />
@@ -83,12 +77,12 @@ export const FontGroup: React.FC<Props> = ({ group, name, unitPrice }) => {
             {name}
           </Text>
           <Text fontSize={'sm'} as={'div'}>
-            {`${groupCount} Styles — Variable Font Included`}
+            {`${styleCount} Styles — Variable Font Included`}
           </Text>
         </Stack>
       </Stack>
       <Flex gap={2} alignItems={'center'}>
-        {percentageDiscount > 0 && unitPrice !== null && (
+        {percentageDiscount > 0 && (
           <Stack direction={'column'}>
             <Stack direction={'row'}>
               <Text

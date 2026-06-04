@@ -1,61 +1,30 @@
-import { StyleEntry } from '@/commercelayer/providers/Order/types'
-import { calculateDiscount } from '@/commercelayer/utils/prices'
-import type { CompanySize } from '@/sanity/lib/queries'
 import { Button, Flex, Stack, Text } from '@chakra-ui/react'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 interface Props {
   name: string
-  siblingCount: number
   skuCode: string
-  parentUid: string
-  parentName: string
-  defaultVariantId: string
   className?: string
+  isSelected: boolean
   unitPrice: number
-  selectedSkus: { [skuCode: string]: StyleEntry }
   nextUnitPrice: number
-  addLineItem: (params: { skuCode: string }) => Promise<void>
-  deleteLineItem: (params: { lineItemId: string }) => Promise<void>
+  onToggle: () => void
 }
 
 export const SingleStyles: React.FC<Props> = ({
   name,
   skuCode,
-  siblingCount,
-  parentUid,
-  parentName,
-  defaultVariantId,
-  addLineItem,
-  selectedSkus,
+  className,
+  isSelected,
   unitPrice,
   nextUnitPrice,
-  className,
+  onToggle,
 }) => {
-  let isSelected = false
-  if (Object.keys(selectedSkus).includes(skuCode)) {
-    isSelected = true
-  }
-
-  const percentageDiscount = siblingCount
-    ? calculateDiscount(siblingCount + 1)
-    : 0
-
   const [isLoading, setIsLoading] = useState(false)
 
-  // @TODO: implement optimistic UI solution
-  const handleClick = async () => {
+  const handleClick = () => {
     setIsLoading(true)
-
-    addLineItem({
-      name,
-      skuCode,
-      parentUid,
-      parentName,
-      defaultVariantId,
-      price: unitPrice,
-      className,
-    })
+    onToggle()
     setIsLoading(false)
   }
 
@@ -97,7 +66,7 @@ export const SingleStyles: React.FC<Props> = ({
         </Text>
       </Stack>
       <Flex gap={2} alignItems={'center'}>
-        {!isSelected && percentageDiscount > 0 && unitPrice !== null && (
+        {!isSelected && nextUnitPrice < unitPrice && (
           <Text
             className={'discount'}
             as={'span'}

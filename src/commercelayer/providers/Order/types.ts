@@ -45,6 +45,15 @@ export type FontSelectionSummary = {
   total: number
 }
 
+/** Pre-computed price summary for a font group (full family or subfamily) */
+export type GroupPriceSummary = {
+  styleCount: number
+  allSelected: boolean
+  percentageDiscount: number
+  fullPrice: number
+  totalPrice: number
+}
+
 export interface UpdateLineItemLicenseTypes {
   cl: CommerceLayerClient
   lineItem: LineItem

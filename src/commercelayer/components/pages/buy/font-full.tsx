@@ -1,47 +1,26 @@
-import { calculateDiscount } from '@/commercelayer/utils/prices'
+import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
 import { Font } from '@/types'
-import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
+import { Button, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
-
-interface FontVariant {
-  _id: string
-  optionName: string
-  parentUid: string
-}
 
 interface Props {
   font: Font
-  unitPrice: number
+  summary: GroupPriceSummary
+  onToggle: () => void
 }
 
-const getMiddleIndex = (array: FontVariant[] | undefined): number => {
-  if (!array || array.length === 0) return -1
-  return Math.floor(array.length / 2)
-}
-
-export const FontFull: React.FC<Props> = ({ font, unitPrice }) => {
+export const FontFull: React.FC<Props> = ({ font, summary, onToggle }) => {
   const className = font.defaultVariant?._id
-  const fontCount = font.variants?.length
+  const { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice } =
+    summary
 
-  const percentageDiscount = fontCount ? calculateDiscount(fontCount) : 0
-
-  const isLineItem = false
   const [isLoading, setIsLoading] = useState(false)
-  // @TODO: implement optimistic UI solution
-  const handleClick = async () => {
+
+  const handleClick = () => {
     setIsLoading(true)
+    onToggle()
     setIsLoading(false)
   }
-
-  const fullPrice = unitPrice * fontCount
-  const totalPrice = Math.round(fullPrice - fullPrice * percentageDiscount)
-  console.log({
-    fontCount,
-    percentageDiscount,
-    unitPrice,
-    fullPrice,
-    totalPrice,
-  })
 
   return (
     <Flex
@@ -61,7 +40,6 @@ export const FontFull: React.FC<Props> = ({ font, unitPrice }) => {
       py={4}
       pb={4}
       px={3}
-      // mb={1}
     >
       <Stack direction={'row'} gap={2} alignItems={'flex-start'}>
         <Button
@@ -72,7 +50,7 @@ export const FontFull: React.FC<Props> = ({ font, unitPrice }) => {
           h={6}
           minW={6}
           p={0}
-          bg={isLineItem ? 'black' : 'white'}
+          bg={allSelected ? 'black' : 'white'}
           disabled={isLoading}
           transition={'border-width 200ms ease-in-out'}
         />
@@ -86,12 +64,12 @@ export const FontFull: React.FC<Props> = ({ font, unitPrice }) => {
             {font.shortName + ' ' + 'Full Family'}
           </Text>
           <Text fontSize={'sm'} as={'div'}>
-            {`${fontCount} Styles — Variable Font Included`}
+            {`${styleCount} Styles — Variable Font Included`}
           </Text>
         </Stack>
       </Stack>
       <Flex gap={2} alignItems={'center'}>
-        {percentageDiscount > 0 && unitPrice !== null && (
+        {percentageDiscount > 0 && (
           <Stack direction={'column'}>
             <Stack direction={'row'}>
               <Text

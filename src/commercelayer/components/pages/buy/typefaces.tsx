@@ -1,10 +1,8 @@
-import { useBuyContext } from '@/commercelayer/providers/buy'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useBuyContext, type ToggleStyleParams } from '@/commercelayer/providers/buy'
 import { Flex } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
 
-import { getLineItemSibilingCount } from '@/commercelayer/utils/prices'
 import { FontFull } from './font-full'
 import { FontGroup } from './font-group'
 
@@ -40,15 +38,16 @@ const mergeVariants = (group: FontGroup): FontVariant[] => {
   return merged
 }
 
-interface YourComponentProps {
-  data: FontGroup[]
-}
-
-export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
-  const { font, addLineItem, selectedSkus } = useBuyContext()
-  const { order, licenseSize, selectedSkuOptions } = useOrderContext()
-
-  // @TODO: on changing selected SKU options, update all line_items on the order
+export const Typefaces = () => {
+  const {
+    font,
+    toggleStyle,
+    toggleGroup,
+    selectedSkus,
+    summary,
+    fullFamilySummary,
+    groupSummaries,
+  } = useBuyContext()
 
   const mergedData = useMemo<FontGroup[]>(() => {
     return font.styleGroups?.map((group) => ({
@@ -57,43 +56,50 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
     }))
   }, [font.styleGroups])
 
+  /** Build toggle params for a variant */
+  const variantToggleParams = (variant: FontVariant): ToggleStyleParams => ({
+    skuCode: variant._id,
+    name: `${font.shortName} ${variant.optionName}`,
+    className: variant._id,
+  })
+
   return font.styleGroups ? (
     <Flex direction={'column'} mt={1} mb={1} gap={'3px'}>
-      <FontFull font={font} unitPrice={unitPrice} />
+      <FontFull
+        font={font}
+        summary={fullFamilySummary}
+        onToggle={() => toggleGroup(font.variants.map(variantToggleParams))}
+      />
       {mergedData.map((group) => (
-        <Flex key={font._id} direction={'column'} mt={'3px'} mb={1} gap={'3px'}>
+        <Flex
+          key={group.groupName}
+          direction={'column'}
+          mt={'3px'}
+          mb={1}
+          gap={'3px'}
+        >
           <FontGroup
             name={font.shortName + ' ' + group.groupName}
             group={group}
-            unitPrice={unitPrice}
+            summary={groupSummaries[group.groupName]}
+            onToggle={() =>
+              toggleGroup(
+                (group.allVariants || []).map(variantToggleParams)
+              )
+            }
           />
           {group.allVariants?.map((variant) => {
-            if (!variant) null
-            const existingLineItem = order?.line_items?.find(
-              (li) => li.sku_code === variant._id
-            )
-            const count =
-              existingLineItem && order?.line_items
-                ? getLineItemSibilingCount(existingLineItem, order.line_items)
-                : fontLineItemCount > 0
-                ? fontLineItemCount + 1
-                : 0
+            if (!variant) return null
             return (
               <SingleStyles
                 key={variant._id}
                 skuCode={variant._id}
                 className={variant._id}
-                selectedSkuOptions={selectedSkuOptions}
-                licenseSize={licenseSize}
-                unitPrice={unitPrice}
-                nextUnitPrice={nextUnitPrice}
-                siblingCount={count}
-                parentUid={variant.parentUid}
-                parentName={font.shortName}
-                defaultVariantId={font.defaultVariant?._id}
-                selectedSkus={selectedSkus}
-                addLineItem={addLineItem}
                 name={`${font.shortName} ${variant.optionName}`}
+                isSelected={!!selectedSkus[variant._id]}
+                unitPrice={summary.unitPrice}
+                nextUnitPrice={summary.nextUnitPrice}
+                onToggle={() => toggleStyle(variantToggleParams(variant))}
               />
             )
           })}
@@ -102,39 +108,23 @@ export const Typefaces = ({ unitPrice, nextUnitPrice, fontLineItemCount }) => {
     </Flex>
   ) : (
     <Flex direction={'column'} mt={0.5} mb={1} gap={0.5}>
-      <FontFull font={font} unitPrice={unitPrice} />
+      <FontFull
+        font={font}
+        summary={fullFamilySummary}
+        onToggle={() => toggleGroup(font.variants.map(variantToggleParams))}
+      />
       {font.variants?.map((variant) => {
-        // If this variant is already a line item, use its real position;
-        // otherwise it would be added at the end of the group
         if (!variant) return null
-        const existingLineItem = order?.line_items?.find(
-          (li) => li.sku_code === variant._id
-        )
-        const count =
-          existingLineItem && order?.line_items
-            ? getLineItemSibilingCount(existingLineItem, order.line_items)
-            : fontLineItemCount > 0
-            ? fontLineItemCount + 1
-            : 0
-
-        // fontLineItemCount is 0 if no items are added
-
         return (
           <SingleStyles
             key={variant._id}
             skuCode={variant._id}
             className={variant._id}
-            selectedSkuOptions={selectedSkuOptions}
-            licenseSize={licenseSize}
-            unitPrice={unitPrice}
-            nextUnitPrice={nextUnitPrice}
-            siblingCount={count}
-            parentUid={variant.parentUid}
-            parentName={font.shortName}
-            defaultVariantId={font.defaultVariant?._id}
-            selectedSkus={selectedSkus}
-            addLineItem={addLineItem}
             name={`${font.shortName} ${variant.optionName}`}
+            isSelected={!!selectedSkus[variant._id]}
+            unitPrice={summary.unitPrice}
+            nextUnitPrice={summary.nextUnitPrice}
+            onToggle={() => toggleStyle(variantToggleParams(variant))}
           />
         )
       })}
