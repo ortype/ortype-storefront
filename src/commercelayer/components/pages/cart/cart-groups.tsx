@@ -10,21 +10,14 @@ import { CloseIcon } from '@sanity/icons'
 import Link from 'next/link'
 
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import {
-  calculateDiscount,
-  calculateLineItemPrice,
-  formatPrice,
-} from '@/commercelayer/utils/prices'
-import { useMemo } from 'react'
-import type { GroupedLineItems, LineItem } from '.'
+import type { CartBufferGroup, CartBufferItem } from '.'
 import { CartItem } from './cart-item'
 
 interface CartGroupsProps {
-  groupedLineItems: GroupedLineItems[]
+  groupedLineItems: CartBufferGroup[]
 }
 
 interface CartGroupsFooterProps {
-  items: LineItem[]
   parentUid: string
   discountedPriceTotal: number
   fullUnitPriceTotal: number
@@ -36,7 +29,6 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
   discountedPriceTotal,
   fullUnitPriceTotal,
   percentageDiscount,
-  items,
 }) => {
   return (
     <HStack
@@ -127,6 +119,8 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
 }
 
 const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
+  const { toggleGroup } = useOrderContext()
+
   return (
     <>
       {groupedLineItems.map(
@@ -153,7 +147,16 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                 px={0}
                 size={'sm'}
                 _hover={{ bg: 'white' }}
-                aria-label="Remove"
+                aria-label="Remove group"
+                onClick={() =>
+                  toggleGroup({
+                    parentUid,
+                    styles: items.map((item) => ({
+                      skuCode: item.skuCode,
+                      styleMetadata: item.entry,
+                    })),
+                  })
+                }
                 css={{
                   '& svg': {
                     color: 'brand.600',
@@ -172,11 +175,10 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
               </Text>
             </HStack>
             {items.map((item) => (
-              <CartItem key={item.id} lineItem={item} />
+              <CartItem key={item.skuCode} item={item} />
             ))}
             <CartGroupsFooter
               parentUid={parentUid}
-              items={items}
               discountedPriceTotal={discountedPriceTotal}
               fullUnitPriceTotal={fullUnitPriceTotal}
               percentageDiscount={percentageDiscount}

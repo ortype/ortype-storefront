@@ -14,12 +14,9 @@ const CartContainer = ({
   openMenu,
   setMenuOpen,
 }: Props): JSX.Element => {
-  const { order, orderId, isLoading, itemsCount } = useOrderContext()
-  const { validCart } = isValidCart(orderId, order)
+  const { orderId, itemsCount } = useOrderContext()
 
-  // if (isLoading) return <>{'Cart: Loading...'}</>
-
-  if (!validCart) {
+  if (!orderId || itemsCount === 0) {
     // @TODO: if orderId does not exist, show an empty cart instead of an error
     return (
       <Button

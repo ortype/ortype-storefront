@@ -1,10 +1,7 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
-  calculateDiscount,
   calculateLineItemPrice,
   formatPrice,
-  getLineItemPosition,
-  getLineItemSibilingCount,
 } from '@/commercelayer/utils/prices'
 import {
   SelectContent,
@@ -25,23 +22,26 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { type LineItem, type SkuOption } from '@commercelayer/sdk'
+import { type SkuOption } from '@commercelayer/sdk'
 import { CloseIcon } from '@sanity/icons'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
+import type { CartBufferItem } from '.'
 
 interface CartItemProps {
-  lineItem: LineItem
+  item: CartBufferItem
 }
 
-export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
+export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const {
-    order,
     skuOptions,
     mediaTypes,
     licenseSize,
-    setLicenseTypes,
-    deleteLineItem,
+    selections,
+    toggleStyle,
+    setStyleLicenseTypes,
   } = useOrderContext()
+
+  const { skuCode, parentUid, entry } = item
 
   // Sort index from mediaTypes so selections follow Sanity order
   const mediaKeyOrder = useMemo(() => {
@@ -49,24 +49,21 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     return new Map(mediaTypes.map((m, i) => [m._key, i]))
   }, [mediaTypes])
 
-  const sortByReference = (options: SkuOption[]): SkuOption[] => {
-    if (!mediaKeyOrder) return options
-
-    return [...options].sort((a, b) => {
-      const aValue = mediaKeyOrder.get(a?.reference) ?? Infinity
-      const bValue = mediaKeyOrder.get(b?.reference) ?? Infinity
-      return aValue - bValue
-    })
+  const sortByReference = (refs: string[]): string[] => {
+    if (!mediaKeyOrder) return refs
+    return [...refs].sort(
+      (a, b) =>
+        (mediaKeyOrder.get(a) ?? Infinity) - (mediaKeyOrder.get(b) ?? Infinity)
+    )
   }
 
-  // Single source of truth for selected license types
-  const [selectedSkuOptions, setSelectedSkuOptions] = useState<SkuOption[]>(
-    sortByReference(
-      (lineItem.line_item_options
-        ?.map(({ sku_option }) => sku_option)
-        .filter(Boolean) as SkuOption[]) ?? []
-    )
-  )
+  // Resolve the SkuOption objects for this style's license types
+  const selectedSkuOptions = useMemo(() => {
+    const refs = entry.licenseTypes ?? []
+    return sortByReference(refs)
+      .map((ref) => skuOptions?.find((o) => o.reference === ref))
+      .filter(Boolean) as SkuOption[]
+  }, [entry.licenseTypes, skuOptions, mediaKeyOrder])
 
   // Derive select-compatible formats from skuOptions
   const formattedTypeOptions = skuOptions?.map((o) => ({
@@ -78,60 +75,47 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
     () => createListCollection({ items: formattedTypeOptions }),
     [formattedTypeOptions]
   )
-  const selectedValues = selectedSkuOptions.map((o) => o.reference)
+  const selectedValues = entry.licenseTypes ?? []
 
-  // Optimistic price: compute locally so the UI updates immediately
-  const optimisticPrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0 || !order?.line_items) {
-      return null
-    }
-    const count = getLineItemSibilingCount(lineItem, order.line_items)
+  // Count siblings in this parentUid group
+  const groupCount = Object.keys(selections[parentUid] ?? {}).length
+
+  // Optimistic price from buffer
+  const displayPrice = useMemo(() => {
+    if (!licenseSize || selectedSkuOptions.length === 0) return 0
     return formatPrice(
       calculateLineItemPrice({
         skuOptions: selectedSkuOptions,
         sizeModifier: licenseSize.modifier,
-        count,
+        count: groupCount,
       })
     )
-  }, [selectedSkuOptions, licenseSize, order?.line_items, lineItem])
+  }, [selectedSkuOptions, licenseSize, groupCount])
 
-  // Show optimistic price immediately; falls back to server price
-  const displayPrice = optimisticPrice ?? lineItem.total_amount_float
+  // Full price (no discount) for strike-through
+  const fullPrice = useMemo(() => {
+    if (!licenseSize || selectedSkuOptions.length === 0) return 0
+    return formatPrice(
+      calculateLineItemPrice({
+        skuOptions: selectedSkuOptions,
+        sizeModifier: licenseSize.modifier,
+        count: 1,
+      })
+    )
+  }, [selectedSkuOptions, licenseSize])
 
   const handleTypeChange = (e: { value: string[] }) => {
-    const next = e.value
-      .map((ref) => skuOptions.find((o) => o.reference === ref))
-      .filter(Boolean) as SkuOption[]
-
-    const sorted = sortByReference(next)
-
-    setSelectedSkuOptions(sorted)
-    setLicenseTypes({ lineItem, selectedSkuOptions: sorted })
+    const sorted = sortByReference(e.value)
+    setStyleLicenseTypes({ parentUid, skuCode, licenseTypes: sorted })
   }
-
-  // @TODO: prevent removing the last option / completely clearing
 
   const handleRemove = () => {
-    if (deleteLineItem && lineItem.id) {
-      deleteLineItem({ lineItemId: lineItem.id })
-    }
+    toggleStyle({
+      parentUid,
+      skuCode,
+      styleMetadata: entry,
+    })
   }
-
-  // calculate discount percentage
-  const count = order
-    ? getLineItemSibilingCount(lineItem, order?.line_items)
-    : 0
-  const percentageDiscount = count ? calculateDiscount(count) : 0
-
-  // calculate full price
-  const fullPrice =
-    (selectedSkuOptions.reduce(
-      (total, { metadata: { price_amount_cents } }) =>
-        total + Number(price_amount_cents),
-      0
-    ) *
-      licenseSize.modifier) /
-    100
 
   return (
     <>
@@ -158,9 +142,9 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
             fontSize={'2xl'}
             lineHeight={1.3}
             as={'span'}
-            className={lineItem.sku_code}
+            className={skuCode}
           >
-            {lineItem.name}
+            {entry.name}
           </Text>
         </Stack>
         <Flex direction={'row'} alignItems={'flex-start'}>
@@ -193,13 +177,8 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
             pr={3}
           >
             <HStack gap={4}>
-              {/*<Text
-                as={'span'}
-                fontSize={'sm'}
-                opacity={percentageDiscount > 0 ? 1 : 0}
-              >{`${Math.floor(percentageDiscount * 100)}%`}</Text>*/}
               <Text as={'span'} fontSize={'sm'}>
-                {displayPrice} {lineItem.currency_code}
+                {displayPrice} {'EUR'}
               </Text>
             </HStack>
             {displayPrice !== fullPrice && (
@@ -209,7 +188,7 @@ export const CartItem: React.FC<CartItemProps> = ({ lineItem }) => {
                 fontSize={'sm'}
                 color={'brand.400'}
               >
-                {fullPrice} {lineItem.currency_code}
+                {fullPrice} {'EUR'}
               </Text>
             )}
           </VStack>

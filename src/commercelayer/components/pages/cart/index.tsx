@@ -3,6 +3,7 @@ import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInpu
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import type { StyleEntry } from '@/commercelayer/providers/Order/types'
 import { useMemo, useRef } from 'react'
 
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -24,164 +25,108 @@ import Summary from './cart-summary'
 import {
   calculateDiscount,
   calculateLineItemPrice,
+  calculateSkuOptionsTotal,
   formatPrice,
-  getParentUid,
 } from '@/commercelayer/utils/prices'
+import type { SkuOption } from '@commercelayer/sdk'
 import CartGroups from './cart-groups'
 
-// Define your types
-interface LineItemMetadata {
-  license?: {
-    size?: {
-      label: string
-      value: string
-      modifier: number
-    }
-    types?: string[]
-    parentUid?: string
-  }
-  parentUid?: string
-  parentName?: string
-  defaultVariantId?: string
+/** A single cart item derived from the selection buffer */
+export interface CartBufferItem {
+  skuCode: string
+  parentUid: string
+  entry: StyleEntry
 }
 
-export interface LineItem {
-  id: string
-  type: string
-  sku_code: string
-  name: string
-  quantity: number
-  unit_amount_float: number
-  formatted_unit_amount: string
-  metadata: LineItemMetadata
-  line_item_options?: Array<{
-    id: string
-    sku_option?: {
-      metadata?: {
-        price_amount_cents: number
-      }
-    }
-  }>
-}
-
-export interface GroupedLineItems {
+/** A group of cart items sharing the same parentUid */
+export interface CartBufferGroup {
   parentUid: string
   parentName: string
   defaultVariantId: string
-  items: LineItem[]
+  items: CartBufferItem[]
   discountedPriceTotal: number
   fullUnitPriceTotal: number
   percentageDiscount: number
 }
 
-// Your helper function
-const getParentName = (item: LineItem): string | undefined => {
-  return item.metadata.parentName
-}
-
-const getDefaultVariantId = (item: LineItem): string | undefined => {
-  return item.metadata.defaultVariantId
-}
-
-// Helper function to calculate full unit price for a line item
-const calculateFullUnitPrice = (
-  lineItem: LineItem,
-  modifier: number
-): number => {
-  const optionsTotal =
-    lineItem.line_item_options?.reduce(
-      (total, option) =>
-        total + Number(option.sku_option?.metadata?.price_amount_cents ?? 0),
-      0
-    ) ?? 0
-
-  return (optionsTotal * (modifier ?? 0)) / 100
-}
-
-// Helper function to calculate prices for a group
-const calculateGroupPrices = (
-  items: LineItem[],
-  modifier: number
-): {
-  fullUnitPriceTotal: number
-  discountedPriceTotal: number
-} => {
-  return items
-    .map((lineItem) => ({
-      fullUnitPrice: calculateFullUnitPrice(lineItem, modifier),
-      discountedPrice: calculateLineItemPrice({
-        skuOptions: lineItem.line_item_options,
-        sizeModifier: modifier,
-        count: items.length,
-      }),
-    }))
-    .reduce(
-      (totals, { fullUnitPrice, discountedPrice }) => ({
-        fullUnitPriceTotal: totals.fullUnitPriceTotal + fullUnitPrice,
-        discountedPriceTotal: totals.discountedPriceTotal + discountedPrice,
-      }),
-      { fullUnitPriceTotal: 0, discountedPriceTotal: 0 }
-    )
-}
-
 const CartComponent = () => {
-  const { isLoading, orderId, order, licenseSize, setLicenseSize } =
-    useOrderContext()
+  const {
+    isLoading,
+    orderId,
+    order,
+    licenseSize,
+    setLicenseSize,
+    selections,
+    skuOptions,
+  } = useOrderContext()
 
-  // The useMemo hook
-  const groupedLineItems = useMemo<GroupedLineItems[]>(() => {
-    if (!order?.line_items) {
-      return []
-    }
+  /** Resolve a style's licenseTypes refs to SkuOption objects */
+  const resolveSkuOptions = (entry: StyleEntry): SkuOption[] =>
+    (entry.licenseTypes ?? [])
+      .map((ref) => skuOptions?.find((o) => o.reference === ref))
+      .filter(Boolean) as SkuOption[]
 
-    const grouped = order.line_items.reduce<GroupedLineItems[]>((acc, item) => {
-      const parentUid = getParentUid(item)
-      const parentName = getParentName(item)
-      const defaultVariantId = getDefaultVariantId(item)
+  // Build grouped cart data from the selection buffer
+  const groupedLineItems = useMemo<CartBufferGroup[]>(() => {
+    const parentUids = Object.keys(selections)
+    if (parentUids.length === 0) return []
 
-      if (!parentUid) {
-        return acc
+    return parentUids.map((parentUid) => {
+      const group = selections[parentUid]
+      const skuCodes = Object.keys(group)
+      const items: CartBufferItem[] = skuCodes.map((skuCode) => ({
+        skuCode,
+        parentUid,
+        entry: group[skuCode],
+      }))
+
+      const first = group[skuCodes[0]]
+      const count = items.length
+      const modifier = licenseSize?.modifier ?? 0
+
+      // Sum per-style prices using each style's own license types
+      let fullTotalCents = 0
+      let discountedTotalCents = 0
+
+      for (const { entry } of items) {
+        const styleOptions = resolveSkuOptions(entry)
+        if (styleOptions.length === 0) continue
+
+        fullTotalCents += calculateLineItemPrice({
+          skuOptions: styleOptions,
+          sizeModifier: modifier,
+          count: 1,
+        })
+        discountedTotalCents += calculateLineItemPrice({
+          skuOptions: styleOptions,
+          sizeModifier: modifier,
+          count,
+        })
       }
-
-      const existing = acc.find((group) => group.parentUid === parentUid)
-
-      if (existing) {
-        existing.items.push(item)
-      } else {
-        acc.push({ parentUid, parentName, defaultVariantId, items: [item] })
-      }
-
-      return acc
-    }, [])
-
-    return grouped.map((group): GroupedLineItems => {
-      const { fullUnitPriceTotal, discountedPriceTotal } = calculateGroupPrices(
-        group.items,
-        licenseSize?.modifier ?? 0
-      )
 
       return {
-        ...group,
-        fullUnitPriceTotal,
-        percentageDiscount: group.items.length
-          ? calculateDiscount(group.items.length)
-          : 0,
-        discountedPriceTotal: formatPrice(discountedPriceTotal),
+        parentUid,
+        parentName: first?.parentName ?? '',
+        defaultVariantId: first?.defaultVariantId ?? '',
+        items,
+        fullUnitPriceTotal: formatPrice(fullTotalCents),
+        percentageDiscount: count ? calculateDiscount(count) : 0,
+        discountedPriceTotal: formatPrice(discountedTotalCents),
       }
     })
-  }, [order?.line_items, licenseSize?.modifier])
+  }, [selections, licenseSize?.modifier, skuOptions])
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
 
   const hasInitializedRef = useRef(false)
-  const isReady = !isLoading && orderId && order && order.line_items
+  const isReady = !isLoading && orderId && order
 
   // Once ready, never show spinner again
   if (isReady) {
     hasInitializedRef.current = true
   }
 
-  if (isLoading) {
+  if (isLoading && !hasInitializedRef.current) {
     return (
       <Box pos="fixed" inset="0" bg="bg/80">
         <Center h="full">
