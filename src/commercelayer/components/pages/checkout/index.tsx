@@ -14,7 +14,6 @@ import StepPlaceOrder from '@/commercelayer/components/pages/checkout/step-place
 import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shipping'
 import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
 import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
-import { StickyBottomPanel } from '@/commercelayer/components/ui/sticky-bottom-panel'
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 

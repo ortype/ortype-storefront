@@ -1,7 +1,17 @@
 'use client'
 
 import type { CompanySize } from '@/sanity/lib/queries'
-import { Box, Heading, Show, SimpleGrid } from '@chakra-ui/react'
+import {
+  Box,
+  Collapsible,
+  Flex,
+  Heading,
+  HStack,
+  Show,
+  SimpleGrid,
+  Text,
+} from '@chakra-ui/react'
+import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 
@@ -20,6 +30,11 @@ interface LineItemType {
     [key: string]: any
   }>
   unit_amount_float?: number
+  metadata?: {
+    parentName?: string
+    defaultVariantId?: string
+    [key: string]: any
+  }
   [key: string]: any
 }
 
@@ -29,6 +44,7 @@ interface OrderType {
     license?: {
       size?: {
         value?: string
+        modifier?: number
       }
     }
   }
@@ -40,23 +56,29 @@ interface FontRefCounts {
   [fontRef: string]: number
 }
 
+/** A group of line items sharing the same font family */
+interface LineItemGroup {
+  parentUid: string
+  parentName: string
+  defaultVariantId: string
+  items: LineItemType[]
+  groupTotal: number
+}
+
 /**
  * Count unique reference_origin values from line items
- * @param lineItems Array of line items containing item.reference_origin
- * @returns Object with reference_origin values as keys and counts as values
  */
 export const getFontReferenceCounts = (
   lineItems: LineItemType[] = []
 ): FontRefCounts => {
-  // Handle case when lineItems is undefined or not an array
   if (!Array.isArray(lineItems) || lineItems.length === 0) {
     return {}
   }
 
   const references = lineItems
-    .filter((lineItem) => lineItem?.item?.reference_origin) // Safely check item exists
+    .filter((lineItem) => lineItem?.item?.reference_origin)
     .map((lineItem) => lineItem.item!.reference_origin!)
-    .filter(Boolean) // Remove any undefined or null values
+    .filter(Boolean)
 
   return references.reduce<FontRefCounts>((acc, ref) => {
     if (typeof ref === 'string') {
@@ -64,6 +86,82 @@ export const getFontReferenceCounts = (
     }
     return acc
   }, {})
+}
+
+/** Collapsible font family group within the order summary */
+const SummaryGroup: React.FC<{ group: LineItemGroup }> = ({ group }) => {
+  return (
+    <Collapsible.Root>
+      <Collapsible.Trigger asChild>
+        <HStack
+          py={1}
+          cursor={'pointer'}
+          _hover={{ opacity: 0.7 }}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #E7E0BF'}
+          my={0.5}
+        >
+          <SimpleGrid w={'full'} columns={3} fontSize={'sm'} lineHeight={1.1}>
+            <HStack gap={1}>
+              <Collapsible.Context>
+                {({ open }) => (
+                  <Box fontSize={'md'} w={4}>
+                    {open ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                  </Box>
+                )}
+              </Collapsible.Context>
+              <Text
+                as={'span'}
+                fontSize={'xl'}
+                className={group.defaultVariantId}
+              >
+                {group.parentName}
+              </Text>
+            </HStack>
+            <Flex
+              alignItems={'center'}
+              fontSize={'sm'}
+              color={'#737373'}
+              pl={3}
+            >
+              {`${group.items.length} ${
+                group.items.length === 1 ? 'style' : 'styles'
+              }`}
+            </Flex>
+            <Flex
+              alignItems={'center'}
+              fontSize={'sm'}
+              justifyContent={'flex-end'}
+            >{`${group.groupTotal} EUR`}</Flex>
+          </SimpleGrid>
+        </HStack>
+      </Collapsible.Trigger>
+      <Collapsible.Content>
+        {group.items.map((lineItem) => (
+          <SimpleGrid
+            key={lineItem.id}
+            columns={3}
+            py={1}
+            pl={5}
+            fontSize={'sm'}
+            lineHeight={1.1}
+          >
+            <Box>{lineItem.name || lineItem.item?.name}</Box>
+            <Box fontSize={'sm'}>
+              {lineItem?.line_item_options
+                ?.map((option) => option.name)
+                .filter(Boolean)
+                .join(', ')}
+            </Box>
+            <Box
+              textAlign={'right'}
+              fontVariantNumeric={'tabular-nums'}
+            >{`${lineItem.unit_amount_float} EUR`}</Box>
+          </SimpleGrid>
+        ))}
+      </Collapsible.Content>
+    </Collapsible.Root>
+  )
 }
 
 interface OrderSummaryProps {
@@ -74,7 +172,7 @@ interface OrderSummaryProps {
   /** Whether the summary box is expanded */
   isOpen: boolean
   /** Function to toggle the summary box */
-  toggleBox: () => void
+  toggleBox?: () => void
   /** Heading text for the summary */
   heading?: string
   /** Empty state text */
@@ -84,25 +182,6 @@ interface OrderSummaryProps {
   sizes: CompanySize[]
 }
 
-/**
- * Reusable OrderSummary component that displays order line items
- * with collapsible behavior for use in StickyBottomPanel.
- *
- * @example
- * ```tsx
- * <StickyBottomPanel>
- *   {({ isExpanded, toggleBox }) => (
- *     <OrderSummary
- *       order={order}
- *       hasLineItems={hasLineItems}
- *       isOpen={isExpanded}
- *       toggleBox={toggleBox}
- *       heading="What's in your cart"
- *     />
- *   )}
- * </StickyBottomPanel>
- * ```
- */
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
   order,
   hasLineItems,
@@ -113,37 +192,79 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   readonly,
   sizes,
 }) => {
-  // Memoize line item filtering and font reference calculations
-  const { displayLineItems, fontRefCounts, fontCount, parentFontString } =
+  // Group line items by font family (reference_origin / parentUid)
+  const { groups, parentFontString, subtotalAmount, totalDiscount } =
     useMemo(() => {
       if (!order?.line_items) {
         return {
-          displayLineItems: [],
-          fontRefCounts: {},
-          fontCount: 0,
+          groups: [],
           parentFontString: '0 fonts',
+          subtotalAmount: 0,
+          totalDiscount: 0,
         }
       }
 
-      // Filter out payment method and shipping line items - only show SKUs and bundles
-      const filteredItems = order.line_items.filter(
-        (lineItem) =>
-          lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
+      const shoppableItems = order.line_items.filter(
+        (li) => li.item_type === 'skus' || li.item_type === 'bundles'
       )
 
-      const counts = getFontReferenceCounts(order.line_items)
-      const count = Object.keys(counts).length
-      const fontString = count + ' ' + (count === 1 ? 'font' : 'fonts')
+      const groupMap = new Map<string, LineItemGroup>()
 
-      return {
-        displayLineItems: filteredItems,
-        fontRefCounts: counts,
-        fontCount: count,
-        parentFontString: fontString,
+      for (const item of shoppableItems) {
+        const parentUid =
+          item.item?.reference_origin ?? item.metadata?.parentUid ?? ''
+        if (!parentUid) continue
+
+        const existing = groupMap.get(parentUid)
+        if (existing) {
+          existing.items.push(item)
+          existing.groupTotal += item.unit_amount_float ?? 0
+        } else {
+          groupMap.set(parentUid, {
+            parentUid,
+            parentName: item.metadata?.parentName ?? parentUid,
+            defaultVariantId: item.metadata?.defaultVariantId ?? '',
+            items: [item],
+            groupTotal: item.unit_amount_float ?? 0,
+          })
+        }
       }
-    }, [order?.line_items])
 
-  console.log({ displayLineItems })
+      const groups = Array.from(groupMap.values())
+      for (const g of groups) {
+        g.groupTotal = Math.round(g.groupTotal * 100) / 100
+      }
+
+      // Compute subtotal (undiscounted) from line item options + size modifier
+      let subtotalAmount = 0
+      let discountedTotal = 0
+      const sizeModifier = order?.metadata?.license?.size?.modifier ?? 1
+
+      for (const group of groups) {
+        for (const item of group.items) {
+          const optionsCents =
+            item.line_item_options?.reduce(
+              (total, opt) =>
+                total +
+                Number(opt.sku_option?.metadata?.price_amount_cents ?? 0),
+              0
+            ) ?? 0
+          subtotalAmount += (optionsCents * sizeModifier) / 100
+          discountedTotal += item.unit_amount_float ?? 0
+        }
+      }
+
+      const totalDiscount =
+        Math.round((subtotalAmount - discountedTotal) * 100) / 100
+
+      const count = groups.length
+      return {
+        groups,
+        parentFontString: count + ' ' + (count === 1 ? 'font' : 'fonts'),
+        subtotalAmount: Math.round(subtotalAmount * 100) / 100,
+        totalDiscount,
+      }
+    }, [order?.line_items, order?.metadata?.license?.size?.modifier])
 
   return (
     <Show
@@ -169,7 +290,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           textTransform={'uppercase'}
           fontWeight={'normal'}
           onClick={toggleBox}
-          cursor={'pointer'}
+          cursor={toggleBox ? 'pointer' : 'default'}
         >
           {heading}
         </Heading>
@@ -190,31 +311,19 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             fontSize={'sm'}
           >
             <Box>{parentFontString}</Box>
-            <Box>
+            <Box pl={3}>
+              {'Company size: '}
               {sizes.find(
                 ({ value }) => value === order?.metadata?.license?.size?.value
               )?.label || ''}
             </Box>
             <Box></Box>
           </SimpleGrid>
-          {displayLineItems.map((lineItem) => (
-            <SimpleGrid key={lineItem.id} columns={3} py={1.5} fontSize={'sm'}>
-              <Box>{lineItem.name || lineItem.item?.name}</Box>
-              <Box>
-                {
-                  // @TODO: these should be sorted in the same order as the 'license types' data source
-                  lineItem?.line_item_options
-                    ?.map((option) => option.name)
-                    .filter(Boolean)
-                    .join(', ')
-                }
-              </Box>
-              <Box
-                textAlign={'right'}
-                fontVariantNumeric={'tabular-nums'}
-              >{`${lineItem.unit_amount_float} EUR`}</Box>
-            </SimpleGrid>
+
+          {groups.map((group) => (
+            <SummaryGroup key={group.parentUid} group={group} />
           ))}
+
           <SimpleGrid
             columns={2}
             pt={3}
@@ -230,9 +339,29 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               textAlign={'right'}
               fontVariantNumeric={'tabular-nums'}
             >
-              {`${order?.total_amount_with_taxes_float} EUR`}
+              {`${subtotalAmount} EUR`}
             </Box>
           </SimpleGrid>
+          {totalDiscount > 0 && (
+            <SimpleGrid
+              columns={2}
+              pb={2}
+              pt={3}
+              borderTop={'1px solid #E7E0BF'}
+              borderBottom={'1px solid #E7E0BF'}
+            >
+              <Box fontSize={'lg'} fontWeight={'normal'}>
+                {'Discounts'}
+              </Box>
+              <Box
+                fontSize={'lg'}
+                textAlign={'right'}
+                fontVariantNumeric={'tabular-nums'}
+              >
+                {`-${totalDiscount} EUR`}
+              </Box>
+            </SimpleGrid>
+          )}
           <SimpleGrid columns={2} py={3}>
             <Box
               fontSize={'xl'}
