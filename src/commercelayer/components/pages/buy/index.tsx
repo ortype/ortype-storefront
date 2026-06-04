@@ -2,15 +2,8 @@ import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInpu
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { getFontReferenceCounts } from '@/commercelayer/components/ui/order-summary'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import {
-  calculateDiscount,
-  calculateLineItemPrice,
-  formatPrice,
-  getLineItemSibilingCount,
-} from '@/commercelayer/utils/prices'
 import {
   Box,
   Button,
@@ -24,7 +17,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import Link from 'next/link'
-import React, { useMemo } from 'react'
+import React from 'react'
 import Typefaces from './typefaces'
 
 interface FontVariant {
@@ -40,14 +33,8 @@ interface FontGroup {
   italicVariants: FontVariant[]
 }
 
-interface FontGroupWithMerged extends FontGroup {
-  allVariants: FontVariant[]
-}
-
 export const Buy = () => {
   const {
-    order,
-    orderId,
     licenseSize,
     skuOptions,
     setLicenseSize,
@@ -55,77 +42,7 @@ export const Buy = () => {
     setSelectedSkuOptions,
     allLicenseInfoSet,
   } = useOrderContext()
-  const { font, selectedSkus, summary } = useBuyContext()
-
-  /*
-  // Optimistic total: compute from each line item's sku options and position
-  const optimisticTotal = useMemo(() => {
-    if (!order?.line_items?.length || !licenseSize || !skuOptions?.length) {
-      return null
-    }
-
-    const skuLineItems = order.line_items.filter(
-      (li) => li.item_type === 'skus' || li.item_type === 'bundles'
-    )
-
-    if (skuLineItems.length === 0) return null
-
-    const totalCents = skuLineItems.reduce((sum, li) => {
-      // Resolve this line item's selected sku options from its line_item_options
-      const itemSkuOptions =
-        li.line_item_options
-          ?.map(({ sku_option }) =>
-            skuOptions.find((o) => o.id === sku_option?.id)
-          )
-          .filter((o): o is NonNullable<typeof o> => !!o) ?? []
-
-      if (itemSkuOptions.length === 0) return sum + (li.total_amount_cents ?? 0)
-
-      const count = getLineItemSibilingCount(li, order.line_items!)
-      return (
-        sum +
-        calculateLineItemPrice({
-          skuOptions: itemSkuOptions,
-          sizeModifier: licenseSize?.modifier,
-          count,
-        })
-      )
-    }, 0)
-
-    return formatPrice(totalCents)
-  }, [order?.line_items, licenseSize, skuOptions])
-
-  const displayTotal = optimisticTotal ?? order?.total_amount_with_taxes_float*/
-
-  // Memoize line item filtering and font reference calculations
-  const { displayLineItems, fontRefCounts, fontCount, parentFontString } =
-    useMemo(() => {
-      if (!order?.line_items) {
-        return {
-          displayLineItems: [],
-          fontRefCounts: {},
-          fontCount: 0,
-          parentFontString: '0 fonts',
-        }
-      }
-
-      // Filter out payment method and shipping line items - only show SKUs and bundles
-      const filteredItems = order.line_items.filter(
-        (lineItem) =>
-          lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
-      )
-
-      const counts = getFontReferenceCounts(order.line_items)
-      const count = Object.keys(counts).length
-      const fontString = count + ' ' + (count === 1 ? 'font' : 'fonts')
-
-      return {
-        displayLineItems: filteredItems,
-        fontRefCounts: counts,
-        fontCount: count,
-        parentFontString: fontString,
-      }
-    }, [order?.line_items])
+  const { font, summary } = useBuyContext()
 
   const licensesCount = selectedSkuOptions?.length
 
@@ -134,7 +51,6 @@ export const Buy = () => {
     show,
     fontStyleCount: fontLineItemCount,
     unitPrice,
-    nextUnitPrice,
     subtotal,
     percentageDiscount,
     totalDiscount,

@@ -1,8 +1,8 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { isValidCart } from '@/commercelayer/utils/isValidCart'
 import { IconButton } from '@/components/ui/chakra-iconbutton'
 import { Button, Circle, Float, Text } from '@chakra-ui/react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 interface Props {
   // settings: CheckoutSettings
@@ -15,6 +15,10 @@ const CartContainer = ({
   setMenuOpen,
 }: Props): JSX.Element => {
   const { orderId, itemsCount } = useOrderContext()
+  const pathname = usePathname()
+
+  // Hide on checkout routes
+  if (pathname?.startsWith('/checkout')) return null
 
   if (!orderId || itemsCount === 0) {
     // @TODO: if orderId does not exist, show an empty cart instead of an error

@@ -5,17 +5,12 @@ import utils, {
   calculateSettings,
   computeSelectionsHash,
   createOrUpdateOrder,
-  updateLineItemLicenseTypes,
-  updateLineItemsLicenseSize,
 } from '@/commercelayer/providers/Order/utils'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
 import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
-import {
-  getParentUid,
-  recalculateSiblingPrices,
-} from '@/commercelayer/utils/prices'
+import { getParentUid } from '@/commercelayer/utils/prices'
 import { executeBatch, type Task } from '@commercelayer/sdk-utils'
 import { getLicenseMetrics } from '@/sanity/lib/client'
 import { type CompanySize, type MediaType } from '@/sanity/lib/queries'
@@ -80,25 +75,6 @@ type OrderAttributes = {
   [key: string]: any
 }
 
-interface AddToCartParams {
-  skuCode: string
-  quantity?: number
-  lineItem?: {
-    externalPrice?: boolean
-    metadata?: {
-      license?: {
-        size?: LicenseSize
-        types?: string[]
-      }
-    }
-  }
-  orderMetadata?: {
-    license?: {
-      size?: LicenseSize
-    }
-  }
-}
-
 export interface AddToCartError {
   message: string
   originalError?: unknown
@@ -124,7 +100,6 @@ type OrderProviderData = {
     customMetadata?: Record<string, any>
     customAttributes?: Record<string, any>
   }) => Promise<AddToCartResult>
-  addToCart: (params: AddToCartParams) => Promise<AddToCartResult>
   refetchOrder: () => Promise<{
     success: boolean
     order?: Order
@@ -149,19 +124,6 @@ type OrderProviderData = {
     success: boolean
     error?: AddToCartError
     order?: Order
-  }>
-  setLicenseTypes: (params: {
-    order?: Order
-    lineItem: LineItem
-    selectedSkuOptions: SkuOption[]
-  }) => Promise<{
-    success: boolean
-    error?: AddToCartError
-    order?: Order
-  }>
-  deleteLineItem: (params: { lineItemId: string }) => Promise<{
-    success: boolean
-    error?: AddToCartError
   }>
   selections: SelectionBuffer
   isCommitted: boolean
@@ -783,139 +745,6 @@ export function OrderProvider({
     ]
   )
 
-  /**
-   * Adds an item to the cart, creating a new order if necessary.
-   *
-   * @param params - Parameters for adding item to cart
-   * @param params.skuCode - The SKU code of the item to add
-   * @param params.quantity - Optional quantity (defaults to 1)
-   * @param params.lineItem - Optional line item attributes
-   * @param params.lineItem.externalPrice - Whether to use external pricing
-   * @param params.lineItem.metadata - Additional metadata for the line item
-   * @param params.lineItem.metadata.license - License information for the item
-   * @param params.orderMetadata - Optional metadata for the order if one needs to be created
-   *
-   * @returns Promise resolving to result object containing:
-   * - success: boolean indicating if operation was successful
-   * - error?: error information if operation failed
-   * - order?: the updated order if successful
-   * - orderId?: the ID of the order if successful
-   */
-  const addToCart = useCallback(
-    async (params: AddToCartParams): Promise<AddToCartResult> => {
-      dispatch({ type: ActionType.START_LOADING })
-
-      try {
-        const cl = config != null ? getCommerceLayer(config) : undefined
-        if (!cl) {
-          throw new Error('Commerce Layer client not initialized')
-        }
-
-        // Add to cart using utils function
-        const result = await utils.addToCart({
-          cl,
-          orderId: state.orderId,
-          skuCode: params.skuCode,
-          quantity: params.quantity ?? 1,
-          lineItemAttributes: {
-            _external_price: params.lineItem?.externalPrice,
-            metadata: params.lineItem?.metadata,
-          },
-          createOrder,
-          fetchOrder,
-          config,
-          persistKey,
-          dispatch,
-          state,
-          setLocalOrder,
-        })
-
-        if (!result.success) {
-          throw result.error
-        }
-
-        // Better to get it from the result? Its the same.
-        // console.log('utils.addToCart result: ', result)
-        // const parentUid = result.lineItem?.metadata?.parentUid
-        const parentUid = params.lineItem?.metadata?.parentUid
-
-        // Recalculate prices for remaining siblings in the same parentUid group
-        if (parentUid && state.order?.line_items?.length) {
-          const hasSiblings = state.order.line_items.some(
-            (li) =>
-              (li.item_type === 'skus' || li.item_type === 'bundles') &&
-              getParentUid(li) === parentUid
-          )
-          if (hasSiblings) {
-            await recalculateSiblingPrices({
-              cl,
-              order: state.order,
-              parentUid,
-            })
-
-            // Refetch to get updated prices in state
-            // @TODO: Do we need this if recalculateSiblingPrices forces autorefresh?
-            const { order: refreshedOrder } = await fetchOrder()
-            if (refreshedOrder) {
-              dispatch({
-                type: ActionType.DELETE_LINE_ITEM,
-                payload: { order: refreshedOrder },
-              })
-              return { success: true }
-            }
-          }
-        }
-
-        // Since fetchOrder was called in utils.addToCart, we should have an updated order state
-        // But we still need to update our local state through the reducer
-        if (state.order) {
-          dispatch({
-            type: ActionType.ADD_TO_CART,
-            payload: {
-              order: state.order,
-              orderId: state.orderId,
-              others: {
-                itemsCount: (state.order.line_items || []).length,
-                ...calculateSettings(state.order),
-              },
-            },
-          })
-        }
-
-        return {
-          success: true,
-          order: state.order,
-          orderId: state.orderId,
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('Error adding to cart:', error)
-        }
-
-        const errorMessage =
-          error instanceof Error ? error.message : 'Failed to add item to cart'
-        return {
-          success: false,
-          error: {
-            message: errorMessage,
-            originalError: error,
-          },
-        }
-      } finally {
-        dispatch({ type: ActionType.STOP_LOADING })
-      }
-    },
-    [
-      config,
-      createOrder,
-      fetchOrder,
-      state.orderId,
-      state.order,
-      persistKey,
-      setLocalOrder,
-    ]
-  )
-
   const setLicenseSize = useCallback(
     async (params: {
       licenseSize?: LicenseSize
@@ -955,15 +784,6 @@ export function OrderProvider({
 
         if (!orderId) {
           throw new Error('Failed to create or update order with license size')
-        }
-
-        // @NOTE: if we already have state.order we should update the line_items
-        if (state.order) {
-          await updateLineItemsLicenseSize({
-            cl,
-            order: state.order,
-            licenseSize: params.licenseSize,
-          })
         }
 
         const { order } = await fetchOrder({ orderId })
@@ -1017,218 +837,6 @@ export function OrderProvider({
       }
     },
     [config, createOrder, updateOrder, fetchOrder, state.order]
-  )
-
-  // @NOTE: this method is used in the cart to selectively update a single line item
-  const setLicenseTypes = useCallback(
-    async (params: {
-      lineItem: LineItem
-      selectedSkuOptions: SkuOption[]
-    }): Promise<{
-      success: boolean
-      error?: AddToCartError
-      order?: Order
-    }> => {
-      dispatch({ type: ActionType.START_LOADING })
-      const cl = config != null ? getCommerceLayer(config) : undefined
-
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[OrderProvider] setLicenseTypes: Starting with params:', {
-          hasOrder: !!state.order,
-          orderId: state.orderId,
-          hasLineItems: !!(
-            state.order?.line_items && state.order.line_items.length > 0
-          ),
-          currentOrderMetadata: state.order?.metadata,
-          selectedSkuOptions: params.selectedSkuOptions,
-        })
-      }
-
-      try {
-        if (!cl || !params.lineItem || !params.selectedSkuOptions) {
-          throw new Error(
-            'Missing required parameters or Commerce Layer client not initialized'
-          )
-        }
-
-        // Track the operation for better error messages
-        const operationName = 'Set license types'
-        if (process.env.NODE_ENV !== 'production') {
-          console.log(
-            '[OrderProvider] setLicenseTypes: Updating line item license types'
-          )
-        }
-
-        await updateLineItemLicenseTypes({
-          cl,
-          selectedSkuOptions: params.selectedSkuOptions,
-          lineItem: params.lineItem,
-        })
-
-        const { order, success } = await fetchOrder({ orderId: state.orderId })
-
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('[OrderProvider] setLicenseTypes: fetchOrder result:', {
-            success,
-            hasOrder: !!order,
-            updatedMetadata: order?.metadata?.license,
-          })
-        }
-
-        if (!success || !order) {
-          throw new Error(
-            'Failed to fetch updated order after setting license types'
-          )
-        }
-
-        dispatch({
-          type: ActionType.SET_LICENSE_TYPES,
-          payload: {
-            order,
-            others: {
-              selectedSkuOptions: params.selectedSkuOptions,
-            },
-          },
-        })
-
-        // Show success notification
-        /*toaster.create({
-          title: 'License types updated successfully',
-          type: 'success',
-          duration: 2000,
-        })*/
-
-        return { success: true, order }
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('Error in setLicenseTypes:', {
-            errorMessage:
-              error instanceof Error ? error.message : String(error),
-            stateInfo: {
-              hasOrder: !!state.order,
-              orderId: state.orderId,
-              hasLineItems: !!(
-                state.order?.line_items && state.order.line_items.length > 0
-              ),
-              currentOrderMetadata: state.order?.metadata,
-            },
-          })
-        }
-
-        // Show error notification
-        const errorMessage =
-          error instanceof Error ? error.message : 'Failed to set license types'
-        toaster.create({
-          title: 'Failed to update license types',
-          description: errorMessage,
-          type: 'error',
-          duration: 3000,
-        })
-
-        return {
-          success: false,
-          error: {
-            message: errorMessage,
-            originalError: error,
-          },
-        }
-      } finally {
-        dispatch({ type: ActionType.STOP_LOADING })
-      }
-    },
-    [
-      config,
-      createOrder,
-      updateOrder,
-      fetchOrder,
-      state.order,
-      state.licenseSize,
-      persistKey,
-      getLocalOrder,
-    ]
-  )
-
-  const deleteLineItem = useCallback(
-    async (params: {
-      lineItemId: string
-    }): Promise<{
-      success: boolean
-      error?: AddToCartError
-    }> => {
-      dispatch({ type: ActionType.START_LOADING })
-      const cl = config != null ? getCommerceLayer(config) : undefined
-      try {
-        if (config == null) {
-          throw new Error('Commerce Layer client not initialized')
-        }
-
-        if (!params.lineItemId) {
-          throw new Error('Line item ID is required')
-        }
-
-        // Read the parentUid before deleting so we can recalculate siblings
-        const deletedItem = state.order?.line_items?.find(
-          (li) => li.id === params.lineItemId
-        )
-        const parentUid = deletedItem ? getParentUid(deletedItem) : ''
-
-        await cl.line_items.delete(params.lineItemId)
-        const { order } = await fetchOrder()
-
-        if (!order) {
-          throw new Error(
-            'Failed to fetch updated order after deleting line item'
-          )
-        }
-
-        // Recalculate prices for remaining siblings in the same parentUid group
-        if (parentUid && order.line_items?.length) {
-          const hasSiblings = order.line_items.some(
-            (li) =>
-              (li.item_type === 'skus' || li.item_type === 'bundles') &&
-              getParentUid(li) === parentUid
-          )
-          if (hasSiblings) {
-            await recalculateSiblingPrices({ cl, order, parentUid })
-
-            // Refetch to get updated prices in state
-            // @TODO: Do we need this if recalculateSiblingPrices forces autorefresh?
-            const { order: refreshedOrder } = await fetchOrder()
-            if (refreshedOrder) {
-              dispatch({
-                type: ActionType.DELETE_LINE_ITEM,
-                payload: { order: refreshedOrder },
-              })
-              return { success: true }
-            }
-          }
-        }
-
-        dispatch({
-          type: ActionType.DELETE_LINE_ITEM,
-          payload: { order },
-        })
-
-        return { success: true }
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('Error deleting line item:', error)
-        }
-        return {
-          success: false,
-          error: {
-            message:
-              error instanceof Error
-                ? error.message
-                : 'Failed to delete line item',
-            originalError: error,
-          },
-        }
-      } finally {
-        dispatch({ type: ActionType.STOP_LOADING })
-      }
-    },
-    [config, fetchOrder, state.order]
   )
 
   const setSelectedSkuOptions = useCallback(
@@ -1317,27 +925,6 @@ export function OrderProvider({
         // @TODO: Trigger notifcation stating that all items in the Cart for this font will be updated
         // Alternatively: add a inline notification to skus that have already been added to the cart,
         // with a calculated price based on that line_items skuOptions
-
-        if (state.order?.line_items && state.order.line_items.length > 0) {
-          // Find line items from this font
-          const lineItemsOfFont = state.order.line_items.filter((lineItem) =>
-            params.font.variants.some(
-              (fontVariant) => fontVariant._id === lineItem.sku_code
-            )
-          )
-
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('[OrderProvider] lineItemsOfFont: ', lineItemsOfFont)
-          }
-
-          for (const lineItem of lineItemsOfFont) {
-            await updateLineItemLicenseTypes({
-              cl,
-              lineItem,
-              selectedSkuOptions: params.selectedSkuOptions,
-            })
-          }
-        }
 
         const { order, success } = await fetchOrder()
 
@@ -1772,7 +1359,22 @@ export function OrderProvider({
       // 1. Disable auto-refresh to prevent N recalculations
       await cl.orders.update({ id: state.order.id, autorefresh: false })
 
-      // 2. Build batch tasks from selections
+      // 2. Delete any existing shoppable line items (from a previous commit)
+      const existingItems = state.order.line_items?.filter(
+        (li) => li.item_type === 'skus' || li.item_type === 'bundles'
+      )
+      if (existingItems?.length) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(
+            `[OrderProvider] commitSelections: Clearing ${existingItems.length} existing line items`
+          )
+        }
+        for (const li of existingItems) {
+          await cl.line_items.delete(li.id)
+        }
+      }
+
+      // 3. Build batch tasks from selections
       const tasks: Task[] = []
       const orderRel = cl.orders.relationship(state.orderId)
 
@@ -2099,12 +1701,9 @@ export function OrderProvider({
     fetchOrder,
     refetchOrder,
     updateOrder,
-    addToCart,
     setLicenseOwner,
     setLicenseSize,
-    setLicenseTypes,
     setSelectedSkuOptions,
-    deleteLineItem,
     // Selection buffer
     selections: state.selections,
     isCommitted: state.isCommitted,
