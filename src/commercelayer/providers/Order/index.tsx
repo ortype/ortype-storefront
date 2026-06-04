@@ -1446,6 +1446,9 @@ export function OrderProvider({
     return await fetchOrder()
   }, [fetchOrder])
 
+  // Declared before initializeProvider so the ref is in scope when the callback sets it
+  const selectionsInitializedRef = useRef(false)
+
   // Create a stable initialization function
   const initializeProvider = useCallback(async () => {
     if (!config.accessToken) return
@@ -1462,27 +1465,51 @@ export function OrderProvider({
         // If order is found, use its license types
         existingTypes = order.metadata?.license?.types || []
 
-        // Hydrate selections from order metadata if available
-        if (order.metadata?.selections) {
-          dispatch({
-            type: ActionType.HYDRATE_SELECTIONS,
-            payload: { selections: order.metadata.selections },
-          })
-
-          if (process.env.NODE_ENV !== 'production') {
-            console.log(
-              '[OrderProvider] 🔄 initializeProvider: Hydrated selections from order metadata',
-              {
-                selectionCount: Object.values(
-                  order.metadata.selections as Record<string, Record<string, unknown>>
-                ).reduce(
-                  (total: number, group) => total + Object.keys(group).length,
-                  0
-                ),
+        // Hydrate selections: localStorage (primary) > order.metadata (fallback)
+        let hydrated = false
+        try {
+          const localKey = `${persistKey}_selections`
+          const stored = localStorage.getItem(localKey)
+          if (stored) {
+            const parsed = JSON.parse(stored) as SelectionBuffer
+            if (Object.keys(parsed).length > 0) {
+              dispatch({
+                type: ActionType.HYDRATE_SELECTIONS,
+                payload: { selections: parsed },
+              })
+              hydrated = true
+              if (process.env.NODE_ENV !== 'production') {
+                console.log(
+                  '[OrderProvider] 🔄 initializeProvider: Hydrated selections from localStorage'
+                )
               }
-            )
+            }
+          }
+        } catch {
+          // localStorage unavailable
+        }
+
+        if (!hydrated && order.metadata?.cart_selections) {
+          try {
+            const metaSelections = JSON.parse(order.metadata.cart_selections)
+            dispatch({
+              type: ActionType.HYDRATE_SELECTIONS,
+              payload: { selections: metaSelections },
+            })
+            if (process.env.NODE_ENV !== 'production') {
+              console.log(
+                '[OrderProvider] 🔄 initializeProvider: Hydrated selections from order metadata'
+              )
+            }
+          } catch {
+            // Corrupted metadata — ignore
           }
         }
+
+        // Enable persistence now that hydration is complete.
+        // Must happen before the async work below so user interactions
+        // during init are persisted immediately.
+        selectionsInitializedRef.current = true
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(
@@ -1576,20 +1603,45 @@ export function OrderProvider({
     initializeProvider()
   }, [initializeProvider])
 
-  // --- Background metadata sync ---
-  // Debounced write of selections to order.metadata.selections
-  // Fire-and-forget: does not block UI. React state is the source of truth.
+  // --- Selections persistence ---
+  // Primary: localStorage (synchronous, immediate)
+  // Secondary: order.metadata (debounced, cross-device)
+  // Both are guarded by selectionsInitializedRef to avoid overwriting
+  // saved data with the empty initial state before hydration completes.
+  const SELECTIONS_STORAGE_KEY = `${persistKey}_selections`
+
+  // Immediate localStorage write on every selections change
+  useEffect(() => {
+    if (!selectionsInitializedRef.current) return
+    try {
+      const serialized = JSON.stringify(state.selections)
+      localStorage.setItem(SELECTIONS_STORAGE_KEY, serialized)
+    } catch {
+      // localStorage unavailable (SSR, private browsing quota, etc.)
+    }
+  }, [state.selections, SELECTIONS_STORAGE_KEY])
+
+  // Debounced metadata sync (cross-device backup)
   const metadataSyncRef = useRef<ReturnType<typeof setTimeout>>()
   const lastSyncedHashRef = useRef('')
 
   useEffect(() => {
-    // Only sync when order exists and selections have changed
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[OrderProvider] 🔍 Metadata sync effect fired', {
+        initialized: selectionsInitializedRef.current,
+        orderId: state.orderId,
+        orderExists: !!state.order?.id,
+        selectionKeys: Object.keys(state.selections),
+        hashChanged: computeSelectionsHash(state.selections) !== lastSyncedHashRef.current,
+      })
+    }
+
+    if (!selectionsInitializedRef.current) return
     if (!state.orderId || !state.order?.id) return
 
     const currentHash = computeSelectionsHash(state.selections)
     if (currentHash === lastSyncedHashRef.current) return
 
-    // Clear previous debounce
     if (metadataSyncRef.current) {
       clearTimeout(metadataSyncRef.current)
     }
@@ -1599,19 +1651,30 @@ export function OrderProvider({
         const cl = config != null ? getCommerceLayer(config) : undefined
         if (!cl || !state.order?.id) return
 
+        const payload = {
+          ...state.order.metadata,
+          cart_selections: JSON.stringify(state.selections),
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('[OrderProvider] 📝 Metadata sync: writing to CL', {
+            orderId: state.order.id,
+            metadataKeys: Object.keys(payload),
+            cart_selections_length: payload.cart_selections.length,
+            selectionsPreview: JSON.stringify(state.selections).slice(0, 200),
+          })
+        }
+
         await cl.orders.update({
           id: state.order.id,
-          metadata: {
-            ...state.order.metadata,
-            selections: state.selections,
-          },
+          metadata: payload,
         })
 
         lastSyncedHashRef.current = currentHash
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(
-            '[OrderProvider] 📝 Metadata sync: selections written to order metadata'
+            '[OrderProvider] ✅ Metadata sync: successfully written to order metadata'
           )
         }
       } catch (error) {
