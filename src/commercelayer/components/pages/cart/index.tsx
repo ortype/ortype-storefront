@@ -3,7 +3,10 @@ import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInpu
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import type { StyleEntry } from '@/commercelayer/providers/Order/types'
+import type {
+  SelectionBuffer,
+  StyleEntry,
+} from '@/commercelayer/providers/Order/types'
 import { useMemo, useRef } from 'react'
 
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -47,6 +50,10 @@ export interface CartBufferGroup {
   discountedPriceTotal: number
   fullUnitPriceTotal: number
   percentageDiscount: number
+}
+
+function isSelectionBufferEmpty(buffer: SelectionBuffer): boolean {
+  return Object.keys(buffer).length === 0
 }
 
 const CartComponent = () => {
@@ -137,7 +144,7 @@ const CartComponent = () => {
   }
 
   // Show error if orderId is missing
-  if (!orderId) {
+  if (!orderId || isSelectionBufferEmpty(selections)) {
     return (
       <Box pos="fixed" inset="0" bg="bg/80">
         <Center h="full">
