@@ -61,7 +61,6 @@ export type Action =
   | {
       type: ActionType.SET_LICENSE_OWNER
       payload: {
-        order: Order
         others: {
           hasLicenseOwner: boolean
           isLicenseForClient: boolean
@@ -72,14 +71,12 @@ export type Action =
   | {
       type: ActionType.SET_LICENSE_SIZE
       payload: {
-        order: Order
         licenseSize: LicenseSize
       }
     }
   | {
       type: ActionType.SET_LICENSE_TYPES
       payload: {
-        order: Order
         others: Partial<OrderStateData>
       }
     }
@@ -204,12 +201,9 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
       return {
         ...state,
-        order: action.payload.order,
-        orderId: action.payload.order.id,
         hasLicenseOwner: action.payload.others.hasLicenseOwner,
         isLicenseForClient: action.payload.others.isLicenseForClient,
         licenseOwner: action.payload.others.licenseOwner,
-        isLoading: false,
       }
     }
     case ActionType.SET_LICENSE_SIZE: {
@@ -221,9 +215,7 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
       return {
         ...state,
-        order: action.payload.order,
         licenseSize: action.payload.licenseSize,
-        isLoading: false,
       }
     }
     case ActionType.SET_LICENSE_TYPES: {
@@ -235,9 +227,7 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
       return {
         ...state,
-        order: action.payload.order,
         ...action.payload.others,
-        isLoading: false,
       }
     }
     case ActionType.SET_SKU_OPTIONS: {

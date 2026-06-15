@@ -13,6 +13,7 @@ import {
   GridItem,
   Show,
   SimpleGrid,
+  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react'
@@ -41,6 +42,7 @@ export const Buy = () => {
     selectedSkuOptions,
     setSelectedSkuOptions,
     allLicenseInfoSet,
+    isCreatingOrder,
     buyLabels,
   } = useOrderContext()
   const { font, summary } = useBuyContext()
@@ -77,8 +79,8 @@ export const Buy = () => {
         <SimpleGrid columns={2} gap={[4, null, null, null, null, null, 8]}>
           <GridItem colSpan={2}>
             <LicenseOwnerInput
-              label={buyLabels?.licenseOwner?.label}
-              info={buyLabels?.licenseOwner?.info}
+              label={buyLabels?.licenseHolder?.label}
+              info={buyLabels?.licenseHolder?.info}
             />
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
@@ -122,9 +124,12 @@ export const Buy = () => {
                 {buyLabels?.fonts?.label || '4. Typefaces'}
               </FieldsetLegend>
               <Fieldset.Content
-                asChild
                 p={0}
-                pointerEvents={allLicenseInfoSet ? 'auto' : 'none'}
+                m={0}
+                pos={'relative'}
+                pointerEvents={
+                  allLicenseInfoSet && !isCreatingOrder ? 'auto' : 'none'
+                }
                 opacity={allLicenseInfoSet ? 1 : 0.3}
               >
                 <Typefaces />
@@ -132,6 +137,18 @@ export const Buy = () => {
             </Fieldset.Root>
           </GridItem>
         </SimpleGrid>
+        {isCreatingOrder && (
+          <Flex
+            pos={'absolute'}
+            inset={0}
+            align={'center'}
+            justify={'center'}
+            bg={'whiteAlpha.700'}
+            zIndex={1}
+          >
+            <Spinner size={'lg'} />
+          </Flex>
+        )}
       </Box>
       <Show when={show}>
         <VStack

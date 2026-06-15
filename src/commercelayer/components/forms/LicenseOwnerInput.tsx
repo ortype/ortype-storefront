@@ -2,7 +2,7 @@ import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Alert } from '@/components/ui/alert'
 import { Fieldset, Input } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 interface FormValues {
@@ -27,7 +27,6 @@ interface Props {
   info?: string
 }
 const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const { order, setLicenseOwner } = useOrderContext()
   const {
     register,
@@ -48,23 +47,24 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
     setValue('full_name', ownerName || '')
   }, [order?.metadata, setValue])
 
-  const onSubmit = handleSubmit(async (data) => {
-    setIsSubmitting(true)
-
+  const submitOwner = (fullName: string) => {
     const licenseOwner: LicenseOwner = {
       is_client: false,
-      full_name: data.full_name.trim(),
+      full_name: fullName.trim(),
     }
+    // Pure state update in the provider; persistence happens in the background
+    setLicenseOwner({ licenseOwner })
+  }
 
-    await setLicenseOwner({ licenseOwner })
-    setIsSubmitting(false)
+  const onSubmit = handleSubmit((data) => {
+    submitOwner(data.full_name)
   })
 
-  const handleBlur = handleSubmit(async (data) => {
+  const handleBlur = handleSubmit((data) => {
     const currentName = (order?.metadata as OrderMetadata)?.license?.owner
       ?.full_name
     if (data.full_name.trim() !== currentName) {
-      await onSubmit()
+      submitOwner(data.full_name)
     }
   })
 
@@ -98,7 +98,6 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
             fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
             mt={1}
             borderRadius={0}
-            disabled={isSubmitting}
             placeholder="Enter license owner or company name"
           />
         </Fieldset.Content>
