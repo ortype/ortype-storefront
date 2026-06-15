@@ -1,7 +1,7 @@
 import { defineQuery, PortableTextBlock } from 'next-sanity'
 
 // src/sanity/lib/queries.ts — instead of hand-declaring the 4 interfaces
-import type { UiLabelsQueryResult } from '@/types'
+import type { LicenseMetricsQueryResult, UiLabelsQueryResult } from '@/types'
 
 export type UiLabels = NonNullable<UiLabelsQueryResult>
 export type BuyLabels = NonNullable<UiLabels['buyPage']>
@@ -143,6 +143,33 @@ export const licenseMetricsQuery = defineQuery(`
   "media": media[]{_key, value, label}
 }
 `)
+
+export interface LicenseMetrics {
+  sizes: CompanySize[]
+  media: MediaType[]
+}
+
+/**
+ * Normalization seam: map the (nullable) generated `licenseMetricsQuery`
+ * result into the non-null domain types. Schema validation already requires
+ * these fields, so incomplete entries are dropped rather than threaded as
+ * nulls through the provider and consumers.
+ */
+export function normalizeLicenseMetrics(
+  data: LicenseMetricsQueryResult
+): LicenseMetrics {
+  const sizes = (data?.sizes ?? []).flatMap((s) =>
+    s.value != null && s.label != null && s.modifier != null
+      ? [{ value: s.value, label: s.label, modifier: s.modifier }]
+      : []
+  )
+  const media = (data?.media ?? []).flatMap((m) =>
+    m.value != null && m.label != null
+      ? [{ _key: m._key, value: m.value, label: m.label }]
+      : []
+  )
+  return { sizes, media }
+}
 
 export const uiLabelsQuery = defineQuery(`
 *[_type == "settings"][0]{

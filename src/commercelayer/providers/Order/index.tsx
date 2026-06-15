@@ -12,11 +12,11 @@ import getCommerceLayer, {
 import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
 import { getParentUid } from '@/commercelayer/utils/prices'
 import { executeBatch, type Task } from '@commercelayer/sdk-utils'
-import { getLicenseMetrics } from '@/sanity/lib/client'
 import {
   type BuyLabels,
   type CartLabels,
   type CompanySize,
+  type LicenseMetrics,
   type MediaType,
   type UiLabels,
 } from '@/sanity/lib/queries'
@@ -221,6 +221,7 @@ export const useOrderContext = (): OrderProviderData => useContext(OrderContext)
 type OrderProviderProps = {
   config: CLayerClientConfig
   labels?: UiLabels | null
+  metrics: LicenseMetrics
   children: ((props: OrderProviderData) => ChildrenElement) | ChildrenElement
 }
 
@@ -228,12 +229,14 @@ export function OrderProvider({
   children,
   config,
   labels,
+  metrics,
   metadata,
   attributes,
 }: OrderProviderProps): JSX.Element {
   const [state, dispatch] = useReducer(reducer, initialState)
-  const [companySizes, setCompanySizes] = useState<CompanySize[]>([])
-  const [mediaTypes, setMediaTypes] = useState<MediaType[]>([])
+  // Seeded once from server-fetched Sanity metrics (Providers → layout)
+  const [companySizes] = useState<CompanySize[]>(metrics.sizes)
+  const [mediaTypes] = useState<MediaType[]>(metrics.media)
 
   // Order persistence is handled through OrderStorageContext
   // using getLocalOrder/setLocalOrder for consistent storage management
@@ -1132,21 +1135,12 @@ export function OrderProvider({
         }
       }
 
-      // Fetch metrics from Sanity
-      const metricsResult = await getLicenseMetrics()
-
-      if (metricsResult.sizes.length > 0) {
-        setCompanySizes(metricsResult.sizes)
-      }
-
-      if (metricsResult.media.length > 0) {
-        setMediaTypes(metricsResult.media)
-      }
-
-      // Reconcile stale licenseSize with current Sanity data
+      // Reconcile stale licenseSize with current Sanity data.
+      // Metrics are server-fetched and provided via props (Providers → layout),
+      // so no client-side Sanity fetch is needed here.
       const storedSize = order?.metadata?.license?.size
-      if (storedSize?.value && metricsResult.sizes.length > 0) {
-        const sanitySize = metricsResult.sizes.find(
+      if (storedSize?.value && metrics.sizes.length > 0) {
+        const sanitySize = metrics.sizes.find(
           (s) => s.value === storedSize.value
         )
         if (
@@ -1170,10 +1164,7 @@ export function OrderProvider({
         }
       }
 
-      const skuResult = await fetchSkuOptions(
-        existingTypes,
-        metricsResult.media
-      )
+      const skuResult = await fetchSkuOptions(existingTypes, metrics.media)
 
       if (!skuResult.success) {
         console.warn('Failed to fetch SKU options during initialization')
@@ -1182,8 +1173,8 @@ export function OrderProvider({
       if (process.env.NODE_ENV !== 'production') {
         console.log('[OrderProvider] ✅ initializeProvider: Initialized with', {
           skuOptions: skuResult.success,
-          companySizes: metricsResult.sizes.length,
-          mediaTypes: metricsResult.media.length,
+          companySizes: metrics.sizes.length,
+          mediaTypes: metrics.media.length,
         })
       }
     } catch (error) {

@@ -3,7 +3,11 @@ import Providers from '@/components/global/Providers'
 import { BASE_PATH, auth } from '@/lib/auth'
 import { DisableDraftMode } from '@/sanity/components/DisableDraftMode'
 import { sanityFetch, SanityLive } from '@/sanity/lib/live'
-import { uiLabelsQuery } from '@/sanity/lib/queries'
+import {
+  licenseMetricsQuery,
+  normalizeLicenseMetrics,
+  uiLabelsQuery,
+} from '@/sanity/lib/queries'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { SessionProvider } from 'next-auth/react'
@@ -47,12 +51,21 @@ export default async function FrontendLayout({
   const marketId = (await getMarketId()) || ''
   const session = await auth()
   const { data: labels } = await sanityFetch({ query: uiLabelsQuery })
+  const { data: metricsData } = await sanityFetch({
+    query: licenseMetricsQuery,
+  })
+  const metrics = normalizeLicenseMetrics(metricsData)
+  if (metrics.sizes.length === 0 || metrics.media.length === 0) {
+    console.warn(
+      '[FrontendLayout] License metrics missing from Sanity settings — the shop requires company sizes and media types to be defined.'
+    )
+  }
 
   return (
     <>
       <PreloadResources />
       <SessionProvider basePath={BASE_PATH} session={session}>
-        <Providers marketId={marketId} labels={labels}>
+        <Providers marketId={marketId} labels={labels} metrics={metrics}>
           {children}
         </Providers>
       </SessionProvider>

@@ -5,7 +5,7 @@ import OrderStorage from '@/commercelayer/providers/Order/Storage'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
 import Webfonts from '@/components/global/Webfonts'
 import { Provider as ChakraProvider } from '@/components/ui/provider'
-import { type UiLabels } from '@/sanity/lib/queries'
+import { type LicenseMetrics, type UiLabels } from '@/sanity/lib/queries'
 
 const config: CommerceLayerAppConfig = {
   slug: process.env.NEXT_PUBLIC_CL_SLUG ?? '',
@@ -20,10 +20,12 @@ function Providers({
   children,
   marketId,
   labels,
+  metrics,
 }: {
   children: React.ReactNode
   marketId: string
   labels?: UiLabels | null
+  metrics: LicenseMetrics
 }) {
   return (
     <>
@@ -40,7 +42,11 @@ function Providers({
             >
               {(ctx) => (
                 <OrderStorage persistKey={config.persistKey}>
-                  <OrderProvider config={ctx.clientConfig} labels={labels}>
+                  <OrderProvider
+                    config={ctx.clientConfig}
+                    labels={labels}
+                    metrics={metrics}
+                  >
                     <div>{children}</div>
                   </OrderProvider>
                 </OrderStorage>
