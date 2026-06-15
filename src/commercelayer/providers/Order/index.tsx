@@ -13,7 +13,13 @@ import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefre
 import { getParentUid } from '@/commercelayer/utils/prices'
 import { executeBatch, type Task } from '@commercelayer/sdk-utils'
 import { getLicenseMetrics } from '@/sanity/lib/client'
-import { type CompanySize, type MediaType } from '@/sanity/lib/queries'
+import {
+  type BuyLabels,
+  type CartLabels,
+  type CompanySize,
+  type MediaType,
+  type UiLabels,
+} from '@/sanity/lib/queries'
 import {
   LineItem,
   OrderUpdate,
@@ -95,6 +101,8 @@ type OrderProviderData = {
   isInvalid: boolean
   companySizes: CompanySize[]
   mediaTypes: MediaType[]
+  buyLabels?: BuyLabels
+  cartLabels?: CartLabels
   licenseSize: LicenseSize
   createOrder: (params?: {
     customMetadata?: Record<string, any>
@@ -212,12 +220,14 @@ export const useOrderContext = (): OrderProviderData => useContext(OrderContext)
 
 type OrderProviderProps = {
   config: CLayerClientConfig
+  labels?: UiLabels | null
   children: ((props: OrderProviderData) => ChildrenElement) | ChildrenElement
 }
 
 export function OrderProvider({
   children,
   config,
+  labels,
   metadata,
   attributes,
 }: OrderProviderProps): JSX.Element {
@@ -1698,6 +1708,8 @@ export function OrderProvider({
     isInvalid: state.isInvalid,
     companySizes,
     mediaTypes,
+    buyLabels: labels?.buyPage,
+    cartLabels: labels?.cartPage,
     hasValidLicenseSize,
     hasValidLicenseType,
     allLicenseInfoSet,

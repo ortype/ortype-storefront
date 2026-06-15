@@ -65,6 +65,7 @@ const CartComponent = () => {
     setLicenseSize,
     selections,
     skuOptions,
+    cartLabels,
   } = useOrderContext()
 
   /** Resolve a style's licenseTypes refs to SkuOption objects */
@@ -169,9 +170,14 @@ const CartComponent = () => {
 
       <Stack direction={'column'} gap={6}>
         <SimpleGrid columns={[1, null, 2]} gap={3}>
-          <LicenseOwnerInput label={'License holder'} />
+          <LicenseOwnerInput
+            label={cartLabels?.licenseHolder?.label || 'License holder'}
+            info={cartLabels?.licenseHolder?.info}
+          />
           {licenseSize && (
             <LicenseSizeSelect
+              label={cartLabels?.companySize?.label}
+              info={cartLabels?.companySize?.info}
               setLicenseSize={setLicenseSize}
               licenseSize={licenseSize}
             />
@@ -181,11 +187,15 @@ const CartComponent = () => {
           <Fieldset.Root>
             <Box display={['none', null, 'flex']} w={'full'}>
               <SimpleGrid columns={2} gap={4} mb={1} w={'full'}>
-                <FieldsetLegend>{'Fonts'}</FieldsetLegend>
+                <FieldsetLegend info={cartLabels?.fonts?.info}>
+                  {cartLabels?.fonts?.label || 'Fonts'}
+                </FieldsetLegend>
                 <Flex justifyContent={'space-between'}>
-                  <FieldsetLegend>{'License Type'}</FieldsetLegend>
-                  <FieldsetLegend>
-                    <Box pr={4}>{'Price'}</Box>
+                  <FieldsetLegend info={cartLabels?.licenseType?.info}>
+                    {cartLabels?.licenseType?.label || 'License Type'}
+                  </FieldsetLegend>
+                  <FieldsetLegend info={cartLabels?.price?.info}>
+                    <Box pr={4}>{cartLabels?.price?.label || 'Price'}</Box>
                   </FieldsetLegend>
                 </Flex>
               </SimpleGrid>

@@ -13,7 +13,11 @@ const Summary = () => {
   // Compute summary totals from the selection buffer (per-style license types)
   const { subtotal, totalDiscount, total } = useMemo(() => {
     const parentUids = Object.keys(selections)
-    if (parentUids.length === 0 || !licenseSize?.modifier || !skuOptions?.length) {
+    if (
+      parentUids.length === 0 ||
+      !licenseSize?.modifier ||
+      !skuOptions?.length
+    ) {
       return { subtotal: null, totalDiscount: null, total: null }
     }
 
@@ -105,16 +109,21 @@ const Summary = () => {
             </Box>
           </SimpleGrid>
         )}
-        <SimpleGrid columns={2} py={3} borderBottom={'1px solid #CEC9AB'}>
+        <SimpleGrid
+          columns={2}
+          py={3}
+          borderBottom={'1px solid #CEC9AB'}
+          fontFamily={'Alltaf-Bold'}
+        >
           <Box
-            fontSize={'xl'}
+            fontSize={'lg'}
             textTransform={'uppercase'}
             fontWeight={'normal'}
           >
             {'Total'}
           </Box>
           <Box
-            fontSize={'xl'}
+            fontSize={'lg'}
             textAlign={'right'}
             fontVariantNumeric={'tabular-nums'}
           >

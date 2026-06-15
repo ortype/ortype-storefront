@@ -74,7 +74,7 @@ const CartContainer = ({
           {`Cart`}
           <Float>
             <Circle
-              fontSize={'md'}
+              fontSize={'sm'}
               // size={5}
               width={
                 itemsCount < 10

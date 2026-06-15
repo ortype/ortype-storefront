@@ -5,11 +5,15 @@ import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
 
 interface Props {
+  label?: string
+  info?: string
   licenseSize: CompanySize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
 }
 
 export const LicenseSizeList: React.FC<Props> = ({
+  label,
+  info,
   licenseSize,
   setLicenseSize,
 }) => {
@@ -41,7 +45,9 @@ export const LicenseSizeList: React.FC<Props> = ({
         variant={'outline'}
         size={'lg'}
       >
-        <FieldsetLegend>{'3. How big is your company?'}</FieldsetLegend>
+        <FieldsetLegend info={info}>
+          {label || '3. How big is your company?'}
+        </FieldsetLegend>
         <Fieldset.Content asChild>
           <VStack mt={1} gap={'3px'}>
             {sizes.map((size) => (

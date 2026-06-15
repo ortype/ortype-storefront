@@ -1,1 +1,1 @@
-{ "overloadClientMethods": true }
+{ "overloadClientMethods": true, "generates": "./src/sanity.types.ts" }

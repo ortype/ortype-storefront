@@ -23,7 +23,39 @@ const GROUPS = [
     name: 'discounts',
     title: 'Discounts',
   },
+  {
+    name: 'labels',
+    title: 'Buy & Cart Labels',
+  },
 ]
+
+const labelWithInfo = (name: string, title: string) =>
+  defineField({
+    name,
+    title,
+    type: 'object',
+    options: { collapsible: true, collapsed: false },
+    fields: [
+      defineField({ name: 'label', title: 'Label', type: 'string' }),
+      defineField({
+        name: 'info',
+        title: 'Info popup',
+        description: 'Optional text shown in the info tooltip',
+        type: 'text',
+        rows: 3,
+      }),
+    ],
+    preview: {
+      select: { title: 'label', subtitle: 'info' },
+      prepare(selection) {
+        const { title, subtitle } = selection
+        return {
+          title: title || '(no label)',
+          subtitle: subtitle || undefined,
+        }
+      },
+    },
+  })
 
 export default defineType({
   name: 'settings',
@@ -198,6 +230,37 @@ export default defineType({
             },
           },
         }),
+      ],
+    }),
+    defineField({
+      name: 'buyPage',
+      title: 'Buy page labels',
+      description: 'Editable labels and info popups for the /buy page',
+      type: 'object',
+      group: 'labels',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        labelWithInfo('licenseHolder', 'License owner'),
+        labelWithInfo('licenseType', 'License type'),
+        labelWithInfo('companySize', 'Company size'),
+        labelWithInfo('fonts', 'Fonts'),
+      ],
+    }),
+    defineField({
+      name: 'cartPage',
+      title: 'Cart page labels',
+      description: 'Editable labels and info popups for the /cart page',
+      type: 'object',
+      group: 'labels',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        labelWithInfo('licenseHolder', 'License holder'),
+        labelWithInfo('companySize', 'Company size'),
+        labelWithInfo('fonts', 'Fonts'),
+        labelWithInfo('licenseType', 'License type'),
+        labelWithInfo('price', 'Price'),
+        labelWithInfo('addMoreStyles', 'Add more styles'),
+        labelWithInfo('bundleHint', 'Bundle discount hint'),
       ],
     }),
   ],

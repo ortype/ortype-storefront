@@ -24,8 +24,9 @@ const MAX_NAME_LENGTH = 100
 
 interface Props {
   label?: string
+  info?: string
 }
-const LicenseOwnerInput: React.FC<Props> = ({ label }) => {
+const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { order, setLicenseOwner } = useOrderContext()
   const {
@@ -70,7 +71,9 @@ const LicenseOwnerInput: React.FC<Props> = ({ label }) => {
   return (
     <form onSubmit={onSubmit}>
       <Fieldset.Root invalid={!!errors.full_name}>
-        <FieldsetLegend>{label || '1. License Owner/Company*'}</FieldsetLegend>
+        <FieldsetLegend info={info}>
+          {label || '1. License Owner/Company*'}
+        </FieldsetLegend>
         <Fieldset.Content asChild>
           <Input
             {...register('full_name', {

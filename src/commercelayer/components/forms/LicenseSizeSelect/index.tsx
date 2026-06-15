@@ -12,11 +12,15 @@ import { createListCollection, Fieldset } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 interface Props {
+  label?: string
+  info?: string
   licenseSize: CompanySize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
 }
 
 export const LicenseSizeSelect: React.FC<Props> = ({
+  label,
+  info,
   licenseSize,
   setLicenseSize,
 }) => {
@@ -53,7 +57,9 @@ export const LicenseSizeSelect: React.FC<Props> = ({
 
   return (
     <Fieldset.Root>
-      <FieldsetLegend>{'Company size of the license owner'}</FieldsetLegend>
+      <FieldsetLegend info={info}>
+        {label || 'Company size of the license owner'}
+      </FieldsetLegend>
       <Fieldset.Content asChild>
         <SelectRoot
           mt={1}

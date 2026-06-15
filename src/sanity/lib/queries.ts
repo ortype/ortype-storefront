@@ -1,5 +1,13 @@
 import { defineQuery, PortableTextBlock } from 'next-sanity'
 
+// src/sanity/lib/queries.ts — instead of hand-declaring the 4 interfaces
+import type { UiLabelsQueryResult } from '@/types'
+
+export type UiLabels = NonNullable<UiLabelsQueryResult>
+export type BuyLabels = NonNullable<UiLabels['buyPage']>
+export type CartLabels = NonNullable<UiLabels['cartPage']>
+export type LabelWithInfo = NonNullable<BuyLabels['licenseOwner']>
+
 const imageFields = `
   _type,
   hotspot,
@@ -125,12 +133,21 @@ export interface Settings {
   }
   sizes?: CompanySize[]
   media?: MediaType[]
+  buyPage?: BuyLabels
+  cartPage?: CartLabels
 }
 
 export const licenseMetricsQuery = defineQuery(`
 *[_type == "settings"][0]{
   "sizes": sizes[]{value, label, modifier},
   "media": media[]{_key, value, label}
+}
+`)
+
+export const uiLabelsQuery = defineQuery(`
+*[_type == "settings"][0]{
+  buyPage,
+  cartPage
 }
 `)
 

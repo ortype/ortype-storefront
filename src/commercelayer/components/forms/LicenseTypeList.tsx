@@ -11,6 +11,8 @@ import { SkuOption } from '@commercelayer/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
 
 interface Props {
+  label?: string
+  info?: string
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
   font: any
@@ -31,6 +33,8 @@ const mapSkuOptionsToTypes = (options: SkuOption[]): Type[] => {
 }
 
 export const LicenseTypeList: React.FC<Props> = ({
+  label,
+  info,
   font,
   skuOptions,
   selectedSkuOptions,
@@ -96,7 +100,9 @@ export const LicenseTypeList: React.FC<Props> = ({
 
   return (
     <Fieldset.Root>
-      <FieldsetLegend>{'2. A license for?'}</FieldsetLegend>
+      <FieldsetLegend info={info}>
+        {label || '2. A license for?'}
+      </FieldsetLegend>
       <Fieldset.Content asChild>
         <CheckboxGroup
           value={selectedTypes?.map((option) => option.value) || []}

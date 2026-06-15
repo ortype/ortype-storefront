@@ -41,6 +41,7 @@ export const Buy = () => {
     selectedSkuOptions,
     setSelectedSkuOptions,
     allLicenseInfoSet,
+    buyLabels,
   } = useOrderContext()
   const { font, summary } = useBuyContext()
 
@@ -75,10 +76,15 @@ export const Buy = () => {
       >
         <SimpleGrid columns={2} gap={[4, null, null, null, null, null, 8]}>
           <GridItem colSpan={2}>
-            <LicenseOwnerInput />
+            <LicenseOwnerInput
+              label={buyLabels?.licenseOwner?.label}
+              info={buyLabels?.licenseOwner?.info}
+            />
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
             <LicenseTypeList
+              label={buyLabels?.licenseType?.label}
+              info={buyLabels?.licenseType?.info}
               font={font}
               skuOptions={skuOptions}
               selectedSkuOptions={selectedSkuOptions}
@@ -104,13 +110,17 @@ export const Buy = () => {
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
             <LicenseSizeList
+              label={buyLabels?.companySize?.label}
+              info={buyLabels?.companySize?.info}
               setLicenseSize={setLicenseSize}
               licenseSize={licenseSize}
             />
           </GridItem>
           <GridItem colSpan={2}>
             <Fieldset.Root>
-              <FieldsetLegend>{'4. Typefaces'}</FieldsetLegend>
+              <FieldsetLegend>
+                {buyLabels?.fonts?.label || '4. Typefaces'}
+              </FieldsetLegend>
               <Fieldset.Content
                 asChild
                 p={0}
