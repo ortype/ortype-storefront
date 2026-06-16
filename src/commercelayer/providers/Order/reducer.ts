@@ -2,7 +2,7 @@ import {
   LicenseOwnerInput,
   OrderStateData,
 } from '@/commercelayer/providers/Order'
-import type { LicenseSize, SelectionBuffer, StyleEntry } from './types'
+import type { CommittedGroups, LicenseSize, SelectionBuffer, StyleEntry } from './types'
 import { Order, SkuOption } from '@commercelayer/sdk'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
@@ -21,10 +21,14 @@ export enum ActionType {
   TOGGLE_STYLE = 'TOGGLE_STYLE',
   TOGGLE_GROUP = 'TOGGLE_GROUP',
   SET_STYLE_LICENSE_TYPES = 'SET_STYLE_LICENSE_TYPES',
+  SET_GROUP_LICENSE_TYPES = 'SET_GROUP_LICENSE_TYPES',
   HYDRATE_SELECTIONS = 'HYDRATE_SELECTIONS',
   CLEAR_SELECTIONS = 'CLEAR_SELECTIONS',
-  SET_COMMITTED = 'SET_COMMITTED',
-  CLEAR_COMMITTED = 'CLEAR_COMMITTED',
+  // Group-level commit tracking
+  SET_COMMITTED_GROUP = 'SET_COMMITTED_GROUP',
+  REMOVE_COMMITTED_GROUP = 'REMOVE_COMMITTED_GROUP',
+  HYDRATE_COMMITTED_GROUPS = 'HYDRATE_COMMITTED_GROUPS',
+  CLEAR_ALL_COMMITTED = 'CLEAR_ALL_COMMITTED',
 }
 
 export type Action =
@@ -131,6 +135,13 @@ export type Action =
       }
     }
   | {
+      type: ActionType.SET_GROUP_LICENSE_TYPES
+      payload: {
+        parentUid: string
+        licenseTypes: string[]
+      }
+    }
+  | {
       type: ActionType.HYDRATE_SELECTIONS
       payload: {
         selections: SelectionBuffer
@@ -138,12 +149,26 @@ export type Action =
     }
   | { type: ActionType.CLEAR_SELECTIONS }
   | {
-      type: ActionType.SET_COMMITTED
+      type: ActionType.SET_COMMITTED_GROUP
       payload: {
-        committedSelectionsHash: string
+        parentUid: string
+        hash: string
+        lineItemIds: string[]
       }
     }
-  | { type: ActionType.CLEAR_COMMITTED }
+  | {
+      type: ActionType.REMOVE_COMMITTED_GROUP
+      payload: {
+        parentUid: string
+      }
+    }
+  | {
+      type: ActionType.HYDRATE_COMMITTED_GROUPS
+      payload: {
+        committedGroups: CommittedGroups
+      }
+    }
+  | { type: ActionType.CLEAR_ALL_COMMITTED }
 
 /** Count total styles across all parentUid groups */
 function countSelections(selections: SelectionBuffer): number {
@@ -357,6 +382,27 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         },
       }
     }
+    case ActionType.SET_GROUP_LICENSE_TYPES: {
+      const { parentUid, licenseTypes } = action.payload
+      const group = state.selections[parentUid]
+      if (!group) return state
+
+      const updatedGroup = Object.entries(group).reduce<typeof group>(
+        (acc, [skuCode, entry]) => {
+          acc[skuCode] = { ...entry, licenseTypes }
+          return acc
+        },
+        {}
+      )
+
+      return {
+        ...state,
+        selections: {
+          ...state.selections,
+          [parentUid]: updatedGroup,
+        },
+      }
+    }
     case ActionType.HYDRATE_SELECTIONS: {
       const { selections } = action.payload
       return {
@@ -370,22 +416,36 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         ...state,
         selections: {},
         itemsCount: 0,
-        isCommitted: false,
-        committedSelectionsHash: '',
+        committedGroups: {},
       }
     }
-    case ActionType.SET_COMMITTED: {
+    case ActionType.SET_COMMITTED_GROUP: {
+      const { parentUid, hash, lineItemIds } = action.payload
       return {
         ...state,
-        isCommitted: true,
-        committedSelectionsHash: action.payload.committedSelectionsHash,
+        committedGroups: {
+          ...state.committedGroups,
+          [parentUid]: { hash, lineItemIds },
+        },
       }
     }
-    case ActionType.CLEAR_COMMITTED: {
+    case ActionType.REMOVE_COMMITTED_GROUP: {
+      const { [action.payload.parentUid]: _, ...rest } = state.committedGroups
       return {
         ...state,
-        isCommitted: false,
-        committedSelectionsHash: '',
+        committedGroups: rest,
+      }
+    }
+    case ActionType.HYDRATE_COMMITTED_GROUPS: {
+      return {
+        ...state,
+        committedGroups: action.payload.committedGroups,
+      }
+    }
+    case ActionType.CLEAR_ALL_COMMITTED: {
+      return {
+        ...state,
+        committedGroups: {},
       }
     }
     default:

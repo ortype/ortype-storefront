@@ -12,11 +12,17 @@ interface Props {
 }
 
 export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
-  const { commitSelections } = useOrderContext()
+  const { commitSelections, isFullyCommitted } = useOrderContext()
   const router = useRouter()
   const [isCommitting, setIsCommitting] = useState(false)
 
   const handleCheckout = async () => {
+    // Fast path: all groups already committed and clean
+    if (isFullyCommitted) {
+      router.push(href || `/checkout/${orderId}`)
+      return
+    }
+
     setIsCommitting(true)
     try {
       const result = await commitSelections()

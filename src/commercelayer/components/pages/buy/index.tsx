@@ -18,7 +18,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 import Typefaces from './typefaces'
 
 interface FontVariant {
@@ -44,8 +44,15 @@ export const Buy = () => {
     allLicenseInfoSet,
     isCreatingOrder,
     buyLabels,
+    isGroupCommitted,
+    commitGroup,
   } = useOrderContext()
   const { font, summary } = useBuyContext()
+
+  // Add to cart / Go to cart button state
+  const [isCommitting, setIsCommitting] = useState(false)
+  const fontUid = font.uid!
+  const groupIsCommitted = isGroupCommitted(fontUid)
 
   const licensesCount = selectedSkuOptions?.length
 
@@ -137,7 +144,7 @@ export const Buy = () => {
             </Fieldset.Root>
           </GridItem>
         </SimpleGrid>
-        {isCreatingOrder && (
+        {(isCreatingOrder || isCommitting) && (
           <Flex
             pos={'absolute'}
             inset={0}
@@ -177,20 +184,49 @@ export const Buy = () => {
             >
               {'Summary'}
             </Text>
-            <Button
-              asChild
-              variant={'solid'}
-              bg={'red'}
-              borderRadius={'5rem'}
-              size={'sm'}
-              fontSize={'md'}
-              color={'white'}
-              disabled={!allLicenseInfoSet}
-              gap={1}
-              _hover={{ bg: 'black' }}
-            >
-              <Link href={'/cart/'}>{'Go to cart'}</Link>
-            </Button>
+            {groupIsCommitted ? (
+              <Button
+                asChild
+                variant={'solid'}
+                bg={'black'}
+                borderRadius={'5rem'}
+                size={'sm'}
+                fontSize={'md'}
+                color={'white'}
+                gap={1}
+                _hover={{ bg: 'red' }}
+              >
+                <Link href={'/cart/'}>{'Go to cart'}</Link>
+              </Button>
+            ) : (
+              <Button
+                variant={'solid'}
+                bg={'red'}
+                borderRadius={'5rem'}
+                size={'sm'}
+                fontSize={'md'}
+                color={'white'}
+                disabled={!allLicenseInfoSet || isCommitting}
+                gap={1}
+                _hover={{ bg: 'black' }}
+                onClick={async () => {
+                  setIsCommitting(true)
+                  try {
+                    await commitGroup(fontUid)
+                  } catch (e) {
+                    console.error('[Buy] commitGroup error:', e)
+                  } finally {
+                    setIsCommitting(false)
+                  }
+                }}
+              >
+                {isCommitting ? (
+                  <><Spinner size={'xs'} /> {'Adding...'}</>
+                ) : (
+                  'Add to cart'
+                )}
+              </Button>
+            )}
           </Flex>
           <Flex
             w={'full'}

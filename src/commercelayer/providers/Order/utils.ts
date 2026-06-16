@@ -24,7 +24,9 @@ import {
 import type { Dispatch } from 'react'
 import type { BaseError } from '../customer'
 import {
+  type LicenseSize,
   type SelectionBuffer,
+  type StyleEntry,
   type UpdateLineItemLicenseTypes,
   type UpdateLineItemsLicenseSize,
 } from './types'
@@ -35,6 +37,31 @@ import {
  */
 export function computeSelectionsHash(selections: SelectionBuffer): string {
   return JSON.stringify(selections)
+}
+/**
+ * Compute a stable hash of a single parentUid group for per-group
+ * commit tracking. Uses sorted keys for deterministic output.
+ */
+export function computeGroupHash(
+  group: { [skuCode: string]: StyleEntry },
+  licenseSize?: LicenseSize
+): string {
+  const sorted = Object.keys(group)
+    .sort()
+    .reduce<Record<string, StyleEntry>>((acc, key) => {
+      acc[key] = group[key]
+      return acc
+    }, {})
+  return JSON.stringify({
+    group: sorted,
+    licenseSize: licenseSize
+      ? {
+          label: licenseSize.label,
+          value: licenseSize.value,
+          modifier: licenseSize.modifier,
+        }
+      : undefined,
+  })
 }
 
 type ResourceIncludedLoaded = Partial<Record<ResourceIncluded, boolean>>

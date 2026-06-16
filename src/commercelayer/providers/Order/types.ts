@@ -53,6 +53,18 @@ export type GroupPriceSummary = {
   fullPrice: number
   totalPrice: number
 }
+/** Tracks a single committed parentUid group on the CL order */
+export type CommittedGroup = {
+  /** Hash of the group's buffer state at commit time */
+  hash: string
+  /** CL line item IDs belonging to this group */
+  lineItemIds: string[]
+}
+
+/** Per-parentUid committed state, mirrors the SelectionBuffer shape */
+export type CommittedGroups = {
+  [parentUid: string]: CommittedGroup
+}
 
 export interface UpdateLineItemLicenseTypes {
   cl: CommerceLayerClient

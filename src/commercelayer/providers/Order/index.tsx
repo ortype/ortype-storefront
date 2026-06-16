@@ -3,13 +3,13 @@ import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
 import { ActionType, reducer } from '@/commercelayer/providers/Order/reducer'
 import utils, {
   calculateSettings,
-  computeSelectionsHash,
+  computeGroupHash,
 } from '@/commercelayer/providers/Order/utils'
+import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
-import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
-import { executeBatch, type Task } from '@commercelayer/sdk-utils'
+import { retryCall } from '@/commercelayer/utils/retryCall'
 import {
   type BuyLabels,
   type CartLabels,
@@ -18,12 +18,7 @@ import {
   type MediaType,
   type UiLabels,
 } from '@/sanity/lib/queries'
-import {
-  LineItem,
-  OrderUpdate,
-  SkuOption,
-  type Order,
-} from '@commercelayer/sdk'
+import { OrderUpdate, SkuOption, type Order } from '@commercelayer/sdk'
 import type { ChildrenElement } from 'CustomApp'
 import { getOrder } from './utils/getOrder'
 
@@ -38,6 +33,12 @@ import {
   useState,
 } from 'react'
 import { OrderStorageContext } from './Storage'
+import type {
+  CommittedGroups,
+  LicenseSize,
+  SelectionBuffer,
+  StyleEntry,
+} from './types'
 
 /*
 1. Clean separation between utils and provider:
@@ -56,8 +57,12 @@ import { OrderStorageContext } from './Storage'
 
 export type LicenseOwnerInput = Pick<LicenseOwner, 'is_client' | 'full_name'>
 
-export type { LicenseSize, StyleEntry, SelectionBuffer } from './types'
-import type { LicenseSize, StyleEntry, SelectionBuffer } from './types'
+export type {
+  CommittedGroups,
+  LicenseSize,
+  SelectionBuffer,
+  StyleEntry,
+} from './types'
 
 interface UpdateOrderArgs {
   id: string
@@ -125,7 +130,17 @@ type OrderProviderData = {
   setLicenseOwner: (params: { licenseOwner?: LicenseOwnerInput }) => void
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
   selections: SelectionBuffer
+  committedGroups: CommittedGroups
+  /** True when every buffer group has a matching committed hash and no orphaned committed groups */
+  isFullyCommitted: boolean
+  /** Alias for isFullyCommitted (backward compat) */
   isCommitted: boolean
+  /** True when at least one committed group exists but the buffer has diverged */
+  isDirty: boolean
+  /** Check if a specific parentUid group is committed and clean */
+  isGroupCommitted: (parentUid: string) => boolean
+  /** Check if a specific parentUid group was committed but has since changed */
+  isGroupDirty: (parentUid: string) => boolean
   toggleStyle: (params: {
     parentUid: string
     skuCode: string
@@ -140,6 +155,12 @@ type OrderProviderData = {
     skuCode: string
     licenseTypes: string[]
   }) => void
+  /** Commit a single parentUid group to CL line items */
+  commitGroup: (parentUid: string) => Promise<{
+    success: boolean
+    error?: AddToCartError
+  }>
+  /** Commit all dirty/new groups; skip clean groups */
   commitSelections: () => Promise<{
     success: boolean
     error?: AddToCartError
@@ -173,8 +194,7 @@ export type OrderStateData = {
   isLoading: boolean
   isInvalid: boolean
   selections: SelectionBuffer
-  isCommitted: boolean
-  committedSelectionsHash: string
+  committedGroups: CommittedGroups
 }
 
 const initialState: OrderStateData = {
@@ -194,8 +214,7 @@ const initialState: OrderStateData = {
   isLoading: true,
   isInvalid: false,
   selections: {},
-  isCommitted: false,
-  committedSelectionsHash: '',
+  committedGroups: {},
 }
 
 const OrderContext = createContext<OrderProviderData>(
@@ -575,7 +594,10 @@ export function OrderProvider({
       if (!licenseOwner) return
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log('[OrderProvider] setLicenseOwner (state-only):', licenseOwner)
+        console.log(
+          '[OrderProvider] setLicenseOwner (state-only):',
+          licenseOwner
+        )
       }
 
       dispatch({
@@ -632,6 +654,17 @@ export function OrderProvider({
           },
         },
       })
+
+      const parentUid = params.font?.uid
+      if (parentUid) {
+        dispatch({
+          type: ActionType.SET_GROUP_LICENSE_TYPES,
+          payload: {
+            parentUid,
+            licenseTypes: params.selectedSkuOptions.map((o) => o.reference),
+          },
+        })
+      }
     },
     []
   )
@@ -702,6 +735,93 @@ export function OrderProvider({
             }
           } catch {
             // Corrupted metadata — ignore
+          }
+        }
+
+        // Hydrate committedGroups: localStorage (primary) > metadata (fallback)
+        let committedHydrated = false
+        try {
+          const storedCommitted = localStorage.getItem(
+            `${persistKey}_committed_groups`
+          )
+          if (storedCommitted) {
+            const parsedCommitted = JSON.parse(
+              storedCommitted
+            ) as CommittedGroups
+            if (Object.keys(parsedCommitted).length > 0) {
+              // Validate lineItemIds still exist on the order
+              const orderLineItemIds = new Set(
+                (order.line_items ?? [])
+                  .filter(
+                    (li) =>
+                      li.item_type === 'skus' || li.item_type === 'bundles'
+                  )
+                  .map((li) => li.id)
+              )
+              const validatedGroups: CommittedGroups = {}
+              for (const [uid, group] of Object.entries(parsedCommitted)) {
+                const validIds = group.lineItemIds.filter((id) =>
+                  orderLineItemIds.has(id)
+                )
+                if (validIds.length > 0) {
+                  validatedGroups[uid] = { ...group, lineItemIds: validIds }
+                }
+              }
+              if (Object.keys(validatedGroups).length > 0) {
+                dispatch({
+                  type: ActionType.HYDRATE_COMMITTED_GROUPS,
+                  payload: { committedGroups: validatedGroups },
+                })
+                committedHydrated = true
+                if (process.env.NODE_ENV !== 'production') {
+                  console.log(
+                    '[OrderProvider] 🔄 Hydrated committedGroups from localStorage',
+                    {
+                      groups: Object.keys(validatedGroups).length,
+                    }
+                  )
+                }
+              }
+            }
+          }
+        } catch {
+          /* localStorage unavailable */
+        }
+
+        if (!committedHydrated && order.metadata?.cart_committed_groups) {
+          try {
+            const metaCommitted = JSON.parse(
+              order.metadata.cart_committed_groups
+            ) as CommittedGroups
+            const orderLineItemIds = new Set(
+              (order.line_items ?? [])
+                .filter(
+                  (li) => li.item_type === 'skus' || li.item_type === 'bundles'
+                )
+                .map((li) => li.id)
+            )
+            const validatedGroups: CommittedGroups = {}
+            for (const [uid, group] of Object.entries(metaCommitted)) {
+              const validIds = group.lineItemIds.filter((id) =>
+                orderLineItemIds.has(id)
+              )
+              if (validIds.length > 0) {
+                validatedGroups[uid] = { ...group, lineItemIds: validIds }
+              }
+            }
+            if (Object.keys(validatedGroups).length > 0) {
+              dispatch({
+                type: ActionType.HYDRATE_COMMITTED_GROUPS,
+                payload: { committedGroups: validatedGroups },
+              })
+              if (process.env.NODE_ENV !== 'production') {
+                console.log(
+                  '[OrderProvider] 🔄 Hydrated committedGroups from metadata'
+                )
+              }
+            }
+          } catch {
+            /* corrupted metadata */
           }
         }
 
@@ -841,12 +961,28 @@ export function OrderProvider({
   useEffect(() => {
     if (!selectionsInitializedRef.current) return
     try {
-      const serialized = JSON.stringify(state.selections)
-      localStorage.setItem(SELECTIONS_STORAGE_KEY, serialized)
+      localStorage.setItem(
+        SELECTIONS_STORAGE_KEY,
+        JSON.stringify(state.selections)
+      )
     } catch {
-      // localStorage unavailable (SSR, private browsing quota, etc.)
+      /* localStorage unavailable */
     }
   }, [state.selections, SELECTIONS_STORAGE_KEY])
+
+  // Immediate localStorage write on every committedGroups change
+  const COMMITTED_GROUPS_STORAGE_KEY = `${persistKey}_committed_groups`
+  useEffect(() => {
+    if (!selectionsInitializedRef.current) return
+    try {
+      localStorage.setItem(
+        COMMITTED_GROUPS_STORAGE_KEY,
+        JSON.stringify(state.committedGroups)
+      )
+    } catch {
+      /* localStorage unavailable */
+    }
+  }, [state.committedGroups, COMMITTED_GROUPS_STORAGE_KEY])
 
   // Immediate localStorage write on every license change (owner/size/types).
   // Mirrors the selections write so partial license info survives a reload
@@ -876,21 +1012,94 @@ export function OrderProvider({
   // metadata. Guarded by the init refs and only runs once an order exists.
   const metadataSyncRef = useRef<ReturnType<typeof setTimeout>>()
   const lastSyncedHashRef = useRef('')
-
-  useEffect(() => {
-    if (!selectionsInitializedRef.current && !licenseInitializedRef.current)
-      return
-    if (!state.orderId || !state.order?.id) return
-
+  const getOrderMetadataSyncHash = useCallback(() => {
     const licenseMetadata = {
       owner: state.licenseOwner,
       size: state.licenseSize,
       types: state.selectedSkuOptions.map((o) => o.reference),
     }
-    const currentHash = JSON.stringify({
+
+    return JSON.stringify({
+      committedGroups: state.committedGroups,
       selections: state.selections,
       license: licenseMetadata,
     })
+  }, [
+    state.committedGroups,
+    state.selections,
+    state.licenseOwner,
+    state.licenseSize,
+    state.selectedSkuOptions,
+  ])
+
+  const syncOrderMetadata = useCallback(
+    async (params?: {
+      order?: Order
+      selections?: SelectionBuffer
+      committedGroups?: CommittedGroups
+    }): Promise<Order | undefined> => {
+      const cl = config != null ? getCommerceLayer(config) : undefined
+      const orderToSync = params?.order ?? state.order
+      if (!cl || !orderToSync?.id) return orderToSync
+
+      if (metadataSyncRef.current) {
+        clearTimeout(metadataSyncRef.current)
+        metadataSyncRef.current = undefined
+      }
+
+      const licenseMetadata = {
+        owner: state.licenseOwner,
+        size: state.licenseSize,
+        types: state.selectedSkuOptions.map((o) => o.reference),
+      }
+      const selections = params?.selections ?? state.selections
+      const committedGroups = params?.committedGroups ?? state.committedGroups
+
+      const payload = {
+        ...orderToSync.metadata,
+        license: {
+          ...(orderToSync.metadata?.license || {}),
+          ...licenseMetadata,
+        },
+        cart_selections: JSON.stringify(selections),
+        cart_committed_groups: JSON.stringify(committedGroups),
+      }
+
+      const updatedOrder = await cl.orders.update({
+        id: orderToSync.id,
+        metadata: payload,
+      })
+
+      dispatch({
+        type: ActionType.UPDATE_ORDER,
+        payload: { order: updatedOrder },
+      })
+
+      lastSyncedHashRef.current = JSON.stringify({
+        committedGroups,
+        selections,
+        license: licenseMetadata,
+      })
+
+      return updatedOrder
+    },
+    [
+      config,
+      state.order,
+      state.licenseOwner,
+      state.licenseSize,
+      state.selectedSkuOptions,
+      state.selections,
+      state.committedGroups,
+      getOrderMetadataSyncHash,
+    ]
+  )
+
+  useEffect(() => {
+    if (!selectionsInitializedRef.current && !licenseInitializedRef.current)
+      return
+    if (!state.orderId || !state.order?.id) return
+    const currentHash = getOrderMetadataSyncHash()
     if (currentHash === lastSyncedHashRef.current) return
 
     if (metadataSyncRef.current) {
@@ -899,24 +1108,8 @@ export function OrderProvider({
 
     metadataSyncRef.current = setTimeout(async () => {
       try {
-        const cl = config != null ? getCommerceLayer(config) : undefined
-        if (!cl || !state.order?.id) return
-
-        const payload = {
-          ...state.order.metadata,
-          license: {
-            ...(state.order.metadata?.license || {}),
-            ...licenseMetadata,
-          },
-          cart_selections: JSON.stringify(state.selections),
-        }
-
-        await cl.orders.update({
-          id: state.order.id,
-          metadata: payload,
-        })
-
-        lastSyncedHashRef.current = currentHash
+        const updatedOrder = await syncOrderMetadata()
+        if (!updatedOrder) return
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(
@@ -940,12 +1133,14 @@ export function OrderProvider({
     }
   }, [
     state.selections,
+    state.committedGroups,
     state.licenseOwner,
     state.licenseSize,
     state.selectedSkuOptions,
     state.orderId,
     state.order?.id,
-    config,
+    getOrderMetadataSyncHash,
+    syncOrderMetadata,
   ])
 
   // --- Selection buffer methods (pure state updates, no API calls) ---
@@ -991,277 +1186,429 @@ export function OrderProvider({
     []
   )
 
-  const commitSelections = useCallback(async (): Promise<{
-    success: boolean
-    error?: AddToCartError
-  }> => {
-    dispatch({ type: ActionType.START_LOADING })
-
-    try {
-      const cl = config != null ? getCommerceLayer(config) : undefined
-      if (!cl) {
-        throw new Error('Commerce Layer client not initialized')
+  // --- Concurrency helper: run promises in batches of N ---
+  const runConcurrent = useCallback(
+    async <T,>(
+      items: (() => Promise<T>)[],
+      concurrency: number
+    ): Promise<PromiseSettledResult<T>[]> => {
+      const results: PromiseSettledResult<T>[] = []
+      for (let i = 0; i < items.length; i += concurrency) {
+        const batch = items.slice(i, i + concurrency)
+        const batchResults = await Promise.allSettled(batch.map((fn) => fn()))
+        results.push(...batchResults)
       }
+      return results
+    },
+    []
+  )
 
-      // Safety net: ensure an order exists. Normally the lazy-creation effect
-      // already created it once all license info was set, but a very fast
-      // checkout click could arrive first.
-      let commitOrder = state.order
-      let commitOrderId = state.orderId
-      if (!commitOrderId || !commitOrder?.id) {
-        const created = await createOrder({
-          customMetadata: {
-            license: {
-              owner: state.licenseOwner,
-              size: state.licenseSize,
-              types: state.selectedSkuOptions.map((o) => o.reference),
-            },
+  const LINE_ITEM_CONCURRENCY = 3
+  const OPTION_CONCURRENCY = 1
+
+  /**
+   * Ensure a CL order exists, creating one if needed.
+   * Returns { cl, orderId, order } or throws.
+   */
+  const ensureOrder = useCallback(async () => {
+    const cl = config != null ? getCommerceLayer(config) : undefined
+    if (!cl) throw new Error('Commerce Layer client not initialized')
+
+    let commitOrder = state.order
+    let commitOrderId = state.orderId
+    if (!commitOrderId || !commitOrder?.id) {
+      const created = await createOrder({
+        customMetadata: {
+          license: {
+            owner: state.licenseOwner,
+            size: state.licenseSize,
+            types: state.selectedSkuOptions.map((o) => o.reference),
           },
-        })
-        if (!created.success || !created.orderId) {
-          throw new Error('Failed to create order before committing selections')
+        },
+      })
+      if (!created.success || !created.orderId) {
+        throw new Error('Failed to create order before committing')
+      }
+      const refetched = await fetchOrder({ orderId: created.orderId })
+      commitOrder = refetched.order ?? created.order
+      commitOrderId = created.orderId
+    }
+    if (!commitOrderId || !commitOrder?.id) {
+      throw new Error('Order must exist before committing')
+    }
+    return { cl, orderId: commitOrderId, order: commitOrder }
+  }, [
+    config,
+    state.order,
+    state.orderId,
+    state.licenseOwner,
+    state.licenseSize,
+    state.selectedSkuOptions,
+    createOrder,
+    fetchOrder,
+  ])
+
+  /**
+   * Commit a single parentUid group to CL line items.
+   * Deletes any previously committed line items for this group,
+   * creates new ones with retryCall, and tracks the result.
+   */
+  const commitGroup = useCallback(
+    async (
+      parentUid: string
+    ): Promise<{ success: boolean; error?: AddToCartError }> => {
+      dispatch({ type: ActionType.START_LOADING })
+
+      try {
+        const { cl, orderId, order: ensuredOrder } = await ensureOrder()
+        await syncOrderMetadata({ order: ensuredOrder })
+        const commitOrder = ensuredOrder
+        const commitLicenseSize = state.licenseSize
+        const groupStyles = state.selections[parentUid]
+        if (!groupStyles || Object.keys(groupStyles).length === 0) {
+          throw new Error(`No selections for group ${parentUid}`)
         }
-        const refetched = await fetchOrder({ orderId: created.orderId })
-        commitOrder = refetched.order ?? created.order
-        commitOrderId = created.orderId
-      }
-      if (!commitOrderId || !commitOrder?.id) {
-        throw new Error('Order must exist before committing selections')
-      }
 
-      const selections = state.selections
-      if (Object.keys(selections).length === 0) {
-        throw new Error('No selections to commit')
-      }
+        const groupSize = Object.keys(groupStyles).length
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[OrderProvider] commitSelections: Starting commit', {
-          orderId: state.orderId,
-          groupCount: Object.keys(selections).length,
-          totalStyles: Object.values(selections).reduce(
-            (total, group) => total + Object.keys(group).length,
-            0
-          ),
-        })
-      }
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[OrderProvider] commitGroup: ${parentUid}`, {
+            styleCount: groupSize,
+            orderId,
+          })
+        }
 
-      // 1. Disable auto-refresh to prevent N recalculations
-      await cl.orders.update({ id: commitOrder.id, autorefresh: false })
+        // 1. Disable autorefresh
+        await cl.orders.update({ id: commitOrder.id, autorefresh: false })
 
-      // --- Concurrency helper: run promises in batches of N ---
-      const runConcurrent = async <T>(
-        items: (() => Promise<T>)[],
-        concurrency: number
-      ): Promise<PromiseSettledResult<T>[]> => {
-        const results: PromiseSettledResult<T>[] = []
-        for (let i = 0; i < items.length; i += concurrency) {
-          const batch = items.slice(i, i + concurrency)
-          const batchResults = await Promise.allSettled(
-            batch.map((fn) => fn())
+        // 2. Delete existing line items for this group
+        const committed = state.committedGroups[parentUid]
+        if (committed?.lineItemIds.length) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(
+              `[OrderProvider] commitGroup: Deleting ${committed.lineItemIds.length} old items for ${parentUid}`
+            )
+          }
+          await runConcurrent(
+            committed.lineItemIds.map((id) => async () => {
+              const result = await retryCall(() => cl.line_items.delete(id))
+              if (!result?.success) {
+                console.warn(`[commitGroup] Failed to delete line item ${id}`)
+              }
+            }),
+            LINE_ITEM_CONCURRENCY
           )
-          results.push(...batchResults)
+        } else {
+          // Fallback: delete by reference_origin in case committedGroups was lost
+          const existing = commitOrder.line_items?.filter(
+            (li) =>
+              li.reference_origin === parentUid &&
+              (li.item_type === 'skus' || li.item_type === 'bundles')
+          )
+          if (existing?.length) {
+            await runConcurrent(
+              existing.map((li) => async () => {
+                const result = await retryCall(() =>
+                  cl.line_items.delete(li.id)
+                )
+                if (!result?.success) {
+                  console.warn(
+                    `[commitGroup] Failed to delete line item ${li.id}`
+                  )
+                }
+              }),
+              LINE_ITEM_CONCURRENCY
+            )
+          }
         }
-        return results
-      }
 
-      const CONCURRENCY = 5
+        // 3. Create line items with retryCall
+        const orderRel = cl.orders.relationship(orderId)
+        const createdLineItems: { id: string; skuCode: string }[] = []
 
-      // 2. Delete any existing shoppable line items (from a previous commit)
-      const existingItems = commitOrder.line_items?.filter(
-        (li) => li.item_type === 'skus' || li.item_type === 'bundles'
-      )
-      if (existingItems?.length) {
+        const lineItemCreators = Object.entries(groupStyles).map(
+          ([skuCode, styleEntry]) =>
+            async () => {
+              const result = await retryCall(() =>
+                cl.line_items.create({
+                  order: orderRel,
+                  sku_code: skuCode,
+                  reference_origin: parentUid,
+                  quantity: 1,
+                  _external_price: true,
+                  metadata: {
+                    parentUid,
+                    parentName: styleEntry.parentName,
+                    defaultVariantId: styleEntry.defaultVariantId,
+                    batchSize: groupSize,
+                    license: {
+                      size: commitLicenseSize,
+                      types: styleEntry.licenseTypes,
+                    },
+                  },
+                })
+              )
+              if (result?.success && result.object) {
+                createdLineItems.push({ id: result.object.id, skuCode })
+              } else {
+                throw new Error(`Failed to create line item for ${skuCode}`)
+              }
+            }
+        )
+
         if (process.env.NODE_ENV !== 'production') {
           console.log(
-            `[OrderProvider] commitSelections: Clearing ${existingItems.length} existing line items (concurrency: ${CONCURRENCY})`
+            `[OrderProvider] commitGroup: Creating ${lineItemCreators.length} line items`
           )
         }
-        await runConcurrent(
-          existingItems.map((li) => () => cl.line_items.delete(li.id)),
-          CONCURRENCY
+
+        const lineItemResults = await runConcurrent(
+          lineItemCreators,
+          LINE_ITEM_CONCURRENCY
         )
-      }
-
-      // 3. Create line items in parallel batches
-      const orderRel = cl.orders.relationship(commitOrderId)
-      const lineItemCreators: (() => Promise<any>)[] = []
-
-      for (const [parentUid, styles] of Object.entries(selections)) {
-        const groupSize = Object.keys(styles).length
-
-        for (const [skuCode, styleEntry] of Object.entries(styles)) {
-          lineItemCreators.push(() =>
-            cl.line_items.create({
-              order: orderRel,
-              sku_code: skuCode,
-              reference_origin: parentUid,
-              quantity: 1,
-              _external_price: true,
-              metadata: {
-                parentUid,
-                parentName: styleEntry.parentName,
-                defaultVariantId: styleEntry.defaultVariantId,
-                batchSize: groupSize,
-                license: {
-                  size: state.licenseSize,
-                  types: styleEntry.licenseTypes,
-                },
-              },
-            })
+        const failedItems = lineItemResults.filter(
+          (r) => r.status === 'rejected'
+        )
+        if (failedItems.length > 0) {
+          console.error(
+            `[commitGroup] ${failedItems.length}/${lineItemCreators.length} line items failed`
           )
         }
-      }
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(
-          `[OrderProvider] commitSelections: Creating ${lineItemCreators.length} line items (concurrency: ${CONCURRENCY})`
-        )
-      }
-
-      const lineItemResults = await runConcurrent(lineItemCreators, CONCURRENCY)
-      const failedLineItems = lineItemResults.filter(
-        (r) => r.status === 'rejected'
-      )
-      if (failedLineItems.length > 0) {
-        console.error(
-          `[commitSelections] ${failedLineItems.length} line items failed to create`
-        )
-      }
-
-      // 4. Create line_item_options in parallel batches
-      const { order: orderWithItems } = await fetchOrder()
-      if (orderWithItems?.line_items?.length) {
-        const optionCreators: (() => Promise<any>)[] = []
-
-        for (const lineItem of orderWithItems.line_items) {
-          if (
-            lineItem.item_type !== 'skus' &&
-            lineItem.item_type !== 'bundles'
-          )
-            continue
-
-          const parentUid = lineItem.metadata?.parentUid ?? ''
-          const skuCode = lineItem.sku_code ?? ''
-          const styleEntry = skuCode
-            ? selections[parentUid]?.[skuCode]
-            : undefined
+        // 4. Create line_item_options with lower concurrency + retryCall
+        const optionCreators: (() => Promise<void>)[] = []
+        for (const { id: lineItemId, skuCode } of createdLineItems) {
+          const styleEntry = groupStyles[skuCode]
           if (!styleEntry) continue
 
           const matchingOptions = state.skuOptions.filter((opt) =>
             styleEntry.licenseTypes.includes(opt.reference)
           )
-
           for (const skuOption of matchingOptions) {
-            optionCreators.push(() =>
-              cl.line_item_options.create({
-                quantity: 1,
-                options: {},
-                sku_option: cl.sku_options.relationship(skuOption.id),
-                line_item: cl.line_items.relationship(lineItem.id),
-              })
-            )
+            optionCreators.push(async () => {
+              const result = await retryCall(() =>
+                cl.line_item_options.create({
+                  quantity: 1,
+                  options: {},
+                  sku_option: cl.sku_options.relationship(skuOption.id),
+                  line_item: cl.line_items.relationship(lineItemId),
+                })
+              )
+              if (!result?.success) {
+                console.warn(
+                  `[commitGroup] Failed to create option for ${skuCode}/${skuOption.reference}`
+                )
+              }
+            })
           }
         }
 
         if (optionCreators.length > 0) {
           if (process.env.NODE_ENV !== 'production') {
             console.log(
-              `[OrderProvider] commitSelections: Creating ${optionCreators.length} line_item_options (concurrency: ${CONCURRENCY})`
+              `[OrderProvider] commitGroup: Creating ${optionCreators.length} options (concurrency: ${OPTION_CONCURRENCY})`
             )
           }
-          await runConcurrent(optionCreators, CONCURRENCY)
+          await runConcurrent(optionCreators, OPTION_CONCURRENCY)
         }
-      }
 
-      // 5. Re-enable auto-refresh and trigger a single refresh
-      await forceOrderAutorefresh({
-        client: cl,
-        order: { ...commitOrder, autorefresh: false },
-      })
-
-      // 6. Fetch the fully refreshed order
-      const { order: refreshedOrder } = await fetchOrder()
-      if (!refreshedOrder) {
-        throw new Error('Failed to fetch order after commit')
-      }
-
-      // 7. Mark as committed with a hash for change detection
-      const hash = computeSelectionsHash(selections)
-      dispatch({
-        type: ActionType.SET_COMMITTED,
-        payload: { committedSelectionsHash: hash },
-      })
-
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[OrderProvider] commitSelections: Commit complete', {
-          lineItemCount: refreshedOrder.line_items?.length,
+        // 5. Re-enable autorefresh
+        await forceOrderAutorefresh({
+          client: cl,
+          order: { ...commitOrder, autorefresh: false },
         })
-      }
 
-      return { success: true }
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('[OrderProvider] commitSelections error:', error)
-      }
+        // 6. Fetch refreshed order
+        const { order: refreshedOrder } = await fetchOrder()
 
-      // Attempt to re-enable autorefresh on failure
-      try {
-        const cl = config != null ? getCommerceLayer(config) : undefined
-        if (cl && state.order?.id) {
-          await cl.orders.update({
-            id: state.order.id,
-            autorefresh: true,
+        // 7. Track committed group
+        const hash = computeGroupHash(groupStyles, commitLicenseSize)
+        const nextCommittedGroups: CommittedGroups = {
+          ...state.committedGroups,
+          [parentUid]: {
+            hash,
+            lineItemIds: createdLineItems.map((li) => li.id),
+          },
+        }
+        dispatch({
+          type: ActionType.SET_COMMITTED_GROUP,
+          payload: {
+            parentUid,
+            hash,
+            lineItemIds: createdLineItems.map((li) => li.id),
+          },
+        })
+        await syncOrderMetadata({
+          order: refreshedOrder ?? commitOrder,
+          committedGroups: nextCommittedGroups,
+        })
+
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[OrderProvider] commitGroup: Done for ${parentUid}`, {
+            itemCount: createdLineItems.length,
           })
         }
-      } catch {
-        // Best-effort recovery
-      }
 
-      return {
-        success: false,
-        error: {
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Failed to commit selections',
-          originalError: error,
-        },
+        return { success: true }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(
+            `[OrderProvider] commitGroup error (${parentUid}):`,
+            error
+          )
+        }
+
+        // Best-effort autorefresh recovery
+        try {
+          const cl = config != null ? getCommerceLayer(config) : undefined
+          if (cl && state.order?.id) {
+            await cl.orders.update({ id: state.order.id, autorefresh: true })
+          }
+        } catch {
+          /* silent */
+        }
+
+        return {
+          success: false,
+          error: {
+            message:
+              error instanceof Error ? error.message : 'Failed to commit group',
+            originalError: error,
+          },
+        }
+      } finally {
+        dispatch({ type: ActionType.STOP_LOADING })
       }
-    } finally {
-      dispatch({ type: ActionType.STOP_LOADING })
+    },
+    [
+      config,
+      state.order,
+      state.orderId,
+      state.selections,
+      state.committedGroups,
+      state.licenseSize,
+      state.skuOptions,
+      ensureOrder,
+      syncOrderMetadata,
+      fetchOrder,
+      runConcurrent,
+    ]
+  )
+
+  /**
+   * Commit all dirty/new groups; skip clean groups.
+   * Used by the checkout button.
+   */
+  const commitSelections = useCallback(async (): Promise<{
+    success: boolean
+    error?: AddToCartError
+  }> => {
+    const selections = state.selections
+    const committed = state.committedGroups
+
+    if (Object.keys(selections).length === 0) {
+      return { success: false, error: { message: 'No selections to commit' } }
     }
+
+    // Classify groups
+    const dirtyOrNew: string[] = []
+    const removed: string[] = []
+
+    for (const parentUid of Object.keys(selections)) {
+      const group = selections[parentUid]
+      const existing = committed[parentUid]
+      if (
+        !existing ||
+        existing.hash !== computeGroupHash(group, state.licenseSize)
+      ) {
+        dirtyOrNew.push(parentUid)
+      }
+    }
+    for (const parentUid of Object.keys(committed)) {
+      if (!selections[parentUid]) {
+        removed.push(parentUid)
+      }
+    }
+
+    // Fast path: everything is clean
+    if (dirtyOrNew.length === 0 && removed.length === 0) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(
+          '[OrderProvider] commitSelections: All groups clean, skipping'
+        )
+      }
+      return { success: true }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[OrderProvider] commitSelections:', {
+        dirtyOrNew,
+        removed,
+        clean: Object.keys(selections).filter(
+          (uid) => !dirtyOrNew.includes(uid)
+        ),
+      })
+    }
+
+    // Handle removed groups
+    if (removed.length > 0) {
+      try {
+        const cl = config != null ? getCommerceLayer(config) : undefined
+        if (cl) {
+          for (const parentUid of removed) {
+            const group = committed[parentUid]
+            if (group?.lineItemIds.length) {
+              await runConcurrent(
+                group.lineItemIds.map((id) => async () => {
+                  await retryCall(() => cl.line_items.delete(id))
+                }),
+                LINE_ITEM_CONCURRENCY
+              )
+            }
+            dispatch({
+              type: ActionType.REMOVE_COMMITTED_GROUP,
+              payload: { parentUid },
+            })
+          }
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(
+            '[OrderProvider] commitSelections: Error removing groups:',
+            error
+          )
+        }
+      }
+    }
+
+    // Commit dirty/new groups sequentially
+    for (const parentUid of dirtyOrNew) {
+      const result = await commitGroup(parentUid)
+      if (!result.success) {
+        return result // Bail on first failure
+      }
+    }
+
+    return { success: true }
   }, [
     config,
-    state.orderId,
-    state.order,
     state.selections,
+    state.committedGroups,
     state.licenseSize,
-    state.selectedSkuOptions,
-    state.licenseOwner,
-    state.skuOptions,
-    createOrder,
-    fetchOrder,
+    commitGroup,
+    runConcurrent,
   ])
 
   /**
-   * Clears committed line items from the CL order when the user exits
-   * checkout and has modified selections (Option A).
+   * Clears all committed line items from the CL order.
    * The selection buffer is preserved so the user can edit and return.
-   * Only deletes if selections have actually changed since last commit.
    */
   const clearCommittedItems = useCallback(async (): Promise<{
     success: boolean
     error?: AddToCartError
   }> => {
-    // Nothing to clear if not committed
-    if (!state.isCommitted) {
-      return { success: true }
-    }
-
-    // Check if selections have changed since commit
-    const currentHash = computeSelectionsHash(state.selections)
-    if (currentHash === state.committedSelectionsHash) {
-      // Selections unchanged — committed line items are still valid
+    const committed = state.committedGroups
+    if (Object.keys(committed).length === 0) {
       return { success: true }
     }
 
@@ -1269,66 +1616,43 @@ export function OrderProvider({
 
     try {
       const cl = config != null ? getCommerceLayer(config) : undefined
-      if (!cl) {
-        throw new Error('Commerce Layer client not initialized')
-      }
+      if (!cl) throw new Error('Commerce Layer client not initialized')
+      if (!state.order?.id) throw new Error('No order to clear items from')
 
-      if (!state.order?.id) {
-        throw new Error('No order to clear items from')
-      }
-
-      // Get current line items to delete
-      const lineItems = state.order.line_items?.filter(
-        (li) => li.item_type === 'skus' || li.item_type === 'bundles'
+      // Collect all committed line item IDs
+      const allLineItemIds = Object.values(committed).flatMap(
+        (g) => g.lineItemIds
       )
 
-      if (!lineItems?.length) {
-        dispatch({ type: ActionType.CLEAR_COMMITTED })
-        return { success: true }
-      }
+      if (allLineItemIds.length > 0) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('[OrderProvider] clearCommittedItems:', {
+            count: allLineItemIds.length,
+          })
+        }
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(
-          '[OrderProvider] clearCommittedItems: Deleting committed line items',
-          { count: lineItems.length }
+        await cl.orders.update({ id: state.order.id, autorefresh: false })
+
+        await runConcurrent(
+          allLineItemIds.map((id) => async () => {
+            await retryCall(() => cl.line_items.delete(id))
+          }),
+          LINE_ITEM_CONCURRENCY
         )
+
+        await forceOrderAutorefresh({
+          client: cl,
+          order: { ...state.order, autorefresh: false },
+        })
+
+        await fetchOrder()
       }
 
-      // Disable autorefresh during bulk delete
-      await cl.orders.update({ id: state.order.id, autorefresh: false })
-
-      // Batch-delete all committed line items
-      const deleteTasks: Task[] = lineItems.map((li) => ({
-        resourceType: 'line_items' as const,
-        operation: 'delete' as const,
-        resource: { id: li.id },
-        onFailure: {
-          errorHandler: (err: unknown) => {
-            console.error(
-              `[clearCommittedItems] Failed to delete ${li.sku_code}:`,
-              err
-            )
-          },
-        },
-      }))
-
-      await executeBatch({ tasks: deleteTasks })
-
-      // Re-enable autorefresh
-      await forceOrderAutorefresh({
-        client: cl,
-        order: { ...state.order, autorefresh: false },
-      })
-
-      // Fetch cleaned order
-      await fetchOrder()
-
-      // Clear committed flag — buffer is preserved for editing
-      dispatch({ type: ActionType.CLEAR_COMMITTED })
+      dispatch({ type: ActionType.CLEAR_ALL_COMMITTED })
 
       if (process.env.NODE_ENV !== 'production') {
         console.log(
-          '[OrderProvider] clearCommittedItems: Done, buffer preserved for editing'
+          '[OrderProvider] clearCommittedItems: Done, buffer preserved'
         )
       }
 
@@ -1342,13 +1666,10 @@ export function OrderProvider({
       try {
         const cl = config != null ? getCommerceLayer(config) : undefined
         if (cl && state.order?.id) {
-          await cl.orders.update({
-            id: state.order.id,
-            autorefresh: true,
-          })
+          await cl.orders.update({ id: state.order.id, autorefresh: true })
         }
       } catch {
-        // Silent recovery
+        /* silent */
       }
 
       return {
@@ -1364,14 +1685,7 @@ export function OrderProvider({
     } finally {
       dispatch({ type: ActionType.STOP_LOADING })
     }
-  }, [
-    config,
-    state.isCommitted,
-    state.committedSelectionsHash,
-    state.selections,
-    state.order,
-    fetchOrder,
-  ])
+  }, [config, state.committedGroups, state.order, fetchOrder, runConcurrent])
 
   // Compute additional state properties
   const hasValidLicenseSize = !!(state.licenseSize && state.licenseSize.value)
@@ -1384,11 +1698,48 @@ export function OrderProvider({
     hasValidLicenseSize
   )
 
-  console.log({allLicenseInfoSet, hasValidLicenseSize, hasValidLicenseType, hasLicenseOwner: state.hasLicenseOwner})
-
   const hasLineItems = !!(
     state.order?.line_items && state.order.line_items.length > 0
   )
+
+  // --- Derived commit state ---
+  const isGroupCommitted = useCallback(
+    (parentUid: string): boolean => {
+      const group = state.selections[parentUid]
+      const committed = state.committedGroups[parentUid]
+      if (!group || !committed) return false
+      return committed.hash === computeGroupHash(group, state.licenseSize)
+    },
+    [state.selections, state.committedGroups, state.licenseSize]
+  )
+
+  const isGroupDirty = useCallback(
+    (parentUid: string): boolean => {
+      const committed = state.committedGroups[parentUid]
+      if (!committed) return false // never committed = not dirty
+      const group = state.selections[parentUid]
+      if (!group) return true // committed but removed from buffer
+      return committed.hash !== computeGroupHash(group, state.licenseSize)
+    },
+    [state.selections, state.committedGroups, state.licenseSize]
+  )
+
+  const bufferUids = Object.keys(state.selections)
+  const committedUids = Object.keys(state.committedGroups)
+
+  const isFullyCommitted =
+    bufferUids.length > 0 &&
+    bufferUids.every((uid) => {
+      const committed = state.committedGroups[uid]
+      return (
+        committed &&
+        committed.hash ===
+          computeGroupHash(state.selections[uid], state.licenseSize)
+      )
+    }) &&
+    committedUids.every((uid) => uid in state.selections)
+
+  const isDirty = committedUids.length > 0 && !isFullyCommitted
 
   // Lazily create the CL order once all license info is set. Until then the
   // license buffer lives purely in React state + localStorage. Guarded by a ref
@@ -1459,10 +1810,16 @@ export function OrderProvider({
     setSelectedSkuOptions,
     // Selection buffer
     selections: state.selections,
-    isCommitted: state.isCommitted,
+    committedGroups: state.committedGroups,
+    isFullyCommitted,
+    isCommitted: isFullyCommitted,
+    isDirty,
+    isGroupCommitted,
+    isGroupDirty,
     toggleStyle,
     toggleGroup,
     setStyleLicenseTypes,
+    commitGroup,
     commitSelections,
     clearCommittedItems,
   }
