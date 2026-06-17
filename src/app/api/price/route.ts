@@ -72,25 +72,6 @@ export async function POST(
   // shared secret: 110eedcdc3dc650fce5a7e4697ee768a
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
 
-  // Use batchSize from metadata if available (batch creation via commitSelections),
-  // otherwise count from included (recalculation after add/remove)
-  const siblings = included.filter(
-    ({ type, attributes }) =>
-      type === 'line_items' &&
-      attributes.sku_code !== sku_code &&
-      attributes.metadata?.parentUid === metadata.parentUid
-  )
-
-  const count = metadata.batchSize ?? siblings.length + 1
-
-  console.log('[PRICE API] count in parentUid group:', {
-    sku_code,
-    count,
-    batchSize: metadata.batchSize,
-    siblingCount: siblings.length + 1,
-    isEdit: !!created_at,
-  })
-
   try {
     const token = await authenticate('client_credentials', {
       clientId: process.env.CL_SYNC_CLIENT_ID,
@@ -103,68 +84,98 @@ export async function POST(
       accessToken: token.accessToken,
     })
 
-    // const includedOrder = included?.find((item) => item.type === 'orders')
-    // const orderMetadata = includedOrder?.attributes?.metadata
-    // console.log('orderMetadata: ', orderMetadata)
-
-    // @TODO: use sku_code to look up sanity fontVariant by id
-
-    /*console.log(
-      'line item metadata: ',
-      { metadata },
-      metadata.license.size,
-      metadata.license.types
-    )*/
-
-    // iterate over the types in the metadata.license?.types
-    // use their base price and multiply with the size.modifier
-
     const { sizes } = await getLicenseMetrics()
     const size = sizes.find(
-      ({ value }) => value === metadata.license.size.value
+      ({ value }) => value === metadata.license?.size?.value
     )
 
-    // console.log('price: found size: ', size)
+    if (!size) {
+      console.error('[PRICE API] Unknown license size:', metadata.license?.size)
+      return NextResponse.json({
+        success: true,
+        status: 200,
+        now: Date.now(),
+        data: { sku_code, unit_amount_cents: 0 },
+      })
+    }
 
-    const skuOptions = await cl.sku_options.list()
+    const allSkuOptions = await cl.sku_options.list()
+    let unit_amount_cents: number
 
-    const selectedTypes = skuOptions.filter(({ reference }) =>
-      metadata.license.types.find((val) => val === reference)
-    )
+    if (metadata.projectionType === 'group') {
+      // ── GROUP PROJECTION ──────────────────────────────────────────
+      // Sum per-style prices using perStyleTypes and the group batchSize.
+      const perStyleTypes: Record<string, string[]> =
+        metadata.license?.perStyleTypes ?? {}
+      const batchSize = metadata.batchSize ?? Object.keys(perStyleTypes).length
 
-    // @REMINDER: we don't have a base price, it is derived entirely
-    // from the license media types (sku_options metadata)
-    // we store the `price_amount_cents` on the metadata b/c we want
-    // to entirely manage price calculations here, otherwise the sku_option
-    // already modifies the line_item and order price when added
+      let groupTotal = 0
+      for (const [styleSkuCode, typeRefs] of Object.entries(perStyleTypes)) {
+        const styleOptions = allSkuOptions.filter(({ reference }) =>
+          typeRefs.includes(reference)
+        )
+        const stylePrice = calculateLineItemPrice({
+          skuOptions: styleOptions,
+          sizeModifier: size.modifier,
+          count: batchSize,
+        })
+        groupTotal += stylePrice
+      }
 
-    const unit_amount_cents = calculateLineItemPrice({
-      skuOptions: selectedTypes,
-      sizeModifier: size.modifier,
-      count,
-    })
+      unit_amount_cents = groupTotal
+
+      console.log('[PRICE API] GROUP projection:', {
+        sku_code,
+        groupName: metadata.groupName,
+        styleCount: Object.keys(perStyleTypes).length,
+        batchSize,
+        companySizeModifier: size.modifier,
+        unit_amount_cents,
+      })
+    } else {
+      // ── STYLE PROJECTION (default) ────────────────────────────────
+      // Use batchSize from metadata if available (batch creation via commitSelections),
+      // otherwise count from included (recalculation after add/remove)
+      const siblings = included.filter(
+        ({ type, attributes }) =>
+          type === 'line_items' &&
+          attributes.sku_code !== sku_code &&
+          attributes.metadata?.parentUid === metadata.parentUid
+      )
+
+      const count = metadata.batchSize ?? siblings.length + 1
+
+      const selectedTypes = allSkuOptions.filter(({ reference }) =>
+        metadata.license?.types?.find((val: string) => val === reference)
+      )
+
+      unit_amount_cents = calculateLineItemPrice({
+        skuOptions: selectedTypes,
+        sizeModifier: size.modifier,
+        count,
+      })
+
+      console.log('[PRICE API] STYLE projection:', {
+        sku_code,
+        count,
+        batchSize: metadata.batchSize,
+        siblingCount: siblings.length + 1,
+        skuOptionsTotal: calculateSkuOptionsTotal(selectedTypes),
+        companySizeModifier: size.modifier,
+        unit_amount_cents,
+      })
+    }
 
     const data = { sku_code, unit_amount_cents }
 
-    console.log('[PRICE API]: ', {
-      skuOptionsTotal: calculateSkuOptionsTotal(selectedTypes),
-      companySizeModifier: size.modifier,
-      count,
-      unit_amount_cents,
-    })
-    console.log('[PRICE API]: ', { data })
-
-    // return result.status(200).json({ success: true, data })
     return NextResponse.json({
       success: true,
       status: 200,
-      // revalidated: true, // what does this option do?
       now: Date.now(),
       data,
     })
   } catch (error) {
     console.error(error)
-    // return result.status(500).json({ success: false, message: 'Internal server error' })
     return NextResponse.json({
       status: 500,
       success: false,

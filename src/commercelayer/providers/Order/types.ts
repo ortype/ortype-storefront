@@ -66,6 +66,21 @@ export type CommittedGroups = {
   [parentUid: string]: CommittedGroup
 }
 
+/** A resolved style group for hybrid projection compilation */
+export type ResolvedFontGroup = {
+  groupName: string
+  groupSlug: string
+  /** Deterministic CL group SKU code: ${font._id}--group--${groupSlug} */
+  groupSkuCode: string
+  /** Variant _id values included in this group (order-independent) */
+  includedSkuCodes: string[]
+}
+
+/** Per-parentUid group resolutions, used by the projection compiler */
+export type GroupResolutions = {
+  [parentUid: string]: ResolvedFontGroup[]
+}
+
 export interface UpdateLineItemLicenseTypes {
   cl: CommerceLayerClient
   lineItem: LineItem

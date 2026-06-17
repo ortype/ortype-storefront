@@ -1,4 +1,7 @@
-import { useBuyContext, type ToggleStyleParams } from '@/commercelayer/providers/buy'
+import {
+  useBuyContext,
+  type ToggleStyleParams,
+} from '@/commercelayer/providers/buy'
 import { Flex } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
@@ -63,6 +66,8 @@ export const Typefaces = () => {
     className: variant._id,
   })
 
+  const hasMultipleGroups = (font.styleGroups?.length ?? 0) > 1
+
   return font.styleGroups ? (
     <Flex direction={'column'} mt={1} mb={1} gap={'3px'}>
       <FontFull
@@ -78,18 +83,21 @@ export const Typefaces = () => {
           mb={1}
           gap={'3px'}
         >
-          <FontGroup
-            name={font.shortName + ' ' + group.groupName}
-            group={group}
-            summary={groupSummaries[group.groupName]}
-            onToggle={() =>
-              toggleGroup(
-                (group.allVariants || []).map(variantToggleParams)
-              )
-            }
-          />
+          {/* Only show the sub-group header when the font has multiple groups */}
+          {hasMultipleGroups && (
+            <FontGroup
+              name={font.shortName + ' ' + group.groupName}
+              group={group}
+              summary={groupSummaries[group.groupName]}
+              onToggle={() =>
+                toggleGroup((group.allVariants || []).map(variantToggleParams))
+              }
+            />
+          )}
           {group.allVariants?.map((variant) => {
             if (!variant) return null
+            const groupFullySelected =
+              groupSummaries[group.groupName]?.allSelected ?? false
             return (
               <SingleStyles
                 key={variant._id}
@@ -97,6 +105,7 @@ export const Typefaces = () => {
                 className={variant._id}
                 name={`${font.shortName} ${variant.optionName}`}
                 isSelected={!!selectedSkus[variant._id]}
+                disabled={groupFullySelected}
                 unitPrice={summary.unitPrice}
                 nextUnitPrice={summary.nextUnitPrice}
                 onToggle={() => toggleStyle(variantToggleParams(variant))}

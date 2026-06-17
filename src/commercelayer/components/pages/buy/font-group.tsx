@@ -20,7 +20,12 @@ const getMiddleIndex = (array: FontVariant[]): number => {
   return Math.floor(array.length / 2)
 }
 
-export const FontGroup: React.FC<Props> = ({ group, name, summary, onToggle }) => {
+export const FontGroup: React.FC<Props> = ({
+  group,
+  name,
+  summary,
+  onToggle,
+}) => {
   const middleIndex = getMiddleIndex(group.variants)
   const middleVariant = group.variants[middleIndex]
   const className = middleVariant._id
@@ -81,7 +86,12 @@ export const FontGroup: React.FC<Props> = ({ group, name, summary, onToggle }) =
           </Text>
         </Stack>
       </Stack>
-      <Flex gap={2} alignItems={'center'}>
+      <Flex
+        gap={2}
+        alignItems={'center'}
+        justifyContent={'flex-end'}
+        minW={'7rem'}
+      >
         {percentageDiscount > 0 && (
           <Stack direction={'column'}>
             <Stack direction={'row'}>

@@ -68,7 +68,12 @@ export const FontFull: React.FC<Props> = ({ font, summary, onToggle }) => {
           </Text>
         </Stack>
       </Stack>
-      <Flex gap={2} alignItems={'center'}>
+      <Flex
+        gap={2}
+        alignItems={'center'}
+        justifyContent={'flex-end'}
+        minW={'7rem'}
+      >
         {percentageDiscount > 0 && (
           <Stack direction={'column'}>
             <Stack direction={'row'}>

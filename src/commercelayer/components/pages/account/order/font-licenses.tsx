@@ -59,8 +59,37 @@ export const FontLicenses: React.FC<FontLicensesProps> = ({ order }) => {
         lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
     )
 
+    // Expand group projection line items into virtual per-style entries
+    const expanded: LineItem[] = []
+    for (const item of filteredItems) {
+      if (item.metadata?.projectionType === 'group') {
+        const styleNames: string[] = item.metadata?.includedStyleNames ?? []
+        const skuCodes: string[] = item.metadata?.includedSkuCodes ?? []
+        const perStyleTypes: Record<string, string[]> =
+          item.metadata?.license?.perStyleTypes ?? {}
+        for (let i = 0; i < skuCodes.length; i++) {
+          expanded.push({
+            ...item,
+            id: `${item.id}-${i}`,
+            name: styleNames[i] ?? skuCodes[i],
+            sku_code: skuCodes[i],
+            // Synthesize line_item_options from perStyleTypes for display
+            line_item_options: (perStyleTypes[skuCodes[i]] ?? []).map(
+              (ref, j) => ({
+                id: `${item.id}-opt-${i}-${j}`,
+                name: ref,
+                quantity: 1,
+              })
+            ) as any,
+          } as LineItem)
+        }
+      } else {
+        expanded.push(item)
+      }
+    }
+
     return {
-      displayLineItems: filteredItems,
+      displayLineItems: expanded,
     }
   }, [order?.line_items])
 

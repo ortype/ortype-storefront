@@ -2,7 +2,14 @@ import {
   LicenseOwnerInput,
   OrderStateData,
 } from '@/commercelayer/providers/Order'
-import type { CommittedGroups, LicenseSize, SelectionBuffer, StyleEntry } from './types'
+import type {
+  CommittedGroups,
+  GroupResolutions,
+  LicenseSize,
+  ResolvedFontGroup,
+  SelectionBuffer,
+  StyleEntry,
+} from './types'
 import { Order, SkuOption } from '@commercelayer/sdk'
 export enum ActionType {
   START_LOADING = 'START_LOADING',
@@ -29,6 +36,9 @@ export enum ActionType {
   REMOVE_COMMITTED_GROUP = 'REMOVE_COMMITTED_GROUP',
   HYDRATE_COMMITTED_GROUPS = 'HYDRATE_COMMITTED_GROUPS',
   CLEAR_ALL_COMMITTED = 'CLEAR_ALL_COMMITTED',
+  // Group resolution tracking (for hybrid projection)
+  REGISTER_GROUP_RESOLUTIONS = 'REGISTER_GROUP_RESOLUTIONS',
+  HYDRATE_GROUP_RESOLUTIONS = 'HYDRATE_GROUP_RESOLUTIONS',
 }
 
 export type Action =
@@ -169,6 +179,19 @@ export type Action =
       }
     }
   | { type: ActionType.CLEAR_ALL_COMMITTED }
+  | {
+      type: ActionType.REGISTER_GROUP_RESOLUTIONS
+      payload: {
+        parentUid: string
+        groups: ResolvedFontGroup[]
+      }
+    }
+  | {
+      type: ActionType.HYDRATE_GROUP_RESOLUTIONS
+      payload: {
+        groupResolutions: GroupResolutions
+      }
+    }
 
 /** Count total styles across all parentUid groups */
 function countSelections(selections: SelectionBuffer): number {
@@ -343,14 +366,29 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       const { parentUid, styles } = action.payload
       const group = state.selections[parentUid] ?? {}
 
-      // If all styles are already selected, remove them all; otherwise add them all
+      // If all styles in this sub-group are already selected, remove them;
+      // otherwise add them all. Only touches the styles in `styles`, not the
+      // entire parentUid entry (which may contain other sub-groups).
       const allSelected = styles.every(({ skuCode }) => !!group[skuCode])
 
       let updatedSelections: SelectionBuffer
       if (allSelected) {
-        // Remove all styles in the group
-        const { [parentUid]: _, ...rest } = state.selections
-        updatedSelections = rest
+        // Remove only the styles in this sub-group
+        const codesToRemove = new Set(styles.map((s) => s.skuCode))
+        const remaining: typeof group = {}
+        for (const [code, entry] of Object.entries(group)) {
+          if (!codesToRemove.has(code)) {
+            remaining[code] = entry
+          }
+        }
+
+        if (Object.keys(remaining).length === 0) {
+          // No styles left for this font
+          const { [parentUid]: _, ...rest } = state.selections
+          updatedSelections = rest
+        } else {
+          updatedSelections = { ...state.selections, [parentUid]: remaining }
+        }
       } else {
         // Add all styles to the group
         const updatedGroup = { ...group }
@@ -446,6 +484,22 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       return {
         ...state,
         committedGroups: {},
+      }
+    }
+    case ActionType.REGISTER_GROUP_RESOLUTIONS: {
+      const { parentUid, groups } = action.payload
+      return {
+        ...state,
+        groupResolutions: {
+          ...state.groupResolutions,
+          [parentUid]: groups,
+        },
+      }
+    }
+    case ActionType.HYDRATE_GROUP_RESOLUTIONS: {
+      return {
+        ...state,
+        groupResolutions: action.payload.groupResolutions,
       }
     }
     default:

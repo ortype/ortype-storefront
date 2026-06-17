@@ -1,13 +1,15 @@
-import { getSkuObject, jsonImport } from '@/commercelayer/utils/import'
-import { getAllFontVariants } from '@/sanity/lib/client'
+import {
+  getGroupSkuObjects,
+  getSkuObject,
+  jsonImport,
+} from '@/commercelayer/utils/import'
+import { getAllFonts, getAllFontVariants } from '@/sanity/lib/client'
 import { parseBody } from 'next-sanity/webhook'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest, res: NextResponse) {
   const importAll = false
-  if (importAll) console.log('IMPORT ALL!!!')
-  // @NOTE: hitting the api route directly at http://localhost:8000/api/import-skus
-  // doesn't seem to run my importAll flagged condition (getting 405 error)
+  if (importAll) console.log('IMPORT ALL!!!') // hitting the route directly throws a 405 but the function runs
 
   try {
     const { body, isValidSignature } = await parseBody<{
@@ -19,36 +21,65 @@ export async function POST(req: NextRequest, res: NextResponse) {
       return new Response('Invalid Signature', { status: 401 })
     }
 
-    if (!body?.variants) {
+    if (!body?.variants && !importAll) {
       return new Response('Payload is missing variants', { status: 400 })
     }
 
-    let inputs
-
     try {
+      let styleSkuInputs: Awaited<ReturnType<typeof getSkuObject>>[] = []
+      let groupSkuInputs: Awaited<ReturnType<typeof getGroupSkuObjects>> = []
+
       if (importAll) {
-        // @NOTE: 1-off import ONLY!!
-        const variants = await getAllFontVariants()
-        if (!variants) {
+        // Full import: style SKUs from variants + group SKUs from font docs
+        const [variants, fonts] = await Promise.all([
+          getAllFontVariants(),
+          getAllFonts(),
+        ])
+
+        if (!variants?.length) {
           return NextResponse.json({
             status: 400,
             now: Date.now(),
-            message: 'Payload is missing variants',
+            message: 'No variants found for import',
           })
         }
-        inputs = await Promise.all(
+
+        styleSkuInputs = await Promise.all(
           variants.map((variant) => getSkuObject(variant))
         )
+
+        // Generate group SKUs from font documents
+        const groupArrays = await Promise.all(
+          fonts.map((font) => getGroupSkuObjects(font))
+        )
+        groupSkuInputs = groupArrays.flat()
       } else {
-        inputs = await Promise.all(
+        // Webhook mode: style SKUs from payload variants
+        styleSkuInputs = await Promise.all(
           body.variants.map((variant) => getSkuObject(variant))
         )
+
+        // If webhook includes font-level data, also generate group SKUs
+        if (body._id && body.uid && (body.styleGroups || body.variants)) {
+          groupSkuInputs = await getGroupSkuObjects(body)
+        }
       }
 
-      await jsonImport('skus', inputs)
+      // Import style SKUs
+      if (styleSkuInputs.length) {
+        await jsonImport('skus', styleSkuInputs)
+      }
+
+      // Import group SKUs
+      if (groupSkuInputs.length) {
+        await jsonImport('skus', groupSkuInputs)
+      }
+
       return NextResponse.json({
         status: 200,
         now: Date.now(),
+        styleSkus: styleSkuInputs.length,
+        groupSkus: groupSkuInputs.length,
       })
     } catch (error) {
       console.error(error)

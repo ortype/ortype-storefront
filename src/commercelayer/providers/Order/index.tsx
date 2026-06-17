@@ -6,6 +6,7 @@ import utils, {
   computeGroupHash,
 } from '@/commercelayer/providers/Order/utils'
 import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
+import { calculateLineItemPrice } from '@/commercelayer/utils/prices'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
@@ -35,7 +36,9 @@ import {
 import { OrderStorageContext } from './Storage'
 import type {
   CommittedGroups,
+  GroupResolutions,
   LicenseSize,
+  ResolvedFontGroup,
   SelectionBuffer,
   StyleEntry,
 } from './types'
@@ -59,7 +62,9 @@ export type LicenseOwnerInput = Pick<LicenseOwner, 'is_client' | 'full_name'>
 
 export type {
   CommittedGroups,
+  GroupResolutions,
   LicenseSize,
+  ResolvedFontGroup,
   SelectionBuffer,
   StyleEntry,
 } from './types'
@@ -169,6 +174,13 @@ type OrderProviderData = {
     success: boolean
     error?: AddToCartError
   }>
+  /** Resolved style groups per parentUid, for hybrid projection */
+  groupResolutions: GroupResolutions
+  /** Register resolved groups for a font (called by BuyProvider on mount) */
+  registerGroupResolutions: (
+    parentUid: string,
+    groups: ResolvedFontGroup[]
+  ) => void
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
   setSelectedSkuOptions: (params: {
@@ -195,6 +207,7 @@ export type OrderStateData = {
   isInvalid: boolean
   selections: SelectionBuffer
   committedGroups: CommittedGroups
+  groupResolutions: GroupResolutions
 }
 
 const initialState: OrderStateData = {
@@ -215,6 +228,7 @@ const initialState: OrderStateData = {
   isInvalid: false,
   selections: {},
   committedGroups: {},
+  groupResolutions: {},
 }
 
 const OrderContext = createContext<OrderProviderData>(
@@ -825,6 +839,30 @@ export function OrderProvider({
           }
         }
 
+        // Hydrate groupResolutions from localStorage
+        try {
+          const storedResolutions = localStorage.getItem(
+            `${persistKey}_group_resolutions`
+          )
+          if (storedResolutions) {
+            const parsed = JSON.parse(storedResolutions) as GroupResolutions
+            if (Object.keys(parsed).length > 0) {
+              dispatch({
+                type: ActionType.HYDRATE_GROUP_RESOLUTIONS,
+                payload: { groupResolutions: parsed },
+              })
+              if (process.env.NODE_ENV !== 'production') {
+                console.log(
+                  '[OrderProvider] 🔄 Hydrated groupResolutions from localStorage',
+                  { fonts: Object.keys(parsed).length }
+                )
+              }
+            }
+          }
+        } catch {
+          /* localStorage unavailable */
+        }
+
         // Enable persistence now that hydration is complete.
         // Must happen before the async work below so user interactions
         // during init are persisted immediately.
@@ -1322,94 +1360,211 @@ export function OrderProvider({
           }
         }
 
-        // 3. Create line items with retryCall
+        // 3. Compile projections: decompose into group SKUs + leftover styles
         const orderRel = cl.orders.relationship(orderId)
         const createdLineItems: { id: string; skuCode: string }[] = []
+        const selectedSkuCodes = new Set(Object.keys(groupStyles))
+        const resolvedGroups = state.groupResolutions[parentUid] || []
 
-        const lineItemCreators = Object.entries(groupStyles).map(
-          ([skuCode, styleEntry]) =>
-            async () => {
-              const result = await retryCall(() =>
-                cl.line_items.create({
-                  order: orderRel,
-                  sku_code: skuCode,
-                  reference_origin: parentUid,
-                  quantity: 1,
-                  _external_price: true,
-                  metadata: {
-                    parentUid,
-                    parentName: styleEntry.parentName,
-                    defaultVariantId: styleEntry.defaultVariantId,
-                    batchSize: groupSize,
-                    license: {
-                      size: commitLicenseSize,
-                      types: styleEntry.licenseTypes,
-                    },
-                  },
-                })
-              )
-              if (result?.success && result.object) {
-                createdLineItems.push({ id: result.object.id, skuCode })
-              } else {
-                throw new Error(`Failed to create line item for ${skuCode}`)
-              }
-            }
+        // Find every resolved group whose styles are ALL selected
+        const matchedGroups = resolvedGroups.filter((g) =>
+          g.includedSkuCodes.every((code) => selectedSkuCodes.has(code))
+        )
+        const coveredCodes = new Set(
+          matchedGroups.flatMap((g) => g.includedSkuCodes)
+        )
+        // Styles not covered by any matched group → individual style projection
+        const styleProjectionCodes = Object.keys(groupStyles).filter(
+          (code) => !coveredCodes.has(code)
         )
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(
-            `[OrderProvider] commitGroup: Creating ${lineItemCreators.length} line items`
+            `[OrderProvider] commitGroup: Projection plan for ${parentUid}`,
+            {
+              totalStyles: groupSize,
+              groupProjections: matchedGroups.map((g) => g.groupName),
+              styleProjections: styleProjectionCodes.length,
+            }
           )
         }
 
-        const lineItemResults = await runConcurrent(
-          lineItemCreators,
-          LINE_ITEM_CONCURRENCY
-        )
-        const failedItems = lineItemResults.filter(
-          (r) => r.status === 'rejected'
-        )
-        if (failedItems.length > 0) {
-          console.error(
-            `[commitGroup] ${failedItems.length}/${lineItemCreators.length} line items failed`
-          )
+        const firstEntry = Object.values(groupStyles)[0]
+
+        // Build a reference → display name lookup from skuOptions
+        const licenseTypeLabels: Record<string, string> = {}
+        for (const opt of state.skuOptions) {
+          if (opt.reference) {
+            licenseTypeLabels[opt.reference] = opt.name ?? opt.reference
+          }
         }
 
-        // 4. Create line_item_options with lower concurrency + retryCall
-        const optionCreators: (() => Promise<void>)[] = []
-        for (const { id: lineItemId, skuCode } of createdLineItems) {
-          const styleEntry = groupStyles[skuCode]
-          if (!styleEntry) continue
-
-          const matchingOptions = state.skuOptions.filter((opt) =>
-            styleEntry.licenseTypes.includes(opt.reference)
-          )
-          for (const skuOption of matchingOptions) {
-            optionCreators.push(async () => {
-              const result = await retryCall(() =>
-                cl.line_item_options.create({
-                  quantity: 1,
-                  options: {},
-                  sku_option: cl.sku_options.relationship(skuOption.id),
-                  line_item: cl.line_items.relationship(lineItemId),
-                })
-              )
-              if (!result?.success) {
-                console.warn(
-                  `[commitGroup] Failed to create option for ${skuCode}/${skuOption.reference}`
-                )
-              }
+        // ── GROUP PROJECTIONS ────────────────────────────────────────────
+        for (const matched of matchedGroups) {
+          const perStyleTypes: Record<string, string[]> = {}
+          const perStylePriceCents: Record<string, number> = {}
+          for (const code of matched.includedSkuCodes) {
+            const types = groupStyles[code]?.licenseTypes ?? []
+            perStyleTypes[code] = types
+            // Compute this style's unit price for display in the order summary
+            const styleSkuOpts = state.skuOptions.filter((o) =>
+              types.includes(o.reference)
+            )
+            perStylePriceCents[code] = calculateLineItemPrice({
+              skuOptions: styleSkuOpts,
+              sizeModifier: commitLicenseSize?.modifier ?? 1,
+              count: groupSize,
             })
           }
-        }
 
-        if (optionCreators.length > 0) {
           if (process.env.NODE_ENV !== 'production') {
             console.log(
-              `[OrderProvider] commitGroup: Creating ${optionCreators.length} options (concurrency: ${OPTION_CONCURRENCY})`
+              `[OrderProvider] commitGroup: GROUP projection → ${matched.groupName}`,
+              {
+                groupSkuCode: matched.groupSkuCode,
+                styleCount: matched.includedSkuCodes.length,
+              }
             )
           }
-          await runConcurrent(optionCreators, OPTION_CONCURRENCY)
+
+          const result = await retryCall(() =>
+            cl.line_items.create({
+              order: orderRel,
+              sku_code: matched.groupSkuCode,
+              reference_origin: parentUid,
+              quantity: 1,
+              _external_price: true,
+              metadata: {
+                projectionType: 'group',
+                parentUid,
+                parentName: firstEntry?.parentName,
+                defaultVariantId: firstEntry?.defaultVariantId,
+                groupName: matched.groupName,
+                groupSlug: matched.groupSlug,
+                includedSkuCodes: matched.includedSkuCodes,
+                includedStyleNames: matched.includedSkuCodes.map(
+                  (code) => groupStyles[code]?.name || code
+                ),
+                batchSize: groupSize,
+                licenseTypeLabels,
+                perStylePriceCents,
+                license: {
+                  size: commitLicenseSize,
+                  defaultTypes: firstEntry?.licenseTypes,
+                  perStyleTypes,
+                },
+              },
+            })
+          )
+
+          if (result?.success && result.object) {
+            createdLineItems.push({
+              id: result.object.id,
+              skuCode: matched.groupSkuCode,
+            })
+          } else {
+            throw new Error(
+              `Failed to create group line item for ${matched.groupSkuCode}`
+            )
+          }
+        }
+
+        // ── STYLE PROJECTIONS (leftover) ─────────────────────────────────
+        if (styleProjectionCodes.length > 0) {
+          const styleLineItemCreators = styleProjectionCodes.map(
+            (skuCode) =>
+              async () => {
+                const styleEntry = groupStyles[skuCode]
+                const result = await retryCall(() =>
+                  cl.line_items.create({
+                    order: orderRel,
+                    sku_code: skuCode,
+                    reference_origin: parentUid,
+                    quantity: 1,
+                    _external_price: true,
+                    metadata: {
+                      projectionType: 'style',
+                      parentUid,
+                      parentName: styleEntry?.parentName,
+                      defaultVariantId: styleEntry?.defaultVariantId,
+                      batchSize: groupSize,
+                      license: {
+                        size: commitLicenseSize,
+                        types: styleEntry?.licenseTypes,
+                      },
+                    },
+                  })
+                )
+                if (result?.success && result.object) {
+                  createdLineItems.push({ id: result.object.id, skuCode })
+                } else {
+                  throw new Error(
+                    `Failed to create line item for ${skuCode}`
+                  )
+                }
+              }
+          )
+
+          if (process.env.NODE_ENV !== 'production') {
+            console.log(
+              `[OrderProvider] commitGroup: STYLE projections for ${parentUid}`,
+              { count: styleLineItemCreators.length }
+            )
+          }
+
+          const lineItemResults = await runConcurrent(
+            styleLineItemCreators,
+            LINE_ITEM_CONCURRENCY
+          )
+          const failedItems = lineItemResults.filter(
+            (r) => r.status === 'rejected'
+          )
+          if (failedItems.length > 0) {
+            console.error(
+              `[commitGroup] ${failedItems.length}/${styleLineItemCreators.length} style line items failed`
+            )
+          }
+
+          // Create line_item_options for style projections only
+          const optionCreators: (() => Promise<void>)[] = []
+          for (const skuCode of styleProjectionCodes) {
+            const lineItem = createdLineItems.find(
+              (li) => li.skuCode === skuCode
+            )
+            if (!lineItem) continue
+            const styleEntry = groupStyles[skuCode]
+            if (!styleEntry) continue
+
+            const matchingOptions = state.skuOptions.filter((opt) =>
+              styleEntry.licenseTypes.includes(opt.reference)
+            )
+            for (const skuOption of matchingOptions) {
+              optionCreators.push(async () => {
+                const result = await retryCall(() =>
+                  cl.line_item_options.create({
+                    quantity: 1,
+                    options: {},
+                    sku_option: cl.sku_options.relationship(skuOption.id),
+                    line_item: cl.line_items.relationship(lineItem.id),
+                  })
+                )
+                if (!result?.success) {
+                  console.warn(
+                    `[commitGroup] Failed to create option for ${skuCode}/${skuOption.reference}`
+                  )
+                }
+              })
+            }
+          }
+
+          if (optionCreators.length > 0) {
+            if (process.env.NODE_ENV !== 'production') {
+              console.log(
+                `[OrderProvider] commitGroup: Creating ${optionCreators.length} options (concurrency: ${OPTION_CONCURRENCY})`
+              )
+            }
+            await runConcurrent(optionCreators, OPTION_CONCURRENCY)
+          }
         }
 
         // 5. Re-enable autorefresh
@@ -1488,6 +1643,7 @@ export function OrderProvider({
       state.committedGroups,
       state.licenseSize,
       state.skuOptions,
+      state.groupResolutions,
       ensureOrder,
       syncOrderMetadata,
       fetchOrder,
@@ -1741,6 +1897,32 @@ export function OrderProvider({
 
   const isDirty = committedUids.length > 0 && !isFullyCommitted
 
+  // --- Group resolutions ---
+  const registerGroupResolutions = useCallback(
+    (parentUid: string, groups: ResolvedFontGroup[]) => {
+      dispatch({
+        type: ActionType.REGISTER_GROUP_RESOLUTIONS,
+        payload: { parentUid, groups },
+      })
+    },
+    []
+  )
+
+  // Persist groupResolutions to localStorage
+  const GROUP_RESOLUTIONS_STORAGE_KEY = `${persistKey}_group_resolutions`
+  useEffect(() => {
+    if (!selectionsInitializedRef.current) return
+    if (Object.keys(state.groupResolutions).length === 0) return
+    try {
+      localStorage.setItem(
+        GROUP_RESOLUTIONS_STORAGE_KEY,
+        JSON.stringify(state.groupResolutions)
+      )
+    } catch {
+      /* localStorage unavailable */
+    }
+  }, [state.groupResolutions, GROUP_RESOLUTIONS_STORAGE_KEY])
+
   // Lazily create the CL order once all license info is set. Until then the
   // license buffer lives purely in React state + localStorage. Guarded by a ref
   // so we attempt creation at most once per mount; the commitSelections safety
@@ -1822,6 +2004,9 @@ export function OrderProvider({
     commitGroup,
     commitSelections,
     clearCommittedItems,
+    // Group resolutions (hybrid projection)
+    groupResolutions: state.groupResolutions,
+    registerGroupResolutions,
   }
 
   return (

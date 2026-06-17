@@ -63,6 +63,8 @@ interface LineItemGroup {
   defaultVariantId: string
   items: LineItemType[]
   groupTotal: number
+  /** Actual style count (expands group projections via metadata) */
+  styleCount: number
 }
 
 /**
@@ -124,8 +126,8 @@ const SummaryGroup: React.FC<{ group: LineItemGroup }> = ({ group }) => {
               color={'#737373'}
               pl={3}
             >
-              {`${group.items.length} ${
-                group.items.length === 1 ? 'style' : 'styles'
+              {`${group.styleCount} ${
+                group.styleCount === 1 ? 'style' : 'styles'
               }`}
             </Flex>
             <Flex
@@ -137,28 +139,79 @@ const SummaryGroup: React.FC<{ group: LineItemGroup }> = ({ group }) => {
         </HStack>
       </Collapsible.Trigger>
       <Collapsible.Content>
-        {group.items.map((lineItem) => (
-          <SimpleGrid
-            key={lineItem.id}
-            columns={3}
-            py={1}
-            pl={5}
-            fontSize={'sm'}
-            lineHeight={1.1}
-          >
-            <Box>{lineItem.name || lineItem.item?.name}</Box>
-            <Box fontSize={'sm'}>
-              {lineItem?.line_item_options
-                ?.map((option) => option.name)
-                .filter(Boolean)
-                .join(', ')}
-            </Box>
-            <Box
-              textAlign={'right'}
-              fontVariantNumeric={'tabular-nums'}
-            >{`${lineItem.unit_amount_float} EUR`}</Box>
-          </SimpleGrid>
-        ))}
+        {group.items.map((lineItem) => {
+          if (lineItem.metadata?.projectionType === 'group') {
+            // Expand group projection into individual style rows
+            const styleNames: string[] =
+              lineItem.metadata?.includedStyleNames ?? []
+            const skuCodes: string[] =
+              lineItem.metadata?.includedSkuCodes ?? []
+            const perStyleTypes: Record<string, string[]> =
+              lineItem.metadata?.license?.perStyleTypes ?? {}
+            const labelMap: Record<string, string> =
+              lineItem.metadata?.licenseTypeLabels ?? {}
+            const priceCentsMap: Record<string, number> =
+              lineItem.metadata?.perStylePriceCents ?? {}
+
+            return styleNames.map((styleName, idx) => {
+              const code = skuCodes[idx]
+              const typeRefs = perStyleTypes[code] ?? []
+              const typeLabels = typeRefs.map(
+                (ref: string) => labelMap[ref] || ref
+              )
+              const priceCents = priceCentsMap[code]
+              const priceFloat =
+                priceCents != null
+                  ? Math.round(priceCents) / 100
+                  : undefined
+
+              return (
+                <SimpleGrid
+                  key={`${lineItem.id}-${idx}`}
+                  columns={3}
+                  py={1}
+                  pl={5}
+                  fontSize={'sm'}
+                  lineHeight={1.1}
+                >
+                  <Box>{styleName}</Box>
+                  <Box fontSize={'sm'}>
+                    {typeLabels.join(', ')}
+                  </Box>
+                  <Box
+                    textAlign={'right'}
+                    fontVariantNumeric={'tabular-nums'}
+                  >
+                    {priceFloat != null ? `${priceFloat} EUR` : ''}
+                  </Box>
+                </SimpleGrid>
+              )
+            })
+          }
+
+          return (
+            <SimpleGrid
+              key={lineItem.id}
+              columns={3}
+              py={1}
+              pl={5}
+              fontSize={'sm'}
+              lineHeight={1.1}
+            >
+              <Box>{lineItem.name || lineItem.item?.name}</Box>
+              <Box fontSize={'sm'}>
+                {lineItem?.line_item_options
+                  ?.map((option) => option.name)
+                  .filter(Boolean)
+                  .join(', ')}
+              </Box>
+              <Box
+                textAlign={'right'}
+                fontVariantNumeric={'tabular-nums'}
+              >{`${lineItem.unit_amount_float} EUR`}</Box>
+            </SimpleGrid>
+          )
+        })}
       </Collapsible.Content>
     </Collapsible.Root>
   )
@@ -215,10 +268,17 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           item.item?.reference_origin ?? item.metadata?.parentUid ?? ''
         if (!parentUid) continue
 
+        // For group projections, expand style count from metadata
+        const isGroupProjection = item.metadata?.projectionType === 'group'
+        const itemStyleCount = isGroupProjection
+          ? (item.metadata?.includedSkuCodes?.length ?? 1)
+          : 1
+
         const existing = groupMap.get(parentUid)
         if (existing) {
           existing.items.push(item)
           existing.groupTotal += item.unit_amount_float ?? 0
+          existing.styleCount += itemStyleCount
         } else {
           groupMap.set(parentUid, {
             parentUid,
@@ -226,6 +286,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             defaultVariantId: item.metadata?.defaultVariantId ?? '',
             items: [item],
             groupTotal: item.unit_amount_float ?? 0,
+            styleCount: itemStyleCount,
           })
         }
       }
@@ -242,15 +303,27 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       for (const group of groups) {
         for (const item of group.items) {
-          const optionsCents =
-            item.line_item_options?.reduce(
-              (total, opt) =>
-                total +
-                Number(opt.sku_option?.metadata?.price_amount_cents ?? 0),
-              0
-            ) ?? 0
-          subtotalAmount += (optionsCents * sizeModifier) / 100
-          discountedTotal += item.unit_amount_float ?? 0
+          if (item.metadata?.projectionType === 'group') {
+            // Group projection: compute undiscounted subtotal from per-style metadata
+            const perStyleTypes = item.metadata?.license?.perStyleTypes ?? {}
+            // Each style's undiscounted price = its options total × sizeModifier
+            // Since we don't have the raw options here, use groupTotal / (1 - discount)
+            // as an approximation, or simply skip undiscounted for groups.
+            // For now, use the discounted amount as-is for both.
+            const amount = item.unit_amount_float ?? 0
+            subtotalAmount += amount
+            discountedTotal += amount
+          } else {
+            const optionsCents =
+              item.line_item_options?.reduce(
+                (total, opt) =>
+                  total +
+                  Number(opt.sku_option?.metadata?.price_amount_cents ?? 0),
+                0
+              ) ?? 0
+            subtotalAmount += (optionsCents * sizeModifier) / 100
+            discountedTotal += item.unit_amount_float ?? 0
+          }
         }
       }
 

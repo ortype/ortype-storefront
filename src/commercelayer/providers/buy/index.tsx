@@ -5,8 +5,14 @@ import {
   formatPrice,
 } from '@/commercelayer/utils/prices'
 import { Font } from '@/sanity/lib/queries'
-import { createContext, FC, useContext, useMemo, useReducer } from 'react'
-import type { FontSelectionSummary, GroupPriceSummary, StyleEntry } from '../Order/types'
+import slugify from 'slugify'
+import { createContext, FC, useContext, useEffect, useMemo, useReducer } from 'react'
+import type {
+  FontSelectionSummary,
+  GroupPriceSummary,
+  ResolvedFontGroup,
+  StyleEntry,
+} from '../Order/types'
 import { useOrderContext } from '../Order'
 
 /** Minimal params for toggling a single style — font-level context is auto-filled */
@@ -53,6 +59,44 @@ const BuyContext = createContext<BuyProviderData>(
 
 export const useBuyContext = (): BuyProviderData => useContext(BuyContext)
 
+/**
+ * Resolve a font's style groups into ResolvedFontGroup[] for projection
+ * compilation. Uses the same slugify as the import utility for consistency.
+ */
+function resolveFontGroups(font: Font): ResolvedFontGroup[] {
+  if (font.styleGroups?.length) {
+    return font.styleGroups.map((sg) => {
+      const groupName = sg.groupName || 'Standard'
+      const groupSlug = slugify(groupName, { lower: true })
+      const variantIds = [
+        ...(sg.variants || []).map((v) => v._id),
+        ...(sg.italicVariants || []).map((v) => v._id),
+      ].filter(Boolean)
+      return {
+        groupName,
+        groupSlug,
+        groupSkuCode: `${font._id}--group--${groupSlug}`,
+        includedSkuCodes: variantIds,
+      }
+    })
+  }
+
+  // Default Standard group containing all variants
+  if (font.variants?.length) {
+    const variantIds = font.variants.map((v) => v._id).filter(Boolean)
+    return [
+      {
+        groupName: 'Standard',
+        groupSlug: 'standard',
+        groupSkuCode: `${font._id}--group--standard`,
+        includedSkuCodes: variantIds,
+      },
+    ]
+  }
+
+  return []
+}
+
 export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -62,7 +106,17 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     toggleStyle: orderToggleStyle,
     toggleGroup: orderToggleGroup,
     selections,
+    registerGroupResolutions,
   } = useOrderContext()
+
+  // Resolve and register group resolutions when the font loads
+  useEffect(() => {
+    if (!font?._id || !font?.uid) return
+    const groups = resolveFontGroups(font)
+    if (groups.length > 0) {
+      registerGroupResolutions(font.uid, groups)
+    }
+  }, [font?._id, font?.uid, registerGroupResolutions])
 
   const selectedSkus = selections[font.uid] ?? {}
 

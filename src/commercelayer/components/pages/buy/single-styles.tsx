@@ -6,6 +6,8 @@ interface Props {
   skuCode: string
   className?: string
   isSelected: boolean
+  /** When true, the style belongs to a fully selected group and cannot be toggled individually */
+  disabled?: boolean
   unitPrice: number
   nextUnitPrice: number
   onToggle: () => void
@@ -16,6 +18,7 @@ export const SingleStyles: React.FC<Props> = ({
   skuCode,
   className,
   isSelected,
+  disabled = false,
   unitPrice,
   nextUnitPrice,
   onToggle,
@@ -23,6 +26,7 @@ export const SingleStyles: React.FC<Props> = ({
   const [isLoading, setIsLoading] = useState(false)
 
   const handleClick = () => {
+    if (disabled) return
     setIsLoading(true)
     onToggle()
     setIsLoading(false)
@@ -33,14 +37,19 @@ export const SingleStyles: React.FC<Props> = ({
       justifyContent={'space-between'}
       bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
       borderRadius={isSelected ? 'full' : '0px'}
-      cursor={'pointer'}
-      _hover={{
-        borderRadius: '100px',
-        bg: 'blackAlpha.300',
-        '& .toggle-button': {
-          borderWidth: '4px',
-        },
-      }}
+      cursor={disabled ? 'default' : 'pointer'}
+      opacity={disabled ? 0.6 : 1}
+      _hover={
+        disabled
+          ? {}
+          : {
+              borderRadius: '100px',
+              bg: 'blackAlpha.300',
+              '& .toggle-button': {
+                borderWidth: '4px',
+              },
+            }
+      }
       onClick={handleClick}
       transition={
         'border-radius 200ms ease-in-out, background 300ms ease-in-out'
@@ -65,7 +74,12 @@ export const SingleStyles: React.FC<Props> = ({
           {name}
         </Text>
       </Stack>
-      <Flex gap={2} alignItems={'center'}>
+      <Flex
+        gap={2}
+        alignItems={'center'}
+        justifyContent={'flex-end'}
+        minW={'7rem'}
+      >
         {!isSelected && nextUnitPrice < unitPrice && (
           <Text
             className={'discount'}
@@ -79,7 +93,7 @@ export const SingleStyles: React.FC<Props> = ({
         )}
         {isSelected ? (
           <Text as={'span'} fontSize={'xs'} opacity={0.6}>
-            {`ADDED`}
+            {`${unitPrice} EUR`}
           </Text>
         ) : (
           <Text as={'span'} fontSize={'xs'}>
