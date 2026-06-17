@@ -108,7 +108,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       display: 'flex',
       flexDirection: 'column',
       flex: '1',
-      gap: '1',
+      gap: '0',
       justifyContent: 'var(--radio-card-justify)',
       alignItems: 'var(--radio-card-align)',
     },

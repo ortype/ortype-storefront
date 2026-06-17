@@ -33,6 +33,7 @@ interface CartItemProps {
 
 export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const {
+    committedGroups,
     skuOptions,
     mediaTypes,
     licenseSize,
@@ -80,6 +81,9 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   // Count siblings in this parentUid group
   const groupCount = Object.keys(selections[parentUid] ?? {}).length
 
+  // committedGroups doesn't contain an Object.key that matches this `parentUid`
+  const canRemove = !(item.parentUid in committedGroups)
+
   // Optimistic price from buffer
   const displayPrice = useMemo(() => {
     if (!licenseSize || selectedSkuOptions.length === 0) return 0
@@ -110,11 +114,12 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   }
 
   const handleRemove = () => {
-    toggleStyle({
-      parentUid,
-      skuCode,
-      styleMetadata: entry,
-    })
+    canRemove &&
+      toggleStyle({
+        parentUid,
+        skuCode,
+        styleMetadata: entry,
+      })
   }
 
   return (
@@ -125,6 +130,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
             <ChakraIconButton
               variant="ghost"
               rounded={'full'}
+              disabled={!canRemove}
               px={0}
               size={'sm'}
               _hover={{ bg: 'white' }}
@@ -138,6 +144,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
               <CloseIcon width={'2rem'} height={'2rem'} />
             </ChakraIconButton>
           </Link>
+
           <Text
             fontSize={'2xl'}
             lineHeight={1.3}

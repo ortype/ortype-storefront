@@ -1,6 +1,8 @@
 'use client'
-
-import type { CompanySize } from '@/sanity/lib/queries'
+import {
+  expandAndGroupLineItems,
+  type ExpandedFontGroup,
+} from '@/commercelayer/utils/expand-group-projections'
 import {
   Box,
   Collapsible,
@@ -17,81 +19,8 @@ import { useMemo } from 'react'
 
 const MotionBox = motion(Box)
 
-interface LineItemType {
-  id: string
-  item_type?: string
-  item?: {
-    name?: string
-    reference_origin?: string
-    [key: string]: any
-  }
-  line_item_options?: Array<{
-    name?: string
-    [key: string]: any
-  }>
-  unit_amount_float?: number
-  metadata?: {
-    parentName?: string
-    defaultVariantId?: string
-    [key: string]: any
-  }
-  [key: string]: any
-}
-
-interface OrderType {
-  line_items?: LineItemType[]
-  metadata?: {
-    license?: {
-      size?: {
-        value?: string
-        modifier?: number
-      }
-    }
-  }
-  total_amount_with_taxes_float?: number
-  [key: string]: any
-}
-
-interface FontRefCounts {
-  [fontRef: string]: number
-}
-
-/** A group of line items sharing the same font family */
-interface LineItemGroup {
-  parentUid: string
-  parentName: string
-  defaultVariantId: string
-  items: LineItemType[]
-  groupTotal: number
-  /** Actual style count (expands group projections via metadata) */
-  styleCount: number
-}
-
-/**
- * Count unique reference_origin values from line items
- */
-export const getFontReferenceCounts = (
-  lineItems: LineItemType[] = []
-): FontRefCounts => {
-  if (!Array.isArray(lineItems) || lineItems.length === 0) {
-    return {}
-  }
-
-  const references = lineItems
-    .filter((lineItem) => lineItem?.item?.reference_origin)
-    .map((lineItem) => lineItem.item!.reference_origin!)
-    .filter(Boolean)
-
-  return references.reduce<FontRefCounts>((acc, ref) => {
-    if (typeof ref === 'string') {
-      acc[ref] = (acc[ref] || 0) + 1
-    }
-    return acc
-  }, {})
-}
-
 /** Collapsible font family group within the order summary */
-const SummaryGroup: React.FC<{ group: LineItemGroup }> = ({ group }) => {
+const SummaryGroup: React.FC<{ group: ExpandedFontGroup }> = ({ group }) => {
   return (
     <Collapsible.Root>
       <Collapsible.Trigger asChild>
@@ -139,76 +68,28 @@ const SummaryGroup: React.FC<{ group: LineItemGroup }> = ({ group }) => {
         </HStack>
       </Collapsible.Trigger>
       <Collapsible.Content>
-        {group.items.map((lineItem) => {
-          if (lineItem.metadata?.projectionType === 'group') {
-            // Expand group projection into individual style rows
-            const styleNames: string[] =
-              lineItem.metadata?.includedStyleNames ?? []
-            const skuCodes: string[] =
-              lineItem.metadata?.includedSkuCodes ?? []
-            const perStyleTypes: Record<string, string[]> =
-              lineItem.metadata?.license?.perStyleTypes ?? {}
-            const labelMap: Record<string, string> =
-              lineItem.metadata?.licenseTypeLabels ?? {}
-            const priceCentsMap: Record<string, number> =
-              lineItem.metadata?.perStylePriceCents ?? {}
-
-            return styleNames.map((styleName, idx) => {
-              const code = skuCodes[idx]
-              const typeRefs = perStyleTypes[code] ?? []
-              const typeLabels = typeRefs.map(
-                (ref: string) => labelMap[ref] || ref
-              )
-              const priceCents = priceCentsMap[code]
-              const priceFloat =
-                priceCents != null
-                  ? Math.round(priceCents) / 100
-                  : undefined
-
-              return (
-                <SimpleGrid
-                  key={`${lineItem.id}-${idx}`}
-                  columns={3}
-                  py={1}
-                  pl={5}
-                  fontSize={'sm'}
-                  lineHeight={1.1}
-                >
-                  <Box>{styleName}</Box>
-                  <Box fontSize={'sm'}>
-                    {typeLabels.join(', ')}
-                  </Box>
-                  <Box
-                    textAlign={'right'}
-                    fontVariantNumeric={'tabular-nums'}
-                  >
-                    {priceFloat != null ? `${priceFloat} EUR` : ''}
-                  </Box>
-                </SimpleGrid>
-              )
-            })
-          }
+        {group.styles.map((style) => {
+          const priceFloat =
+            style.priceCents != null
+              ? Math.round(style.priceCents) / 100
+              : undefined
 
           return (
             <SimpleGrid
-              key={lineItem.id}
+              key={style.id}
               columns={3}
               py={1}
               pl={5}
               fontSize={'sm'}
               lineHeight={1.1}
             >
-              <Box>{lineItem.name || lineItem.item?.name}</Box>
+              <Box>{style.name}</Box>
               <Box fontSize={'sm'}>
-                {lineItem?.line_item_options
-                  ?.map((option) => option.name)
-                  .filter(Boolean)
-                  .join(', ')}
+                {style.licenseTypeLabels.join(', ')}
               </Box>
-              <Box
-                textAlign={'right'}
-                fontVariantNumeric={'tabular-nums'}
-              >{`${lineItem.unit_amount_float} EUR`}</Box>
+              <Box textAlign={'right'} fontVariantNumeric={'tabular-nums'}>
+                {priceFloat != null ? `${priceFloat} EUR` : ''}
+              </Box>
             </SimpleGrid>
           )
         })}
@@ -219,7 +100,7 @@ const SummaryGroup: React.FC<{ group: LineItemGroup }> = ({ group }) => {
 
 interface OrderSummaryProps {
   /** Order data containing line items and metadata */
-  order: OrderType | null | undefined
+  order: any
   /** Whether the order has line items to display */
   hasLineItems: boolean
   /** Whether the summary box is expanded */
@@ -232,7 +113,6 @@ interface OrderSummaryProps {
   emptyText?: string
   /** Optional readonly flag (for future use) */
   readonly?: boolean
-  sizes: CompanySize[]
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -243,101 +123,71 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   heading = 'Order Overview',
   emptyText = 'Your cart is empty',
   readonly,
-  sizes,
 }) => {
-  // Group line items by font family (reference_origin / parentUid)
-  const { groups, parentFontString, subtotalAmount, totalDiscount } =
-    useMemo(() => {
-      if (!order?.line_items) {
-        return {
-          groups: [],
-          parentFontString: '0 fonts',
-          subtotalAmount: 0,
-          totalDiscount: 0,
-        }
-      }
-
-      const shoppableItems = order.line_items.filter(
-        (li) => li.item_type === 'skus' || li.item_type === 'bundles'
-      )
-
-      const groupMap = new Map<string, LineItemGroup>()
-
-      for (const item of shoppableItems) {
-        const parentUid =
-          item.item?.reference_origin ?? item.metadata?.parentUid ?? ''
-        if (!parentUid) continue
-
-        // For group projections, expand style count from metadata
-        const isGroupProjection = item.metadata?.projectionType === 'group'
-        const itemStyleCount = isGroupProjection
-          ? (item.metadata?.includedSkuCodes?.length ?? 1)
-          : 1
-
-        const existing = groupMap.get(parentUid)
-        if (existing) {
-          existing.items.push(item)
-          existing.groupTotal += item.unit_amount_float ?? 0
-          existing.styleCount += itemStyleCount
-        } else {
-          groupMap.set(parentUid, {
-            parentUid,
-            parentName: item.metadata?.parentName ?? parentUid,
-            defaultVariantId: item.metadata?.defaultVariantId ?? '',
-            items: [item],
-            groupTotal: item.unit_amount_float ?? 0,
-            styleCount: itemStyleCount,
-          })
-        }
-      }
-
-      const groups = Array.from(groupMap.values())
-      for (const g of groups) {
-        g.groupTotal = Math.round(g.groupTotal * 100) / 100
-      }
-
-      // Compute subtotal (undiscounted) from line item options + size modifier
-      let subtotalAmount = 0
-      let discountedTotal = 0
-      const sizeModifier = order?.metadata?.license?.size?.modifier ?? 1
-
-      for (const group of groups) {
-        for (const item of group.items) {
-          if (item.metadata?.projectionType === 'group') {
-            // Group projection: compute undiscounted subtotal from per-style metadata
-            const perStyleTypes = item.metadata?.license?.perStyleTypes ?? {}
-            // Each style's undiscounted price = its options total × sizeModifier
-            // Since we don't have the raw options here, use groupTotal / (1 - discount)
-            // as an approximation, or simply skip undiscounted for groups.
-            // For now, use the discounted amount as-is for both.
-            const amount = item.unit_amount_float ?? 0
-            subtotalAmount += amount
-            discountedTotal += amount
-          } else {
-            const optionsCents =
-              item.line_item_options?.reduce(
-                (total, opt) =>
-                  total +
-                  Number(opt.sku_option?.metadata?.price_amount_cents ?? 0),
-                0
-              ) ?? 0
-            subtotalAmount += (optionsCents * sizeModifier) / 100
-            discountedTotal += item.unit_amount_float ?? 0
-          }
-        }
-      }
-
-      const totalDiscount =
-        Math.round((subtotalAmount - discountedTotal) * 100) / 100
-
-      const count = groups.length
+  const {
+    groups,
+    parentFontCount,
+    allStylesCount,
+    subtotalAmount,
+    totalDiscount,
+  } = useMemo(() => {
+    if (!order?.line_items) {
       return {
-        groups,
-        parentFontString: count + ' ' + (count === 1 ? 'font' : 'fonts'),
-        subtotalAmount: Math.round(subtotalAmount * 100) / 100,
-        totalDiscount,
+        groups: [] as ExpandedFontGroup[],
+        parentFontCount: '0 fonts',
+        allStylesCount: '0 styles',
+        subtotalAmount: 0,
+        totalDiscount: 0,
       }
-    }, [order?.line_items, order?.metadata?.license?.size?.modifier])
+    }
+
+    const groups = expandAndGroupLineItems(order.line_items)
+
+    // Subtotal / discount
+    let subtotalAmount = 0
+    let discountedTotal = 0
+    for (const group of groups) {
+      for (const style of group.styles) {
+        const cents = style.priceCents ?? 0
+        // For style projections with line_item_options, compute undiscounted
+        const source = style.sourceLineItem
+        if (
+          style.projectionType !== 'group' &&
+          source.line_item_options?.length
+        ) {
+          const sizeModifier =
+            order?.metadata?.license?.size?.modifier ?? 1
+          const optionsCents =
+            source.line_item_options.reduce(
+              (total, opt) =>
+                total +
+                Number(
+                  opt.sku_option?.metadata?.price_amount_cents ?? 0
+                ),
+              0
+            )
+          subtotalAmount += (optionsCents * sizeModifier) / 100
+        } else {
+          subtotalAmount += cents / 100
+        }
+        discountedTotal += cents / 100
+      }
+    }
+
+    const totalDiscount =
+      Math.round((subtotalAmount - discountedTotal) * 100) / 100
+
+    const fontCount = groups.length
+    const styleCount = groups.reduce((sum, g) => sum + g.styleCount, 0)
+    return {
+      groups,
+      parentFontCount:
+        fontCount + ' ' + (fontCount === 1 ? 'font' : 'fonts'),
+      allStylesCount: styleCount + ' styles',
+      subtotalAmount: Math.round(subtotalAmount * 100) / 100,
+      totalDiscount,
+    }
+  }, [order?.line_items, order?.metadata?.license?.size?.modifier])
 
   return (
     <Show
@@ -383,13 +233,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             mb={1.5}
             fontSize={'sm'}
           >
-            <Box>{parentFontString}</Box>
-            <Box pl={3}>
-              {'Company size: '}
-              {sizes.find(
-                ({ value }) => value === order?.metadata?.license?.size?.value
-              )?.label || ''}
-            </Box>
+            <Box>{parentFontCount}</Box>
+            <Box pl={3}>{allStylesCount}</Box>
             <Box></Box>
           </SimpleGrid>
 

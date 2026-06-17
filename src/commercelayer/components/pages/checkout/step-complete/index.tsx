@@ -122,21 +122,21 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
           fontSize={'xs'}
           textTransform={'uppercase'}
           color={'#737373'}
-          asChild
+          mb={2}
         >
-          <Flex gap={1} alignItems={'center'}>
-            {'Order details'}
-          </Flex>
+          {'Order details'}
         </Box>
 
         {/* Email Address */}
         <HStack
           justify="space-between"
           w="full"
-          bg={'brand.50'}
-          py={2}
+          borderBottom={'1px solid #919191'}
+          fontSize={'sm'}
+          lineHeight={1}
+          py={0}
           px={3}
-          h={8}
+          h={6}
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
             {t('stepComplete.email')}
@@ -150,10 +150,12 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
         <HStack
           justify="space-between"
           w="full"
-          bg={'brand.50'}
-          py={1}
+          borderBottom={'1px solid #919191'}
+          fontSize={'sm'}
+          lineHeight={1}
+          py={0}
           px={3}
-          h={8}
+          h={6}
           data-testid="billing-address-recap"
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
@@ -168,10 +170,12 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
         <HStack
           justify="space-between"
           w="full"
-          bg={'brand.50'}
-          py={1}
+          borderBottom={'1px solid #919191'}
+          fontSize={'sm'}
+          lineHeight={1}
+          py={0}
           px={3}
-          h={8}
+          h={6}
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
             {t('checkoutSummary.licenseOwnerLabel', 'License owner')}
@@ -185,10 +189,12 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
         <HStack
           justify="space-between"
           w="full"
-          bg={'brand.50'}
-          py={2}
+          borderBottom={'1px solid #919191'}
+          fontSize={'sm'}
+          lineHeight={1}
+          py={0}
           px={3}
-          h={8}
+          h={6}
           data-testid="complete-checkout-summary"
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
@@ -203,10 +209,12 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
         <HStack
           justify="space-between"
           w="full"
-          bg={'brand.50'}
-          py={2}
+          borderBottom={'1px solid #919191'}
+          fontSize={'sm'}
+          lineHeight={1}
+          py={0}
           px={3}
-          h={8}
+          h={6}
           data-testid="complete-checkout-summary"
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>

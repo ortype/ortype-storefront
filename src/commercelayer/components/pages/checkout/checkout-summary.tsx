@@ -1,4 +1,5 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { useOrderContext } from '@/commercelayer/providers/Order'
 import {
   Box,
   Button,
@@ -45,6 +46,7 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
   mb = 2,
 }) => {
   const checkoutCtx = useContext(CheckoutContext)
+  const { order, companySizes } = useOrderContext()
   const stepsContext = useStepsContext()
   const { t } = useTranslation()
 
@@ -107,34 +109,68 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
   }
 
   return (
-    <VStack gap={2} align="start" w="full" mb={mb}>
-      <VStack gap={2} align="start" w="full">
+    <VStack gap={2} align="start" w="full" pb={4} mb={mb}>
+      <VStack gap={1} align="start" w="full">
         <Box
           px={3}
+          mb={2}
           fontSize={'xs'}
           textTransform={'uppercase'}
           color={'#737373'}
-          asChild
         >
-          <Flex gap={1} alignItems={'center'}>
-            {heading || t('checkoutSummary.heading', 'Checkout Summary')}
-          </Flex>
+          {heading || t('checkoutSummary.heading', 'Checkout Summary')}
         </Box>
         {/* Email Address */}
         {showEmail && checkoutCtx?.emailAddress && (
           <HStack
             justify="space-between"
             w="full"
-            bg={'brand.50'}
-            py={2}
+            borderBottom={'1px solid #919191'}
+            fontSize={'sm'}
+            lineHeight={1}
+            py={0}
             px={3}
-            h={8}
+            h={6}
           >
-            <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
+            <Text minW={'8rem'} color={'brand.500'}>
               {t('checkoutSummary.emailLabel', 'Email')}
             </Text>{' '}
             <Box flexGrow={1} pl={4}>
               {checkoutCtx.emailAddress}
+            </Box>
+            {/*<Button
+              variant="text"
+              size="xs"
+              onClick={goToEmailStep}
+              fontSize="xs"
+              px={2}
+              py={1}
+              h="auto"
+              minH="auto"
+            >
+              {t('checkoutSummary.editButton', 'edit')}
+            </Button>*/}
+          </HStack>
+        )}
+
+        {showEmail && checkoutCtx?.emailAddress && (
+          <HStack
+            justify="space-between"
+            w="full"
+            borderBottom={'1px solid #919191'}
+            fontSize={'sm'}
+            lineHeight={1}
+            py={0}
+            px={3}
+            h={6}
+          >
+            <Text minW={'8rem'} color={'brand.500'}>
+              {'Comany size'}
+            </Text>{' '}
+            <Box flexGrow={1} pl={4}>
+              {companySizes.find(
+                ({ value }) => value === order?.metadata?.license?.size?.value
+              )?.label || ''}
             </Box>
             {/*<Button
               variant="text"
@@ -156,12 +192,14 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
           <HStack
             justify="space-between"
             w="full"
-            bg={'brand.50'}
-            py={1}
+            borderBottom={'1px solid #919191'}
+            fontSize={'sm'}
+            lineHeight={1}
+            py={0}
             px={3}
-            h={8}
+            h={6}
           >
-            <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
+            <Text minW={'8rem'} color={'brand.500'}>
               {t('checkoutSummary.billingAddressLabel', 'Billing address')}
             </Text>
             <Box flexGrow={1} pl={4}>
@@ -187,12 +225,14 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
           <HStack
             justify="space-between"
             w="full"
-            bg={'brand.50'}
-            py={1}
+            borderBottom={'1px solid #919191'}
+            fontSize={'sm'}
+            lineHeight={1}
+            py={0}
             px={3}
-            h={8}
+            h={6}
           >
-            <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
+            <Text minW={'8rem'} color={'brand.500'}>
               {t('checkoutSummary.licenseOwnerLabel', 'License owner')}
             </Text>{' '}
             <Box flexGrow={1} pl={4}>

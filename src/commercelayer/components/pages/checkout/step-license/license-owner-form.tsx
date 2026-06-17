@@ -112,11 +112,12 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
               <RadioCardItem
                 key={type.value}
                 value={type.value}
+                isSelected={projectType === type.value}
                 label={type.title}
                 description={type.description}
                 flex="1"
                 alignSelf="stretch"
-                indicatorPlacement="end"
+                indicatorPlacement="start"
               />
             ))}
           </Group>
@@ -264,7 +265,11 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                     3. Call commitSelections() to recreate with new pricing
                     Until then, show the current size as read-only. */}
                 <Box bg={'brand.50'} p={4} w="full" px={3}>
-                  <Text fontSize={'xs'} textTransform={'uppercase'} color={'#737373'}>
+                  <Text
+                    fontSize={'xs'}
+                    textTransform={'uppercase'}
+                    color={'#737373'}
+                  >
                     {'Your clients company size'}
                   </Text>
                   <Text fontSize={'md'}>{licenseSize?.label}</Text>
@@ -280,9 +285,20 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                     )}
                   </Text>
                 </Box>
-                {/* @TODO: Re-enable license size changes during checkout (see above) */}
+                {/* @TODO: Re-enable license size changes during checkout (see above) 
+                <LicenseSizeNativeSelect
+                  setLicenseSize={setLicenseSize}
+                  licenseSize={licenseSize}
+                  label={'Your company size'}
+                />
+                */}
                 <Box bg={'brand.50'} p={4} w="full" px={3}>
-                  <Text fontSize={'xs'} textTransform={'uppercase'} color={'#737373'}>
+                  <Text
+                    fontSize={'xs'}
+                    lineHeight={1}
+                    textTransform={'uppercase'}
+                    color={'#737373'}
+                  >
                     {'Your company size'}
                   </Text>
                   <Text fontSize={'md'}>{licenseSize?.label}</Text>

@@ -36,7 +36,7 @@ export const SingleStyles: React.FC<Props> = ({
     <Flex
       justifyContent={'space-between'}
       bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
-      borderRadius={isSelected ? 'full' : '0px'}
+      borderRadius={isSelected ? '100px' : '0px'}
       cursor={disabled ? 'default' : 'pointer'}
       opacity={disabled ? 0.6 : 1}
       _hover={

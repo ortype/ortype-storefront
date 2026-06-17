@@ -50,18 +50,22 @@ export const PaymentMethodCard: React.FC<PaymentMethodCardProps> = memo(
       <VStack align="stretch" w={'full'} gap={0}>
         {!isSinglePaymentMethod && (
           <Flex
-            bg={'brand.50'}
             p={4}
             justifyContent={'space-between'}
             cursor={'pointer'}
             onClick={handleCardClick}
             _hover={{
-              bg: 'brand.100',
+              borderRadius: '100px',
+              bg: 'blackAlpha.300',
               '& .indicator': {
                 bg: 'black',
               },
             }}
-            transition="background-color 0.2s"
+            bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
+            borderRadius={isSelected ? '100px' : '0px'}
+            transition={
+              'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+            }
           >
             <Stack direction={'row'} gap={2} alignItems={'center'}>
               <Button

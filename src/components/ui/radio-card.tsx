@@ -2,6 +2,7 @@ import { RadioCard } from '@chakra-ui/react'
 import * as React from 'react'
 
 interface RadioCardItemProps extends RadioCard.ItemProps {
+  isSelected?: boolean
   icon?: React.ReactElement
   label?: React.ReactNode
   description?: React.ReactNode
@@ -16,6 +17,7 @@ export const RadioCardItem = React.forwardRef<
   RadioCardItemProps
 >(function RadioCardItem(props, ref) {
   const {
+    isSelected,
     inputProps,
     label,
     description,
@@ -30,9 +32,16 @@ export const RadioCardItem = React.forwardRef<
   const ContentWrapper = indicator ? RadioCard.ItemContent : React.Fragment
 
   return (
-    <RadioCard.Item {...rest}>
+    <RadioCard.Item
+      {...rest}
+      bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
+      borderRadius={isSelected ? '100px' : '0px'}
+      transition={
+        'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+      }
+    >
       <RadioCard.ItemHiddenInput ref={ref} {...inputProps} />
-      <RadioCard.ItemControl>
+      <RadioCard.ItemControl alignItems={'center'}>
         {indicatorPlacement === 'start' && indicator}
         {hasContent && (
           <ContentWrapper>

@@ -1,5 +1,10 @@
 'use client'
 import {
+  expandAndGroupLineItems,
+  expandLineItems,
+  filterShoppableItems,
+} from '@/commercelayer/utils/expand-group-projections'
+import {
   Box,
   Button,
   Flex,
@@ -14,31 +19,9 @@ import { EllipsisHorizontalIcon } from '@sanity/icons'
 import { format, parseISO } from 'date-fns'
 import { useMemo } from 'react'
 
-interface LineItemType {
-  id: string
-  item_type?: string
-  item?: {
-    name?: string
-    reference_origin?: string
-    [key: string]: any
-  }
-  line_item_options?: Array<{
-    name?: string
-    [key: string]: any
-  }>
-  unit_amount_float?: number
-  [key: string]: any
-}
-
-interface OrderType {
-  line_items?: LineItemType[]
-  total_amount_with_taxes_float?: number
-  [key: string]: any
-}
-
 interface OrderSummaryProps {
   /** Order data containing line items and metadata */
-  order: OrderType | null | undefined
+  order: any
   /** Heading text for the summary */
   heading?: string
   /** Empty state text */
@@ -46,24 +29,56 @@ interface OrderSummaryProps {
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
-  // Memoize line item filtering and font reference calculations
-  const { fontCount } = useMemo(() => {
+  // Expanded style count (group projections count as N styles, not 1 line item)
+  const { fontCount, subtotalAmount, totalDiscount } = useMemo(() => {
     if (!order?.line_items) {
       return {
         fontCount: 0,
+        subtotalAmount: 0,
+        totalDiscount: 0,
       }
     }
 
-    // Filter out payment method and shipping line items - only show SKUs and bundles
-    const filteredItems = order.line_items.filter(
-      (lineItem) =>
-        lineItem.item_type === 'skus' || lineItem.item_type === 'bundles'
-    )
+    // Subtotal / discount
+    let subtotalAmount = 0
+    let discountedTotal = 0
+
+    const groups = expandAndGroupLineItems(order.line_items)
+    for (const group of groups) {
+      for (const style of group.styles) {
+        const cents = style.priceCents ?? 0
+        // For style projections with line_item_options, compute undiscounted
+        const source = style.sourceLineItem
+        if (
+          style.projectionType !== 'group' &&
+          source.line_item_options?.length
+        ) {
+          const sizeModifier = order?.metadata?.license?.size?.modifier ?? 1
+          const optionsCents = source.line_item_options.reduce(
+            (total, opt) =>
+              total + Number(opt.sku_option?.metadata?.price_amount_cents ?? 0),
+            0
+          )
+          subtotalAmount += (optionsCents * sizeModifier) / 100
+        } else {
+          subtotalAmount += cents / 100
+        }
+        discountedTotal += cents / 100
+      }
+    }
+
+    const totalDiscount =
+      Math.round((subtotalAmount - discountedTotal) * 100) / 100
+
+    const shoppable = filterShoppableItems(order.line_items)
+    const expanded = expandLineItems(shoppable)
 
     return {
-      fontCount: filteredItems.length,
+      fontCount: expanded.length,
+      subtotalAmount: Math.round(subtotalAmount * 100) / 100,
+      totalDiscount,
     }
-  }, [order?.line_items])
+  }, [order?.line_items, order?.metadata?.license?.size?.modifier])
 
   const placedAt =
     (order?.placed_at && format(parseISO(order?.placed_at), 'yyyy-MM-dd')) || ''
@@ -207,7 +222,13 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
           <Box>{placedAt}</Box>
           <Box>{fontCount}</Box>
         </SimpleGrid>
-        <SimpleGrid columns={2} pt={3} pb={2} mt={1.5}>
+        <SimpleGrid
+          columns={2}
+          pt={3}
+          pb={2}
+          mt={1.5}
+          borderTop={'1px solid #E7E0BF'}
+        >
           <Box fontSize={'lg'} fontWeight={'normal'}>
             {'Subtotal (excl. discounts)'}
           </Box>
@@ -216,9 +237,29 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             textAlign={'right'}
             fontVariantNumeric={'tabular-nums'}
           >
-            {`${order?.total_amount_with_taxes_float} EUR`}
+            {`${subtotalAmount} EUR`}
           </Box>
         </SimpleGrid>
+        {totalDiscount > 0 && (
+          <SimpleGrid
+            columns={2}
+            pb={2}
+            pt={3}
+            borderTop={'1px solid #E7E0BF'}
+            borderBottom={'1px solid #E7E0BF'}
+          >
+            <Box fontSize={'lg'} fontWeight={'normal'}>
+              {'Discounts'}
+            </Box>
+            <Box
+              fontSize={'lg'}
+              textAlign={'right'}
+              fontVariantNumeric={'tabular-nums'}
+            >
+              {`-${totalDiscount} EUR`}
+            </Box>
+          </SimpleGrid>
+        )}
         <SimpleGrid columns={2} py={3}>
           <Box
             fontSize={'xl'}

@@ -91,6 +91,14 @@ export const Buy = () => {
             />
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
+            <LicenseSizeList
+              label={buyLabels?.companySize?.label}
+              info={buyLabels?.companySize?.info}
+              setLicenseSize={setLicenseSize}
+              licenseSize={licenseSize}
+            />
+          </GridItem>
+          <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
             <LicenseTypeList
               label={buyLabels?.licenseType?.label}
               info={buyLabels?.licenseType?.info}
@@ -116,14 +124,6 @@ export const Buy = () => {
               </ChakraLink>
               {`.`}
             </Text>
-          </GridItem>
-          <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
-            <LicenseSizeList
-              label={buyLabels?.companySize?.label}
-              info={buyLabels?.companySize?.info}
-              setLicenseSize={setLicenseSize}
-              licenseSize={licenseSize}
-            />
           </GridItem>
           <GridItem colSpan={2}>
             <Fieldset.Root>
@@ -221,7 +221,9 @@ export const Buy = () => {
                 }}
               >
                 {isCommitting ? (
-                  <><Spinner size={'xs'} /> {'Adding...'}</>
+                  <>
+                    <Spinner size={'xs'} /> {'Adding...'}
+                  </>
                 ) : (
                   'Add to cart'
                 )}
