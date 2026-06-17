@@ -58,11 +58,22 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
 
     try {
       setIsPlacing(true)
-      console.error('Payment method not selected')
       if (!hasPaymentMethod) {
+        console.error('Payment method not selected')
         if (onClick) {
           onClick({ placed: false, order })
         }
+        return
+      }
+
+      // Validate Terms of Use BEFORE submitting payment. Confirming the Stripe
+      // PaymentIntent first leaves it in a `succeeded` state, so a subsequent
+      // click (after the user checks the box) fails with
+      // `payment_intent_unexpected_state`.
+      if (!termsChecked) {
+        // highlight the Terms of Use box in case it isn't
+        console.log('Terms not checked...')
+        onClick && onClick({ placed: false, order })
         return
       }
 
@@ -75,13 +86,6 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
         if (onClick) {
           onClick({ placed: false, order })
         }
-        return
-      }
-
-      if (!termsChecked) {
-        // highlight the Terms of Use box in case it isn't
-        console.log('Terms not checked...')
-        onClick && onClick({ placed: false, order })
         return
       }
 

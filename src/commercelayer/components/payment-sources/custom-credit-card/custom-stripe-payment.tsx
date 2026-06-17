@@ -117,6 +117,31 @@ const CustomStripeElementsForm: React.FC<{
      * This function will be called by the CheckoutProvider when "Place Order" is clicked
      */
     const submitPayment = async (): Promise<boolean> => {
+      const clientSecret = order?.payment_source?.client_secret || ''
+
+      // Idempotency guard: if this PaymentIntent has already been confirmed
+      // (e.g. a previous attempt confirmed payment but order placement then
+      // failed), calling confirmCardPayment again throws
+      // `payment_intent_unexpected_state`. Detect the already-succeeded case
+      // and let the flow proceed straight to order placement.
+      if (clientSecret) {
+        try {
+          const { paymentIntent, error: retrieveError } =
+            await stripe.retrievePaymentIntent(clientSecret)
+
+          if (retrieveError) {
+            console.error('Error retrieving PaymentIntent:', retrieveError)
+          } else if (paymentIntent?.status === 'succeeded') {
+            console.log(
+              'PaymentIntent already succeeded; skipping confirmation'
+            )
+            return true
+          }
+        } catch (retrieveError) {
+          console.error('Error retrieving PaymentIntent:', retrieveError)
+        }
+      }
+
       if (!allComplete) {
         setError('Please fill in all payment details')
         return false
@@ -161,7 +186,7 @@ const CustomStripeElementsForm: React.FC<{
 
         // Confirm payment using Elements
         const { error } = await stripe.confirmCardPayment(
-          order?.payment_source?.client_secret || '',
+          clientSecret,
           {
             payment_method: {
               card: cardElement,
