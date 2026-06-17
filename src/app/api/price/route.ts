@@ -1,14 +1,67 @@
 import { getLicenseMetrics } from '@/sanity/lib/client'
 import { authenticate } from '@commercelayer/js-auth'
-import CommerceLayer from '@commercelayer/sdk'
+import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import {
   calculateLineItemPrice,
   calculateSkuOptionsTotal,
 } from '@/commercelayer/utils/prices'
+import type { CompanySize } from '@/sanity/lib/queries'
 // External prices URL is mananged at
 // `${process.env.CL_SLUG}.commercelayer.io/admin/settings/markets/${marketId}/edit`
 // e.g. https://owenhoskins.ngrok.app/api/price
+
+/* ------------------------------------------------------------------ */
+/*  Module-level cache — survives across requests within the same      */
+/*  serverless invocation. TTL prevents stale data.                    */
+/* ------------------------------------------------------------------ */
+const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
+
+let cachedCl: ReturnType<typeof CommerceLayer> | null = null
+let cachedClExpiry = 0
+
+let cachedSizes: CompanySize[] | null = null
+let cachedSizesExpiry = 0
+
+let cachedSkuOptions: SkuOption[] | null = null
+let cachedSkuOptionsExpiry = 0
+
+async function getCl() {
+  const now = Date.now()
+  if (cachedCl && now < cachedClExpiry) return cachedCl
+
+  const token = await authenticate('client_credentials', {
+    clientId: process.env.CL_SYNC_CLIENT_ID,
+    clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
+    endpoint: process.env.CL_ENDPOINT,
+  })
+  cachedCl = CommerceLayer({
+    organization: process.env.CL_SLUG,
+    accessToken: token.accessToken,
+  })
+  cachedClExpiry = now + CACHE_TTL_MS
+  return cachedCl
+}
+
+async function getSizes() {
+  const now = Date.now()
+  if (cachedSizes && now < cachedSizesExpiry) return cachedSizes
+
+  const { sizes } = await getLicenseMetrics()
+  cachedSizes = sizes
+  cachedSizesExpiry = now + CACHE_TTL_MS
+  return cachedSizes
+}
+
+async function getSkuOptions() {
+  const now = Date.now()
+  if (cachedSkuOptions && now < cachedSkuOptionsExpiry) return cachedSkuOptions
+
+  const cl = await getCl()
+  cachedSkuOptions = await cl.sku_options.list()
+  cachedSkuOptionsExpiry = now + CACHE_TTL_MS
+  return cachedSkuOptions
+}
 
 type IncludedLineItem = {
   type: string
@@ -73,18 +126,12 @@ export async function POST(
   // We recommend verifying the callback authenticity by signing the payload with that shared secret and comparing the result with the callback signature header.
 
   try {
-    const token = await authenticate('client_credentials', {
-      clientId: process.env.CL_SYNC_CLIENT_ID,
-      clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
-      endpoint: process.env.CL_ENDPOINT,
-    })
+    // Parallel fetch from cache (warm) or network (cold)
+    const [sizes, allSkuOptions] = await Promise.all([
+      getSizes(),
+      getSkuOptions(),
+    ])
 
-    const cl = CommerceLayer({
-      organization: process.env.CL_SLUG,
-      accessToken: token.accessToken,
-    })
-
-    const { sizes } = await getLicenseMetrics()
     const size = sizes.find(
       ({ value }) => value === metadata.license?.size?.value
     )
@@ -98,8 +145,6 @@ export async function POST(
         data: { sku_code, unit_amount_cents: 0 },
       })
     }
-
-    const allSkuOptions = await cl.sku_options.list()
     let unit_amount_cents: number
 
     if (metadata.projectionType === 'group') {
