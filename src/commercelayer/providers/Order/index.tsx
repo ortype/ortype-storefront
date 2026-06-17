@@ -414,11 +414,23 @@ export function OrderProvider({
         if (shouldClearPlacedOrder && order && order.editable === false) {
           if (process.env.NODE_ENV !== 'production') {
             console.log(
-              '[OrderProvider] fetchOrder: Order has been placed, clearing local storage',
+              '[OrderProvider] fetchOrder: Order has been placed, clearing all cart state',
               { orderId, persistKey }
             )
           }
+          // Clear order ID from localStorage
           deleteLocalOrder(persistKey)
+          // Clear all cart-related localStorage keys
+          try {
+            localStorage.removeItem(`${persistKey}_selections`)
+            localStorage.removeItem(`${persistKey}_committed_groups`)
+            localStorage.removeItem(`${persistKey}_group_resolutions`)
+            localStorage.removeItem(`${persistKey}_license`)
+          } catch {
+            /* localStorage unavailable */
+          }
+          // Reset provider state: order, selections, committed groups
+          dispatch({ type: ActionType.CLEAR_SELECTIONS })
           dispatch({
             type: ActionType.SET_ORDER,
             payload: {
