@@ -6,10 +6,10 @@ import utils, {
   computeGroupHash,
 } from '@/commercelayer/providers/Order/utils'
 import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
-import { calculateLineItemPrice } from '@/commercelayer/utils/prices'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
+import { calculateLineItemPrice } from '@/commercelayer/utils/prices'
 import { retryCall } from '@/commercelayer/utils/retryCall'
 import {
   type BuyLabels,
@@ -1253,8 +1253,7 @@ export function OrderProvider({
     []
   )
 
-  const LINE_ITEM_CONCURRENCY = 3
-  const OPTION_CONCURRENCY = 1
+  const LINE_ITEM_CONCURRENCY = 5
 
   /**
    * Ensure a CL order exists, creating one if needed.
@@ -1415,10 +1414,10 @@ export function OrderProvider({
         for (const matched of matchedGroups) {
           const perStyleTypes: Record<string, string[]> = {}
           const perStylePriceCents: Record<string, number> = {}
+          const perStyleFullPriceCents: Record<string, number> = {}
           for (const code of matched.includedSkuCodes) {
             const types = groupStyles[code]?.licenseTypes ?? []
             perStyleTypes[code] = types
-            // Compute this style's unit price for display in the order summary
             const styleSkuOpts = state.skuOptions.filter((o) =>
               types.includes(o.reference)
             )
@@ -1426,6 +1425,11 @@ export function OrderProvider({
               skuOptions: styleSkuOpts,
               sizeModifier: commitLicenseSize?.modifier ?? 1,
               count: groupSize,
+            })
+            perStyleFullPriceCents[code] = calculateLineItemPrice({
+              skuOptions: styleSkuOpts,
+              sizeModifier: commitLicenseSize?.modifier ?? 1,
+              count: 1,
             })
           }
 
@@ -1460,6 +1464,7 @@ export function OrderProvider({
                 batchSize: groupSize,
                 licenseTypeLabels,
                 perStylePriceCents,
+                perStyleFullPriceCents,
                 license: {
                   size: commitLicenseSize,
                   defaultTypes: firstEntry?.licenseTypes,
@@ -1482,39 +1487,57 @@ export function OrderProvider({
         }
 
         // ── STYLE PROJECTIONS (leftover) ─────────────────────────────────
+        // Metadata-only: no line_item_options created. License detail
+        // lives entirely in metadata.license.types + licenseTypeLabels.
         if (styleProjectionCodes.length > 0) {
           const styleLineItemCreators = styleProjectionCodes.map(
-            (skuCode) =>
-              async () => {
-                const styleEntry = groupStyles[skuCode]
-                const result = await retryCall(() =>
-                  cl.line_items.create({
-                    order: orderRel,
-                    sku_code: skuCode,
-                    reference_origin: parentUid,
-                    quantity: 1,
-                    _external_price: true,
-                    metadata: {
-                      projectionType: 'style',
-                      parentUid,
-                      parentName: styleEntry?.parentName,
-                      defaultVariantId: styleEntry?.defaultVariantId,
-                      batchSize: groupSize,
-                      license: {
-                        size: commitLicenseSize,
-                        types: styleEntry?.licenseTypes,
-                      },
+            (skuCode) => async () => {
+              const styleEntry = groupStyles[skuCode]
+              const types = styleEntry?.licenseTypes ?? []
+              // Compute this style's unit price for order summary display
+              const styleSkuOpts = state.skuOptions.filter((o) =>
+                types.includes(o.reference)
+              )
+              const priceCents = calculateLineItemPrice({
+                skuOptions: styleSkuOpts,
+                sizeModifier: commitLicenseSize?.modifier ?? 1,
+                count: groupSize,
+              })
+              const fullPriceCents = calculateLineItemPrice({
+                skuOptions: styleSkuOpts,
+                sizeModifier: commitLicenseSize?.modifier ?? 1,
+                count: 1,
+              })
+
+              const result = await retryCall(() =>
+                cl.line_items.create({
+                  order: orderRel,
+                  sku_code: skuCode,
+                  reference_origin: parentUid,
+                  quantity: 1,
+                  _external_price: true,
+                  metadata: {
+                    projectionType: 'style',
+                    parentUid,
+                    parentName: styleEntry?.parentName,
+                    defaultVariantId: styleEntry?.defaultVariantId,
+                    batchSize: groupSize,
+                    priceCents,
+                    fullPriceCents,
+                    licenseTypeLabels,
+                    license: {
+                      size: commitLicenseSize,
+                      types,
                     },
-                  })
-                )
-                if (result?.success && result.object) {
-                  createdLineItems.push({ id: result.object.id, skuCode })
-                } else {
-                  throw new Error(
-                    `Failed to create line item for ${skuCode}`
-                  )
-                }
+                  },
+                })
+              )
+              if (result?.success && result.object) {
+                createdLineItems.push({ id: result.object.id, skuCode })
+              } else {
+                throw new Error(`Failed to create line item for ${skuCode}`)
               }
+            }
           )
 
           if (process.env.NODE_ENV !== 'production') {
@@ -1535,47 +1558,6 @@ export function OrderProvider({
             console.error(
               `[commitGroup] ${failedItems.length}/${styleLineItemCreators.length} style line items failed`
             )
-          }
-
-          // Create line_item_options for style projections only
-          const optionCreators: (() => Promise<void>)[] = []
-          for (const skuCode of styleProjectionCodes) {
-            const lineItem = createdLineItems.find(
-              (li) => li.skuCode === skuCode
-            )
-            if (!lineItem) continue
-            const styleEntry = groupStyles[skuCode]
-            if (!styleEntry) continue
-
-            const matchingOptions = state.skuOptions.filter((opt) =>
-              styleEntry.licenseTypes.includes(opt.reference)
-            )
-            for (const skuOption of matchingOptions) {
-              optionCreators.push(async () => {
-                const result = await retryCall(() =>
-                  cl.line_item_options.create({
-                    quantity: 1,
-                    options: {},
-                    sku_option: cl.sku_options.relationship(skuOption.id),
-                    line_item: cl.line_items.relationship(lineItem.id),
-                  })
-                )
-                if (!result?.success) {
-                  console.warn(
-                    `[commitGroup] Failed to create option for ${skuCode}/${skuOption.reference}`
-                  )
-                }
-              })
-            }
-          }
-
-          if (optionCreators.length > 0) {
-            if (process.env.NODE_ENV !== 'production') {
-              console.log(
-                `[OrderProvider] commitGroup: Creating ${optionCreators.length} options (concurrency: ${OPTION_CONCURRENCY})`
-              )
-            }
-            await runConcurrent(optionCreators, OPTION_CONCURRENCY)
           }
         }
 

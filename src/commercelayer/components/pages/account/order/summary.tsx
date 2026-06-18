@@ -1,5 +1,6 @@
 'use client'
 import {
+  computeOrderTotals,
   expandAndGroupLineItems,
   expandLineItems,
   filterShoppableItems,
@@ -39,36 +40,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
       }
     }
 
-    // Subtotal / discount
-    let subtotalAmount = 0
-    let discountedTotal = 0
-
     const groups = expandAndGroupLineItems(order.line_items)
-    for (const group of groups) {
-      for (const style of group.styles) {
-        const cents = style.priceCents ?? 0
-        // For style projections with line_item_options, compute undiscounted
-        const source = style.sourceLineItem
-        if (
-          style.projectionType !== 'group' &&
-          source.line_item_options?.length
-        ) {
-          const sizeModifier = order?.metadata?.license?.size?.modifier ?? 1
-          const optionsCents = source.line_item_options.reduce(
-            (total, opt) =>
-              total + Number(opt.sku_option?.metadata?.price_amount_cents ?? 0),
-            0
-          )
-          subtotalAmount += (optionsCents * sizeModifier) / 100
-        } else {
-          subtotalAmount += cents / 100
-        }
-        discountedTotal += cents / 100
-      }
-    }
-
-    const totalDiscount =
-      Math.round((subtotalAmount - discountedTotal) * 100) / 100
+    const { subtotalAmount, totalDiscount } = computeOrderTotals(groups)
 
     const shoppable = filterShoppableItems(order.line_items)
     const expanded = expandLineItems(shoppable)
@@ -78,7 +51,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
       subtotalAmount: Math.round(subtotalAmount * 100) / 100,
       totalDiscount,
     }
-  }, [order?.line_items, order?.metadata?.license?.size?.modifier])
+  }, [order?.line_items])
 
   const placedAt =
     (order?.placed_at && format(parseISO(order?.placed_at), 'yyyy-MM-dd')) || ''

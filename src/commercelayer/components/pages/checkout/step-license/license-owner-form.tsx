@@ -301,7 +301,9 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   >
                     {'Your company size'}
                   </Text>
-                  <Text fontSize={'md'}>{licenseSize?.label}</Text>
+                  <Text fontSize={'md'} lineHeight={1.2}>
+                    {licenseSize?.label}
+                  </Text>
                 </Box>
               </>
             )}

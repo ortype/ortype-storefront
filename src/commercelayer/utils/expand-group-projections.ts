@@ -51,6 +51,8 @@ export interface ExpandedStyle {
   licenseTypeRefs: string[]
   /** Per-style discounted price in cents, or null if unavailable */
   priceCents: number | null
+  /** Per-style undiscounted price in cents (count=1), or null if unavailable */
+  fullPriceCents: number | null
   /** Projection type that produced this entry */
   projectionType: 'group' | 'style' | 'unknown'
   /** Group name (only meaningful for entries from group projections) */
@@ -114,6 +116,9 @@ export function expandLineItems(
       const priceCentsMap: Record<string, number> =
         meta.perStylePriceCents ?? {}
 
+      const fullPriceCentsMap: Record<string, number> =
+        meta.perStyleFullPriceCents ?? {}
+
       for (let i = 0; i < skuCodes.length; i++) {
         const code = skuCodes[i]
         const typeRefs = perStyleTypes[code] ?? []
@@ -130,6 +135,7 @@ export function expandLineItems(
           ),
           licenseTypeRefs: typeRefs,
           priceCents: priceCentsMap[code] ?? null,
+          fullPriceCents: fullPriceCentsMap[code] ?? null,
           projectionType: 'group',
           groupName: meta.groupName,
           sourceLineItem: item,
@@ -138,10 +144,33 @@ export function expandLineItems(
     } else {
       // Style projection or legacy line item
       const typeRefs: string[] = meta.license?.types ?? []
-      const optionNames =
-        item.line_item_options
-          ?.map((o) => o.sku_option?.name ?? o.name)
-          .filter(Boolean) ?? []
+      const labelMap: Record<string, string> =
+        meta.licenseTypeLabels ?? {}
+
+      // Prefer metadata labels (metadata-only projections), fall back to
+      // line_item_options names (legacy style projections)
+      let labels: string[]
+      if (Object.keys(labelMap).length > 0 && typeRefs.length > 0) {
+        labels = typeRefs.map((ref) => labelMap[ref] || ref)
+      } else {
+        labels = (
+          item.line_item_options
+            ?.map((o) => o.sku_option?.name ?? o.name)
+            .filter(Boolean) ?? []
+        ) as string[]
+      }
+
+      // Prefer metadata priceCents (metadata-only), fall back to CL unit_amount_float
+      const priceCents =
+        meta.priceCents != null
+          ? meta.priceCents
+          : item.unit_amount_float != null
+            ? Math.round(item.unit_amount_float * 100)
+            : null
+
+      // fullPriceCents: metadata (metadata-only) > same as priceCents (legacy fallback)
+      const fullPriceCents =
+        meta.fullPriceCents != null ? meta.fullPriceCents : priceCents
 
       result.push({
         id: item.id,
@@ -151,12 +180,10 @@ export function expandLineItems(
           item.item?.reference_origin ?? meta.parentUid ?? '',
         parentName: meta.parentName ?? '',
         defaultVariantId: meta.defaultVariantId ?? '',
-        licenseTypeLabels: optionNames as string[],
+        licenseTypeLabels: labels,
         licenseTypeRefs: typeRefs,
-        priceCents:
-          item.unit_amount_float != null
-            ? Math.round(item.unit_amount_float * 100)
-            : null,
+        priceCents,
+        fullPriceCents,
         projectionType: projectionType === 'style' ? 'style' : 'unknown',
         sourceLineItem: item,
       })
@@ -206,6 +233,45 @@ export function groupByFont(
     g.groupTotal = Math.round(g.groupTotal * 100) / 100
   }
   return groups
+}
+
+/* ------------------------------------------------------------------ */
+/*  Totals                                                             */
+/* ------------------------------------------------------------------ */
+
+/** Computed order-level totals from expanded font groups. */
+export interface OrderTotals {
+  /** Sum of undiscounted per-style prices (float, e.g. 490.00) */
+  subtotalAmount: number
+  /** Sum of discounted per-style prices (float) */
+  discountedTotal: number
+  /** subtotalAmount - discountedTotal */
+  totalDiscount: number
+}
+
+/**
+ * Compute subtotal, discounted total, and discount from expanded groups.
+ * Reusable across checkout order summary, account order pages, etc.
+ */
+export function computeOrderTotals(
+  groups: ExpandedFontGroup[]
+): OrderTotals {
+  let subtotalCents = 0
+  let discountedCents = 0
+
+  for (const group of groups) {
+    for (const style of group.styles) {
+      subtotalCents += style.fullPriceCents ?? style.priceCents ?? 0
+      discountedCents += style.priceCents ?? 0
+    }
+  }
+
+  const subtotalAmount = Math.round(subtotalCents) / 100
+  const discountedTotal = Math.round(discountedCents) / 100
+  const totalDiscount =
+    Math.round((subtotalAmount - discountedTotal) * 100) / 100
+
+  return { subtotalAmount, discountedTotal, totalDiscount }
 }
 
 /* ------------------------------------------------------------------ */
