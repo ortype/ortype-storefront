@@ -107,23 +107,6 @@ export const Buy = () => {
               selectedSkuOptions={selectedSkuOptions}
               setSelectedSkuOptions={setSelectedSkuOptions}
             />
-            <Text
-              as={Box}
-              py={4}
-              textAlign={'center'}
-              textStyle={'xs'}
-              opacity={0.8}
-            >
-              {`Need something else? Please `}
-              <ChakraLink
-                href="mailto:info@ortype.is"
-                textDecoration={'underline'}
-                target={'_blank'}
-              >
-                {'contact us'}
-              </ChakraLink>
-              {`.`}
-            </Text>
           </GridItem>
           <GridItem colSpan={2}>
             <Fieldset.Root>

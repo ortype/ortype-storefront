@@ -265,7 +265,7 @@ export const dialogSlotRecipe = defineSlotRecipe({
     },
   },
   defaultVariants: {
-    size: 'cover',
+    size: 'full',
     scrollBehavior: 'outside',
     placement: 'center',
     motionPreset: 'scale',

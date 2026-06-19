@@ -653,8 +653,6 @@ export function OrderProvider({
   // Pure state update (see setLicenseOwner note on persistence).
   const setLicenseSize = useCallback(
     (params: { licenseSize?: LicenseSize }): void => {
-      if (!params.licenseSize) return
-
       if (process.env.NODE_ENV !== 'production') {
         console.log(
           '[OrderProvider] setLicenseSize (state-only):',
