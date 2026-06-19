@@ -33,11 +33,11 @@ interface CartItemProps {
 
 export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const {
-    committedGroups,
     skuOptions,
     mediaTypes,
     licenseSize,
     selections,
+    groupResolutions,
     toggleStyle,
     setStyleLicenseTypes,
   } = useOrderContext()
@@ -81,8 +81,18 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   // Count siblings in this parentUid group
   const groupCount = Object.keys(selections[parentUid] ?? {}).length
 
-  // committedGroups doesn't contain an Object.key that matches this `parentUid`
-  const canRemove = !(item.parentUid in committedGroups)
+  // Disable individual removal when this style belongs to a fully-selected group.
+  // A style is "locked" if every style in its resolved group is currently selected.
+  const isInFullGroup = useMemo(() => {
+    const resolved = groupResolutions[parentUid] ?? []
+    const selectedCodes = new Set(Object.keys(selections[parentUid] ?? {}))
+    return resolved.some(
+      (g) =>
+        g.includedSkuCodes.includes(skuCode) &&
+        g.includedSkuCodes.every((code) => selectedCodes.has(code))
+    )
+  }, [groupResolutions, selections, parentUid, skuCode])
+  const canRemove = !isInFullGroup
 
   // Optimistic price from buffer
   const displayPrice = useMemo(() => {
