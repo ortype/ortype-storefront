@@ -431,7 +431,7 @@ export function OrderProvider({
           } catch {
             /* localStorage unavailable */
           }
-          // Reset provider state: order, selections, committed groups
+          // Reset provider state: order, selections, committed groups, license
           dispatch({ type: ActionType.CLEAR_SELECTIONS })
           dispatch({
             type: ActionType.SET_ORDER,
@@ -441,6 +441,14 @@ export function OrderProvider({
                 orderId: undefined,
                 itemsCount: 0,
                 isInvalid: false,
+                hasLicenseOwner: false,
+                isLicenseForClient: false,
+                licenseOwner: undefined,
+                hasValidLicenseSize: false,
+                hasValidLicenseType: false,
+                allLicenseInfoSet: false,
+                licenseSize: undefined,
+                selectedSkuOptions: [],
               },
             },
           })
