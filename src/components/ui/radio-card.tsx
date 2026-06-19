@@ -35,6 +35,10 @@ export const RadioCardItem = React.forwardRef<
     <RadioCard.Item
       {...rest}
       bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
+      _hover={{
+        borderRadius: '100px',
+        bg: 'blackAlpha.300',
+      }}
       borderRadius={isSelected ? '100px' : '0px'}
       transition={
         'border-radius 200ms ease-in-out, background 300ms ease-in-out'

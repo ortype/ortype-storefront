@@ -2,7 +2,8 @@
 
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import { defineStyle, Steps, useStepsContext } from '@chakra-ui/react'
+import { Button, defineStyle, Steps, useStepsContext } from '@chakra-ui/react'
+import { useRouter } from 'next/navigation'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SingleStepEnum } from '../types'
@@ -52,12 +53,32 @@ export const StepNav: React.FC<Props> = ({
   const ctx = useContext(CheckoutContext)
   const { customer } = useIdentityContext()
   const stepsContext = useStepsContext()
+  const router = useRouter()
+
+  const handleClick = () => {
+    router.push(`/cart`)
+  }
 
   if (!ctx) {
     return null
   }
   return stepsContext.isCompleted ? null : (
     <Steps.List css={listStyles}>
+      <Button
+        onClick={handleClick}
+        variant={'outline'}
+        bg={'white'}
+        borderRadius={'5rem'}
+        size={'xs'}
+        fontSize={'sm'}
+        css={{
+          _hover: {
+            bg: 'colorPalette.subtle',
+          },
+        }}
+      >
+        {'← Cart'}
+      </Button>
       {steps.map((step, index) => {
         const stepComplete = isStepComplete(step.key, ctx, customer)
         const isCurrentStep = stepsContext.value === index

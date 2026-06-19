@@ -1,6 +1,6 @@
 import { Popover as ChakraPopover, IconButton, Portal } from '@chakra-ui/react'
-import * as React from 'react'
 import { InfoOutlineIcon } from '@sanity/icons'
+import * as React from 'react'
 
 export interface ToggleTipProps extends ChakraPopover.RootProps {
   showArrow?: boolean
@@ -30,6 +30,7 @@ export const ToggleTip = React.forwardRef<HTMLDivElement, ToggleTipProps>(
           <ChakraPopover.Positioner>
             <ChakraPopover.Content
               width="auto"
+              maxW={'20rem'}
               px="2"
               py="1"
               textStyle="xs"

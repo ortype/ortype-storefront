@@ -1,6 +1,7 @@
 'use client'
 import { Account } from '@/commercelayer/components/global/account'
-import { IconButton } from '@/components/ui/chakra-iconbutton'
+import { usePathname } from 'next/navigation'
+
 import { Box, Button, Flex, Group } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -45,6 +46,11 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
   const [openCart, setCartOpen] = useState(false)
   const [openLogin, setLoginOpen] = useState(false)
 
+  const pathname = usePathname()
+
+  // Hide on checkout routes
+  const hideLogin = pathname?.startsWith('/checkout')
+
   const { settings, customer } = useIdentityContext()
   const { full_name } = customer?.metadata
   const firstLetter = full_name?.charAt(0)
@@ -77,21 +83,23 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
             <Link href={'/account'}>{firstLetter}</Link>
           </Button>
         ) : (
-          <Button
-            //mr={'-3px'}
-            bg={'white'}
-            _hover={{ color: 'white', bg: 'black' }}
-            mr={1}
-            variant={'block'}
-            borderRadius={'full'}
-            borderWidth={'3px'}
-            fontSize={'lg'}
-            size={'md'}
-            px={2}
-            onClick={() => setLoginOpen(true)}
-          >
-            {'Login'}
-          </Button>
+          !hideLogin && (
+            <Button
+              //mr={'-3px'}
+              bg={'white'}
+              _hover={{ color: 'white', bg: 'black' }}
+              mr={1}
+              variant={'block'}
+              borderRadius={'full'}
+              borderWidth={'3px'}
+              fontSize={'lg'}
+              size={'md'}
+              px={2}
+              onClick={() => setLoginOpen(true)}
+            >
+              {'Login'}
+            </Button>
+          )
         )}
         <DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu} />
         {/*<DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu}>

@@ -3,6 +3,8 @@ import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInpu
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useRouter } from 'next/navigation'
+
 import type {
   SelectionBuffer,
   StyleEntry,
@@ -12,6 +14,7 @@ import { useMemo, useRef } from 'react'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import {
   Box,
+  Button,
   Center,
   Container,
   Fieldset,
@@ -67,6 +70,12 @@ const CartComponent = () => {
     skuOptions,
     cartLabels,
   } = useOrderContext()
+
+  const router = useRouter()
+
+  const handleClick = () => {
+    router.push(`/`)
+  }
 
   /** Resolve a style's licenseTypes refs to SkuOption objects */
   const resolveSkuOptions = (entry: StyleEntry): SkuOption[] =>
@@ -149,7 +158,20 @@ const CartComponent = () => {
     return (
       <Box pos="fixed" inset="0" bg="bg/80">
         <Center h="full">
-          <Text fontSize={'2xl'}>{'No items in your cart 😢'}</Text>
+          <VStack gap={6}>
+            <Text fontSize={'2xl'}>{'No items in your cart 😢'}</Text>
+
+            <Button
+              onClick={handleClick}
+              variant={'outline'}
+              bg={'white'}
+              borderRadius={'5rem'}
+              size={'sm'}
+              fontSize={'md'}
+            >
+              {'Continue shopping'}
+            </Button>
+          </VStack>
         </Center>
       </Box>
     )

@@ -18,7 +18,8 @@ const CartContainer = ({
   const pathname = usePathname()
 
   // Hide on checkout routes
-  if (pathname?.startsWith('/checkout')) return null
+  if (pathname?.startsWith('/checkout') || pathname?.startsWith('/cart'))
+    return null
 
   if (!orderId || itemsCount === 0) {
     // @TODO: if orderId does not exist, show an empty cart instead of an error
