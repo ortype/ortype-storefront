@@ -174,6 +174,8 @@ type OrderProviderData = {
     success: boolean
     error?: AddToCartError
   }>
+  /** Clear uncommitted selections for a specific font (parentUid) */
+  clearFontSelections: (parentUid: string) => void
   /** Resolved style groups per parentUid, for hybrid projection */
   groupResolutions: GroupResolutions
   /** Register resolved groups for a font (called by BuyProvider on mount) */
@@ -1891,6 +1893,17 @@ export function OrderProvider({
 
   const isDirty = committedUids.length > 0 && !isFullyCommitted
 
+  // --- Per-font selection management ---
+  const clearFontSelections = useCallback(
+    (parentUid: string) => {
+      dispatch({
+        type: ActionType.CLEAR_FONT_SELECTIONS,
+        payload: { parentUid },
+      })
+    },
+    []
+  )
+
   // --- Group resolutions ---
   const registerGroupResolutions = useCallback(
     (parentUid: string, groups: ResolvedFontGroup[]) => {
@@ -1998,6 +2011,7 @@ export function OrderProvider({
     commitGroup,
     commitSelections,
     clearCommittedItems,
+    clearFontSelections,
     // Group resolutions (hybrid projection)
     groupResolutions: state.groupResolutions,
     registerGroupResolutions,

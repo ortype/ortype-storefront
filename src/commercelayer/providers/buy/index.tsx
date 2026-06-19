@@ -6,7 +6,7 @@ import {
 } from '@/commercelayer/utils/prices'
 import { Font } from '@/sanity/lib/queries'
 import slugify from 'slugify'
-import { createContext, FC, useContext, useEffect, useMemo, useReducer } from 'react'
+import { createContext, FC, useContext, useEffect, useMemo, useReducer, useRef } from 'react'
 import type {
   FontSelectionSummary,
   GroupPriceSummary,
@@ -106,7 +106,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     toggleStyle: orderToggleStyle,
     toggleGroup: orderToggleGroup,
     selections,
+    committedGroups,
     registerGroupResolutions,
+    clearFontSelections,
   } = useOrderContext()
 
   // Resolve and register group resolutions when the font loads
@@ -117,6 +119,21 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       registerGroupResolutions(font.uid, groups)
     }
   }, [font?._id, font?.uid, registerGroupResolutions])
+
+  // On unmount: clear selections for this font if they were never committed.
+  // This prevents uncommitted browse-only selections from polluting the cart.
+  // Uses a ref to read the latest committed state without re-running the effect.
+  const committedRef = useRef(committedGroups)
+  committedRef.current = committedGroups
+  useEffect(() => {
+    const uid = font?.uid
+    if (!uid) return
+    return () => {
+      if (!committedRef.current[uid]) {
+        clearFontSelections(uid)
+      }
+    }
+  }, [font?.uid, clearFontSelections])
 
   const selectedSkus = selections[font.uid] ?? {}
 

@@ -36,6 +36,8 @@ export enum ActionType {
   REMOVE_COMMITTED_GROUP = 'REMOVE_COMMITTED_GROUP',
   HYDRATE_COMMITTED_GROUPS = 'HYDRATE_COMMITTED_GROUPS',
   CLEAR_ALL_COMMITTED = 'CLEAR_ALL_COMMITTED',
+  // Per-font selection management
+  CLEAR_FONT_SELECTIONS = 'CLEAR_FONT_SELECTIONS',
   // Group resolution tracking (for hybrid projection)
   REGISTER_GROUP_RESOLUTIONS = 'REGISTER_GROUP_RESOLUTIONS',
   HYDRATE_GROUP_RESOLUTIONS = 'HYDRATE_GROUP_RESOLUTIONS',
@@ -179,6 +181,10 @@ export type Action =
       }
     }
   | { type: ActionType.CLEAR_ALL_COMMITTED }
+  | {
+      type: ActionType.CLEAR_FONT_SELECTIONS
+      payload: { parentUid: string }
+    }
   | {
       type: ActionType.REGISTER_GROUP_RESOLUTIONS
       payload: {
@@ -484,6 +490,15 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       return {
         ...state,
         committedGroups: {},
+      }
+    }
+    case ActionType.CLEAR_FONT_SELECTIONS: {
+      const { parentUid } = action.payload
+      const { [parentUid]: _, ...restSelections } = state.selections
+      return {
+        ...state,
+        selections: restSelections,
+        itemsCount: countSelections(restSelections),
       }
     }
     case ActionType.REGISTER_GROUP_RESOLUTIONS: {
