@@ -736,19 +736,23 @@ export function OrderProvider({
         try {
           const localKey = `${persistKey}_selections`
           const stored = localStorage.getItem(localKey)
-          if (stored) {
+          if (stored !== null) {
+            // Key exists in localStorage — treat as authoritative even if
+            // empty (user intentionally cleared all selections). Only fall
+            // through to metadata when the key is missing (new device).
             const parsed = JSON.parse(stored) as SelectionBuffer
             if (Object.keys(parsed).length > 0) {
               dispatch({
                 type: ActionType.HYDRATE_SELECTIONS,
                 payload: { selections: parsed },
               })
-              hydrated = true
-              if (process.env.NODE_ENV !== 'production') {
-                console.log(
-                  '[OrderProvider] 🔄 initializeProvider: Hydrated selections from localStorage'
-                )
-              }
+            }
+            hydrated = true
+            if (process.env.NODE_ENV !== 'production') {
+              console.log(
+                '[OrderProvider] 🔄 initializeProvider: Hydrated selections from localStorage',
+                { count: Object.keys(parsed).length }
+              )
             }
           }
         } catch {
@@ -1900,14 +1904,28 @@ export function OrderProvider({
   const isDirty = committedUids.length > 0 && !isFullyCommitted
 
   // --- Per-font selection management ---
+  // Uses SELECTIONS_STORAGE_KEY declared at the persistence section above.
   const clearFontSelections = useCallback(
     (parentUid: string) => {
       dispatch({
         type: ActionType.CLEAR_FONT_SELECTIONS,
         payload: { parentUid },
       })
+      // Write directly to localStorage so the clear survives navigation
+      // even if the persistence effect doesn't re-run before the page
+      // transition completes (production-only timing issue).
+      try {
+        const stored = localStorage.getItem(SELECTIONS_STORAGE_KEY)
+        if (stored) {
+          const parsed = JSON.parse(stored)
+          delete parsed[parentUid]
+          localStorage.setItem(SELECTIONS_STORAGE_KEY, JSON.stringify(parsed))
+        }
+      } catch {
+        /* localStorage unavailable */
+      }
     },
-    []
+    [SELECTIONS_STORAGE_KEY]
   )
 
   // --- Group resolutions ---

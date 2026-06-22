@@ -120,18 +120,30 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     }
   }, [font?._id, font?.uid, registerGroupResolutions])
 
-  // On unmount: clear selections for this font if they were never committed.
-  // This prevents uncommitted browse-only selections from polluting the cart.
-  // Uses a ref to read the latest committed state without re-running the effect.
+  // Clear uncommitted selections when leaving the /buy page.
+  // Covers both route navigation (React unmount) and tab close (beforeunload).
+  // Uses a ref so the handler always reads the latest committed state.
   const committedRef = useRef(committedGroups)
   committedRef.current = committedGroups
   useEffect(() => {
     const uid = font?.uid
     if (!uid) return
-    return () => {
+
+    const clearIfUncommitted = () => {
       if (!committedRef.current[uid]) {
         clearFontSelections(uid)
       }
+    }
+
+    // Tab close / browser quit — React cleanup won't fire, but
+    // beforeunload does. clearFontSelections writes to localStorage
+    // synchronously so it completes before the page is destroyed.
+    window.addEventListener('beforeunload', clearIfUncommitted)
+
+    return () => {
+      window.removeEventListener('beforeunload', clearIfUncommitted)
+      // Route navigation — React unmount cleanup
+      clearIfUncommitted()
     }
   }, [font?.uid, clearFontSelections])
 
