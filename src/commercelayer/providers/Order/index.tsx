@@ -215,9 +215,9 @@ export type OrderStateData = {
 const initialState: OrderStateData = {
   order: undefined,
   orderId: undefined,
-  licenseOwner: undefined,
-  hasLicenseOwner: false,
-  isLicenseForClient: false, // Add default value
+  licenseOwner: { is_client: false },
+  hasLicenseOwner: true,
+  isLicenseForClient: false,
   hasValidLicenseSize: false,
   hasValidLicenseType: false,
   allLicenseInfoSet: false,
@@ -640,7 +640,9 @@ export function OrderProvider({
         type: ActionType.SET_LICENSE_OWNER,
         payload: {
           others: {
-            hasLicenseOwner: !!licenseOwner.full_name?.trim(),
+            hasLicenseOwner:
+              licenseOwner.is_client !== null &&
+              licenseOwner.is_client !== undefined,
             isLicenseForClient: licenseOwner.is_client ?? false,
             licenseOwner,
           },
@@ -920,7 +922,9 @@ export function OrderProvider({
                 type: ActionType.SET_LICENSE_OWNER,
                 payload: {
                   others: {
-                    hasLicenseOwner: !!parsed.owner.full_name.trim(),
+                    hasLicenseOwner:
+                      parsed.owner.is_client !== null &&
+                      parsed.owner.is_client !== undefined,
                     isLicenseForClient: parsed.owner.is_client ?? false,
                     licenseOwner: parsed.owner,
                   },

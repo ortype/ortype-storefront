@@ -20,6 +20,7 @@ import {
   Fieldset,
   Flex,
   Heading,
+  Input,
   SimpleGrid,
   Spinner,
   Stack,
@@ -31,7 +32,6 @@ import Summary from './cart-summary'
 import {
   calculateDiscount,
   calculateLineItemPrice,
-  calculateSkuOptionsTotal,
   formatPrice,
 } from '@/commercelayer/utils/prices'
 import type { SkuOption } from '@commercelayer/sdk'
@@ -192,10 +192,27 @@ const CartComponent = () => {
 
       <Stack direction={'column'} gap={6}>
         <SimpleGrid columns={[1, null, 2]} gap={3}>
-          <LicenseOwnerInput
-            label={cartLabels?.licenseHolder?.label || 'License holder'}
-            info={cartLabels?.licenseHolder?.info}
-          />
+          <Fieldset.Root>
+            <FieldsetLegend info={cartLabels?.licenseHolder?.info}>
+              {cartLabels?.licenseHolder?.label || 'License holder'}
+            </FieldsetLegend>
+            <Fieldset.Content asChild>
+              <Flex
+                bg={'brand.50'}
+                justifyContent={'center'}
+                px={'3'}
+                h={11}
+                fontSize={{ base: 'lg', xl: 'md' }}
+                mt={1}
+                borderRadius={0}
+              >
+                {order?.metadata?.license?.owner?.is_client
+                  ? 'Your client'
+                  : 'Yourself'}
+              </Flex>
+            </Fieldset.Content>
+          </Fieldset.Root>
+
           {licenseSize && (
             <LicenseSizeSelect
               label={cartLabels?.companySize?.label}

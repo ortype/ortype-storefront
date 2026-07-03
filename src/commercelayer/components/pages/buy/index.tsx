@@ -1,4 +1,4 @@
-import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
+import LicenseOwnerRadio from '@/commercelayer/components/forms/license-owner-radio'
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -67,8 +67,6 @@ export const Buy = () => {
     total,
   } = summary
 
-  // @TODO: on changing selected SKU options, update all line_items on the order
-
   return (
     <Box pos={'relative'}>
       <Box
@@ -85,7 +83,7 @@ export const Buy = () => {
       >
         <SimpleGrid columns={2} gap={[4, null, null, null, null, null, 8]}>
           <GridItem colSpan={2}>
-            <LicenseOwnerInput
+            <LicenseOwnerRadio
               label={buyLabels?.licenseHolder?.label}
               info={buyLabels?.licenseHolder?.info}
             />
