@@ -35,12 +35,12 @@ const projectTypes = [
   {
     value: 'yourself',
     title: 'Yourself',
-    description: 'You will own the license',
+    description: '',
   },
   {
     value: 'client',
     title: 'Your client',
-    description: 'Your client will own the license',
+    description: '',
   },
 ]
 
