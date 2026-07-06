@@ -4,6 +4,8 @@ import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeLis
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { AnimatePresence, motion, type Variants } from 'framer-motion'
+
 import {
   Box,
   Button,
@@ -11,6 +13,7 @@ import {
   Fieldset,
   Flex,
   GridItem,
+  Presence,
   Show,
   SimpleGrid,
   Spinner,
@@ -20,6 +23,47 @@ import {
 import Link from 'next/link'
 import React, { useState } from 'react'
 import Typefaces from './typefaces'
+
+const ANIMATION_DURATION = 0.3
+
+// The wrapper animates its own height so the surrounding panel grows/shrinks
+// smoothly. `when` sequences the two animations: expand the height BEFORE the
+// button animates in, and collapse it AFTER the button animates out.
+const buttonContainerVariants: Variants = {
+  hidden: {
+    height: 0,
+    transition: {
+      // when: 'afterChildren',
+      delay: 0.1,
+      duration: ANIMATION_DURATION,
+      ease: 'easeInOut',
+    },
+  },
+  visible: {
+    height: 'auto',
+    transition: {
+      when: 'beforeChildren',
+      // delay: 0.1,
+      duration: ANIMATION_DURATION,
+      ease: 'easeInOut',
+    },
+  },
+}
+
+// The button slides in/out from the top and fades. It inherits the active
+// variant label ('hidden' / 'visible') from the wrapper above.
+const buttonVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: -10,
+    transition: { duration: ANIMATION_DURATION, ease: 'easeInOut' },
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: ANIMATION_DURATION, ease: 'easeInOut' },
+  },
+}
 
 interface FontVariant {
   _id: string
@@ -36,6 +80,7 @@ interface FontGroup {
 
 export const Buy = () => {
   const {
+    selections,
     licenseSize,
     skuOptions,
     setLicenseSize,
@@ -46,6 +91,7 @@ export const Buy = () => {
     buyLabels,
     isGroupCommitted,
     commitGroup,
+    committedGroups,
   } = useOrderContext()
   const { font, summary } = useBuyContext()
 
@@ -53,12 +99,16 @@ export const Buy = () => {
   const [isCommitting, setIsCommitting] = useState(false)
   const fontUid = font.uid!
   const groupIsCommitted = isGroupCommitted(fontUid)
+  const hasFontSelections = Object.keys(selections[font.uid] ?? {}).length > 0
 
   const licensesCount = selectedSkuOptions?.length
 
+  const showAddUpdateButton =
+    allLicenseInfoSet && hasFontSelections && !groupIsCommitted
+
   // All pricing now derived from the selection buffer via BuyProvider
   const {
-    show,
+    show: showSummaryPanel,
     fontStyleCount: fontLineItemCount,
     unitPrice,
     subtotal,
@@ -134,148 +184,76 @@ export const Buy = () => {
             bg={'whiteAlpha.700'}
             zIndex={1}
           >
-            <Spinner size={'lg'} />
+            {/*<Spinner size={'lg'} />*/}
           </Flex>
         )}
       </Box>
-      <Show when={show}>
-        <VStack
-          pos={{ base: 'relative', lg: 'fixed' }}
-          right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
-          top={{ base: 'auto', lg: 5 }}
+      <Presence
+        present={showSummaryPanel}
+        animationName={{
+          _open: 'slide-from-right, fade-in',
+          _closed: 'slide-to-right, fade-out',
+        }}
+        animationDuration="moderate"
+        pos={{ base: 'relative', lg: 'fixed' }}
+        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
+        top={{ base: 'auto', lg: 5 }}
+      >
+        <Box
           w={{ base: '100%', lg: '13rem', '2xl': '15rem', '3xl': '17rem' }}
           bg={'#FFF8D3'}
-          px={4}
-          py={5}
           my={{ base: 4, xl: 0 }}
           borderRadius={20}
-          gap={2}
+          px={4}
+          py={5}
         >
-          <Flex
-            w={'full'}
-            justifyContent={'space-between'}
-            borderBottom={'1px solid #CEC9AB'}
-            alignItems={'center'}
-            pb={2}
-          >
-            <Text
-              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-              w={'50%'}
-              textTransform={'uppercase'}
+          <VStack gap={2}>
+            <Flex
+              w={'full'}
+              justifyContent={'space-between'}
+              borderBottom={'1px solid #CEC9AB'}
+              alignItems={'center'}
+              pb={2}
+              h={8}
             >
-              {'Summary'}
-            </Text>
-            {groupIsCommitted ? (
-              <Button
-                asChild
-                variant={'solid'}
-                bg={'black'}
-                borderRadius={'5rem'}
-                size={'sm'}
-                fontSize={'md'}
-                color={'white'}
-                gap={1}
-                _hover={{ bg: 'red' }}
+              <Text
+                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                w={'50%'}
+                textTransform={'uppercase'}
               >
-                <Link href={'/cart/'}>{'Go to cart'}</Link>
-              </Button>
-            ) : (
-              <Button
-                variant={'solid'}
-                bg={'red'}
-                borderRadius={'5rem'}
-                size={'sm'}
-                fontSize={'md'}
-                color={'white'}
-                disabled={!allLicenseInfoSet || isCommitting}
-                gap={1}
-                _hover={{ bg: 'black' }}
-                onClick={async () => {
-                  setIsCommitting(true)
-                  try {
-                    await commitGroup(fontUid)
-                  } catch (e) {
-                    console.error('[Buy] commitGroup error:', e)
-                  } finally {
-                    setIsCommitting(false)
-                  }
+                {'Summary'}
+              </Text>
+              {/* NAVIGATION */}
+              <Presence
+                present={
+                  allLicenseInfoSet &&
+                  hasFontSelections &&
+                  isGroupCommitted(fontUid)
+                }
+                animationName={{
+                  _open: 'slide-from-top, fade-in',
+                  _closed: 'slide-to-top, fade-out',
                 }}
+                animationDuration="moderate"
               >
-                {isCommitting ? (
-                  <>
-                    <Spinner size={'xs'} /> {'Adding...'}
-                  </>
-                ) : (
-                  'Add to cart'
-                )}
-              </Button>
-            )}
-          </Flex>
-          <Flex
-            w={'full'}
-            justifyContent={'space-between'}
-            borderBottom={'1px solid #CEC9AB'}
-            alignItems={'center'}
-            pb={2}
-          >
-            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
-              {' '}
-              {`Styles`}
-            </Text>
-            <Text
-              pl={1}
-              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-            >{`${fontLineItemCount}`}</Text>
-          </Flex>
-          <Flex
-            w={'full'}
-            justifyContent={'space-between'}
-            borderBottom={'1px solid #CEC9AB'}
-            alignItems={'center'}
-            pb={2}
-          >
-            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
-              {' '}
-              {`Licenses`}
-            </Text>
-            <Text
-              pl={1}
-              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-            >{`${licensesCount}`}</Text>
-          </Flex>
-          <Flex
-            w={'full'}
-            justifyContent={'space-between'}
-            borderBottom={'1px solid #CEC9AB'}
-            alignItems={'center'}
-            pb={2}
-          >
-            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
-              {' '}
-              {`Unit Price`}
-            </Text>
-            <Text
-              pl={1}
-              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-            >{`${unitPrice} EUR`}</Text>
-          </Flex>
-          <Flex
-            w={'full'}
-            justifyContent={'space-between'}
-            borderBottom={'1px solid #CEC9AB'}
-            alignItems={'center'}
-            pb={2}
-          >
-            <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
-              {' '}
-              {`Subtotal`}
-            </Text>
-            <Text
-              pl={1}
-              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-            >{`${subtotal} EUR`}</Text>
-          </Flex>
-          <Show when={totalDiscount > 0}>
+                <Button
+                  asChild
+                  variant={'outline'}
+                  bg={'transparent'}
+                  borderRadius={'5rem'}
+                  size={'xs'}
+                  fontSize={'sm'}
+                  css={{
+                    _hover: {
+                      bg: 'colorPalette.fg',
+                      color: 'colorPalette.bg',
+                    },
+                  }}
+                >
+                  <Link href={'/cart/'}>{'Cart →'}</Link>
+                </Button>
+              </Presence>
+            </Flex>
             <Flex
               w={'full'}
               justifyContent={'space-between'}
@@ -283,38 +261,206 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text
-                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-                w={'50%'}
-                whiteSpace={'nowrap'}
-              >
-                {`Discount (${percentageDiscount * 100}%)`}
+              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+                {' '}
+                {`Styles`}
               </Text>
               <Text
                 pl={1}
                 textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-              >{`-${totalDiscount} EUR`}</Text>
+              >{`${fontLineItemCount}`}</Text>
             </Flex>
-          </Show>
-          <Flex
-            w={'full'}
-            mt={-1}
-            justifyContent={'space-between'}
-            borderTop={'1px solid #CEC9AB'}
-            alignItems={'center'}
-            pt={2}
-          >
-            <Text
-              textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-              w={'50%'}
-              textTransform={'uppercase'}
+            <Flex
+              w={'full'}
+              justifyContent={'space-between'}
+              borderBottom={'1px solid #CEC9AB'}
+              alignItems={'center'}
+              pb={2}
             >
-              {`TOTAL`}
-            </Text>
-            <Text pl={1} textStyle={'md'}>{`${total} EUR`}</Text>
-          </Flex>
-        </VStack>
-      </Show>
+              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+                {' '}
+                {`Licenses`}
+              </Text>
+              <Text
+                pl={1}
+                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+              >{`${licensesCount}`}</Text>
+            </Flex>
+            <Flex
+              w={'full'}
+              justifyContent={'space-between'}
+              borderBottom={'1px solid #CEC9AB'}
+              alignItems={'center'}
+              pb={2}
+            >
+              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+                {' '}
+                {`Unit Price`}
+              </Text>
+              <Text
+                pl={1}
+                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+              >{`${unitPrice} EUR`}</Text>
+            </Flex>
+            <Flex
+              w={'full'}
+              justifyContent={'space-between'}
+              borderBottom={'1px solid #CEC9AB'}
+              alignItems={'center'}
+              pb={2}
+            >
+              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+                {' '}
+                {`Subtotal`}
+              </Text>
+              <Text
+                pl={1}
+                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+              >{`${subtotal} EUR`}</Text>
+            </Flex>
+            <Presence
+              present={totalDiscount > 0}
+              animationName={{
+                _open: 'slide-from-top, fade-in',
+                _closed: 'slide-to-top, fade-out',
+              }}
+              animationDuration="faster"
+              w={'full'}
+            >
+              <Flex
+                w={'full'}
+                justifyContent={'space-between'}
+                borderBottom={'1px solid #CEC9AB'}
+                alignItems={'center'}
+                pb={2}
+              >
+                <Text
+                  textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                  w={'50%'}
+                  whiteSpace={'nowrap'}
+                >
+                  {`Discount (${percentageDiscount * 100}%)`}
+                </Text>
+                <Text
+                  pl={1}
+                  textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                >{`-${totalDiscount} EUR`}</Text>
+              </Flex>
+            </Presence>
+            <Flex
+              w={'full'}
+              mt={-1}
+              justifyContent={'space-between'}
+              borderTop={'1px solid #CEC9AB'}
+              alignItems={'center'}
+              pt={2}
+            >
+              <Text
+                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                w={'50%'}
+                textTransform={'uppercase'}
+              >
+                {`TOTAL`}
+              </Text>
+              <Text pl={1} textStyle={'md'}>{`${total} EUR`}</Text>
+            </Flex>
+          </VStack>
+          {/* SAVE CONFIGURATION */}
+          <AnimatePresence>
+            {showAddUpdateButton && (
+              <motion.div
+                key="button"
+                variants={buttonContainerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                style={{ overflow: 'hidden' }}
+              >
+                <motion.div variants={buttonVariants}>
+                  <Button
+                    variant={'solid'}
+                    bg={'black'}
+                    borderRadius={'5rem'}
+                    size={'sm'}
+                    fontSize={'md'}
+                    color={'white'}
+                    disabled={isCommitting}
+                    mt={2}
+                    w={'full'}
+                    gap={1}
+                    _hover={{ bg: 'red' }}
+                    onClick={async () => {
+                      setIsCommitting(true)
+                      try {
+                        await commitGroup(fontUid)
+                      } catch (e) {
+                        console.error('[Buy] commitGroup error:', e)
+                      } finally {
+                        setIsCommitting(false)
+                      }
+                    }}
+                  >
+                    {isCommitting ? (
+                      <>
+                        <Spinner size={'xs'} /> {'Processing...'}
+                      </>
+                    ) : !committedGroups[font.uid] ? (
+                      'Add to cart'
+                    ) : (
+                      'Update cart'
+                    )}
+                  </Button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/*<Presence
+            present={
+              allLicenseInfoSet &&
+              hasFontSelections &&
+              !isGroupCommitted(fontUid)
+            }
+            animationName={{
+              _open: 'slide-from-top, fade-in',
+              _closed: 'slide-to-top, fade-out',
+            }}
+            animationDuration="moderate"
+          >
+            <Button
+              variant={'solid'}
+              bg={'black'}
+              borderRadius={'5rem'}
+              size={'sm'}
+              fontSize={'md'}
+              color={'white'}
+              disabled={isCommitting}
+              mt={2}
+              gap={1}
+              _hover={{ bg: 'red' }}
+              onClick={async () => {
+                setIsCommitting(true)
+                try {
+                  await commitGroup(fontUid)
+                } catch (e) {
+                  console.error('[Buy] commitGroup error:', e)
+                } finally {
+                  setIsCommitting(false)
+                }
+              }}
+            >
+              {isCommitting ? (
+                <>
+                  <Spinner size={'xs'} /> {'Processing...'}
+                </>
+              ) : !groupIsCommitted ? (
+                'Update cart'
+              ) : (
+                'Add to cart'
+              )}
+            </Button>
+          </Presence>*/}
+        </Box>
+      </Presence>
     </Box>
   )
 }
