@@ -47,7 +47,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
 
   return (
     <>
-      <DialogRoot open={registerOpen}>
+      <DialogRoot open={registerOpen} size={'xl'}>
         <DialogContent maxW={'35rem'}>
           <DialogHeader asChild>
             <Heading
@@ -89,7 +89,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
           </DialogFooter>
         </DialogContent>
       </DialogRoot>
-      <DialogRoot open={openLogin}>
+      <DialogRoot open={openLogin} size={'xl'}>
         <DialogContent maxW={'35rem'}>
           <DialogHeader asChild>
             <Heading

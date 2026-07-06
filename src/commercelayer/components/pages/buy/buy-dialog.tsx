@@ -62,7 +62,6 @@ export function BuyDialog({ data }: BuyDialogProps) {
       onOpenChange={({ open }) => {
         if (!open) handleClose()
       }}
-      backdrop={false}
       size={'full'}
       motionPreset={'slide-in-bottom-custom'}
     >
