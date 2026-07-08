@@ -9,7 +9,9 @@ import {
 } from '@/components/ui/chakra-select'
 import { type CompanySize } from '@/sanity/lib/queries'
 import { createListCollection, Fieldset } from '@chakra-ui/react'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
+import ConfirmLicenseSizeChangeDialog from '../confirm-license-size-change-dialog'
+import { useLicenseSizeChange } from '../use-license-size-change'
 
 interface Props {
   label?: string
@@ -18,37 +20,24 @@ interface Props {
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
 }
 
-export const LicenseSizeSelect: React.FC<Props> = ({
-  label,
-  info,
-  licenseSize,
-  setLicenseSize,
-}) => {
+export const LicenseSizeSelect: React.FC<Props> = ({ label, info }) => {
   // *************************************
   // License size select logic
 
   const { companySizes: sizes } = useOrderContext()
-
-  const [selectedSize, setSelectedSize] = useState<CompanySize | null>(
-    licenseSize
-  )
-
-  useEffect(() => {
-    setSelectedSize(licenseSize) // keep component synced with data from Provider
-  }, [licenseSize])
+  const { requestSizeChange, confirm, cancel, confirmOpen, displayValue } =
+    useLicenseSizeChange()
 
   const handleSizeChange = useCallback(
     (e) => {
       const value = e.value
       if (!value) return
-      const selectedSize = sizes.find((size) => size.value === value[0])
-
-      // @TODO: open a dialog to confirm change and commit it (add to cart)
-
-      setSelectedSize(selectedSize || null)
-      setLicenseSize({ licenseSize: selectedSize })
+      const selected = sizes.find((size) => size.value === value[0])
+      // Opens the "all cart items will be adjusted" confirm when the cart has
+      // committed items; applies immediately otherwise.
+      requestSizeChange(selected)
     },
-    [sizes, setSelectedSize]
+    [sizes, requestSizeChange]
   )
 
   const licenseSizeCollection = useMemo(
@@ -70,7 +59,7 @@ export const LicenseSizeSelect: React.FC<Props> = ({
           size={'lg'}
           fontSize={'md'}
           collection={licenseSizeCollection}
-          value={[selectedSize?.value || '']}
+          value={[displayValue?.value || '']}
           onValueChange={handleSizeChange}
           w={'100%'}
           positioning={{ sameWidth: true }}
@@ -99,6 +88,11 @@ export const LicenseSizeSelect: React.FC<Props> = ({
           </SelectContent>
         </SelectRoot>
       </Fieldset.Content>
+      <ConfirmLicenseSizeChangeDialog
+        open={confirmOpen}
+        onCancel={cancel}
+        onConfirm={confirm}
+      />
     </Fieldset.Root>
   )
 }

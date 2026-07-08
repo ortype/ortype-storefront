@@ -2,8 +2,10 @@ import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
 import { type CompanySize } from '@/sanity/lib/queries'
 import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import CustomLicenseSizeDialog from '../pages/buy/custom-license-size'
+import ConfirmLicenseSizeChangeDialog from './confirm-license-size-change-dialog'
+import { useLicenseSizeChange } from './use-license-size-change'
 
 interface Props {
   label?: string
@@ -15,45 +17,45 @@ interface Props {
 export const LicenseSizeList: React.FC<Props> = ({
   label,
   info,
-  licenseSize,
   setLicenseSize,
 }) => {
   const { companySizes: sizes } = useOrderContext()
-  const [selectedSize, setSelectedSize] = useState<string>(
-    licenseSize?.value || ''
-  )
+  const { requestSizeChange, confirm, cancel, confirmOpen, displayValue } =
+    useLicenseSizeChange()
 
+  // Custom "50+ employees" contact dialog
   const [open, setOpen] = useState(false)
+  // Local flag for the non-size "escape hatch" option (not a real LicenseSize)
+  const [escapeHatch, setEscapeHatch] = useState(false)
 
-  // Keep component synced with data from Provider
-  // (skip sync when escape hatch is active — provider has undefined but UI shows escapeHatch)
-  useEffect(() => {
-    if (selectedSize === 'escapeHatch') return
-    setSelectedSize(licenseSize?.value || '')
-  }, [licenseSize])
+  // Radio reflects the escape hatch when active, otherwise the tentative
+  // (pending, while the confirm dialog is open) or committed license size.
+  const selectedValue = escapeHatch ? 'escapeHatch' : displayValue?.value || ''
 
   const handleSizeChange = useCallback(
     (value: string) => {
       if (value === 'escapeHatch') {
-        // Clear license size so allLicenseInfoSet becomes false,
-        // preventing Add to Cart and checkout until a valid size is selected.
-        setSelectedSize('escapeHatch')
+        // Clear license size so allLicenseInfoSet becomes false, preventing
+        // Add to Cart and checkout until a valid size is selected. This path
+        // intentionally bypasses the order-wide confirm dialog.
+        setEscapeHatch(true)
         setLicenseSize({ licenseSize: undefined })
         setOpen(true)
-        // @TODO: open dialog with contact form
         return
       }
-      const selectedSize = sizes.find((size) => size.value === value)
-      setSelectedSize(value)
-      setLicenseSize({ licenseSize: selectedSize })
+      setEscapeHatch(false)
+      const selected = sizes.find((size) => size.value === value)
+      // Applies immediately when the cart is empty, or opens the "all cart
+      // items will be adjusted" confirm when committed items exist.
+      requestSizeChange(selected)
     },
-    [setLicenseSize, sizes]
+    [setLicenseSize, sizes, requestSizeChange]
   )
 
   return (
     <Fieldset.Root>
       <RadioGroup.Root
-        value={selectedSize}
+        value={selectedValue}
         onValueChange={(e) => handleSizeChange(e.value)}
         aria-label="License size options"
         variant={'outline'}
@@ -133,6 +135,11 @@ export const LicenseSizeList: React.FC<Props> = ({
         </Fieldset.Content>
       </RadioGroup.Root>
       <CustomLicenseSizeDialog open={open} setOpen={setOpen} />
+      <ConfirmLicenseSizeChangeDialog
+        open={confirmOpen}
+        onCancel={cancel}
+        onConfirm={confirm}
+      />
     </Fieldset.Root>
   )
 }

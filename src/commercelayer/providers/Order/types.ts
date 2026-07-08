@@ -55,10 +55,17 @@ export type GroupPriceSummary = {
 }
 /** Tracks a single committed parentUid group on the CL order */
 export type CommittedGroup = {
-  /** Hash of the group's buffer state at commit time */
+  /** Hash of the group's buffer state at commit time (styles + license types only) */
   hash: string
   /** CL line item IDs belonging to this group */
   lineItemIds: string[]
+  /**
+   * The order-wide license size these line items were priced at. Used to detect
+   * silent "size staleness" without marking the group dirty. Optional for
+   * backward-compat with records persisted before this field existed (missing
+   * size is treated as stale so it reconciles at checkout).
+   */
+  size?: LicenseSize
 }
 
 /** Per-parentUid committed state, mirrors the SelectionBuffer shape */

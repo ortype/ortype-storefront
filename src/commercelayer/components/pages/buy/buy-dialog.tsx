@@ -65,7 +65,12 @@ export function BuyDialog({ data }: BuyDialogProps) {
       size={'full'}
       motionPreset={'slide-in-bottom-custom'}
     >
-      <DialogContent borderRadius={0} bg={'colorPalette.bg'} h={'100vh'}>
+      <DialogContent
+        backdrop={false}
+        borderRadius={0}
+        bg={'colorPalette.bg'}
+        h={'100vh'}
+      >
         <DialogBody overflow={'auto'}>
           <DialogTitle
             textAlign={'center'}

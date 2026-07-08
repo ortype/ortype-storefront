@@ -166,6 +166,7 @@ export type Action =
         parentUid: string
         hash: string
         lineItemIds: string[]
+        size?: LicenseSize
       }
     }
   | {
@@ -477,12 +478,12 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
       }
     }
     case ActionType.SET_COMMITTED_GROUP: {
-      const { parentUid, hash, lineItemIds } = action.payload
+      const { parentUid, hash, lineItemIds, size } = action.payload
       return {
         ...state,
         committedGroups: {
           ...state.committedGroups,
-          [parentUid]: { hash, lineItemIds },
+          [parentUid]: { hash, lineItemIds, size },
         },
       }
     }

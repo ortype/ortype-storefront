@@ -1579,13 +1579,14 @@ export function OrderProvider({
         // 6. Fetch refreshed order
         const { order: refreshedOrder } = await fetchOrder()
 
-        // 7. Track committed group
-        const hash = computeGroupHash(groupStyles, commitLicenseSize)
+        // 7. Track committed group (record the size these items were priced at)
+        const hash = computeGroupHash(groupStyles)
         const nextCommittedGroups: CommittedGroups = {
           ...state.committedGroups,
           [parentUid]: {
             hash,
             lineItemIds: createdLineItems.map((li) => li.id),
+            size: commitLicenseSize,
           },
         }
         dispatch({
@@ -1594,6 +1595,7 @@ export function OrderProvider({
             parentUid,
             hash,
             lineItemIds: createdLineItems.map((li) => li.id),
+            size: commitLicenseSize,
           },
         })
         await syncOrderMetadata({
@@ -1676,9 +1678,17 @@ export function OrderProvider({
     for (const parentUid of Object.keys(selections)) {
       const group = selections[parentUid]
       const existing = committed[parentUid]
+      // A group needs (re)committing when its styles/types changed (hash) OR
+      // when its committed line items were priced at a different order-wide
+      // size (silent size-staleness). This is the checkout-time catch-all.
+      const sizeStale =
+        !!existing &&
+        (existing.size?.value !== state.licenseSize?.value ||
+          existing.size?.modifier !== state.licenseSize?.modifier)
       if (
         !existing ||
-        existing.hash !== computeGroupHash(group, state.licenseSize)
+        existing.hash !== computeGroupHash(group) ||
+        sizeStale
       ) {
         dirtyOrNew.push(parentUid)
       }
@@ -1862,25 +1872,45 @@ export function OrderProvider({
   )
 
   // --- Derived commit state ---
+  // User-facing: is this font's selection committed and clean? Reflects only
+  // styles/types (NOT license size), so an order-wide size change never flips
+  // a font back to an "Update cart" state.
   const isGroupCommitted = useCallback(
     (parentUid: string): boolean => {
       const group = state.selections[parentUid]
       const committed = state.committedGroups[parentUid]
       if (!group || !committed) return false
-      return committed.hash === computeGroupHash(group, state.licenseSize)
+      return committed.hash === computeGroupHash(group)
     },
-    [state.selections, state.committedGroups, state.licenseSize]
+    [state.selections, state.committedGroups]
   )
 
+  // User-facing dirtiness: styles/types only (NOT license size).
   const isGroupDirty = useCallback(
     (parentUid: string): boolean => {
       const committed = state.committedGroups[parentUid]
       if (!committed) return false // never committed = not dirty
       const group = state.selections[parentUid]
       if (!group) return true // committed but removed from buffer
-      return committed.hash !== computeGroupHash(group, state.licenseSize)
+      return committed.hash !== computeGroupHash(group)
     },
-    [state.selections, state.committedGroups, state.licenseSize]
+    [state.selections, state.committedGroups]
+  )
+
+  // Silent, order-wide: were this group's committed items priced at a different
+  // license size than the current one? Intentionally NOT part of isGroupDirty /
+  // isGroupCommitted so it never surfaces a per-font "Update cart"; it only
+  // feeds the order-wide checkout gate (isFullyCommitted / commitSelections).
+  const isGroupSizeStale = useCallback(
+    (parentUid: string): boolean => {
+      const committed = state.committedGroups[parentUid]
+      if (!committed) return false
+      return (
+        committed.size?.value !== state.licenseSize?.value ||
+        committed.size?.modifier !== state.licenseSize?.modifier
+      )
+    },
+    [state.committedGroups, state.licenseSize]
   )
 
   const bufferUids = Object.keys(state.selections)
@@ -1892,8 +1922,8 @@ export function OrderProvider({
       const committed = state.committedGroups[uid]
       return (
         committed &&
-        committed.hash ===
-          computeGroupHash(state.selections[uid], state.licenseSize)
+        committed.hash === computeGroupHash(state.selections[uid]) &&
+        !isGroupSizeStale(uid)
       )
     }) &&
     committedUids.every((uid) => uid in state.selections)
