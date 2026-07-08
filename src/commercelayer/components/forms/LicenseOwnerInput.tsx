@@ -14,12 +14,6 @@ interface LicenseOwner {
   full_name: string
 }
 
-interface OrderMetadata {
-  license?: {
-    owner?: LicenseOwner
-  }
-}
-
 const MAX_NAME_LENGTH = 100
 
 interface Props {
@@ -27,7 +21,8 @@ interface Props {
   info?: string
 }
 const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
-  const { order, setLicenseOwner } = useOrderContext()
+  const { isLicenseForClient, licenseOwner, setLicenseOwner } =
+    useOrderContext()
   const {
     register,
     handleSubmit,
@@ -35,25 +30,23 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
     setValue,
   } = useForm<FormValues>({
     defaultValues: {
-      full_name: order?.metadata?.license?.owner?.full_name || '',
+      full_name: licenseOwner?.full_name || '',
     },
   })
 
-  // Keep form in sync with order changes
+  // Keep the input in sync with the provider's licenseOwner (the source of
+  // truth) so the name survives hiding/showing when the radio is toggled.
   useEffect(() => {
-    const ownerName = (order?.metadata as OrderMetadata)?.license?.owner
-      ?.full_name
-    // Always sync with order metadata, even if empty
-    setValue('full_name', ownerName || '')
-  }, [order?.metadata, setValue])
+    setValue('full_name', licenseOwner?.full_name || '')
+  }, [licenseOwner?.full_name, setValue])
 
   const submitOwner = (fullName: string) => {
-    const licenseOwner: LicenseOwner = {
-      is_client: false,
+    const nextOwner: LicenseOwner = {
+      is_client: isLicenseForClient,
       full_name: fullName.trim(),
     }
     // Pure state update in the provider; persistence happens in the background
-    setLicenseOwner({ licenseOwner })
+    setLicenseOwner({ licenseOwner: nextOwner })
   }
 
   const onSubmit = handleSubmit((data) => {
@@ -61,9 +54,7 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
   })
 
   const handleBlur = handleSubmit((data) => {
-    const currentName = (order?.metadata as OrderMetadata)?.license?.owner
-      ?.full_name
-    if (data.full_name.trim() !== currentName) {
+    if (data.full_name.trim() !== (licenseOwner?.full_name || '')) {
       submitOwner(data.full_name)
     }
   })
@@ -98,7 +89,7 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
             fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
             mt={1}
             borderRadius={0}
-            placeholder="Enter license owner or company name"
+            placeholder="Enter Name of License Owner*"
           />
         </Fieldset.Content>
         {/*errors.full_name && (

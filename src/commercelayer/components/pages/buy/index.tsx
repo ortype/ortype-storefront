@@ -1,3 +1,4 @@
+import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import LicenseOwnerRadio from '@/commercelayer/components/forms/license-owner-radio'
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
@@ -82,6 +83,7 @@ export const Buy = () => {
   const {
     selections,
     licenseSize,
+    isLicenseForClient,
     skuOptions,
     setLicenseSize,
     selectedSkuOptions,
@@ -137,6 +139,16 @@ export const Buy = () => {
               label={buyLabels?.licenseHolder?.label}
               info={buyLabels?.licenseHolder?.info}
             />
+            {isLicenseForClient && (
+              <Box my={2}>
+                <LicenseOwnerInput
+                  label={'Company info'}
+                  info={
+                    'Please let us know the company name of your client, the typeface license owner.'
+                  }
+                />
+              </Box>
+            )}
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>
             <LicenseSizeList

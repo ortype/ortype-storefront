@@ -128,6 +128,7 @@ type OrderProviderData = {
   }>
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
+  licenseOwner?: LicenseOwnerInput
   hasValidLicenseSize: boolean
   hasValidLicenseType: boolean
   allLicenseInfoSet: boolean
@@ -640,10 +641,6 @@ export function OrderProvider({
         type: ActionType.SET_LICENSE_OWNER,
         payload: {
           others: {
-            hasLicenseOwner:
-              licenseOwner.is_client !== null &&
-              licenseOwner.is_client !== undefined,
-            isLicenseForClient: licenseOwner.is_client ?? false,
             licenseOwner,
           },
         },
@@ -917,15 +914,11 @@ export function OrderProvider({
               types?: string[]
             }
 
-            if (parsed.owner?.full_name) {
+            if (parsed.owner) {
               dispatch({
                 type: ActionType.SET_LICENSE_OWNER,
                 payload: {
                   others: {
-                    hasLicenseOwner:
-                      parsed.owner.is_client !== null &&
-                      parsed.owner.is_client !== undefined,
-                    isLicenseForClient: parsed.owner.is_client ?? false,
                     licenseOwner: parsed.owner,
                   },
                 },

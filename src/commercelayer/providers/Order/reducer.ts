@@ -77,9 +77,9 @@ export type Action =
   | {
       type: ActionType.SET_LICENSE_OWNER
       payload: {
+        // Only the (partial) owner is sent; the reducer merges it with the
+        // existing owner and derives hasLicenseOwner / isLicenseForClient.
         others: {
-          hasLicenseOwner: boolean
-          isLicenseForClient: boolean
           licenseOwner: LicenseOwnerInput
         }
       }
@@ -253,11 +253,24 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
           action.payload
         )
       }
+      // Merge with the existing owner so partial updates from the radio
+      // (is_client only) and the name input (full_name only) don't clobber
+      // each other.
+      const licenseOwner: LicenseOwnerInput = {
+        ...state.licenseOwner,
+        ...action.payload.others.licenseOwner,
+      }
+      const isLicenseForClient = licenseOwner.is_client ?? false
+      // "Yourself" needs no name; "Your client" requires a name before the
+      // license info is considered complete.
+      const hasLicenseOwner = isLicenseForClient
+        ? !!licenseOwner.full_name?.trim()
+        : true
       return {
         ...state,
-        hasLicenseOwner: action.payload.others.hasLicenseOwner,
-        isLicenseForClient: action.payload.others.isLicenseForClient,
-        licenseOwner: action.payload.others.licenseOwner,
+        hasLicenseOwner,
+        isLicenseForClient,
+        licenseOwner,
       }
     }
     case ActionType.SET_LICENSE_SIZE: {
