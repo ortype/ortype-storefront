@@ -279,8 +279,8 @@ export function calculateSettings(order: Order) {
   const isLicenseForClient = owner?.is_client || false
   return {
     // Mirror the reducer's rule: "Yourself" needs no name, "Your client"
-    // requires a name before the license owner is considered complete.
-    hasLicenseOwner: isLicenseForClient ? !!owner?.full_name?.trim() : true,
+    // requires a license owner / company name before it is considered complete.
+    hasLicenseOwner: isLicenseForClient ? !!owner?.company?.trim() : true,
     isLicenseForClient,
     licenseOwner: owner || {},
     licenseSize: order.metadata?.license?.size,

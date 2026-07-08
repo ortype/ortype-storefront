@@ -58,7 +58,7 @@ import type {
 •  Clear error messages
 */
 
-export type LicenseOwnerInput = Pick<LicenseOwner, 'is_client' | 'full_name'>
+export type LicenseOwnerInput = Pick<LicenseOwner, 'is_client' | 'company'>
 
 export type {
   CommittedGroups,

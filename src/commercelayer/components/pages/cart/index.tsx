@@ -64,6 +64,7 @@ const CartComponent = () => {
     isLoading,
     orderId,
     order,
+    isLicenseForClient,
     licenseSize,
     setLicenseSize,
     selections,
@@ -206,8 +207,8 @@ const CartComponent = () => {
                 mt={1}
                 borderRadius={0}
               >
-                {order?.metadata?.license?.owner?.is_client
-                  ? 'Your client'
+                {isLicenseForClient
+                  ? order?.metadata?.license?.owner?.company
                   : 'Yourself'}
               </Flex>
             </Fieldset.Content>

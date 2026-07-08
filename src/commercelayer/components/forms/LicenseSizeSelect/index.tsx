@@ -42,6 +42,9 @@ export const LicenseSizeSelect: React.FC<Props> = ({
       const value = e.value
       if (!value) return
       const selectedSize = sizes.find((size) => size.value === value[0])
+
+      // @TODO: open a dialog to confirm change and commit it (add to cart)
+
       setSelectedSize(selectedSize || null)
       setLicenseSize({ licenseSize: selectedSize })
     },

@@ -254,17 +254,17 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         )
       }
       // Merge with the existing owner so partial updates from the radio
-      // (is_client only) and the name input (full_name only) don't clobber
+      // (is_client only) and the company input (company only) don't clobber
       // each other.
       const licenseOwner: LicenseOwnerInput = {
         ...state.licenseOwner,
         ...action.payload.others.licenseOwner,
       }
       const isLicenseForClient = licenseOwner.is_client ?? false
-      // "Yourself" needs no name; "Your client" requires a name before the
-      // license info is considered complete.
+      // "Yourself" needs no name; "Your client" requires a license owner /
+      // company name before the license info is considered complete.
       const hasLicenseOwner = isLicenseForClient
-        ? !!licenseOwner.full_name?.trim()
+        ? !!licenseOwner.company?.trim()
         : true
       return {
         ...state,

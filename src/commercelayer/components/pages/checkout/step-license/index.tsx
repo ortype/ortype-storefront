@@ -1,7 +1,7 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { VStack, useStepsContext } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { CheckoutSummary } from '../checkout-summary'
@@ -40,10 +40,13 @@ export const StepLicense: React.FC<Props> = () => {
     setProjectType(isLicenseForClient ? 'client' : 'yourself')
   }, [isLicenseForClient])
 
-  // Initialize form with existing data
-  const form = useForm<LicenseOwnerFormData>({
-    resolver: zodResolver(licenseOwnerSchema),
-    defaultValues: {
+  // Seed the form from the OrderProvider/checkout licenseOwner. `values` (vs
+  // `defaultValues`) is reactive, so the form updates once the order — and its
+  // license metadata (e.g. the company entered on /buy) — finishes loading
+  // asynchronously. `defaultValues` alone is captured only on mount and would
+  // leave the fields empty.
+  const licenseOwnerValues = useMemo<LicenseOwnerFormData>(
+    () => ({
       company: licenseOwner?.company || '',
       full_name: licenseOwner?.full_name || '',
       line_1: licenseOwner?.line_1 || '',
@@ -52,7 +55,13 @@ export const StepLicense: React.FC<Props> = () => {
       zip_code: licenseOwner?.zip_code || '',
       country_code: licenseOwner?.country_code || '',
       state_code: licenseOwner?.state_code || '',
-    },
+    }),
+    [licenseOwner]
+  )
+
+  const form = useForm<LicenseOwnerFormData>({
+    resolver: zodResolver(licenseOwnerSchema),
+    values: licenseOwnerValues,
   })
 
   const handleProceed = async () => {

@@ -1,17 +1,16 @@
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { Alert } from '@/components/ui/alert'
 import { Fieldset, Input } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 interface FormValues {
-  full_name: string
+  company: string
 }
 
 interface LicenseOwner {
   is_client: boolean
-  full_name: string
+  company: string
 }
 
 const MAX_NAME_LENGTH = 100
@@ -30,45 +29,46 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
     setValue,
   } = useForm<FormValues>({
     defaultValues: {
-      full_name: licenseOwner?.full_name || '',
+      company: licenseOwner?.company || '',
     },
   })
 
   // Keep the input in sync with the provider's licenseOwner (the source of
-  // truth) so the name survives hiding/showing when the radio is toggled.
+  // truth) so the value survives hiding/showing when the radio is toggled and
+  // pre-seeds the /checkout "License Owner/Company" field.
   useEffect(() => {
-    setValue('full_name', licenseOwner?.full_name || '')
-  }, [licenseOwner?.full_name, setValue])
+    setValue('company', licenseOwner?.company || '')
+  }, [licenseOwner?.company, setValue])
 
-  const submitOwner = (fullName: string) => {
+  const submitOwner = (company: string) => {
     const nextOwner: LicenseOwner = {
       is_client: isLicenseForClient,
-      full_name: fullName.trim(),
+      company: company.trim(),
     }
     // Pure state update in the provider; persistence happens in the background
     setLicenseOwner({ licenseOwner: nextOwner })
   }
 
   const onSubmit = handleSubmit((data) => {
-    submitOwner(data.full_name)
+    submitOwner(data.company)
   })
 
   const handleBlur = handleSubmit((data) => {
-    if (data.full_name.trim() !== (licenseOwner?.full_name || '')) {
-      submitOwner(data.full_name)
+    if (data.company.trim() !== (licenseOwner?.company || '')) {
+      submitOwner(data.company)
     }
   })
 
   return (
     <form onSubmit={onSubmit}>
-      <Fieldset.Root invalid={!!errors.full_name}>
+      <Fieldset.Root invalid={!!errors.company}>
         <FieldsetLegend info={info}>
           {label || '1. License Owner/Company*'}
         </FieldsetLegend>
         <Fieldset.Content asChild>
           <Input
-            {...register('full_name', {
-              required: 'License owner name is required',
+            {...register('company', {
+              required: 'License owner / company is required',
               minLength: {
                 value: 2,
                 message: 'Name must be at least 2 characters',
@@ -83,22 +83,17 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
               },
             })}
             onBlur={handleBlur}
-            aria-label="License owner name"
+            aria-label="License owner or company name"
             variant="subtle"
             size="lg"
             fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
             mt={1}
             borderRadius={0}
-            placeholder="Enter Name of License Owner*"
+            placeholder="Enter License Owner / Company Name*"
           />
         </Fieldset.Content>
-        {/*errors.full_name && (
-          <Alert status="error" my="4">
-            {errors.full_name.message}
-          </Alert>
-        )*/}
         <Fieldset.ErrorText className="sr-only" fontSize={'xs'}>
-          {errors.full_name?.message}
+          {errors.company?.message}
         </Fieldset.ErrorText>
       </Fieldset.Root>
     </form>
