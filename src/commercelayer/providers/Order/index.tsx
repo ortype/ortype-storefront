@@ -216,8 +216,8 @@ export type OrderStateData = {
 const initialState: OrderStateData = {
   order: undefined,
   orderId: undefined,
-  licenseOwner: { is_client: false },
-  hasLicenseOwner: true,
+  licenseOwner: undefined,
+  hasLicenseOwner: false,
   isLicenseForClient: false,
   hasValidLicenseSize: false,
   hasValidLicenseType: false,
@@ -1685,11 +1685,7 @@ export function OrderProvider({
         !!existing &&
         (existing.size?.value !== state.licenseSize?.value ||
           existing.size?.modifier !== state.licenseSize?.modifier)
-      if (
-        !existing ||
-        existing.hash !== computeGroupHash(group) ||
-        sizeStale
-      ) {
+      if (!existing || existing.hash !== computeGroupHash(group) || sizeStale) {
         dirtyOrNew.push(parentUid)
       }
     }

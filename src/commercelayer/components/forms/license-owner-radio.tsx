@@ -28,15 +28,18 @@ const LicenseOwnerRadio: React.FC<Props> = ({
   showProjectTypeSelection = true,
 }) => {
   // The OrderProvider is the single source of truth. Driving the selection
-  // from `isLicenseForClient` keeps the radio and the conditional
+  // from `licenseOwner.is_client` keeps the radio and the conditional
   // LicenseOwnerInput on /buy in sync, even after async hydration.
-  const { setLicenseOwner, isLicenseForClient } = useOrderContext()
+  const { setLicenseOwner, licenseOwner } = useOrderContext()
 
-  const selectedValue = isLicenseForClient ? 'client' : 'yourself'
+  const isClient = licenseOwner?.is_client
+  const selectedValue =
+    isClient === true ? 'client' : isClient === false ? 'yourself' : undefined
 
   const handleValueChange = (value: string) => {
+    if (!value) return
     const is_client = value === 'client'
-    if (is_client === isLicenseForClient) return
+    if (is_client === isClient) return
     // Send only is_client; the reducer merges with the existing owner so any
     // full_name already entered by the user is preserved.
     setLicenseOwner({ licenseOwner: { is_client } })

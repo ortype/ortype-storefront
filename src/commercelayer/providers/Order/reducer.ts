@@ -261,12 +261,13 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         ...state.licenseOwner,
         ...action.payload.others.licenseOwner,
       }
-      const isLicenseForClient = licenseOwner.is_client ?? false
+      const hasLicenseOwnerType = typeof licenseOwner.is_client === 'boolean'
+      const isLicenseForClient = licenseOwner.is_client === true
       // "Yourself" needs no name; "Your client" requires a license owner /
       // company name before the license info is considered complete.
-      const hasLicenseOwner = isLicenseForClient
-        ? !!licenseOwner.company?.trim()
-        : true
+      const hasLicenseOwner =
+        hasLicenseOwnerType &&
+        (isLicenseForClient ? !!licenseOwner.company?.trim() : true)
       return {
         ...state,
         hasLicenseOwner,

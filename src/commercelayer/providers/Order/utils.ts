@@ -269,13 +269,16 @@ export async function createOrder(
 
 export function calculateSettings(order: Order) {
   const owner = order.metadata?.license?.owner
-  const isLicenseForClient = owner?.is_client || false
+  const hasLicenseOwnerType = typeof owner?.is_client === 'boolean'
+  const isLicenseForClient = owner?.is_client === true
   return {
     // Mirror the reducer's rule: "Yourself" needs no name, "Your client"
     // requires a license owner / company name before it is considered complete.
-    hasLicenseOwner: isLicenseForClient ? !!owner?.company?.trim() : true,
+    hasLicenseOwner:
+      hasLicenseOwnerType &&
+      (isLicenseForClient ? !!owner?.company?.trim() : true),
     isLicenseForClient,
-    licenseOwner: owner || {},
+    licenseOwner: owner,
     licenseSize: order.metadata?.license?.size,
     types: order.metadata?.license?.types || [], // Add types to settings
     hasValidLicenseType:
