@@ -73,8 +73,11 @@ export const radioGroupSlotRecipe = defineSlotRecipe({
             color: 'colorPalette.fg',
             borderColor: 'colorPalette.fg',
           },
+          _hover: {
+            borderWidth: '3px',
+          },
           '& .dot': {
-            scale: '0.8',
+            scale: '1',
           },
         },
       },

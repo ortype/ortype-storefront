@@ -35,7 +35,8 @@ export const SingleStyles: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
+      // bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
+      bg={'brand.50'}
       borderRadius={isSelected ? '100px' : '0px'}
       cursor={disabled ? 'default' : 'pointer'}
       opacity={disabled ? 0.6 : 1}
@@ -44,9 +45,9 @@ export const SingleStyles: React.FC<Props> = ({
           ? {}
           : {
               borderRadius: '100px',
-              bg: 'blackAlpha.300',
+              // bg: 'blackAlpha.300',
               '& .toggle-button': {
-                borderWidth: '4px',
+                borderWidth: '3px',
               },
             }
       }
@@ -55,9 +56,9 @@ export const SingleStyles: React.FC<Props> = ({
         'border-radius 200ms ease-in-out, background 300ms ease-in-out'
       }
       py={2}
-      px={3}
+      px={4}
     >
-      <Stack direction={'row'} gap={2} alignItems={'center'}>
+      <Stack direction={'row'} gap={3} alignItems={'center'}>
         <Button
           className={'toggle-button'}
           variant={'circle'}
@@ -70,7 +71,7 @@ export const SingleStyles: React.FC<Props> = ({
           disabled={isLoading}
           transition={'border-width 200ms ease-in-out'}
         />
-        <Text fontSize={'2xl'} lineHeight={1} as={'span'} className={className}>
+        <Text fontSize={'xl'} lineHeight={1} as={'span'} className={className}>
           {name}
         </Text>
       </Stack>

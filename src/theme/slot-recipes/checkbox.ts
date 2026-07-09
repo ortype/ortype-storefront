@@ -93,12 +93,16 @@ export const checkboxSlotRecipe = defineSlotRecipe({
       outline: {
         control: {
           bg: 'colorPalette.bg',
-          borderRadius: '0',
+          borderRadius: 'full',
           borderWidth: '2px',
           borderColor: 'colorPalette.fg',
+          _hover: {
+            borderWidth: '3px',
+          },
           '&:is([data-state=checked], [data-state=indeterminate])': {
             color: 'colorPalette.fg',
             borderColor: 'colorPalette.fg',
+            bg: 'colorPalette.fg',
           },
         },
       },

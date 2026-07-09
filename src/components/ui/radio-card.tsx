@@ -23,7 +23,7 @@ export const RadioCardItem = React.forwardRef<
     description,
     addon,
     icon,
-    indicator = <RadioCard.ItemIndicator />,
+    indicator = <RadioCard.ItemIndicator className="dot" />,
     indicatorPlacement = 'end',
     ...rest
   } = props
@@ -37,7 +37,17 @@ export const RadioCardItem = React.forwardRef<
       bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
       _hover={{
         borderRadius: '100px',
-        bg: 'blackAlpha.300',
+        // bg: 'blackAlpha.300',
+        '& .dot': {
+          borderWidth: '3px',
+        },
+      }}
+      _checked={{
+        _hover: {
+          '& .dot': {
+            borderWidth: '0',
+          },
+        },
       }}
       borderRadius={isSelected ? '100px' : '0px'}
       transition={

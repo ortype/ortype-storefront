@@ -95,7 +95,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
         width: '100%',
         borderRadius: 'full',
         bg: 'currentColor',
-        scale: '0.4',
+        scale: '1',
       },
     },
     itemAddon: {
@@ -194,7 +194,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
           _hover: {
             opacity: 1,
           },
-          opacity: 0.6,
+          opacity: 1,
           _checked: {
             opacity: 1,
           },

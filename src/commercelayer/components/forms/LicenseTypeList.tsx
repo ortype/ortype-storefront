@@ -121,25 +121,25 @@ export const LicenseTypeList: React.FC<Props> = ({
                 value={option.value}
                 variant={'outline'}
                 size={'lg'}
-                p={2}
+                py={2}
+                px={4}
                 w={'full'}
                 bg={'brand.50'}
-                _hover={{
-                  // borderRadius: '100px',
-                  cursor: 'pointer',
-                  bg: 'blackAlpha.300',
-                  /*
-                // @NOTE: need to work out how to select the control element
-                '&[data-part=item-control]': {
-                  borderWidth: '4px',
-                },*/
-                }}
-                _checked={{
-                  bg: 'blackAlpha.300',
-                }}
+                borderRadius={'0px'}
                 transition={
                   'border-radius 200ms ease-in-out, background 300ms ease-in-out'
                 }
+                _checked={{
+                  borderRadius: '100px',
+                }}
+                _focus={{
+                  ring: 2,
+                  ringColor: 'blue.500',
+                }}
+                _hover={{
+                  borderRadius: '100px',
+                  cursor: 'pointer',
+                }}
               >
                 <Checkbox.HiddenInput />
                 <Checkbox.Control />
@@ -155,13 +155,15 @@ export const LicenseTypeList: React.FC<Props> = ({
       </Fieldset.Root>
       <Text
         as={Box}
-        py={4}
+        py={2}
         textAlign={'center'}
         textStyle={'xs'}
         opacity={0.8}
+        px={4}
         onClick={() => setOpen(true)}
       >
-        {`Need something else? Please `}
+        {`Need something else?`}
+        {` Please `}
         <Text as={'span'} textDecoration={'underline'} cursor={'pointer'}>
           {'contact us'}
         </Text>

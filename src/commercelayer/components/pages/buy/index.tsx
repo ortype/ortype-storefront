@@ -1,5 +1,5 @@
-import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import LicenseOwnerRadio from '@/commercelayer/components/forms/license-owner-radio'
+import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -133,7 +133,7 @@ export const Buy = () => {
         }}
         position={'relative'}
       >
-        <SimpleGrid columns={2} gap={[4, null, null, null, null, null, 8]}>
+        <SimpleGrid columns={2} gap={[12, null, null, null, null, null, 12]}>
           <GridItem colSpan={2}>
             <LicenseOwnerRadio
               label={buyLabels?.licenseHolder?.label}
@@ -254,7 +254,7 @@ export const Buy = () => {
                   bg={'transparent'}
                   borderRadius={'5rem'}
                   size={'xs'}
-                  fontSize={'sm'}
+                  fontSize={'md'}
                   css={{
                     _hover: {
                       bg: 'colorPalette.fg',

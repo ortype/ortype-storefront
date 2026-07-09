@@ -70,28 +70,25 @@ export const LicenseSizeList: React.FC<Props> = ({
               <RadioGroup.Item
                 key={size.value}
                 value={size.value}
-                _focus={{
-                  ring: 2,
-                  ringColor: 'blue.500',
-                }}
+                py={2}
+                px={4}
+                w={'full'}
                 bg={'brand.50'}
-                _hover={{
-                  // borderRadius: '100px',
-                  bg: 'blackAlpha.300',
-                  cursor: 'pointer',
-                  // @NOTE: need to work out how to select the control element
-                  /*'&[data-part=item-control]': {
-                    borderWidth: '4px',
-                  },*/
-                }}
+                borderRadius={'0px'}
                 transition={
                   'border-radius 200ms ease-in-out, background 300ms ease-in-out'
                 }
                 _checked={{
-                  bg: 'blackAlpha.300',
+                  borderRadius: '100px',
                 }}
-                p={2}
-                w={'full'}
+                _focus={{
+                  ring: 2,
+                  ringColor: 'blue.500',
+                }}
+                _hover={{
+                  borderRadius: '100px',
+                  cursor: 'pointer',
+                }}
               >
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
@@ -105,23 +102,25 @@ export const LicenseSizeList: React.FC<Props> = ({
             <RadioGroup.Item
               key={'escapeHatch'}
               value={'escapeHatch'}
-              _focus={{
-                ring: 2,
-                ringColor: 'blue.500',
-              }}
+              py={2}
+              px={4}
+              w={'full'}
               bg={'brand.50'}
-              _hover={{
-                bg: 'blackAlpha.300',
-                cursor: 'pointer',
-              }}
+              borderRadius={'0px'}
               transition={
                 'border-radius 200ms ease-in-out, background 300ms ease-in-out'
               }
               _checked={{
-                bg: 'blackAlpha.300',
+                borderRadius: '100px',
               }}
-              p={2}
-              w={'full'}
+              _focus={{
+                ring: 2,
+                ringColor: 'blue.500',
+              }}
+              _hover={{
+                borderRadius: '100px',
+                cursor: 'pointer',
+              }}
             >
               <RadioGroup.ItemHiddenInput />
               <RadioGroup.ItemIndicator />

@@ -44,22 +44,24 @@ export const FontGroup: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={'blackAlpha.300'}
-      borderRadius={'1rem'}
+      bg={'brand.50'}
+      borderRadius={allSelected ? '100px' : '0px'}
       cursor={'pointer'}
       _hover={{
-        bg: 'brand.50',
+        borderRadius: '100px',
         '& .toggle-button': {
-          borderWidth: '4px',
+          borderWidth: '3px',
         },
       }}
       onClick={handleClick}
-      transition={'background 300ms ease-in-out'}
-      py={4}
-      pb={4}
-      px={3}
+      transition={
+        'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+      }
+      pt={3}
+      pb={1}
+      px={4}
     >
-      <Stack direction={'row'} gap={2} alignItems={'flex-start'}>
+      <Stack direction={'row'} gap={3} alignItems={'flex-start'}>
         <Button
           className={'toggle-button'}
           variant={'circle'}
@@ -70,9 +72,11 @@ export const FontGroup: React.FC<Props> = ({
           p={0}
           bg={allSelected ? 'black' : 'white'}
           disabled={isLoading}
-          transition={'border-width 200ms ease-in-out'}
+          transition={
+            'border-radius 200ms ease-in-out, border-width 200ms ease-in-out'
+          }
         />
-        <Stack direction={'column'} gap={2}>
+        <Stack direction={'column'} gap={0.5}>
           <Text
             fontSize={'2xl'}
             lineHeight={1}
@@ -81,7 +85,7 @@ export const FontGroup: React.FC<Props> = ({
           >
             {name}
           </Text>
-          <Text fontSize={'sm'} as={'div'}>
+          <Text fontSize={'xs'} as={'div'}>
             {`${styleCount} Styles — Variable Font Included`}
           </Text>
         </Stack>
@@ -93,7 +97,7 @@ export const FontGroup: React.FC<Props> = ({
         minW={'7rem'}
       >
         {percentageDiscount > 0 && (
-          <Stack direction={'column'}>
+          <Stack direction={'column'} gap={0}>
             <Stack direction={'row'}>
               <Text
                 className={'discount'}
