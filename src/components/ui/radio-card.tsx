@@ -34,10 +34,7 @@ export const RadioCardItem = React.forwardRef<
   return (
     <RadioCard.Item
       {...rest}
-      bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
       _hover={{
-        borderRadius: '100px',
-        // bg: 'blackAlpha.300',
         '& .dot': {
           borderWidth: '3px',
         },
@@ -49,10 +46,6 @@ export const RadioCardItem = React.forwardRef<
           },
         },
       }}
-      borderRadius={isSelected ? '100px' : '0px'}
-      transition={
-        'border-radius 200ms ease-in-out, background 300ms ease-in-out'
-      }
     >
       <RadioCard.ItemHiddenInput ref={ref} {...inputProps} />
       <RadioCard.ItemControl alignItems={'center'}>

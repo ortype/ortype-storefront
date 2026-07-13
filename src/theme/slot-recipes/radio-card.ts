@@ -134,7 +134,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       },
       md: {
         item: {
-          textStyle: 'sm',
+          textStyle: 'xl',
         },
         itemControl: {
           padding: '4',
@@ -146,7 +146,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
           borderTopWidth: '1px',
         },
         itemIndicator: {
-          boxSize: '5',
+          boxSize: '1.385rem',
         },
       },
       lg: {
@@ -190,19 +190,24 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       subtle: {
         item: {
           bg: 'brand.50',
-          borderRadius: 0,
+          borderRadius: '0px',
+          transition:
+            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
           _hover: {
             opacity: 1,
+            borderRadius: '100px',
           },
           opacity: 1,
           _checked: {
+            borderRadius: '100px',
             opacity: 1,
           },
         },
         itemControl: {
           _checked: {
             opacity: 1,
-            bg: 'brand.50',
+            boxShadow: 'inset 0 0 0 2px #000',
+            bg: 'colorPalette.bg',
             color: 'colorPalette.fg',
           },
         },

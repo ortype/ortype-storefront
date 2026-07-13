@@ -120,26 +120,10 @@ export const LicenseTypeList: React.FC<Props> = ({
                 key={option.value}
                 value={option.value}
                 variant={'outline'}
-                size={'lg'}
+                size={'md'}
                 py={2}
                 px={4}
                 w={'full'}
-                bg={'brand.50'}
-                borderRadius={'0px'}
-                transition={
-                  'border-radius 200ms ease-in-out, background 300ms ease-in-out'
-                }
-                _checked={{
-                  borderRadius: '100px',
-                }}
-                _focus={{
-                  ring: 2,
-                  ringColor: 'blue.500',
-                }}
-                _hover={{
-                  borderRadius: '100px',
-                  cursor: 'pointer',
-                }}
               >
                 <Checkbox.HiddenInput />
                 <Checkbox.Control />

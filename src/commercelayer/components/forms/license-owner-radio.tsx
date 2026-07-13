@@ -56,7 +56,7 @@ const LicenseOwnerRadio: React.FC<Props> = ({
             value={selectedValue}
             onValueChange={(e) => handleValueChange(e.value || '')}
             variant={'subtle'}
-            size={'lg'}
+            size={'md'}
           >
             <Group
               gap={1}

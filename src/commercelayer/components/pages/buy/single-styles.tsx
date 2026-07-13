@@ -36,7 +36,8 @@ export const SingleStyles: React.FC<Props> = ({
     <Flex
       justifyContent={'space-between'}
       // bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
-      bg={'brand.50'}
+      bg={isSelected ? 'colorPalette.bg' : 'brand.50'}
+      boxShadow={isSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
       borderRadius={isSelected ? '100px' : '0px'}
       cursor={disabled ? 'default' : 'pointer'}
       opacity={disabled ? 0.6 : 1}
@@ -45,7 +46,6 @@ export const SingleStyles: React.FC<Props> = ({
           ? {}
           : {
               borderRadius: '100px',
-              // bg: 'blackAlpha.300',
               '& .toggle-button': {
                 borderWidth: '3px',
               },
@@ -53,7 +53,7 @@ export const SingleStyles: React.FC<Props> = ({
       }
       onClick={handleClick}
       transition={
-        'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+        'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
       }
       py={2}
       px={4}
@@ -62,10 +62,10 @@ export const SingleStyles: React.FC<Props> = ({
         <Button
           className={'toggle-button'}
           variant={'circle'}
-          w={6}
+          w={'1.385rem'}
           borderWidth={'2px'}
-          h={6}
-          minW={6}
+          h={'1.385rem'}
+          minW={'1.385rem'}
           p={0}
           bg={isSelected ? 'black' : 'white'}
           disabled={isLoading}

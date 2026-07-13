@@ -69,7 +69,7 @@ export const Typefaces = () => {
   const hasMultipleGroups = (font.styleGroups?.length ?? 0) > 1
 
   return font.styleGroups ? (
-    <Flex direction={'column'} mt={1} mb={1} gap={'3px'}>
+    <Flex direction={'column'} mt={1} mb={1} gap={0.5}>
       <FontFull
         font={font}
         summary={fullFamilySummary}
@@ -79,9 +79,9 @@ export const Typefaces = () => {
         <Flex
           key={group.groupName}
           direction={'column'}
-          mt={'3px'}
+          mt={0.5}
           mb={1}
-          gap={'3px'}
+          gap={0.5}
         >
           {/* Only show the sub-group header when the font has multiple groups */}
           {hasMultipleGroups && (

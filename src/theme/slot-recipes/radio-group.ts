@@ -65,6 +65,25 @@ export const radioGroupSlotRecipe = defineSlotRecipe({
   variants: {
     variant: {
       outline: {
+        item: {
+          borderRadius: '0px',
+          transition:
+            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
+          boxShadow: 'inset 0 0 0 0px #000',
+          bg: 'brand.50',
+          _hover: {
+            borderRadius: '100px',
+            cursor: 'pointer',
+          },
+          _focus: {
+            boxShadow: 'inset 0 0 0 2px #000',
+          },
+          _checked: {
+            borderRadius: '100px',
+            boxShadow: 'inset 0 0 0 2px #000',
+            bg: 'colorPalette.bg',
+          },
+        },
         itemControl: {
           borderWidth: '2px',
           borderColor: 'colorPalette.fg',
@@ -129,7 +148,7 @@ export const radioGroupSlotRecipe = defineSlotRecipe({
           gap: '2.5',
         },
         itemControl: {
-          boxSize: '5',
+          boxSize: '1.385rem',
         },
       },
       lg: {

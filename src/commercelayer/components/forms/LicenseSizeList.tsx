@@ -59,7 +59,7 @@ export const LicenseSizeList: React.FC<Props> = ({
         onValueChange={(e) => handleSizeChange(e.value)}
         aria-label="License size options"
         variant={'outline'}
-        size={'lg'}
+        size={'md'}
       >
         <FieldsetLegend info={info}>
           {label || '3. How big is your company?'}
@@ -73,22 +73,6 @@ export const LicenseSizeList: React.FC<Props> = ({
                 py={2}
                 px={4}
                 w={'full'}
-                bg={'brand.50'}
-                borderRadius={'0px'}
-                transition={
-                  'border-radius 200ms ease-in-out, background 300ms ease-in-out'
-                }
-                _checked={{
-                  borderRadius: '100px',
-                }}
-                _focus={{
-                  ring: 2,
-                  ringColor: 'blue.500',
-                }}
-                _hover={{
-                  borderRadius: '100px',
-                  cursor: 'pointer',
-                }}
               >
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
@@ -105,21 +89,9 @@ export const LicenseSizeList: React.FC<Props> = ({
               py={2}
               px={4}
               w={'full'}
-              bg={'brand.50'}
-              borderRadius={'0px'}
-              transition={
-                'border-radius 200ms ease-in-out, background 300ms ease-in-out'
-              }
-              _checked={{
-                borderRadius: '100px',
-              }}
               _focus={{
                 ring: 2,
                 ringColor: 'blue.500',
-              }}
-              _hover={{
-                borderRadius: '100px',
-                cursor: 'pointer',
               }}
             >
               <RadioGroup.ItemHiddenInput />

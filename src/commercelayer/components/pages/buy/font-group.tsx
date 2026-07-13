@@ -44,7 +44,8 @@ export const FontGroup: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={'brand.50'}
+      bg={allSelected ? 'colorPalette.bg' : 'brand.50'}
+      boxShadow={allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
       borderRadius={allSelected ? '100px' : '0px'}
       cursor={'pointer'}
       _hover={{
@@ -55,20 +56,19 @@ export const FontGroup: React.FC<Props> = ({
       }}
       onClick={handleClick}
       transition={
-        'border-radius 200ms ease-in-out, background 300ms ease-in-out'
+        'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
       }
-      pt={3}
-      pb={1}
+      py={3}
       px={4}
     >
-      <Stack direction={'row'} gap={3} alignItems={'flex-start'}>
+      <Stack direction={'row'} gap={3} alignItems={'center'}>
         <Button
           className={'toggle-button'}
           variant={'circle'}
-          w={6}
+          w={'1.385rem'}
           borderWidth={'2px'}
-          h={6}
-          minW={6}
+          h={'1.385rem'}
+          minW={'1.385rem'}
           p={0}
           bg={allSelected ? 'black' : 'white'}
           disabled={isLoading}
@@ -76,7 +76,7 @@ export const FontGroup: React.FC<Props> = ({
             'border-radius 200ms ease-in-out, border-width 200ms ease-in-out'
           }
         />
-        <Stack direction={'column'} gap={0.5}>
+        <Stack direction={'column'} gap={1}>
           <Text
             fontSize={'2xl'}
             lineHeight={1}
@@ -85,7 +85,7 @@ export const FontGroup: React.FC<Props> = ({
           >
             {name}
           </Text>
-          <Text fontSize={'xs'} as={'div'}>
+          <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
             {`${styleCount} Styles — Variable Font Included`}
           </Text>
         </Stack>
@@ -95,14 +95,15 @@ export const FontGroup: React.FC<Props> = ({
         alignItems={'center'}
         justifyContent={'flex-end'}
         minW={'7rem'}
+        lineHeight={1}
       >
         {percentageDiscount > 0 && (
-          <Stack direction={'column'} gap={0}>
+          <Stack direction={'column'} gap={1}>
             <Stack direction={'row'}>
               <Text
                 className={'discount'}
                 as={'span'}
-                fontSize={'xs'}
+                fontSize={'2xs'}
               >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
               <Text className={'discount'} as={'span'} fontSize={'xs'}>
                 {`${totalPrice} EUR`}
