@@ -42,12 +42,21 @@ export interface CartBufferItem {
   entry: StyleEntry
 }
 
+/** A sub-family group of items within a CartBufferGroup */
+export interface CartSubFamilyGroup {
+  groupName: string
+  items: CartBufferItem[]
+}
+
 /** A group of cart items sharing the same parentUid */
 export interface CartBufferGroup {
   parentUid: string
   parentName: string
   defaultVariantId: string
   items: CartBufferItem[]
+  /** Populated only when the font has 2+ sub-family groups with selected items */
+  subGroups: CartSubFamilyGroup[]
+  hasSubGroups: boolean
   discountedPriceTotal: number
   fullUnitPriceTotal: number
   percentageDiscount: number
@@ -66,6 +75,7 @@ const CartComponent = () => {
     licenseSize,
     setLicenseSize,
     selections,
+    groupResolutions,
     skuOptions,
     cartLabels,
   } = useOrderContext()
@@ -120,17 +130,32 @@ const CartComponent = () => {
         })
       }
 
+      // Derive sub-family groups from resolved group resolutions (mirrors
+      // typefaces.tsx hasMultipleGroups logic, using the same source data)
+      const resolvedGroups = groupResolutions[parentUid] ?? []
+      const subGroupsRaw: CartSubFamilyGroup[] = resolvedGroups
+        .map((rg) => ({
+          groupName: rg.groupName,
+          items: items.filter((item) =>
+            rg.includedSkuCodes.includes(item.skuCode)
+          ),
+        }))
+        .filter((sg) => sg.items.length > 0)
+      const hasSubGroups = subGroupsRaw.length > 1
+
       return {
         parentUid,
         parentName: first?.parentName ?? '',
         defaultVariantId: first?.defaultVariantId ?? '',
         items,
+        subGroups: hasSubGroups ? subGroupsRaw : [],
+        hasSubGroups,
         fullUnitPriceTotal: formatPrice(fullTotalCents),
         percentageDiscount: count ? calculateDiscount(count) : 0,
         discountedPriceTotal: formatPrice(discountedTotalCents),
       }
     })
-  }, [selections, licenseSize?.modifier, skuOptions])
+  }, [selections, groupResolutions, licenseSize?.modifier, skuOptions])
 
   // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
 

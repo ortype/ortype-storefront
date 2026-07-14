@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react'
 import { CloseIcon } from '@sanity/icons'
 import Link from 'next/link'
+import React from 'react'
 
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import type { CartBufferGroup, CartBufferItem } from '.'
@@ -130,6 +131,8 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
           parentName,
           defaultVariantId,
           items,
+          subGroups,
+          hasSubGroups,
           discountedPriceTotal,
           fullUnitPriceTotal,
           percentageDiscount,
@@ -177,9 +180,26 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                 {parentName}
               </Text>
             </HStack>
-            {items.map((item) => (
-              <CartItem key={item.skuCode} item={item} />
-            ))}
+            {hasSubGroups
+              ? subGroups.map((sg) => (
+                  <React.Fragment key={sg.groupName}>
+                    <Box px={3} pt={2} pb={1}>
+                      <Text
+                        fontSize={'xs'}
+                        textTransform={'uppercase'}
+                        color={'#737373'}
+                      >
+                        {sg.groupName}
+                      </Text>
+                    </Box>
+                    {sg.items.map((item) => (
+                      <CartItem key={item.skuCode} item={item} />
+                    ))}
+                  </React.Fragment>
+                ))
+              : items.map((item) => (
+                  <CartItem key={item.skuCode} item={item} />
+                ))}
             <CartGroupsFooter
               parentUid={parentUid}
               discountedPriceTotal={discountedPriceTotal}
