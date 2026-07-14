@@ -55,7 +55,7 @@ export const LicenseSizeSelect: React.FC<Props> = ({ label, info }) => {
       <Fieldset.Content asChild>
         <SelectRoot
           mt={1}
-          variant={'subtle'}
+          variant={'outline'}
           size={'lg'}
           fontSize={'md'}
           collection={licenseSizeCollection}
@@ -70,18 +70,7 @@ export const LicenseSizeSelect: React.FC<Props> = ({ label, info }) => {
           </SelectTrigger>
           <SelectContent portalled={false}>
             {sizes.map((option) => (
-              <SelectItem
-                key={option.value}
-                item={option}
-                _checked={{
-                  bg: 'blackAlpha.300',
-                }}
-                _hover={{
-                  cursor: 'pointer',
-                  bg: 'blackAlpha.300',
-                }}
-                transition={'background 300ms ease-in-out'}
-              >
+              <SelectItem key={option.value} item={option}>
                 {option.label}
               </SelectItem>
             ))}

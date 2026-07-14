@@ -1,12 +1,27 @@
 'use client'
 
 import type { CollectionItem } from '@chakra-ui/react'
-import { Select as ChakraSelect, Portal } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Select as ChakraSelect,
+  Portal,
+  useSelectItemContext,
+} from '@chakra-ui/react'
+import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
 import * as React from 'react'
 import { CloseButton } from './close-button'
 
 interface SelectTriggerProps extends ChakraSelect.ControlProps {
   clearable?: boolean
+}
+
+const SelectTriggerIndicator = () => {
+  return (
+    <Box fontSize={'2rem'} w={8} ml={-1}>
+      <ChevronDownIcon />
+    </Box>
+  )
 }
 
 export const SelectTrigger = React.forwardRef<
@@ -16,12 +31,13 @@ export const SelectTrigger = React.forwardRef<
   const { children, clearable, ...rest } = props
   return (
     <ChakraSelect.Control {...rest}>
-      <ChakraSelect.Trigger ref={ref} pr={'2rem'}>
+      <ChakraSelect.Trigger ref={ref} pr={clearable ? '2rem' : '1rem'}>
+        <SelectTriggerIndicator />
         {children}
       </ChakraSelect.Trigger>
       <ChakraSelect.IndicatorGroup>
         {clearable && <SelectClearTrigger />}
-        <ChakraSelect.Indicator />
+        {/*<ChakraSelect.Indicator />*/}
       </ChakraSelect.IndicatorGroup>
     </ChakraSelect.Control>
   )
@@ -63,15 +79,34 @@ export const SelectContent = React.forwardRef<
   )
 })
 
+const SelectItemIndicatorCustom = ({ size = 'md' }) => {
+  const { selected } = useSelectItemContext()
+  const box = size == 'sm' ? '1rem' : '1.385rem'
+  return (
+    <Button
+      className={'toggle-button'}
+      variant={'circle'}
+      w={box}
+      borderWidth={'2px'}
+      h={box}
+      minW={box}
+      p={0}
+      bg={selected ? 'black' : 'white'}
+      transition={'border-width 200ms ease-in-out'}
+    />
+  )
+}
+
 export const SelectItem = React.forwardRef<
   HTMLDivElement,
   ChakraSelect.ItemProps
 >(function SelectItem(props, ref) {
-  const { item, children, ...rest } = props
+  const { item, size, children, ...rest } = props
   return (
     <ChakraSelect.Item key={item.value} item={item} {...rest} ref={ref}>
+      <SelectItemIndicatorCustom size={size} />
+      {/*<ChakraSelect.ItemIndicator />*/}
       {children}
-      <ChakraSelect.ItemIndicator />
     </ChakraSelect.Item>
   )
 })

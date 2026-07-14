@@ -158,7 +158,7 @@ export const TieredSelect: React.FC<Props> = (props) => {
       {/* Group Select - only show when there are multiple style groups */}
       {styleGroups.length > 1 && (
         <SelectRoot
-          variant={'flushed'}
+          variant={'outline'}
           size={'sm'}
           fontSize={'md'}
           collection={groupCollection}
@@ -170,7 +170,12 @@ export const TieredSelect: React.FC<Props> = (props) => {
           </SelectTrigger>
           <SelectContent>
             {groupCollection.items.map((item) => (
-              <SelectItem item={item} key={item.value} fontSize={'md'}>
+              <SelectItem
+                size={'sm'}
+                item={item}
+                key={item.value}
+                fontSize={'md'}
+              >
                 {item.label}
               </SelectItem>
             ))}
@@ -180,7 +185,7 @@ export const TieredSelect: React.FC<Props> = (props) => {
 
       {/* Variant Select */}
       <SelectRoot
-        variant={'flushed'}
+        variant={'outline'}
         size={'sm'}
         collection={variantCollection}
         value={[currentVariantId]}
@@ -196,7 +201,12 @@ export const TieredSelect: React.FC<Props> = (props) => {
         </SelectTrigger>
         <SelectContent>
           {variantCollection.items.map((item) => (
-            <SelectItem item={item} key={item.value} fontSize={'md'}>
+            <SelectItem
+              size={'sm'}
+              item={item}
+              key={item.value}
+              fontSize={'md'}
+            >
               {item.label}
             </SelectItem>
           ))}

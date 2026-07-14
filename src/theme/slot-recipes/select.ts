@@ -147,12 +147,53 @@ export const selectSlotRecipe = defineSlotRecipe({
   variants: {
     variant: {
       outline: {
+        content: {
+          gap: '0',
+          bg: 'none',
+          boxShadow: 'none',
+          p: 0,
+        },
+        item: {
+          justifyContent: 'flex-start',
+          gap: '2',
+          cursor: 'pointer',
+          borderRadius: '0px',
+          bg: 'brand.50',
+          // boxShadow: 'inset 0 0 0 2px #fff',
+          transition:
+            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
+          _hover: {
+            borderRadius: '100px',
+          },
+          _checked: {
+            bg: 'colorPalette.bg',
+            borderRadius: '100px',
+            boxShadow: 'inset 0 0 0 2px #000',
+          },
+          _highlighted: {
+            bg: {
+              _light: 'bg.muted',
+              _dark: 'bg.emphasized',
+            },
+          },
+          _disabled: {
+            pointerEvents: 'none',
+            opacity: '0.5',
+          },
+          _icon: {
+            width: '4',
+            height: '4',
+          },
+        },
         trigger: {
+          gap: 0,
+          justifyContent: 'flex-start',
           bg: 'transparent',
-          borderWidth: '1px',
-          borderColor: 'border',
+          borderRadius: 'full',
+          borderWidth: '2px',
+          borderColor: 'colorPalette.fg',
           _expanded: {
-            borderColor: 'border.emphasized',
+            borderColor: 'colorPalette.fg', // 'border.emphasized',
           },
         },
       },
