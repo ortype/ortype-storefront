@@ -1,4 +1,4 @@
-import { Button, Flex, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   className?: string
   isSelected: boolean
   /** When true, the style belongs to a fully selected group and cannot be toggled individually */
-  disabled?: boolean
+  allSelected?: boolean
   unitPrice: number
   nextUnitPrice: number
   onToggle: () => void
@@ -18,7 +18,7 @@ export const SingleStyles: React.FC<Props> = ({
   skuCode,
   className,
   isSelected,
-  disabled = false,
+  allSelected = false,
   unitPrice,
   nextUnitPrice,
   onToggle,
@@ -26,7 +26,7 @@ export const SingleStyles: React.FC<Props> = ({
   const [isLoading, setIsLoading] = useState(false)
 
   const handleClick = () => {
-    if (disabled) return
+    if (allSelected) return
     setIsLoading(true)
     onToggle()
     setIsLoading(false)
@@ -35,14 +35,11 @@ export const SingleStyles: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
-      // bg={isSelected ? 'blackAlpha.300' : 'brand.50'}
       bg={isSelected ? 'colorPalette.bg' : 'brand.50'}
       boxShadow={isSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
       borderRadius={isSelected ? '100px' : '0px'}
-      cursor={disabled ? 'default' : 'pointer'}
-      opacity={disabled ? 0.6 : 1}
       _hover={
-        disabled
+        allSelected
           ? {}
           : {
               borderRadius: '100px',
@@ -55,13 +52,17 @@ export const SingleStyles: React.FC<Props> = ({
       transition={
         'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
       }
+      cursor={'pointer'}
       py={2}
       px={4}
+      ml={allSelected ? 9 : 0}
+      minH={'2.5rem'}
     >
       <Stack direction={'row'} gap={3} alignItems={'center'}>
         <Button
           className={'toggle-button'}
           variant={'circle'}
+          display={allSelected ? 'none' : 'block'}
           w={'1.385rem'}
           borderWidth={'2px'}
           h={'1.385rem'}

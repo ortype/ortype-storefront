@@ -7,9 +7,15 @@ interface Props {
   font: Font
   summary: GroupPriceSummary
   onToggle: () => void
+  hasMultipleGroups?: boolean
 }
 
-export const FontFull: React.FC<Props> = ({ font, summary, onToggle }) => {
+export const FontFull: React.FC<Props> = ({
+  font,
+  summary,
+  onToggle,
+  hasMultipleGroups = false,
+}) => {
   const className = font.defaultVariant?._id
   const { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice } =
     summary
@@ -41,6 +47,7 @@ export const FontFull: React.FC<Props> = ({ font, summary, onToggle }) => {
       }
       py={3}
       px={4}
+      mb={hasMultipleGroups ? 0.5 : 0}
     >
       <Stack direction={'row'} gap={3} alignItems={'center'}>
         <Button

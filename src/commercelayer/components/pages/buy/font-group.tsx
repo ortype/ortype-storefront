@@ -47,7 +47,8 @@ export const FontGroup: React.FC<Props> = ({
       bg={allSelected ? 'colorPalette.bg' : 'brand.50'}
       boxShadow={allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
       borderRadius={allSelected ? '100px' : '0px'}
-      cursor={'pointer'}
+      cursor={allSelected ? 'default' : 'pointer'}
+      w={'full'}
       _hover={{
         borderRadius: '100px',
         '& .toggle-button': {
