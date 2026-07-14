@@ -1,5 +1,4 @@
 'use client'
-import LicenseOwnerInput from '@/commercelayer/components/forms/LicenseOwnerInput'
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { useOrderContext } from '@/commercelayer/providers/Order'
@@ -20,7 +19,6 @@ import {
   Fieldset,
   Flex,
   Heading,
-  Input,
   SimpleGrid,
   Spinner,
   Stack,
@@ -199,13 +197,14 @@ const CartComponent = () => {
             </FieldsetLegend>
             <Fieldset.Content asChild>
               <Flex
-                bg={'brand.50'}
+                bg={'colorPalette.bg'}
                 justifyContent={'center'}
                 px={'3'}
                 h={11}
                 fontSize={{ base: 'lg', xl: 'md' }}
                 mt={1}
-                borderRadius={0}
+                borderRadius={'100px'}
+                border={'2px solid #000'}
               >
                 {isLicenseForClient
                   ? order?.metadata?.license?.owner?.company

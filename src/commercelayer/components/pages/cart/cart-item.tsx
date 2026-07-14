@@ -3,20 +3,16 @@ import {
   calculateLineItemPrice,
   formatPrice,
 } from '@/commercelayer/utils/prices'
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from '@/components/ui/license-type-select'
+import { Tag } from '@/components/ui/tag'
 import {
   Box,
+  Button,
   IconButton as ChakraIconButton,
-  createListCollection,
   Flex,
   HStack,
   Link,
+  Menu,
+  Portal,
   SimpleGrid,
   Stack,
   Text,
@@ -66,17 +62,30 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
       .filter(Boolean) as SkuOption[]
   }, [entry.licenseTypes, skuOptions, mediaKeyOrder])
 
-  // Derive select-compatible formats from skuOptions
+  // Derive select-compatible { value, label } formats from skuOptions
   const formattedTypeOptions = skuOptions?.map((o) => ({
     value: o.reference,
     label: o.name,
   }))
 
-  const typeOptionsCollection = useMemo(
-    () => createListCollection({ items: formattedTypeOptions }),
-    [formattedTypeOptions]
-  )
+  // Label lookup keyed by SkuOption.reference, for tag display
+  const labelByReference = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const option of formattedTypeOptions ?? []) {
+      map.set(option.value, option.label)
+    }
+    return map
+  }, [formattedTypeOptions])
+
   const selectedValues = entry.licenseTypes ?? []
+
+  // License types not yet selected — shown in the "Edit license" menu
+  const remainingOptions = useMemo(() => {
+    const selected = new Set(entry.licenseTypes ?? [])
+    return (formattedTypeOptions ?? []).filter(
+      (option) => !selected.has(option.value)
+    )
+  }, [formattedTypeOptions, entry.licenseTypes])
 
   // Count siblings in this parentUid group
   const groupCount = Object.keys(selections[parentUid] ?? {}).length
@@ -118,9 +127,14 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
     )
   }, [selectedSkuOptions, licenseSize])
 
-  const handleTypeChange = (e: { value: string[] }) => {
-    const sorted = sortByReference(e.value)
-    setStyleLicenseTypes({ parentUid, skuCode, licenseTypes: sorted })
+  const handleAddType = (value: string) => {
+    const next = sortByReference([...selectedValues, value])
+    setStyleLicenseTypes({ parentUid, skuCode, licenseTypes: next })
+  }
+
+  const handleRemoveType = (value: string) => {
+    const next = sortByReference(selectedValues.filter((v) => v !== value))
+    setStyleLicenseTypes({ parentUid, skuCode, licenseTypes: next })
   }
 
   const handleRemove = () => {
@@ -134,7 +148,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   return (
     <>
-      <SimpleGrid columns={[1, null, 2]} gap={3} bg={'brand.0'} p={3}>
+      <SimpleGrid columns={[1, null, 2]} gap={3} bg={'#F8F8F8'} p={3}>
         <Stack direction={'row'} gap={2} alignItems={'flex-start'}>
           <Link onClick={handleRemove} cursor={'pointer'}>
             <ChakraIconButton
@@ -166,25 +180,46 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
         </Stack>
         <Flex direction={'row'} alignItems={'flex-start'}>
           <Box flexGrow={1}>
-            <SelectRoot
-              variant={'flushed'}
-              size={'sm'}
-              fontSize={'md'}
-              collection={typeOptionsCollection}
-              value={selectedValues}
-              onValueChange={handleTypeChange}
-              multiple
-            >
-              <SelectValueText placeholder="Select a type" />
-              <SelectTrigger>{'Edit license'}</SelectTrigger>
-              <SelectContent portalled={false}>
-                {formattedTypeOptions.map((option) => (
-                  <SelectItem key={option.value} item={option}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </SelectRoot>
+            <HStack gap={2} flexWrap={'wrap'} alignItems={'center'}>
+              {selectedValues.map((value) => (
+                <Tag
+                  key={value}
+                  size={'xl'}
+                  variant={'solid'}
+                  closable
+                  onClose={() => handleRemoveType(value)}
+                >
+                  {labelByReference.get(value) ?? value}
+                </Tag>
+              ))}
+
+              {remainingOptions.length > 0 && (
+                <Menu.Root variant={'outline'} size={'md'}>
+                  <Menu.Trigger
+                  // border={0}
+                  // borderBottom={'2px solid #000'}
+                  // borderRadius={0}
+                  >
+                    Add license
+                  </Menu.Trigger>
+                  <Portal>
+                    <Menu.Positioner>
+                      <Menu.Content>
+                        {remainingOptions.map((option) => (
+                          <Menu.Item
+                            key={option.value}
+                            value={option.value}
+                            onClick={() => handleAddType(option.value)}
+                          >
+                            {option.label}
+                          </Menu.Item>
+                        ))}
+                      </Menu.Content>
+                    </Menu.Positioner>
+                  </Portal>
+                </Menu.Root>
+              )}
+            </HStack>
           </Box>
           <VStack
             minW={28}

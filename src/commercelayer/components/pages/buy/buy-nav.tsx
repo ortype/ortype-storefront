@@ -48,6 +48,7 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
       </Button>
       <MenuRoot
         variant={'wrap'}
+        size={'custom'}
         open={openTypeMenu}
         onOpenChange={(e) => setTypeMenuOpen(e.open)}
         positioning={{ getAnchorRect: getTypeAnchorRect }}

@@ -1,5 +1,20 @@
 import { defineSlotRecipe } from '@chakra-ui/react'
 
+const customContentFields = {
+  bg: 'transparent',
+  boxShadow: 'none',
+  color: 'black',
+}
+
+const customItemFields = {
+  border: '3px solid black',
+  mt: '-3px',
+  borderRadius: 0,
+  flex: '1',
+  bg: 'bg',
+  width: 'max-content',
+}
+
 export const menuSlotRecipe = defineSlotRecipe({
   className: 'chakra-menu',
   slots: [
@@ -29,9 +44,9 @@ export const menuSlotRecipe = defineSlotRecipe({
     */
     content: {
       outline: 0,
-      bg: 'transparent',
-      boxShadow: 'none',
-      color: 'black',
+      bg: 'bg.panel',
+      boxShadow: 'lg',
+      color: 'fg',
       maxHeight: 'var(--available-height)',
       '--menu-z-index': 'zIndex.dropdown',
       zIndex: 'calc(var(--menu-z-index) + var(--layer-index, 0))',
@@ -48,20 +63,16 @@ export const menuSlotRecipe = defineSlotRecipe({
       },
     },
     item: {
-      mt: '-3px',
       textDecoration: 'none',
-      color: 'black',
-      bg: 'white',
-      border: '3px solid black',
       userSelect: 'none',
-      borderRadius: 0,
-      width: 'max-content',
+      width: '100%',
+      borderRadius: 'l1',
       display: 'flex',
       cursor: 'menuitem',
       alignItems: 'center',
       textAlign: 'start',
       position: 'relative',
-      flex: '1',
+      flex: '0 0 auto',
       outline: 0,
       _disabled: {
         layerStyle: 'disabled',
@@ -98,6 +109,53 @@ export const menuSlotRecipe = defineSlotRecipe({
   },
   variants: {
     variant: {
+      outline: {
+        content: {
+          gap: '0',
+          bg: 'none',
+          boxShadow: 'none',
+          p: 0,
+        },
+        item: {
+          justifyContent: 'flex-start',
+          gap: '2',
+          cursor: 'pointer',
+          bg: 'brand.50',
+          transition:
+            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
+          _hover: {
+            borderRadius: '100px',
+          },
+          _highlighted: {
+            borderRadius: '100px',
+            // bg: 'colorPalette.bg',
+            // boxShadow: 'inset 0 0 0 2px #000',
+          },
+          _disabled: {
+            pointerEvents: 'none',
+            opacity: '0.5',
+          },
+        },
+        trigger: {
+          gap: 0,
+          justifyContent: 'flex-start',
+          bg: 'transparent',
+          borderWidth: '2px',
+          h: '7',
+          minW: '6',
+          textStyle: 'sm',
+          px: '2',
+          borderColor: 'colorPalette.border',
+          color: 'colorPalette.fg',
+          _hover: {
+            // bg: 'colorPalette.subtle',
+          },
+          _expanded: {
+            borderColor: 'colorPalette.fg',
+          },
+          borderRadius: 'full',
+        },
+      },
       // inline
       // for the typeface menu on /typeface route
       subtle: {
@@ -111,7 +169,11 @@ export const menuSlotRecipe = defineSlotRecipe({
         },
       },
       solid: {
+        content: {
+          ...customContentFields,
+        },
         item: {
+          ...customItemFields,
           _highlighted: {
             bg: 'black',
             color: 'white',
@@ -121,11 +183,13 @@ export const menuSlotRecipe = defineSlotRecipe({
       },
       right: {
         content: {
+          ...customContentFields,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-end',
         },
         item: {
+          ...customItemFields,
           _highlighted: {
             bg: 'black',
             color: 'white',
@@ -134,6 +198,7 @@ export const menuSlotRecipe = defineSlotRecipe({
       },
       wrap: {
         content: {
+          ...customContentFields,
           display: 'flex',
           flexWrap: 'wrap',
           gap: '0',
@@ -145,13 +210,15 @@ export const menuSlotRecipe = defineSlotRecipe({
           padding: 0,
         },
         item: {
+          ...customItemFields,
+          border: '3px solid black',
           _highlighted: {
             bg: 'black',
             color: 'white',
           },
-          flex: '0 0 auto',
-          mt: '-3px',
+          pt: '3px',
           ml: '-3px',
+          flex: '0 0 auto',
         },
       },
     },
@@ -159,28 +226,35 @@ export const menuSlotRecipe = defineSlotRecipe({
       sm: {
         content: {
           minW: '8rem',
-          px: 0,
-          pt: '3px',
+          padding: '1',
         },
         item: {
-          mt: '-2px',
-          border: '2px solid black',
-          gap: '2',
-          fontSize: 'lg',
-          h: 8,
-          py: '1.5',
+          gap: '1',
+          textStyle: 'xs',
+          py: '1',
           px: '1.5',
         },
       },
       md: {
+        content: {
+          mt: -1,
+          minW: '8rem',
+          padding: '1.5',
+        },
+        item: {
+          gap: '2',
+          textStyle: 'sm',
+          py: '1.5',
+          px: '2',
+        },
+      },
+      custom: {
         content: {
           minW: 'auto',
           px: 0,
           pt: '3px',
         },
         item: {
-          mt: '-3px',
-          border: '3px solid black',
           gap: '2',
           fontSize: '2xl',
           h: 11,

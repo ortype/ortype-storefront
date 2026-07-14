@@ -102,7 +102,7 @@ export const tagSlotRecipe = defineSlotRecipe({
           '--tag-element-offset': '-4px',
         },
         label: {
-          textStyle: 'md',
+          textStyle: 'lg',
         },
       },
     },
@@ -115,8 +115,9 @@ export const tagSlotRecipe = defineSlotRecipe({
       },
       solid: {
         root: {
-          bg: 'colorPalette.fg',
-          color: 'colorPalette.bg',
+          bg: 'colorPalette.bg',
+          color: 'colorPalette.fg',
+          borderRadius: 'none',
         },
       },
       outline: {

@@ -128,6 +128,7 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
         </Show>
         <MenuRoot
           variant={'wrap'}
+          size={'custom'}
           open={openTypeMenu}
           onOpenChange={(e) => setTypeMenuOpen(e.open)}
           positioning={{ getAnchorRect: getTypeAnchorRect }}
@@ -162,6 +163,7 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
           open={openMenu}
           onOpenChange={(e) => setMenuOpen(e.open)}
           positioning={{ getAnchorRect }}
+          size={'custom'}
         >
           <MenuContent
             fontSize={'1.5rem'}

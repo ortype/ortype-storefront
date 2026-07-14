@@ -138,7 +138,9 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
             <HStack
               py={2}
               px={3}
-              bg={'brand.100'}
+              bg={'brand.50'}
+              // bg={'colorPalette.bg'}
+              // boxShadow={'inset 0 0 0 2px #000'}
               w={'full'}
               borderRadius={'full'}
             >

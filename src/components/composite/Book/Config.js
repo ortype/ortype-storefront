@@ -102,6 +102,7 @@ const Config = () => {
                   <Group spacing={2} width={'100%'}>
                     <MenuRoot
                       variant={'right'}
+                      size={'custom'}
                       positioning={{ placement: 'right-start' }}
                     >
                       <MenuTrigger
