@@ -60,18 +60,39 @@ const BuyContext = createContext<BuyProviderData>(
 export const useBuyContext = (): BuyProviderData => useContext(BuyContext)
 
 /**
+ * Interleave variants and italicVariants in display order, matching the
+ * mergeVariants logic used by Typefaces: Regular, Regular Italic, Medium, …
+ * This order is stored in includedSkuCodes so the cart can sort by it.
+ */
+function interleaveVariantIds(
+  variants: Array<{ _id: string }>,
+  italicVariants: Array<{ _id: string }>
+): string[] {
+  const ids: string[] = []
+  const maxLen = Math.max(variants.length, italicVariants.length)
+  for (let i = 0; i < maxLen; i++) {
+    if (i < variants.length && variants[i]._id) ids.push(variants[i]._id)
+    if (i < italicVariants.length && italicVariants[i]._id)
+      ids.push(italicVariants[i]._id)
+  }
+  return ids
+}
+
+/**
  * Resolve a font's style groups into ResolvedFontGroup[] for projection
  * compilation. Uses the same slugify as the import utility for consistency.
+ * includedSkuCodes is stored in interleaved display order so both the buy
+ * page and the cart can sort by index without extra data.
  */
 function resolveFontGroups(font: Font): ResolvedFontGroup[] {
   if (font.styleGroups?.length) {
     return font.styleGroups.map((sg) => {
       const groupName = sg.groupName || 'Standard'
       const groupSlug = slugify(groupName, { lower: true })
-      const variantIds = [
-        ...(sg.variants || []).map((v) => v._id),
-        ...(sg.italicVariants || []).map((v) => v._id),
-      ].filter(Boolean)
+      const variantIds = interleaveVariantIds(
+        sg.variants || [],
+        sg.italicVariants || []
+      )
       return {
         groupName,
         groupSlug,

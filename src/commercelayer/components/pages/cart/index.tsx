@@ -131,12 +131,22 @@ const CartComponent = () => {
       }
 
       // Derive sub-family groups from resolved group resolutions (mirrors
-      // typefaces.tsx hasMultipleGroups logic, using the same source data)
+      // typefaces.tsx hasMultipleGroups logic, using the same source data).
+      // includedSkuCodes is in interleaved display order (see resolveFontGroups),
+      // so sorting by index restores the same order as the buy page.
       const resolvedGroups = groupResolutions[parentUid] ?? []
+      const allOrderedCodes = resolvedGroups.flatMap((rg) => rg.includedSkuCodes)
+      const skuOrder = new Map(allOrderedCodes.map((id, i) => [id, i]))
+      const sortedItems = [...items].sort(
+        (a, b) =>
+          (skuOrder.get(a.skuCode) ?? Infinity) -
+          (skuOrder.get(b.skuCode) ?? Infinity)
+      )
+
       const subGroupsRaw: CartSubFamilyGroup[] = resolvedGroups
         .map((rg) => ({
           groupName: rg.groupName,
-          items: items.filter((item) =>
+          items: sortedItems.filter((item) =>
             rg.includedSkuCodes.includes(item.skuCode)
           ),
         }))
@@ -147,7 +157,7 @@ const CartComponent = () => {
         parentUid,
         parentName: first?.parentName ?? '',
         defaultVariantId: first?.defaultVariantId ?? '',
-        items,
+        items: sortedItems,
         subGroups: hasSubGroups ? subGroupsRaw : [],
         hasSubGroups,
         fullUnitPriceTotal: formatPrice(fullTotalCents),
