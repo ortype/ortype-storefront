@@ -198,6 +198,46 @@ export function expandLineItems(
 /* ------------------------------------------------------------------ */
 
 /**
+ * Reconstruct the canonical display order for expanded styles within a single
+ * font family using group projection metadata.
+ *
+ * Group projections store `includedSkuCodes` in interleaved display order
+ * (upright/italic pairs). By processing each unique source line item once —
+ * in the order they appear in the expanded list, which reflects CL creation
+ * order and therefore Sanity sub-family order — we can rebuild the global
+ * position map. Style projections not covered by any group fall to the end
+ * in their existing relative order.
+ */
+function sortExpandedStyles(styles: ExpandedStyle[]): ExpandedStyle[] {
+  const orderMap = new Map<string, number>()
+  let pos = 0
+
+  // Pass 1: derive order from group projection metadata (one pass per source line item)
+  const seenSources = new Set<string>()
+  for (const s of styles) {
+    if (s.projectionType !== 'group') continue
+    const sourceId = s.sourceLineItem.id
+    if (seenSources.has(sourceId)) continue
+    seenSources.add(sourceId)
+    const codes: string[] = s.sourceLineItem.metadata?.includedSkuCodes ?? []
+    for (const code of codes) {
+      if (!orderMap.has(code)) orderMap.set(code, pos++)
+    }
+  }
+
+  // Pass 2: append any style projection codes not covered by a group (preserves relative order)
+  for (const s of styles) {
+    if (!orderMap.has(s.skuCode)) orderMap.set(s.skuCode, pos++)
+  }
+
+  return [...styles].sort(
+    (a, b) =>
+      (orderMap.get(a.skuCode) ?? Infinity) -
+      (orderMap.get(b.skuCode) ?? Infinity)
+  )
+}
+
+/**
  * Group expanded styles by font family (parentUid).
  */
 export function groupByFont(
@@ -231,6 +271,7 @@ export function groupByFont(
   const groups = Array.from(map.values())
   for (const g of groups) {
     g.groupTotal = Math.round(g.groupTotal * 100) / 100
+    g.styles = sortExpandedStyles(g.styles)
   }
   return groups
 }

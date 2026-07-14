@@ -1393,10 +1393,21 @@ export function OrderProvider({
         const coveredCodes = new Set(
           matchedGroups.flatMap((g) => g.includedSkuCodes)
         )
-        // Styles not covered by any matched group → individual style projection
-        const styleProjectionCodes = Object.keys(groupStyles).filter(
-          (code) => !coveredCodes.has(code)
+        // Styles not covered by any matched group → individual style projection,
+        // sorted into canonical display order so CL stores them in Sanity order
+        const allOrderedGroupCodes = resolvedGroups.flatMap(
+          (g) => g.includedSkuCodes
         )
+        const styleCodeOrderMap = new Map(
+          allOrderedGroupCodes.map((id, i) => [id, i])
+        )
+        const styleProjectionCodes = Object.keys(groupStyles)
+          .filter((code) => !coveredCodes.has(code))
+          .sort(
+            (a, b) =>
+              (styleCodeOrderMap.get(a) ?? Infinity) -
+              (styleCodeOrderMap.get(b) ?? Infinity)
+          )
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(

@@ -33,7 +33,13 @@ const SummaryGroup: React.FC<{ group: ExpandedFontGroup }> = ({ group }) => {
           borderBottom={'1px solid #E7E0BF'}
           my={0.5}
         >
-          <SimpleGrid w={'full'} columns={3} fontSize={'sm'} lineHeight={1.1}>
+          <SimpleGrid
+            w={'full'}
+            columns={3}
+            fontSize={'sm'}
+            lineHeight={1.1}
+            gap={2}
+          >
             <HStack gap={1}>
               <Collapsible.Context>
                 {({ open }) => (
@@ -83,11 +89,10 @@ const SummaryGroup: React.FC<{ group: ExpandedFontGroup }> = ({ group }) => {
               pl={5}
               fontSize={'sm'}
               lineHeight={1.1}
+              gap={2}
             >
               <Box>{style.name}</Box>
-              <Box fontSize={'sm'}>
-                {style.licenseTypeLabels.join(', ')}
-              </Box>
+              <Box fontSize={'xs'}>{style.licenseTypeLabels.join(', ')}</Box>
               <Box textAlign={'right'} fontVariantNumeric={'tabular-nums'}>
                 {priceFloat != null ? `${priceFloat} EUR` : ''}
               </Box>
@@ -149,8 +154,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
     const styleCount = groups.reduce((sum, g) => sum + g.styleCount, 0)
     return {
       groups,
-      parentFontCount:
-        fontCount + ' ' + (fontCount === 1 ? 'font' : 'fonts'),
+      parentFontCount: fontCount + ' ' + (fontCount === 1 ? 'font' : 'fonts'),
       allStylesCount: styleCount + ' styles',
       subtotalAmount: Math.round(subtotalAmount * 100) / 100,
       totalDiscount,
