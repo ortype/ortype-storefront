@@ -6,7 +6,6 @@ import {
 import { Tag } from '@/components/ui/tag'
 import {
   Box,
-  Button,
   IconButton as ChakraIconButton,
   Flex,
   HStack,
@@ -20,6 +19,7 @@ import {
 } from '@chakra-ui/react'
 import { type SkuOption } from '@commercelayer/sdk'
 import { CloseIcon } from '@sanity/icons'
+import { AnimatePresence, motion } from 'framer-motion'
 import React, { useMemo } from 'react'
 import type { CartBufferItem } from '.'
 
@@ -181,24 +181,44 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
         <Flex direction={'row'} alignItems={'flex-start'}>
           <Box flexGrow={1}>
             <HStack gap={2} flexWrap={'wrap'} alignItems={'center'}>
-              {selectedValues.map((value) => (
-                <Tag
-                  key={value}
-                  size={'xl'}
-                  variant={'solid'}
-                  closable
-                  onClose={() => handleRemoveType(value)}
-                >
-                  {labelByReference.get(value) ?? value}
-                </Tag>
-              ))}
+              <AnimatePresence mode={'sync'} initial={false}>
+                {selectedValues.map((value) => (
+                  <motion.div
+                    key={value}
+                    style={{ display: 'inline-flex' }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                  >
+                    <Tag
+                      size={'xl'}
+                      variant={'solid'}
+                      closable
+                      onClose={() => handleRemoveType(value)}
+                    >
+                      {labelByReference.get(value) ?? value}
+                    </Tag>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {remainingOptions.length > 0 && (
                 <Menu.Root variant={'outline'} size={'md'}>
                   <Menu.Trigger
-                  // border={0}
-                  // borderBottom={'2px solid #000'}
-                  // borderRadius={0}
+                    // border={0}
+                    // borderBottom={'2px solid #000'}
+                    // borderRadius={0}
+                    cursor={'pointer'}
+                    _hover={{
+                      bg: 'colorPalette.fg',
+                      color: 'colorPalette.bg',
+                    }}
+                    // borderRadius={'100px'}
+                    // _hover={{
+                    //   borderRadius: '0px',
+                    // }}
+                    transition={'background 200ms ease-out'}
                   >
                     Add license
                   </Menu.Trigger>

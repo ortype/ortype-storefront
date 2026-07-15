@@ -207,7 +207,6 @@ export const menuSlotRecipe = defineSlotRecipe({
           border: 'none',
           borderLeft: '3px solid black',
           ml: '-3px',
-          padding: 0,
         },
         item: {
           ...customItemFields,
@@ -216,7 +215,6 @@ export const menuSlotRecipe = defineSlotRecipe({
             bg: 'black',
             color: 'white',
           },
-          pt: '3px',
           ml: '-3px',
           flex: '0 0 auto',
         },

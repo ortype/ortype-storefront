@@ -63,12 +63,11 @@ export const LicenseSizeSelect: React.FC<Props> = ({ label, info }) => {
           onValueChange={handleSizeChange}
           w={'100%'}
           positioning={{ sameWidth: true }}
-          fontVariantNumeric={'tabular-nums'}
         >
           <SelectTrigger width={'100%'}>
             <SelectValueText placeholder="Select a size" />
           </SelectTrigger>
-          <SelectContent portalled={false}>
+          <SelectContent portalled={false} mt={-1}>
             {sizes.map((option) => (
               <SelectItem key={option.value} item={option}>
                 {option.label}

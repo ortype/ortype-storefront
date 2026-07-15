@@ -145,10 +145,11 @@ export const LicenseTypeList: React.FC<Props> = ({
         opacity={0.8}
         px={4}
         onClick={() => setOpen(true)}
+        cursor={'pointer'}
       >
         {`Need something else?`}
         {` Please `}
-        <Text as={'span'} textDecoration={'underline'} cursor={'pointer'}>
+        <Text as={'span'} textDecoration={'underline'}>
           {'contact us'}
         </Text>
         {`.`}

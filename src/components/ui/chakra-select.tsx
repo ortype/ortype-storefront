@@ -31,7 +31,11 @@ export const SelectTrigger = React.forwardRef<
   const { children, clearable, ...rest } = props
   return (
     <ChakraSelect.Control {...rest}>
-      <ChakraSelect.Trigger ref={ref} pr={clearable ? '2rem' : '1rem'}>
+      <ChakraSelect.Trigger
+        ref={ref}
+        cursor={'pointer'}
+        pr={clearable ? '2rem' : '1rem'}
+      >
         <SelectTriggerIndicator />
         {children}
       </ChakraSelect.Trigger>
@@ -103,7 +107,17 @@ export const SelectItem = React.forwardRef<
 >(function SelectItem(props, ref) {
   const { item, size, children, ...rest } = props
   return (
-    <ChakraSelect.Item key={item.value} item={item} {...rest} ref={ref}>
+    <ChakraSelect.Item
+      key={item.value}
+      item={item}
+      {...rest}
+      ref={ref}
+      _hover={{
+        '& .toggle-button': {
+          borderWidth: '3px',
+        },
+      }}
+    >
       <SelectItemIndicatorCustom size={size} />
       {/*<ChakraSelect.ItemIndicator />*/}
       {children}
