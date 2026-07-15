@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 // import { GTMContext } from '@/components/data/GTMProvider'
 import { PlaceOrderButton } from '@/commercelayer/components'
-import { Button } from '@/components/ui/chakra-button'
 import { Box, Card, Checkbox, Field, Flex, Link } from '@chakra-ui/react'
 
 interface Props {
@@ -89,7 +88,7 @@ const StepPlaceOrder: React.FC<Props> = ({ termsUrl, privacyUrl }) => {
                   setChecked(!!e.checked)
                   e.checked && setInvalid(false)
                 }}
-                variant={'outline'}
+                variant={'solid'}
                 size={'sm'}
 
                 // py={1}

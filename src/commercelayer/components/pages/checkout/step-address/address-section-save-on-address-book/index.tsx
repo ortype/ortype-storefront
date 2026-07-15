@@ -41,7 +41,9 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
   const handleChange = (e: { checked: boolean }) => {
     setChecked(e.checked)
     setCustomerOrderParam(
-      storageKey as '_save_billing_address_to_customer_address_book' | '_save_shipping_address_to_customer_address_book',
+      storageKey as
+        | '_save_billing_address_to_customer_address_book'
+        | '_save_shipping_address_to_customer_address_book',
       e.checked ? 'true' : 'false'
     )
   }
@@ -56,7 +58,7 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
           className="form-checkbox"
           checked={checked}
           onCheckedChange={handleChange}
-          variant={'outline'}
+          variant={'solid'}
           size={'sm'}
         >
           {t('stepCustomer.saveAddressBook')}
