@@ -200,23 +200,18 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                           pos: 'absolute',
                           left: 2,
                           top: -3,
-                          bottom: 0,
+                          bottom: 6,
                           w: 3,
                           borderLeft: '2px solid #000',
-                          borderTopRadius: '4px',
                           borderTop: '2px solid #000',
-                          // borderBottom: '2px solid #000',
+                          borderBottom: '2px solid #000',
                           borderRight: '2px solid transparent',
                           zIndex: 0,
                         }}
                       />
                     )}
                     {sg.items.map((item) => (
-                      <CartItem
-                        key={item.skuCode}
-                        item={item}
-                        allSelected={sg.allSelected}
-                      />
+                      <CartItem key={item.skuCode} item={item} />
                     ))}
                   </Box>
                 </React.Fragment>
@@ -233,7 +228,6 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                       bottom: 6,
                       w: 3,
                       borderLeft: '2px solid #000',
-                      borderTopRadius: '4px',
                       borderTop: '2px solid #000',
                       borderBottom: '2px solid #000',
                       borderRight: '2px solid transparent',
@@ -242,11 +236,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                   />
                 )}
                 {items.map((item) => (
-                  <CartItem
-                    key={item.skuCode}
-                    allSelected={allSelected}
-                    item={item}
-                  />
+                  <CartItem key={item.skuCode} item={item} />
                 ))}
               </Box>
             )}

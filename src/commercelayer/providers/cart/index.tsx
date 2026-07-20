@@ -95,22 +95,16 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     return parentUids.map((parentUid) => {
       const selectedSkus = selections[parentUid]
       const skuCodes = Object.keys(selectedSkus)
-      const items: CartBufferItem[] = skuCodes.map((skuCode) => ({
-        skuCode,
-        parentUid,
-        entry: selectedSkus[skuCode],
-      }))
-
       const first = selectedSkus[skuCodes[0]]
-      const count = items.length
+      const count = skuCodes.length
       const modifier = licenseSize?.modifier ?? 0
 
       // Sum per-style prices using each style's own license types
       let fullTotalCents = 0
       let discountedTotalCents = 0
 
-      for (const { entry } of items) {
-        const styleOptions = resolveSkuOptions(entry)
+      for (const skuCode of skuCodes) {
+        const styleOptions = resolveSkuOptions(selectedSkus[skuCode])
         if (styleOptions.length === 0) continue
 
         fullTotalCents += calculateLineItemPrice({
@@ -125,21 +119,42 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         })
       }
 
-      // Sort items into Sanity display order using pre-registered group resolutions.
+      // Sort SKU codes into Sanity display order using pre-registered group resolutions.
       // includedSkuCodes is stored in interleaved order (see BuyProvider resolveFontGroups).
       const resolvedGroups = groupResolutions[parentUid] ?? []
       const allOrderedCodes = resolvedGroups.flatMap((rg) => rg.includedSkuCodes)
       const skuOrder = new Map(allOrderedCodes.map((id, i) => [id, i]))
-      const sortedItems = [...items].sort(
-        (a, b) =>
-          (skuOrder.get(a.skuCode) ?? Infinity) -
-          (skuOrder.get(b.skuCode) ?? Infinity)
+      const sortedSkuCodes = [...skuCodes].sort(
+        (a, b) => (skuOrder.get(a) ?? Infinity) - (skuOrder.get(b) ?? Infinity)
       )
+
+      // Top-level allSelected: used when the font has no sub-groups
+      const allSelected =
+        allOrderedCodes.length > 0 &&
+        allOrderedCodes.every((code) => code in selectedSkus)
+
+      // Pre-compute which codes belong to a fully-selected resolved group so
+      // isInFullGroup can be stamped onto each CartBufferItem without re-reading context.
+      const fullySelectedGroupCodes = new Set<string>()
+      for (const rg of resolvedGroups) {
+        if (rg.includedSkuCodes.every((code) => code in selectedSkus)) {
+          for (const code of rg.includedSkuCodes) fullySelectedGroupCodes.add(code)
+        }
+      }
+
+      // Build fully-typed CartBufferItem[] in display order
+      const items: CartBufferItem[] = sortedSkuCodes.map((skuCode) => ({
+        skuCode,
+        parentUid,
+        entry: selectedSkus[skuCode],
+        groupCount: count,
+        isInFullGroup: fullySelectedGroupCodes.has(skuCode),
+      }))
 
       const subGroupsRaw: CartSubFamilyGroup[] = resolvedGroups
         .map((rg) => ({
           groupName: rg.groupName,
-          items: sortedItems.filter((item) =>
+          items: items.filter((item) =>
             rg.includedSkuCodes.includes(item.skuCode)
           ),
           // Per-subgroup: every code in this group's spec is selected
@@ -150,16 +165,11 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         .filter((sg) => sg.items.length > 0)
       const hasSubGroups = subGroupsRaw.length > 1
 
-      // Top-level allSelected: used only when the font has no sub-groups
-      const allSelected =
-        allOrderedCodes.length > 0 &&
-        allOrderedCodes.every((code) => code in selectedSkus)
-
       return {
         parentUid,
         parentName: first?.parentName ?? '',
         defaultVariantId: first?.defaultVariantId ?? '',
-        items: sortedItems,
+        items,
         subGroups: hasSubGroups ? subGroupsRaw : [],
         hasSubGroups,
         allSelected,

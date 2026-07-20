@@ -26,21 +26,19 @@ import React, { useMemo } from 'react'
 
 interface CartItemProps {
   item: CartBufferItem
-  allSelected: boolean
 }
 
-export const CartItem: React.FC<CartItemProps> = ({ allSelected, item }) => {
+export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const {
     skuOptions,
     mediaTypes,
     licenseSize,
-    selections,
-    groupResolutions,
     toggleStyle,
     setStyleLicenseTypes,
   } = useCartContext()
 
-  const { skuCode, parentUid, entry } = item
+  const { skuCode, parentUid, entry, groupCount, isInFullGroup } = item
+  const canRemove = !isInFullGroup
 
   // Sort index from mediaTypes so selections follow Sanity order
   const mediaKeyOrder = useMemo(() => {
@@ -88,23 +86,6 @@ export const CartItem: React.FC<CartItemProps> = ({ allSelected, item }) => {
       (option) => !selected.has(option.value)
     )
   }, [formattedTypeOptions, entry.licenseTypes])
-
-  // Count siblings in this parentUid group
-  const groupCount = Object.keys(selections[parentUid] ?? {}).length
-
-  // Disable individual removal when this style belongs to a fully-selected group.
-  // A style is "locked" if every style in its resolved group is currently selected.
-  const isInFullGroup = useMemo(() => {
-    const resolved = groupResolutions[parentUid] ?? []
-    const selectedCodes = new Set(Object.keys(selections[parentUid] ?? {}))
-    if (allSelected) return true
-    return resolved.some(
-      (g) =>
-        g.includedSkuCodes.includes(skuCode) &&
-        g.includedSkuCodes.every((code) => selectedCodes.has(code))
-    )
-  }, [groupResolutions, selections, parentUid, skuCode, allSelected])
-  const canRemove = !isInFullGroup
 
   // Optimistic price from buffer
   const displayPrice = useMemo(() => {
@@ -187,7 +168,7 @@ export const CartItem: React.FC<CartItemProps> = ({ allSelected, item }) => {
                   },
                 }}
               >
-                <CloseIcon width={'2rem'} height={'2rem'} />
+                <CloseIcon width={'3rem'} height={'3rem'} />
               </ChakraIconButton>
             </Link>
           )}

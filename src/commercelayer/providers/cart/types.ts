@@ -5,6 +5,10 @@ export interface CartBufferItem {
   skuCode: string
   parentUid: string
   entry: StyleEntry
+  /** Number of styles in the same parentUid group — used for volume-price calculation */
+  groupCount: number
+  /** True when this style belongs to a fully-selected resolved group (locks individual removal) */
+  isInFullGroup: boolean
 }
 
 /** A sub-family group of items within a CartBufferGroup */
