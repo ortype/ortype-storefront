@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   IconButton as ChakraIconButton,
+  Flex,
   HStack,
   Text,
   VStack,
@@ -10,8 +11,8 @@ import { CloseIcon } from '@sanity/icons'
 import Link from 'next/link'
 import React from 'react'
 
-import { useOrderContext } from '@/commercelayer/providers/Order'
-import type { CartBufferGroup, CartBufferItem } from '.'
+import type { CartBufferGroup } from '@/commercelayer/providers/cart'
+import { useCartContext } from '@/commercelayer/providers/cart'
 import { CartItem } from './cart-item'
 
 interface CartGroupsProps {
@@ -121,7 +122,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
 }
 
 const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
-  const { toggleGroup } = useOrderContext()
+  const { toggleGroup } = useCartContext()
 
   return (
     <>
@@ -132,28 +133,40 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
           defaultVariantId,
           items,
           subGroups,
+          allSelected,
           hasSubGroups,
           discountedPriceTotal,
           fullUnitPriceTotal,
           percentageDiscount,
         }) => (
-          <VStack gap={0.5} mb={1} key={parentUid} alignItems={'stretch'}>
-            <HStack
+          <VStack
+            gap={0.5}
+            mb={1}
+            key={parentUid}
+            alignItems={'stretch'}
+            pos={'relative'}
+          >
+            <Flex
               py={2}
-              px={3}
-              bg={'brand.50'}
-              // bg={'colorPalette.bg'}
-              // boxShadow={'inset 0 0 0 2px #000'}
+              px={6}
+              bg={'colorPalette.bg'}
+              boxShadow={'inset 0 0 0 2px #000'}
               w={'full'}
               borderRadius={'full'}
+              justifyContent={'space-between'}
+              alignItems={'center'}
             >
-              <ChakraIconButton
-                variant="ghost"
-                rounded={'full'}
-                px={0}
-                size={'sm'}
-                _hover={{ bg: 'white' }}
-                aria-label="Remove group"
+              <Text
+                fontSize={'2xl'}
+                lineHeight={1}
+                as={'div'}
+                className={defaultVariantId}
+              >
+                {parentName}
+              </Text>
+              <Button
+                variant="text"
+                size="sm"
                 onClick={() =>
                   toggleGroup({
                     parentUid,
@@ -163,43 +176,80 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                     })),
                   })
                 }
-                css={{
-                  '& svg': {
-                    color: 'brand.600',
-                  },
-                }}
               >
-                <CloseIcon width={'2rem'} height={'2rem'} />
-              </ChakraIconButton>
-              <Text
-                fontSize={'2xl'}
-                lineHeight={1}
-                as={'div'}
-                className={defaultVariantId}
-              >
-                {parentName}
-              </Text>
-            </HStack>
-            {hasSubGroups
-              ? subGroups.map((sg) => (
-                  <React.Fragment key={sg.groupName}>
-                    <Box px={3} pt={2} pb={1}>
-                      <Text
-                        fontSize={'xs'}
-                        textTransform={'uppercase'}
-                        color={'#737373'}
-                      >
-                        {sg.groupName}
-                      </Text>
-                    </Box>
+                {'Clear'}
+              </Button>
+            </Flex>
+            {hasSubGroups ? (
+              subGroups.map((sg) => (
+                <React.Fragment key={sg.groupName}>
+                  <Box px={6} pt={2} pb={1}>
+                    <Text
+                      fontSize={'xs'}
+                      textTransform={'uppercase'}
+                      color={'#737373'}
+                    >
+                      {sg.groupName}
+                    </Text>
+                  </Box>
+                  <Box pos={'relative'}>
+                    {sg.allSelected && (
+                      <Box
+                        _before={{
+                          content: '""',
+                          pos: 'absolute',
+                          left: 2,
+                          top: -3,
+                          bottom: 0,
+                          w: 3,
+                          borderLeft: '2px solid #000',
+                          borderTopRadius: '4px',
+                          borderTop: '2px solid #000',
+                          // borderBottom: '2px solid #000',
+                          borderRight: '2px solid transparent',
+                          zIndex: 0,
+                        }}
+                      />
+                    )}
                     {sg.items.map((item) => (
-                      <CartItem key={item.skuCode} item={item} />
+                      <CartItem
+                        key={item.skuCode}
+                        item={item}
+                        allSelected={sg.allSelected}
+                      />
                     ))}
-                  </React.Fragment>
-                ))
-              : items.map((item) => (
-                  <CartItem key={item.skuCode} item={item} />
+                  </Box>
+                </React.Fragment>
+              ))
+            ) : (
+              <Box pos={'relative'}>
+                {allSelected && (
+                  <Box
+                    _before={{
+                      content: '""',
+                      pos: 'absolute',
+                      left: 2,
+                      top: 6,
+                      bottom: 6,
+                      w: 3,
+                      borderLeft: '2px solid #000',
+                      borderTopRadius: '4px',
+                      borderTop: '2px solid #000',
+                      borderBottom: '2px solid #000',
+                      borderRight: '2px solid transparent',
+                      zIndex: 0,
+                    }}
+                  />
+                )}
+                {items.map((item) => (
+                  <CartItem
+                    key={item.skuCode}
+                    allSelected={allSelected}
+                    item={item}
+                  />
                 ))}
+              </Box>
+            )}
             <CartGroupsFooter
               parentUid={parentUid}
               discountedPriceTotal={discountedPriceTotal}

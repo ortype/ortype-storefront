@@ -1,14 +1,9 @@
 'use client'
 import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useCartContext } from '@/commercelayer/providers/cart'
 import { useRouter } from 'next/navigation'
-
-import type {
-  SelectionBuffer,
-  StyleEntry,
-} from '@/commercelayer/providers/Order/types'
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import {
@@ -26,45 +21,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import Summary from './cart-summary'
-
-import {
-  calculateDiscount,
-  calculateLineItemPrice,
-  formatPrice,
-} from '@/commercelayer/utils/prices'
-import type { SkuOption } from '@commercelayer/sdk'
 import CartGroups from './cart-groups'
-
-/** A single cart item derived from the selection buffer */
-export interface CartBufferItem {
-  skuCode: string
-  parentUid: string
-  entry: StyleEntry
-}
-
-/** A sub-family group of items within a CartBufferGroup */
-export interface CartSubFamilyGroup {
-  groupName: string
-  items: CartBufferItem[]
-}
-
-/** A group of cart items sharing the same parentUid */
-export interface CartBufferGroup {
-  parentUid: string
-  parentName: string
-  defaultVariantId: string
-  items: CartBufferItem[]
-  /** Populated only when the font has 2+ sub-family groups with selected items */
-  subGroups: CartSubFamilyGroup[]
-  hasSubGroups: boolean
-  discountedPriceTotal: number
-  fullUnitPriceTotal: number
-  percentageDiscount: number
-}
-
-function isSelectionBufferEmpty(buffer: SelectionBuffer): boolean {
-  return Object.keys(buffer).length === 0
-}
 
 const CartComponent = () => {
   const {
@@ -74,100 +31,15 @@ const CartComponent = () => {
     isLicenseForClient,
     licenseSize,
     setLicenseSize,
-    selections,
-    groupResolutions,
-    skuOptions,
     cartLabels,
-  } = useOrderContext()
+    groupedLineItems,
+  } = useCartContext()
 
   const router = useRouter()
 
   const handleClick = () => {
     router.push(`/`)
   }
-
-  /** Resolve a style's licenseTypes refs to SkuOption objects */
-  const resolveSkuOptions = (entry: StyleEntry): SkuOption[] =>
-    (entry.licenseTypes ?? [])
-      .map((ref) => skuOptions?.find((o) => o.reference === ref))
-      .filter(Boolean) as SkuOption[]
-
-  // Build grouped cart data from the selection buffer
-  const groupedLineItems = useMemo<CartBufferGroup[]>(() => {
-    const parentUids = Object.keys(selections)
-    if (parentUids.length === 0) return []
-
-    return parentUids.map((parentUid) => {
-      const group = selections[parentUid]
-      const skuCodes = Object.keys(group)
-      const items: CartBufferItem[] = skuCodes.map((skuCode) => ({
-        skuCode,
-        parentUid,
-        entry: group[skuCode],
-      }))
-
-      const first = group[skuCodes[0]]
-      const count = items.length
-      const modifier = licenseSize?.modifier ?? 0
-
-      // Sum per-style prices using each style's own license types
-      let fullTotalCents = 0
-      let discountedTotalCents = 0
-
-      for (const { entry } of items) {
-        const styleOptions = resolveSkuOptions(entry)
-        if (styleOptions.length === 0) continue
-
-        fullTotalCents += calculateLineItemPrice({
-          skuOptions: styleOptions,
-          sizeModifier: modifier,
-          count: 1,
-        })
-        discountedTotalCents += calculateLineItemPrice({
-          skuOptions: styleOptions,
-          sizeModifier: modifier,
-          count,
-        })
-      }
-
-      // Derive sub-family groups from resolved group resolutions (mirrors
-      // typefaces.tsx hasMultipleGroups logic, using the same source data).
-      // includedSkuCodes is in interleaved display order (see resolveFontGroups),
-      // so sorting by index restores the same order as the buy page.
-      const resolvedGroups = groupResolutions[parentUid] ?? []
-      const allOrderedCodes = resolvedGroups.flatMap((rg) => rg.includedSkuCodes)
-      const skuOrder = new Map(allOrderedCodes.map((id, i) => [id, i]))
-      const sortedItems = [...items].sort(
-        (a, b) =>
-          (skuOrder.get(a.skuCode) ?? Infinity) -
-          (skuOrder.get(b.skuCode) ?? Infinity)
-      )
-
-      const subGroupsRaw: CartSubFamilyGroup[] = resolvedGroups
-        .map((rg) => ({
-          groupName: rg.groupName,
-          items: sortedItems.filter((item) =>
-            rg.includedSkuCodes.includes(item.skuCode)
-          ),
-        }))
-        .filter((sg) => sg.items.length > 0)
-      const hasSubGroups = subGroupsRaw.length > 1
-
-      return {
-        parentUid,
-        parentName: first?.parentName ?? '',
-        defaultVariantId: first?.defaultVariantId ?? '',
-        items: sortedItems,
-        subGroups: hasSubGroups ? subGroupsRaw : [],
-        hasSubGroups,
-        fullUnitPriceTotal: formatPrice(fullTotalCents),
-        percentageDiscount: count ? calculateDiscount(count) : 0,
-        discountedPriceTotal: formatPrice(discountedTotalCents),
-      }
-    })
-  }, [selections, groupResolutions, licenseSize?.modifier, skuOptions])
-
-  // @TODO: CartProvider with next/dynamic to load the cart and data only if we have an orderid
 
   const hasInitializedRef = useRef(false)
   const isReady = !isLoading && orderId && order
@@ -188,7 +60,7 @@ const CartComponent = () => {
   }
 
   // Show error if orderId is missing
-  if (!orderId || isSelectionBufferEmpty(selections)) {
+  if (!orderId || groupedLineItems.length === 0) {
     return (
       <Box pos="fixed" inset="0" bg="bg/80">
         <Center h="full">

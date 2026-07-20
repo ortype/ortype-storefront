@@ -1,4 +1,5 @@
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import type { CartBufferItem } from '@/commercelayer/providers/cart'
+import { useCartContext } from '@/commercelayer/providers/cart'
 import {
   calculateLineItemPrice,
   formatPrice,
@@ -6,6 +7,7 @@ import {
 import { Tag } from '@/components/ui/tag'
 import {
   Box,
+  Button,
   IconButton as ChakraIconButton,
   Flex,
   HStack,
@@ -21,13 +23,13 @@ import { type SkuOption } from '@commercelayer/sdk'
 import { CloseIcon } from '@sanity/icons'
 import { AnimatePresence, motion } from 'framer-motion'
 import React, { useMemo } from 'react'
-import type { CartBufferItem } from '.'
 
 interface CartItemProps {
   item: CartBufferItem
+  allSelected: boolean
 }
 
-export const CartItem: React.FC<CartItemProps> = ({ item }) => {
+export const CartItem: React.FC<CartItemProps> = ({ allSelected, item }) => {
   const {
     skuOptions,
     mediaTypes,
@@ -36,7 +38,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
     groupResolutions,
     toggleStyle,
     setStyleLicenseTypes,
-  } = useOrderContext()
+  } = useCartContext()
 
   const { skuCode, parentUid, entry } = item
 
@@ -95,12 +97,13 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const isInFullGroup = useMemo(() => {
     const resolved = groupResolutions[parentUid] ?? []
     const selectedCodes = new Set(Object.keys(selections[parentUid] ?? {}))
+    if (allSelected) return true
     return resolved.some(
       (g) =>
         g.includedSkuCodes.includes(skuCode) &&
         g.includedSkuCodes.every((code) => selectedCodes.has(code))
     )
-  }, [groupResolutions, selections, parentUid, skuCode])
+  }, [groupResolutions, selections, parentUid, skuCode, allSelected])
   const canRemove = !isInFullGroup
 
   // Optimistic price from buffer
@@ -148,26 +151,46 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   return (
     <>
-      <SimpleGrid columns={[1, null, 2]} gap={3} bg={'#F8F8F8'} p={3}>
-        <Stack direction={'row'} gap={2} alignItems={'flex-start'}>
-          <Link onClick={handleRemove} cursor={'pointer'}>
-            <ChakraIconButton
-              variant="ghost"
-              rounded={'full'}
-              disabled={!canRemove}
-              px={0}
-              size={'sm'}
-              _hover={{ bg: 'white' }}
-              aria-label="Remove"
-              css={{
-                '& svg': {
-                  color: 'brand.600',
-                },
-              }}
+      <SimpleGrid
+        columns={[1, null, 2]}
+        gap={3}
+        bg={'brand.50'}
+        p={3}
+        my={0.5}
+        ml={6}
+      >
+        <Stack
+          direction={'row'}
+          gap={2}
+          alignItems={'flex-start'}
+          pos={'relative'}
+        >
+          {!isInFullGroup && (
+            <Link
+              onClick={handleRemove}
+              cursor={'pointer'}
+              pos={'absolute'}
+              left={-10}
+              ml={-0.5}
             >
-              <CloseIcon width={'2rem'} height={'2rem'} />
-            </ChakraIconButton>
-          </Link>
+              <ChakraIconButton
+                variant="ghost"
+                rounded={'full'}
+                disabled={!canRemove}
+                px={0}
+                size={'sm'}
+                _hover={{ bg: 'transparent' }}
+                aria-label="Remove"
+                css={{
+                  '& svg': {
+                    color: 'brand.600',
+                  },
+                }}
+              >
+                <CloseIcon width={'2rem'} height={'2rem'} />
+              </ChakraIconButton>
+            </Link>
+          )}
 
           <Text
             fontSize={'2xl'}
@@ -178,7 +201,11 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
             {entry.name}
           </Text>
         </Stack>
-        <Flex direction={'row'} alignItems={'flex-start'}>
+        <Flex
+          direction={'row'}
+          alignItems={'flex-start'}
+          alignContent={'center'}
+        >
           <Box flexGrow={1}>
             <HStack gap={2} flexWrap={'wrap'} alignItems={'center'}>
               <AnimatePresence mode={'sync'} initial={false}>
@@ -192,7 +219,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                   >
                     <Tag
-                      size={'xl'}
+                      size={'md'}
                       variant={'solid'}
                       closable
                       onClose={() => handleRemoveType(value)}
@@ -205,22 +232,10 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
               {remainingOptions.length > 0 && (
                 <Menu.Root variant={'outline'} size={'md'}>
-                  <Menu.Trigger
-                    // border={0}
-                    // borderBottom={'2px solid #000'}
-                    // borderRadius={0}
-                    cursor={'pointer'}
-                    _hover={{
-                      bg: 'colorPalette.fg',
-                      color: 'colorPalette.bg',
-                    }}
-                    // borderRadius={'100px'}
-                    // _hover={{
-                    //   borderRadius: '0px',
-                    // }}
-                    transition={'background 200ms ease-out'}
-                  >
-                    Add license
+                  <Menu.Trigger asChild>
+                    <Button variant="text" size="sm" h={6}>
+                      {'Add license'}
+                    </Button>
                   </Menu.Trigger>
                   <Portal>
                     <Menu.Positioner>

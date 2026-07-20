@@ -1,55 +1,193 @@
-import CommerceLayer, {
-  type LineItem,
-  type Order,
-  type SkuOption,
-} from '@commercelayer/sdk'
-import { InvalidCartSettings } from 'CustomApp'
-import { createContext, FC, useContext, useEffect, useReducer } from 'react'
+'use client'
+import {
+  calculateDiscount,
+  calculateLineItemPrice,
+  formatPrice,
+} from '@/commercelayer/utils/prices'
+import type { CartLabels, MediaType } from '@/sanity/lib/queries'
+import type { Order, SkuOption } from '@commercelayer/sdk'
+import { createContext, FC, useContext, useMemo } from 'react'
 
-import { ActionType, reducer } from './reducer'
-
-import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import type {
+  GroupResolutions,
+  LicenseSize,
+  SelectionBuffer,
+  StyleEntry,
+} from '@/commercelayer/providers/Order/types'
+import type { CartBufferGroup, CartBufferItem, CartSubFamilyGroup } from './types'
+
+export type { CartBufferGroup, CartBufferItem, CartSubFamilyGroup } from './types'
 
 export interface CartProviderData {
-  /**
-   * When `true` it means that app is fetching content from API and is not ready to return the `Settings` object.
-   * It can be used to control the UI state.
-   */
   isLoading: boolean
-  accessToken: string
-  slug: string
-  domain: string
+  orderId?: string
+  order?: Order
+  /** Computed, sorted, grouped representation of the selection buffer */
+  groupedLineItems: CartBufferGroup[]
+  // License form — forwarded for CartComponent
+  isLicenseForClient: boolean
+  licenseSize?: LicenseSize
+  setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
+  cartLabels?: CartLabels
+  // Forwarded for CartItem / CartGroups
+  skuOptions: SkuOption[]
+  mediaTypes: MediaType[]
+  selections: SelectionBuffer
+  groupResolutions: GroupResolutions
+  toggleStyle: (params: {
+    parentUid: string
+    skuCode: string
+    styleMetadata: StyleEntry
+  }) => void
+  toggleGroup: (params: {
+    parentUid: string
+    styles: { skuCode: string; styleMetadata: StyleEntry }[]
+  }) => void
+  setStyleLicenseTypes: (params: {
+    parentUid: string
+    skuCode: string
+    licenseTypes: string[]
+  }) => void
 }
 
 interface CartProviderProps {
-  children?: JSX.Element[] | JSX.Element | null
+  children: React.ReactNode
 }
 
-export interface AppStateData {
-  isLoading: boolean
-}
+export const CartContext = createContext<CartProviderData>(
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  {} as CartProviderData
+)
 
-const initialState: AppStateData = {
-  isLoading: true,
-}
-
-export const CartContext = createContext<CartProviderData | null>(null)
+export const useCartContext = (): CartProviderData => useContext(CartContext)
 
 export const CartProvider: FC<CartProviderProps> = ({ children }) => {
   const {
-    settings: { accessToken },
-  } = useIdentityContext()
-  const { orderId } = useOrderContext()
+    isLoading,
+    orderId,
+    order,
+    isLicenseForClient,
+    licenseSize,
+    setLicenseSize,
+    cartLabels,
+    selections,
+    groupResolutions,
+    skuOptions,
+    mediaTypes,
+    toggleStyle,
+    toggleGroup,
+    setStyleLicenseTypes,
+  } = useOrderContext()
 
-  const [state, dispatch] = useReducer(reducer, initialState)
+  /** Resolve a style's licenseType refs to SkuOption objects */
+  const resolveSkuOptions = (entry: StyleEntry): SkuOption[] =>
+    (entry.licenseTypes ?? [])
+      .map((ref) => skuOptions?.find((o) => o.reference === ref))
+      .filter(Boolean) as SkuOption[]
+
+  // Build grouped, sorted, sub-grouped cart data from the selection buffer.
+  // Mirrors the buy provider's per-font derived state, but spans all fonts.
+  const groupedLineItems = useMemo<CartBufferGroup[]>(() => {
+    const parentUids = Object.keys(selections)
+    if (parentUids.length === 0) return []
+
+    return parentUids.map((parentUid) => {
+      const selectedSkus = selections[parentUid]
+      const skuCodes = Object.keys(selectedSkus)
+      const items: CartBufferItem[] = skuCodes.map((skuCode) => ({
+        skuCode,
+        parentUid,
+        entry: selectedSkus[skuCode],
+      }))
+
+      const first = selectedSkus[skuCodes[0]]
+      const count = items.length
+      const modifier = licenseSize?.modifier ?? 0
+
+      // Sum per-style prices using each style's own license types
+      let fullTotalCents = 0
+      let discountedTotalCents = 0
+
+      for (const { entry } of items) {
+        const styleOptions = resolveSkuOptions(entry)
+        if (styleOptions.length === 0) continue
+
+        fullTotalCents += calculateLineItemPrice({
+          skuOptions: styleOptions,
+          sizeModifier: modifier,
+          count: 1,
+        })
+        discountedTotalCents += calculateLineItemPrice({
+          skuOptions: styleOptions,
+          sizeModifier: modifier,
+          count,
+        })
+      }
+
+      // Sort items into Sanity display order using pre-registered group resolutions.
+      // includedSkuCodes is stored in interleaved order (see BuyProvider resolveFontGroups).
+      const resolvedGroups = groupResolutions[parentUid] ?? []
+      const allOrderedCodes = resolvedGroups.flatMap((rg) => rg.includedSkuCodes)
+      const skuOrder = new Map(allOrderedCodes.map((id, i) => [id, i]))
+      const sortedItems = [...items].sort(
+        (a, b) =>
+          (skuOrder.get(a.skuCode) ?? Infinity) -
+          (skuOrder.get(b.skuCode) ?? Infinity)
+      )
+
+      const subGroupsRaw: CartSubFamilyGroup[] = resolvedGroups
+        .map((rg) => ({
+          groupName: rg.groupName,
+          items: sortedItems.filter((item) =>
+            rg.includedSkuCodes.includes(item.skuCode)
+          ),
+          // Per-subgroup: every code in this group's spec is selected
+          allSelected:
+            rg.includedSkuCodes.length > 0 &&
+            rg.includedSkuCodes.every((code) => code in selectedSkus),
+        }))
+        .filter((sg) => sg.items.length > 0)
+      const hasSubGroups = subGroupsRaw.length > 1
+
+      // Top-level allSelected: used only when the font has no sub-groups
+      const allSelected =
+        allOrderedCodes.length > 0 &&
+        allOrderedCodes.every((code) => code in selectedSkus)
+
+      return {
+        parentUid,
+        parentName: first?.parentName ?? '',
+        defaultVariantId: first?.defaultVariantId ?? '',
+        items: sortedItems,
+        subGroups: hasSubGroups ? subGroupsRaw : [],
+        hasSubGroups,
+        allSelected,
+        fullUnitPriceTotal: formatPrice(fullTotalCents),
+        percentageDiscount: count ? calculateDiscount(count) : 0,
+        discountedPriceTotal: formatPrice(discountedTotalCents),
+      }
+    })
+  }, [selections, groupResolutions, licenseSize?.modifier, skuOptions])
 
   return (
     <CartContext.Provider
       value={{
-        ...state,
+        isLoading,
         orderId,
-        accessToken,
+        order,
+        groupedLineItems,
+        isLicenseForClient,
+        licenseSize,
+        setLicenseSize,
+        cartLabels,
+        skuOptions,
+        mediaTypes,
+        selections,
+        groupResolutions,
+        toggleStyle,
+        toggleGroup,
+        setStyleLicenseTypes,
       }}
     >
       {children}
