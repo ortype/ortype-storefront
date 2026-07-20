@@ -139,40 +139,43 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
         p={3}
         my={0.5}
         ml={6}
+        position={'relative'}
       >
+        {!isInFullGroup && (
+          <Link
+            onClick={handleRemove}
+            cursor={'pointer'}
+            pos={'absolute'}
+            left={-6}
+            top={0}
+            bottom={0}
+          >
+            <ChakraIconButton
+              variant="ghost"
+              rounded={0}
+              h={'full'}
+              minW={4}
+              disabled={!canRemove}
+              px={0}
+              size={'sm'}
+              _hover={{ bg: 'brand.50' }}
+              aria-label="Remove"
+              css={{
+                '& svg': {
+                  color: 'colorPalette.fg',
+                },
+              }}
+            >
+              <CloseIcon width={'2rem'} height={'2rem'} />
+            </ChakraIconButton>
+          </Link>
+        )}
         <Stack
           direction={'row'}
           gap={2}
           alignItems={'flex-start'}
           pos={'relative'}
         >
-          {!isInFullGroup && (
-            <Link
-              onClick={handleRemove}
-              cursor={'pointer'}
-              pos={'absolute'}
-              left={-10}
-              ml={-0.5}
-            >
-              <ChakraIconButton
-                variant="ghost"
-                rounded={'full'}
-                disabled={!canRemove}
-                px={0}
-                size={'sm'}
-                _hover={{ bg: 'transparent' }}
-                aria-label="Remove"
-                css={{
-                  '& svg': {
-                    color: 'brand.600',
-                  },
-                }}
-              >
-                <CloseIcon width={'3rem'} height={'3rem'} />
-              </ChakraIconButton>
-            </Link>
-          )}
-
           <Text
             fontSize={'2xl'}
             lineHeight={1.3}
@@ -212,9 +215,9 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
               </AnimatePresence>
 
               {remainingOptions.length > 0 && (
-                <Menu.Root variant={'outline'} size={'md'}>
+                <Menu.Root variant={'outline'} size={'sm'}>
                   <Menu.Trigger asChild>
-                    <Button variant="text" size="sm" h={6}>
+                    <Button borderRadius={0} variant="text" size="sm" h={5}>
                       {'Add license'}
                     </Button>
                   </Menu.Trigger>

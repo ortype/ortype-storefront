@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useRef } from 'react'
 
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
+import { InfoTip } from '@/components/ui/toggle-tip'
 import {
   Box,
   Button,
@@ -14,14 +15,15 @@ import {
   Fieldset,
   Flex,
   Heading,
+  HStack,
   SimpleGrid,
   Spinner,
   Stack,
   Text,
   VStack,
 } from '@chakra-ui/react'
-import Summary from './cart-summary'
 import CartGroups from './cart-groups'
+import Summary from './cart-summary'
 
 const CartComponent = () => {
   const {
@@ -97,50 +99,121 @@ const CartComponent = () => {
       </Heading>
 
       <Stack direction={'column'} gap={6}>
-        <SimpleGrid columns={[1, null, 2]} gap={3}>
-          <Fieldset.Root>
-            <FieldsetLegend info={cartLabels?.licenseHolder?.info}>
-              {cartLabels?.licenseHolder?.label || 'License holder'}
-            </FieldsetLegend>
-            <Fieldset.Content asChild>
-              <Flex
-                bg={'colorPalette.bg'}
-                justifyContent={'center'}
-                px={'3'}
-                h={11}
-                fontSize={{ base: 'lg', xl: 'md' }}
-                mt={1}
-                borderRadius={'100px'}
-                border={'2px solid #000'}
-              >
-                {isLicenseForClient
-                  ? order?.metadata?.license?.owner?.company
-                  : 'Yourself'}
+        <Stack direction={'column'} gap={1} align="start" w="full">
+          <HStack
+            justify="space-between"
+            w="full"
+            borderBottom={'1px solid #919191'}
+            fontSize={'sm'}
+            lineHeight={1}
+            py={0}
+            pl={6}
+            pr={4}
+            h={6}
+          >
+            <Text
+              minW={'10rem'}
+              fontSize={'xs'}
+              textTransform={'uppercase'}
+              fontVariantNumeric={'tabular-nums'}
+              color={'#737373'}
+              asChild
+            >
+              <Flex gap={1} alignItems={'center'}>
+                <span>
+                  {cartLabels?.licenseHolder?.label || 'License holder'}
+                </span>
+                {cartLabels?.licenseHolder?.info && (
+                  <InfoTip
+                    content={
+                      cartLabels?.licenseHolder?.info ||
+                      'This is additional information about this fieldset'
+                    }
+                  />
+                )}
               </Flex>
-            </Fieldset.Content>
-          </Fieldset.Root>
+            </Text>
+            <Box flexGrow={1} pl={4}>
+              {isLicenseForClient
+                ? order?.metadata?.license?.owner?.company
+                : 'Yourself'}
+            </Box>
+            <Button
+              variant="text"
+              size="xs"
+              // onClick={}
+              fontSize="xs"
+              px={2}
+              py={1}
+              h="auto"
+              minH="auto"
+            >
+              {'Edit'}
+            </Button>
+          </HStack>
 
           {licenseSize && (
-            <LicenseSizeSelect
-              label={cartLabels?.companySize?.label}
-              info={cartLabels?.companySize?.info}
-              setLicenseSize={setLicenseSize}
-              licenseSize={licenseSize}
-            />
+            <HStack
+              justify="space-between"
+              w="full"
+              borderBottom={'1px solid #919191'}
+              fontSize={'sm'}
+              lineHeight={1}
+              py={0}
+              pl={6}
+              pr={4}
+              h={6}
+            >
+              <Text
+                minW={'10rem'}
+                fontSize={'xs'}
+                textTransform={'uppercase'}
+                fontVariantNumeric={'tabular-nums'}
+                color={'#737373'}
+                asChild
+              >
+                <Flex gap={1} alignItems={'center'}>
+                  <span>{cartLabels?.companySize?.label}</span>
+                  <InfoTip
+                    content={
+                      cartLabels?.companySize?.info ||
+                      'This is additional information about this fieldset'
+                    }
+                  />
+                </Flex>
+              </Text>
+              <Box flexGrow={1} pl={4}>
+                {licenseSize.label}
+              </Box>
+              <Button
+                variant="text"
+                size="xs"
+                // onClick={}
+                // @TODO: open dialog with LicenseSizeList
+                // setLicenseSize={setLicenseSize}
+                fontSize="xs"
+                px={2}
+                py={1}
+                h="auto"
+                minH="auto"
+              >
+                {'Edit'}
+              </Button>
+            </HStack>
           )}
-        </SimpleGrid>
+        </Stack>
         <Box>
           <Fieldset.Root>
             <Box display={['none', null, 'flex']} w={'full'}>
-              <SimpleGrid columns={2} gap={4} mb={1} w={'full'}>
-                <FieldsetLegend info={cartLabels?.fonts?.info}>
+              <SimpleGrid columns={2} gap={4} mb={1} pl={6} pr={2} w={'full'}>
+                <FieldsetLegend px={0} info={cartLabels?.fonts?.info}>
                   {cartLabels?.fonts?.label || 'Fonts'}
                 </FieldsetLegend>
                 <Flex justifyContent={'space-between'}>
-                  <FieldsetLegend info={cartLabels?.licenseType?.info}>
+                  <FieldsetLegend px={0} info={cartLabels?.licenseType?.info}>
                     {cartLabels?.licenseType?.label || 'License Type'}
                   </FieldsetLegend>
-                  <FieldsetLegend info={cartLabels?.price?.info}>
+                  <FieldsetLegend px={0} info={cartLabels?.price?.info}>
                     <Box pr={4}>{cartLabels?.price?.label || 'Price'}</Box>
                   </FieldsetLegend>
                 </Flex>

@@ -5,12 +5,13 @@ import React from 'react'
 interface Props {
   info?: string
   children: React.ReactNode
+  px: number
 }
 
-export const FieldsetLegend: React.FC<Props> = ({ children, info }) => {
+export const FieldsetLegend: React.FC<Props> = ({ children, info, px = 3 }) => {
   return (
     <Fieldset.Legend
-      px={3}
+      px={px}
       fontSize={'xs'}
       textTransform={'uppercase'}
       fontVariantNumeric={'tabular-nums'}

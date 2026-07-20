@@ -113,23 +113,24 @@ export const menuSlotRecipe = defineSlotRecipe({
         content: {
           gap: '0',
           bg: 'none',
-          boxShadow: 'none',
+          // boxShadow: 'none',
           p: 0,
+          boxShadow: 'sm',
         },
         item: {
           justifyContent: 'flex-start',
           gap: '2',
           cursor: 'pointer',
-          bg: 'brand.50',
-          transition:
-            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
+          bg: 'colorPalette.bg',
+          borderRadius: 0,
+          transition: 'background 200ms ease-in-out',
           _hover: {
-            borderRadius: '100px',
+            // bg: 'brand.100',
           },
           _highlighted: {
-            borderRadius: '100px',
+            // borderRadius: '100px',
             // bg: 'colorPalette.bg',
-            // boxShadow: 'inset 0 0 0 2px #000',
+            boxShadow: 'inset 0 0 0 2px #000',
           },
           _disabled: {
             pointerEvents: 'none',
@@ -228,8 +229,8 @@ export const menuSlotRecipe = defineSlotRecipe({
         },
         item: {
           gap: '1',
-          textStyle: 'xs',
-          py: '1',
+          textStyle: 'sm',
+          py: '0.5',
           px: '1.5',
         },
       },

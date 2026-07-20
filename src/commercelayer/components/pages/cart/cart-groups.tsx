@@ -183,15 +183,40 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
             {hasSubGroups ? (
               subGroups.map((sg) => (
                 <React.Fragment key={sg.groupName}>
-                  <Box px={6} pt={2} pb={1}>
+                  <Flex
+                    px={6}
+                    pt={2}
+                    gap={2}
+                    minH={7}
+                    justifyContent={'flex-start'}
+                    alignItems={'center'}
+                  >
                     <Text
-                      fontSize={'xs'}
+                      as={'span'}
+                      fontSize={'sm'}
                       textTransform={'uppercase'}
                       color={'#737373'}
                     >
                       {sg.groupName}
                     </Text>
-                  </Box>
+                    {sg.allSelected && (
+                      <Button
+                        variant="text"
+                        size="xs"
+                        onClick={() =>
+                          toggleGroup({
+                            parentUid,
+                            styles: sg.items.map((item) => ({
+                              skuCode: item.skuCode,
+                              styleMetadata: item.entry,
+                            })),
+                          })
+                        }
+                      >
+                        {'Clear'}
+                      </Button>
+                    )}
+                  </Flex>
                   <Box pos={'relative'}>
                     {sg.allSelected && (
                       <Box
@@ -199,7 +224,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                           content: '""',
                           pos: 'absolute',
                           left: 2,
-                          top: -3,
+                          top: -4.5,
                           bottom: 6,
                           w: 3,
                           borderLeft: '2px solid #000',
@@ -224,8 +249,8 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                       content: '""',
                       pos: 'absolute',
                       left: 2,
-                      top: 6,
-                      bottom: 6,
+                      top: 7,
+                      bottom: 7,
                       w: 3,
                       borderLeft: '2px solid #000',
                       borderTop: '2px solid #000',
