@@ -197,7 +197,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                   >
                     <Text
                       as={'span'}
-                      fontSize={'sm'}
+                      fontSize={'md'}
                       textTransform={'uppercase'}
                       color={'#737373'}
                     >

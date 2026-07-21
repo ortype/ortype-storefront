@@ -5,6 +5,7 @@ import { useCartContext } from '@/commercelayer/providers/cart'
 import { useRouter } from 'next/navigation'
 import { useRef } from 'react'
 
+import EditLicenseMetricsDialog from '@/commercelayer/components/forms/edit-license-metrics-dialog'
 import EditLicenseOwnerDialog from '@/commercelayer/components/forms/edit-license-owner-dialog'
 import EditLicenseSizeDialog from '@/commercelayer/components/forms/edit-license-size-dialog'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -103,6 +104,91 @@ const CartComponent = () => {
       </Heading>
 
       <Stack direction={'column'} gap={6}>
+        <SimpleGrid
+          columns={2}
+          gap={3}
+          mb={1}
+          pl={6}
+          pr={4}
+          w={'full'}
+          borderBottom={'1px solid #919191'}
+        >
+          <HStack
+            justify="space-between"
+            w="full"
+            fontSize={'sm'}
+            lineHeight={1}
+            h={6}
+          >
+            <Text
+              minW={'10rem'}
+              fontSize={'xs'}
+              textTransform={'uppercase'}
+              fontVariantNumeric={'tabular-nums'}
+              color={'#737373'}
+              asChild
+            >
+              <Flex gap={1} alignItems={'center'}>
+                <span>
+                  {cartLabels?.licenseHolder?.label || 'License holder'}
+                </span>
+                {cartLabels?.licenseHolder?.info && (
+                  <InfoTip
+                    content={
+                      cartLabels?.licenseHolder?.info ||
+                      'This is additional information about this fieldset'
+                    }
+                  />
+                )}
+              </Flex>
+            </Text>
+            <Box flexGrow={1} pl={4}>
+              {isLicenseForClient
+                ? order?.metadata?.license?.owner?.company
+                : 'Yourself'}
+            </Box>
+          </HStack>
+
+          <HStack
+            justify="space-between"
+            w="full"
+            fontSize={'sm'}
+            lineHeight={1}
+            pl={2}
+            h={6}
+          >
+            <Text
+              minW={'10rem'}
+              fontSize={'xs'}
+              textTransform={'uppercase'}
+              fontVariantNumeric={'tabular-nums'}
+              color={'#737373'}
+              asChild
+            >
+              <Flex gap={1} alignItems={'center'}>
+                <span>{cartLabels?.companySize?.label}</span>
+                <InfoTip
+                  content={
+                    cartLabels?.companySize?.info ||
+                    'This is additional information about this fieldset'
+                  }
+                />
+              </Flex>
+            </Text>
+            <Box flexGrow={1} pl={4}>
+              {licenseSize?.label}
+            </Box>
+            <EditLicenseMetricsDialog
+              label={cartLabels?.companySize?.label}
+              info={cartLabels?.companySize?.info}
+              setLicenseSize={setLicenseSize}
+              isLicenseForClient={isLicenseForClient}
+            />
+          </HStack>
+        </SimpleGrid>
+
+        {/*
+          // @NOTE: two row license metrics
         <Stack direction={'column'} gap={1} align="start" w="full">
           <HStack
             justify="space-between"
@@ -149,7 +235,7 @@ const CartComponent = () => {
             />
           </HStack>
 
-          {
+          
             <HStack
               justify="space-between"
               w="full"
@@ -188,12 +274,12 @@ const CartComponent = () => {
                 setLicenseSize={setLicenseSize}
               />
             </HStack>
-          }
-        </Stack>
+          </Stack>
+        */}
         <Box>
           <Fieldset.Root>
             <Box display={['none', null, 'flex']} w={'full'}>
-              <SimpleGrid columns={2} gap={4} mb={1} pl={6} pr={2} w={'full'}>
+              <SimpleGrid columns={2} gap={5} mb={1} pl={6} pr={2} w={'full'}>
                 <FieldsetLegend px={0} info={cartLabels?.fonts?.info}>
                   {cartLabels?.fonts?.label || 'Fonts'}
                 </FieldsetLegend>
