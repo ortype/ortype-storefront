@@ -240,14 +240,15 @@ export const Buy = () => {
                 <Button
                   asChild
                   variant={'outline'}
-                  bg={'transparent'}
+                  bg={'colorPalette.fg'}
+                  color={'colorPalette.bg'}
                   borderRadius={'5rem'}
                   size={'xs'}
                   fontSize={'md'}
                   css={{
                     _hover: {
-                      bg: 'colorPalette.fg',
-                      color: 'colorPalette.bg',
+                      bg: 'transparent',
+                      color: 'colorPalette.fg',
                     },
                   }}
                 >

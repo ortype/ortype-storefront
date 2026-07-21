@@ -114,7 +114,7 @@ export const SelectItem = React.forwardRef<
       ref={ref}
       _hover={{
         '& .toggle-button': {
-          borderWidth: '3px',
+          bg: 'colorPalette.fg',
         },
       }}
     >

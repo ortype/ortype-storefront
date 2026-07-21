@@ -149,7 +149,7 @@ export const LicenseTypeList: React.FC<Props> = ({
       >
         {`Need something else?`}
         {` Please `}
-        <Text as={'span'} textDecoration={'underline'}>
+        <Text as={'span'} textDecoration={'underline'} whiteSpace={'nowrap'}>
           {'contact us'}
         </Text>
         {`.`}

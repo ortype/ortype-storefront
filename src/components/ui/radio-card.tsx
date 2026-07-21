@@ -36,13 +36,13 @@ export const RadioCardItem = React.forwardRef<
       {...rest}
       _hover={{
         '& .dot': {
-          borderWidth: '3px',
+          bg: 'colorPalette.fg',
         },
       }}
       _checked={{
         _hover: {
           '& .dot': {
-            borderWidth: '0',
+            bg: 'colorPalette.fg',
           },
         },
       }}
