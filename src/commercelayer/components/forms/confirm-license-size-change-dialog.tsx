@@ -30,7 +30,7 @@ export default function ConfirmLicenseSizeChangeDialog({
         // Treat backdrop / escape close as a cancel.
         if (!e.open) onCancel()
       }}
-      size={'sm'}
+      size={'xs'}
       placement={'center'}
       motionPreset={'slide-in-bottom'}
       role={'alertdialog'}
@@ -41,11 +41,14 @@ export default function ConfirmLicenseSizeChangeDialog({
       <DialogContent
         backdrop={false}
         portalled={false}
-        borderRadius={'l4'}
-        bg={'colorPalette.bg'}
+        // bg={'colorPalette.bg'}
         boxShadow={'lg'}
+        bg={'#FFF8D3'}
+        borderRadius={20}
+        px={4}
+        py={5}
       >
-        <DialogHeader>
+        <DialogHeader p={0} pb={2} borderBottom={'1px solid #CEC9AB'}>
           <DialogTitle
             fontSize={'2xl'}
             fontWeight={'normal'}
@@ -54,21 +57,23 @@ export default function ConfirmLicenseSizeChangeDialog({
             {'Update cart pricing?'}
           </DialogTitle>
         </DialogHeader>
-        <DialogBody>
+        <DialogBody p={0} pt={2}>
           <Text textStyle={'sm'}>
             {
               'Changing the company size updates pricing for every item in your cart. Continue?'
             }
           </Text>
         </DialogBody>
-        <DialogFooter gap={2}>
+        <DialogFooter gap={2} p={0} pt={2}>
           <Button
             onClick={onCancel}
-            variant={'outline'}
-            bg={'white'}
-            borderRadius={'5rem'}
-            size={'sm'}
-            fontSize={'md'}
+            variant="text"
+            size="xs"
+            fontSize="xs"
+            px={2}
+            py={1}
+            h="auto"
+            minH="auto"
           >
             {'Cancel'}
           </Button>
@@ -78,9 +83,10 @@ export default function ConfirmLicenseSizeChangeDialog({
             bg={'black'}
             color={'white'}
             borderRadius={'5rem'}
+            border={'2px solid #000'}
             size={'sm'}
             fontSize={'md'}
-            _hover={{ bg: 'red' }}
+            _hover={{ bg: 'transparent', color: 'colorPalette.fg' }}
           >
             {'Ok'}
           </Button>
