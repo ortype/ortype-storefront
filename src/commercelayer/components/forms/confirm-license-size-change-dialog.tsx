@@ -41,16 +41,21 @@ export default function ConfirmLicenseSizeChangeDialog({
       <DialogContent
         backdrop={false}
         portalled={false}
-        borderRadius={'l3'}
-        bg={'brand.100'}
+        borderRadius={'l4'}
+        bg={'colorPalette.bg'}
+        boxShadow={'lg'}
       >
         <DialogHeader>
-          <DialogTitle fontWeight={'normal'} textTransform={'uppercase'}>
+          <DialogTitle
+            fontSize={'2xl'}
+            fontWeight={'normal'}
+            textTransform={'uppercase'}
+          >
             {'Update cart pricing?'}
           </DialogTitle>
         </DialogHeader>
         <DialogBody>
-          <Text textStyle={'md'}>
+          <Text textStyle={'sm'}>
             {
               'Changing the company size updates pricing for every item in your cart. Continue?'
             }

@@ -1,10 +1,12 @@
 'use client'
-import { LicenseSizeSelect } from '@/commercelayer/components/forms/LicenseSizeSelect'
+
 import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { useCartContext } from '@/commercelayer/providers/cart'
 import { useRouter } from 'next/navigation'
 import { useRef } from 'react'
 
+import EditLicenseOwnerDialog from '@/commercelayer/components/forms/edit-license-owner-dialog'
+import EditLicenseSizeDialog from '@/commercelayer/components/forms/edit-license-size-dialog'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { InfoTip } from '@/components/ui/toggle-tip'
 import {
@@ -30,9 +32,11 @@ const CartComponent = () => {
     isLoading,
     orderId,
     order,
+    allLicenseInfoSet,
     isLicenseForClient,
     licenseSize,
     setLicenseSize,
+    buyLabels,
     cartLabels,
     groupedLineItems,
   } = useCartContext()
@@ -138,21 +142,14 @@ const CartComponent = () => {
                 ? order?.metadata?.license?.owner?.company
                 : 'Yourself'}
             </Box>
-            <Button
-              variant="text"
-              size="xs"
-              // onClick={}
-              fontSize="xs"
-              px={2}
-              py={1}
-              h="auto"
-              minH="auto"
-            >
-              {'Edit'}
-            </Button>
+            <EditLicenseOwnerDialog
+              label={buyLabels?.licenseHolder?.label}
+              info={buyLabels?.licenseHolder?.info}
+              isLicenseForClient={isLicenseForClient}
+            />
           </HStack>
 
-          {licenseSize && (
+          {
             <HStack
               justify="space-between"
               w="full"
@@ -183,24 +180,15 @@ const CartComponent = () => {
                 </Flex>
               </Text>
               <Box flexGrow={1} pl={4}>
-                {licenseSize.label}
+                {licenseSize?.label}
               </Box>
-              <Button
-                variant="text"
-                size="xs"
-                // onClick={}
-                // @TODO: open dialog with LicenseSizeList
-                // setLicenseSize={setLicenseSize}
-                fontSize="xs"
-                px={2}
-                py={1}
-                h="auto"
-                minH="auto"
-              >
-                {'Edit'}
-              </Button>
+              <EditLicenseSizeDialog
+                label={cartLabels?.companySize?.label}
+                info={cartLabels?.companySize?.info}
+                setLicenseSize={setLicenseSize}
+              />
             </HStack>
-          )}
+          }
         </Stack>
         <Box>
           <Fieldset.Root>
@@ -227,7 +215,10 @@ const CartComponent = () => {
         </Box>
         <VStack maxW={'60rem'}>
           <Summary />
-          <CheckoutButton orderId={orderId || ''} isDisabled={false} />
+          <CheckoutButton
+            orderId={orderId || ''}
+            isDisabled={!allLicenseInfoSet}
+          />
         </VStack>
       </Stack>
     </Container>

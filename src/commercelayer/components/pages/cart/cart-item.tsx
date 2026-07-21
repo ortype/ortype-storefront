@@ -249,7 +249,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
           >
             <HStack gap={4}>
               <Text as={'span'} fontSize={'sm'}>
-                {displayPrice} {'EUR'}
+                {displayPrice === 0 ? `–– EUR` : `${displayPrice} EUR`}
               </Text>
             </HStack>
             {displayPrice !== fullPrice && (

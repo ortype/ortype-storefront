@@ -10,23 +10,42 @@ import { useLicenseSizeChange } from './use-license-size-change'
 interface Props {
   label?: string
   info?: string
-  licenseSize: CompanySize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
+  onResolved?: (applied: boolean) => void
 }
 
 export const LicenseSizeList: React.FC<Props> = ({
   label,
   info,
   setLicenseSize,
+  onResolved,
 }) => {
   const { companySizes: sizes } = useOrderContext()
-  const { requestSizeChange, confirm, cancel, confirmOpen, displayValue } =
-    useLicenseSizeChange()
+  const {
+    requestSizeChange,
+    confirm: hookConfirm,
+    cancel: hookCancel,
+    confirmOpen,
+    displayValue,
+  } = useLicenseSizeChange({ onResolved })
 
   // Custom "50+ employees" contact dialog
   const [open, setOpen] = useState(false)
   // Local flag for the non-size "escape hatch" option (not a real LicenseSize)
   const [escapeHatch, setEscapeHatch] = useState(false)
+  // Tracks whether escape hatch was active when a new size was tentatively
+  // picked, so we can restore it if the confirm dialog is cancelled.
+  const [priorEscapeHatch, setPriorEscapeHatch] = useState(false)
+
+  const cancel = useCallback(() => {
+    setEscapeHatch(priorEscapeHatch)
+    hookCancel()
+  }, [priorEscapeHatch, hookCancel])
+
+  const confirm = useCallback(() => {
+    setPriorEscapeHatch(false)
+    hookConfirm()
+  }, [hookConfirm])
 
   // Radio reflects the escape hatch when active, otherwise the tentative
   // (pending, while the confirm dialog is open) or committed license size.
@@ -43,13 +62,14 @@ export const LicenseSizeList: React.FC<Props> = ({
         setOpen(true)
         return
       }
+      setPriorEscapeHatch(escapeHatch)
       setEscapeHatch(false)
       const selected = sizes.find((size) => size.value === value)
       // Applies immediately when the cart is empty, or opens the "all cart
       // items will be adjusted" confirm when committed items exist.
       requestSizeChange(selected)
     },
-    [setLicenseSize, sizes, requestSizeChange]
+    [setLicenseSize, sizes, requestSizeChange, escapeHatch]
   )
 
   return (
@@ -89,10 +109,6 @@ export const LicenseSizeList: React.FC<Props> = ({
               py={2}
               px={4}
               w={'full'}
-              _focus={{
-                ring: 2,
-                ringColor: 'blue.500',
-              }}
             >
               <RadioGroup.ItemHiddenInput />
               <RadioGroup.ItemIndicator />

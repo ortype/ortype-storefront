@@ -10,12 +10,10 @@ import { AnimatePresence, motion, type Variants } from 'framer-motion'
 import {
   Box,
   Button,
-  Link as ChakraLink,
   Fieldset,
   Flex,
   GridItem,
   Presence,
-  Show,
   SimpleGrid,
   Spinner,
   Text,
@@ -72,17 +70,9 @@ interface FontVariant {
   parentUid: string
 }
 
-interface FontGroup {
-  _type: string
-  groupName: string
-  variants: FontVariant[]
-  italicVariants: FontVariant[]
-}
-
 export const Buy = () => {
   const {
     selections,
-    licenseSize,
     isLicenseForClient,
     skuOptions,
     setLicenseSize,
@@ -155,7 +145,6 @@ export const Buy = () => {
               label={buyLabels?.companySize?.label}
               info={buyLabels?.companySize?.info}
               setLicenseSize={setLicenseSize}
-              licenseSize={licenseSize}
             />
           </GridItem>
           <GridItem colSpan={{ base: 2, md: 1, '2xl': 1 }}>

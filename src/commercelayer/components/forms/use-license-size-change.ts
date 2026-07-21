@@ -14,7 +14,9 @@ import { useCallback, useState } from 'react'
  * Shared by both size selectors (`LicenseSizeList` on /buy, `LicenseSizeSelect`
  * in the cart) so the behaviour stays consistent.
  */
-export function useLicenseSizeChange() {
+export function useLicenseSizeChange(opts?: {
+  onResolved?: (applied: boolean) => void
+}) {
   const { committedGroups, licenseSize, setLicenseSize } = useOrderContext()
 
   // The tentative size awaiting confirmation, and whether the dialog is open.
@@ -32,26 +34,29 @@ export function useLicenseSizeChange() {
       if (!hasCommittedItems) {
         // Nothing committed yet — apply immediately (no dialog needed).
         setLicenseSize({ licenseSize: next })
+        opts?.onResolved?.(true) // empty-cart: applied immediately
         return
       }
       // Stash the tentative size and confirm before applying.
       setPendingSize(next)
       setConfirmOpen(true)
     },
-    [hasCommittedItems, setLicenseSize]
+    [hasCommittedItems, setLicenseSize, opts]
   )
 
   const confirm = useCallback(() => {
     setLicenseSize({ licenseSize: pendingSize })
     setPendingSize(undefined)
     setConfirmOpen(false)
-  }, [pendingSize, setLicenseSize])
+    opts?.onResolved?.(true) // applied
+  }, [pendingSize, setLicenseSize, opts])
 
   const cancel = useCallback(() => {
     // Drop the tentative size; the committed size stays in effect.
     setPendingSize(undefined)
     setConfirmOpen(false)
-  }, [])
+    opts?.onResolved?.(false) // reverted
+  }, [opts])
 
   // While the dialog is open show the tentative choice; otherwise the committed
   // size. Selectors bind their value to this so Cancel cleanly reverts without

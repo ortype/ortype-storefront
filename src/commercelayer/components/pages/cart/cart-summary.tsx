@@ -92,7 +92,7 @@ const Summary = () => {
             textAlign={'right'}
             fontVariantNumeric={'tabular-nums'}
           >
-            {`${subtotal} EUR`}
+            {subtotal === null ? `–– EUR` : `${subtotal} EUR`}
           </Box>
         </SimpleGrid>
         {totalDiscount && totalDiscount > 0 && (
@@ -127,7 +127,7 @@ const Summary = () => {
             textAlign={'right'}
             fontVariantNumeric={'tabular-nums'}
           >
-            {`${displayTotal} EUR`}
+            {displayTotal === null ? `–– EUR` : `${displayTotal} EUR`}
           </Box>
         </SimpleGrid>
         <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>

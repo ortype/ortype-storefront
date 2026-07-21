@@ -11,7 +11,12 @@ interface Props {
   href?: string
 }
 
-export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
+export const CheckoutButton: React.FC<Props> = ({
+  isDisabled,
+  orderId,
+  label,
+  href,
+}) => {
   const { commitSelections, isFullyCommitted } = useOrderContext()
   const router = useRouter()
   const [isCommitting, setIsCommitting] = useState(false)
@@ -71,9 +76,13 @@ export const CheckoutButton = ({ isDisabled, orderId, label, href }) => {
           onClick={handleCheckout}
         >
           {isCommitting ? (
-            <><Spinner size={'xs'} /> {'Preparing order...'}</>
+            <>
+              <Spinner size={'xs'} /> {'Preparing order...'}
+            </>
           ) : (
-            <><LockIcon /> {label || 'Proceed to Checkout'}</>
+            <>
+              <LockIcon /> {label || 'Proceed to Checkout'}
+            </>
           )}
         </Button>
       </HStack>

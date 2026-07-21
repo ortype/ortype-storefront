@@ -5,7 +5,7 @@ import React from 'react'
 interface Props {
   info?: string
   children: React.ReactNode
-  px: number
+  px?: number
 }
 
 export const FieldsetLegend: React.FC<Props> = ({ children, info, px = 3 }) => {

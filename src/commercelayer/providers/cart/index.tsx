@@ -4,7 +4,7 @@ import {
   calculateLineItemPrice,
   formatPrice,
 } from '@/commercelayer/utils/prices'
-import type { CartLabels, MediaType } from '@/sanity/lib/queries'
+import type { BuyLabels, CartLabels, MediaType } from '@/sanity/lib/queries'
 import type { Order, SkuOption } from '@commercelayer/sdk'
 import { createContext, FC, useContext, useMemo } from 'react'
 
@@ -15,9 +15,17 @@ import type {
   SelectionBuffer,
   StyleEntry,
 } from '@/commercelayer/providers/Order/types'
-import type { CartBufferGroup, CartBufferItem, CartSubFamilyGroup } from './types'
+import type {
+  CartBufferGroup,
+  CartBufferItem,
+  CartSubFamilyGroup,
+} from './types'
 
-export type { CartBufferGroup, CartBufferItem, CartSubFamilyGroup } from './types'
+export type {
+  CartBufferGroup,
+  CartBufferItem,
+  CartSubFamilyGroup,
+} from './types'
 
 export interface CartProviderData {
   isLoading: boolean
@@ -27,8 +35,10 @@ export interface CartProviderData {
   groupedLineItems: CartBufferGroup[]
   // License form — forwarded for CartComponent
   isLicenseForClient: boolean
+  allLicenseInfoSet: boolean
   licenseSize?: LicenseSize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
+  buyLabels?: BuyLabels
   cartLabels?: CartLabels
   // Forwarded for CartItem / CartGroups
   skuOptions: SkuOption[]
@@ -67,9 +77,11 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     isLoading,
     orderId,
     order,
+    allLicenseInfoSet,
     isLicenseForClient,
     licenseSize,
     setLicenseSize,
+    buyLabels,
     cartLabels,
     selections,
     groupResolutions,
@@ -122,7 +134,9 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
       // Sort SKU codes into Sanity display order using pre-registered group resolutions.
       // includedSkuCodes is stored in interleaved order (see BuyProvider resolveFontGroups).
       const resolvedGroups = groupResolutions[parentUid] ?? []
-      const allOrderedCodes = resolvedGroups.flatMap((rg) => rg.includedSkuCodes)
+      const allOrderedCodes = resolvedGroups.flatMap(
+        (rg) => rg.includedSkuCodes
+      )
       const skuOrder = new Map(allOrderedCodes.map((id, i) => [id, i]))
       const sortedSkuCodes = [...skuCodes].sort(
         (a, b) => (skuOrder.get(a) ?? Infinity) - (skuOrder.get(b) ?? Infinity)
@@ -138,7 +152,8 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
       const fullySelectedGroupCodes = new Set<string>()
       for (const rg of resolvedGroups) {
         if (rg.includedSkuCodes.every((code) => code in selectedSkus)) {
-          for (const code of rg.includedSkuCodes) fullySelectedGroupCodes.add(code)
+          for (const code of rg.includedSkuCodes)
+            fullySelectedGroupCodes.add(code)
         }
       }
 
@@ -187,9 +202,11 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         orderId,
         order,
         groupedLineItems,
+        allLicenseInfoSet,
         isLicenseForClient,
         licenseSize,
         setLicenseSize,
+        buyLabels,
         cartLabels,
         skuOptions,
         mediaTypes,

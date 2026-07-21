@@ -30,7 +30,12 @@ export default function CustomLicenseSizeDialog({
       size={'full'}
       motionPreset={'slide-in-bottom-custom'}
     >
-      <DialogContent borderRadius={0} bg={'colorPalette.bg'} h={'100vh'}>
+      <DialogContent
+        backdrop={false}
+        borderRadius={0}
+        bg={'colorPalette.bg'}
+        h={'100vh'}
+      >
         <DialogHeader maxW={'50rem'} m={'0 auto'}>
           <DialogTitle
             textAlign={'center'}

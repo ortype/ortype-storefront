@@ -71,7 +71,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
         >{`${fullUnitPriceTotal} EUR`}</Box>
       ) : (
         // DISCOUNT
-        <HStack gap={0.5}>
+        <HStack gap={0.5} alignItems={'stretch'}>
           <VStack
             bg={'#FFF8D3'}
             borderRadius={30}
@@ -97,10 +97,14 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
               alignItems={'flex-end'}
               fontVariantNumeric={'tabular-nums'}
               pr={2}
+              whiteSpace={'nowrap'}
+              flex={'1 0 0'}
             >
               <HStack gap={4}>
                 <Text as={'span'} fontSize={'lg'}>
-                  {discountedPriceTotal} {'EUR'}
+                  {discountedPriceTotal === 0
+                    ? `–– EUR`
+                    : `${discountedPriceTotal} EUR`}
                 </Text>
               </HStack>
               {discountedPriceTotal !== fullUnitPriceTotal && (

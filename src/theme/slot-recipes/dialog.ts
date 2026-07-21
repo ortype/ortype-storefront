@@ -190,9 +190,6 @@ export const dialogSlotRecipe = defineSlotRecipe({
         },
       },
       full: {
-        backdrop: {
-          backdropFilter: 'none',
-        },
         content: {
           maxW: '100vw',
           minH: '100vh',
