@@ -9,6 +9,7 @@ import { SingleStyles } from './single-styles'
 
 import { FontFull } from './font-full'
 import { FontGroup } from './font-group'
+import FontItem from './font-item'
 
 interface FontVariant {
   _id: string
@@ -78,87 +79,12 @@ export const Typefaces = () => {
         onToggle={() => toggleGroup(font.variants.map(variantToggleParams))}
       />
       {mergedData.map((group) => (
-        <Flex
+        <FontItem
           key={group.groupName}
-          direction={'column'}
-          mb={0.5}
-          gap={0}
-          asChild
-        >
-          <Collapsible.Root defaultOpen={hasMultipleGroups ? false : true}>
-            {/* Only show the sub-group header when the font has multiple groups */}
-            {hasMultipleGroups && (
-              <HStack gap={1}>
-                <Collapsible.Trigger>
-                  <Collapsible.Context>
-                    {({ open }) => (
-                      <Box fontSize={'2rem'} w={8} ml={-1}>
-                        {open ? <ChevronDownIcon /> : <ChevronRightIcon />}
-                      </Box>
-                    )}
-                  </Collapsible.Context>
-                </Collapsible.Trigger>
-
-                <FontGroup
-                  name={font.shortName + ' ' + group.groupName}
-                  group={group}
-                  summary={groupSummaries[group.groupName]}
-                  onToggle={() =>
-                    toggleGroup(
-                      (group.allVariants || []).map(variantToggleParams)
-                    )
-                  }
-                />
-              </HStack>
-            )}
-            <Collapsible.Content pl={hasMultipleGroups ? 8 : 0} asChild>
-              <VStack
-                mt={groupSummaries[group.groupName]?.allSelected ? 0 : 0.5}
-                gap={0.5}
-                w={'full'}
-                alignItems={'stretch'}
-                pos={'relative'}
-              >
-                {groupSummaries[group.groupName]?.allSelected && (
-                  <Box
-                    _before={{
-                      content: '""',
-                      pos: 'absolute',
-                      left: hasMultipleGroups ? 14 : 6,
-                      top: 5,
-                      bottom: 5,
-                      w: 3,
-                      borderLeft: '2px solid #000',
-                      borderRadius: '4px',
-                      borderTop: '2px solid #000',
-                      borderBottom: '2px solid #000',
-                      borderRight: '2px solid transparent',
-                      zIndex: 0,
-                    }}
-                  />
-                )}
-                {group.allVariants?.map((variant) => {
-                  if (!variant) return null
-                  const groupFullySelected =
-                    groupSummaries[group.groupName]?.allSelected ?? false
-                  return (
-                    <SingleStyles
-                      key={variant._id}
-                      skuCode={variant._id}
-                      className={variant._id}
-                      name={`${font.shortName} ${variant.optionName}`}
-                      isSelected={!!selectedSkus[variant._id]}
-                      allSelected={groupFullySelected}
-                      unitPrice={summary.unitPrice}
-                      nextUnitPrice={summary.nextUnitPrice}
-                      onToggle={() => toggleStyle(variantToggleParams(variant))}
-                    />
-                  )
-                })}
-              </VStack>
-            </Collapsible.Content>
-          </Collapsible.Root>
-        </Flex>
+          group={group}
+          hasMultipleGroups={hasMultipleGroups}
+          variantToggleParams={variantToggleParams}
+        />
       ))}
     </Flex>
   ) : (
