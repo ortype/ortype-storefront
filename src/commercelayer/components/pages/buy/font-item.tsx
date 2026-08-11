@@ -128,7 +128,7 @@ export const FontItem: React.FC<Props> = ({
                     bottom: 5,
                     w: 3,
                     borderLeft: '2px solid #000',
-                    borderRadius: '4px',
+                    borderRadius: '0',
                     borderTop: '2px solid #000',
                     borderBottom: '2px solid #000',
                     borderRight: '2px solid transparent',

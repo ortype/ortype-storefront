@@ -44,7 +44,8 @@ export const SingleStyles: React.FC<Props> = ({
           : {
               borderRadius: '100px',
               '& .toggle-button': {
-                bg: 'colorPalette.fg',
+                // bg: 'colorPalette.fg',
+                borderWidth: '3px',
               },
             }
       }

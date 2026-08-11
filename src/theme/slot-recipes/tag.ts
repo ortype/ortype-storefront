@@ -22,8 +22,8 @@ export const tagSlotRecipe = defineSlotRecipe({
       alignItems: 'center',
       justifyContent: 'center',
       outline: '0',
-      borderRadius: 'l1',
       color: 'currentColor',
+      borderRadius: 'full',
       focusVisibleRing: 'inside',
       focusRingWidth: '2px',
     },
@@ -72,11 +72,11 @@ export const tagSlotRecipe = defineSlotRecipe({
           minH: '5',
           gap: '1',
           '--tag-avatar-size': 'spacing.3.5',
-          '--tag-element-size': 'spacing.3.5',
+          '--tag-element-size': 'spacing.3',
           '--tag-element-offset': '-2px',
         },
         label: {
-          textStyle: 'sm',
+          textStyle: 'xs',
         },
       },
       lg: {

@@ -159,14 +159,14 @@ export const TieredSelect: React.FC<Props> = (props) => {
       {styleGroups.length > 1 && (
         <SelectRoot
           variant={'outline'}
-          size={'sm'}
-          fontSize={'md'}
+          size={'xs'}
+          fontSize={'sm'}
           collection={groupCollection}
           value={[selectedGroup]}
           onValueChange={useCallback((e) => setSelectedGroup(e.value[0]), [])}
         >
           <SelectTrigger>
-            <SelectValueText fontSize={'md'} placeholder="Select group" />
+            <SelectValueText fontSize={'sm'} placeholder="Select group" />
           </SelectTrigger>
           <SelectContent>
             {groupCollection.items.map((item) => (
@@ -174,7 +174,7 @@ export const TieredSelect: React.FC<Props> = (props) => {
                 size={'sm'}
                 item={item}
                 key={item.value}
-                fontSize={'md'}
+                fontSize={'sm'}
               >
                 {item.label}
               </SelectItem>
@@ -186,7 +186,7 @@ export const TieredSelect: React.FC<Props> = (props) => {
       {/* Variant Select */}
       <SelectRoot
         variant={'outline'}
-        size={'sm'}
+        size={'xs'}
         collection={variantCollection}
         value={[currentVariantId]}
         onValueChange={useCallback(
@@ -197,7 +197,7 @@ export const TieredSelect: React.FC<Props> = (props) => {
         )}
       >
         <SelectTrigger>
-          <SelectValueText placeholder="Select style" fontSize={'md'} />
+          <SelectValueText placeholder="Select style" fontSize={'sm'} />
         </SelectTrigger>
         <SelectContent>
           {variantCollection.items.map((item) => (
@@ -205,7 +205,7 @@ export const TieredSelect: React.FC<Props> = (props) => {
               size={'sm'}
               item={item}
               key={item.value}
-              fontSize={'md'}
+              fontSize={'sm'}
             >
               {item.label}
             </SelectItem>

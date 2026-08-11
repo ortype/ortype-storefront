@@ -2,8 +2,8 @@ import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
 import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'
 import React, { useCallback, useState } from 'react'
-import CustomLicenseSizeDialog from '../pages/buy/custom-license-size'
 import ConfirmLicenseSizeChangeDialog from './confirm-license-size-change-dialog'
+import CustomLicenseMetricDialog from './custom-license-metric'
 import { useLicenseSizeChange } from './use-license-size-change'
 
 interface Props {
@@ -103,6 +103,9 @@ export const LicenseSizeList: React.FC<Props> = ({
               </RadioGroup.Item>
             ))}
             <RadioGroup.Item
+              disabled
+              cursor={'pointer'}
+              onClick={() => setOpen(true)}
               key={'escapeHatch'}
               value={'escapeHatch'}
               py={2}
@@ -120,7 +123,7 @@ export const LicenseSizeList: React.FC<Props> = ({
           </VStack>
         </Fieldset.Content>
       </RadioGroup.Root>
-      <CustomLicenseSizeDialog open={open} setOpen={setOpen} />
+      <CustomLicenseMetricDialog open={open} setOpen={setOpen} />
       <ConfirmLicenseSizeChangeDialog
         open={confirmOpen}
         onCancel={cancel}

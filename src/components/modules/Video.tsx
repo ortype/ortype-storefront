@@ -18,6 +18,7 @@ interface VideoValue {
   aspectRatio?: number
   videoUrl?: string
   poster?: string
+  constrainHeight?: boolean
 }
 
 interface VideoProps {
@@ -42,6 +43,7 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
     aspectRatio,
     videoUrl,
     poster,
+    constrainHeight = false,
   } = value as VideoValue
 
   const [videoId, setVideoId] = useState<string | null>(null)
@@ -67,8 +69,10 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
   // Page layout: 680x930 design units, 46px margin on each side
   // @TODO: pass down these values from Dimensions Context
   const pageMargin = 46
-  const contentWidth = (680 - pageMargin * 2) * conversion
-  const contentHeight = (930 - pageMargin * 2) * conversion
+  const contentWidth = (680 - pageMargin * 4) * conversion
+  const contentHeight = (930 - pageMargin * 4) * conversion
+
+  console.log({ size })
 
   let videoWidth: number
   let videoHeight: number

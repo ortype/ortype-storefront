@@ -26,7 +26,7 @@ export const resolve: PresentationPluginOptions['resolve'] = {
     },
   ]),
   locations: {
-    // @TODO: review this functionality
+    // @TODO: review this functionality (use recently updated A-Frame project as a ref)
     post: defineLocations({
       select: {
         title: 'title',

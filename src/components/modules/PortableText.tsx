@@ -60,6 +60,7 @@ export default function CustomPortableText({
         <Box
           pos={'relative'}
           overflow={'hidden'}
+          marginY={'auto'}
           css={{
             '& > div > div > div': { position: 'inherit !important' },
           }}

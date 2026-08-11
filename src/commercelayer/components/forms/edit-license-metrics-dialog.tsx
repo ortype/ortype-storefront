@@ -78,7 +78,10 @@ export default function EditLicenseMetricsDialog({
           <Container maxW={'30rem'}>
             <VStack gap={4}>
               <Box w={'full'}>
-                <LicenseOwnerRadio label={label} info={info} />
+                <LicenseOwnerRadio
+                  label={'License holder'}
+                  info={'The license owner is the business entity...'}
+                />
                 {isLicenseForClient && (
                   <Box my={2}>
                     <LicenseOwnerInput

@@ -33,12 +33,13 @@ export const FontFull: React.FC<Props> = ({
       justifyContent={'space-between'}
       bg={allSelected ? 'colorPalette.bg' : 'brand.50'}
       boxShadow={allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
-      borderRadius={allSelected ? '100px' : '0px'}
+      borderRadius={allSelected ? '0px' : '100px'}
       cursor={'pointer'}
       _hover={{
-        borderRadius: '100px',
+        borderRadius: '0px',
         '& .toggle-button': {
-          bg: 'colorPalette.fg',
+          // bg: 'colorPalette.fg',
+          borderWidth: '3px',
         },
       }}
       onClick={handleClick}

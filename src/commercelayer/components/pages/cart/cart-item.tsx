@@ -132,52 +132,30 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   return (
     <>
-      <SimpleGrid
-        columns={[1, null, 2]}
-        gap={3}
-        bg={'brand.50'}
-        p={3}
-        my={0.5}
-        ml={6}
-        position={'relative'}
-      >
-        {!isInFullGroup && (
-          <Link
-            onClick={handleRemove}
-            cursor={'pointer'}
-            pos={'absolute'}
-            left={-6}
-            top={0}
-            bottom={0}
-          >
-            <ChakraIconButton
-              variant="ghost"
-              rounded={0}
-              h={'full'}
-              minW={4}
-              disabled={!canRemove}
-              px={0}
-              size={'sm'}
-              _hover={{ bg: 'brand.50' }}
-              aria-label="Remove"
-              css={{
-                '& svg': {
-                  color: 'colorPalette.fg',
-                },
-              }}
-            >
-              <CloseIcon width={'2rem'} height={'2rem'} />
-            </ChakraIconButton>
-          </Link>
-        )}
-        <Stack
-          direction={'row'}
-          gap={2}
-          alignItems={'flex-start'}
-          pos={'relative'}
-        >
+      <SimpleGrid columns={[1, null, 2]} bg={'#F8F8F8'} my={0.5} gap={3} p={3}>
+        <Stack direction={'row'} gap={2} bg={'#F8F8F8'} alignItems={'center'}>
+          {!isInFullGroup && (
+            <Link onClick={handleRemove} cursor={'pointer'} ml={-1}>
+              <ChakraIconButton
+                variant="ghost"
+                rounded={'full'}
+                disabled={!canRemove}
+                px={0}
+                size={'sm'}
+                _hover={{ bg: 'white' }}
+                aria-label="Remove"
+                css={{
+                  '& svg': {
+                    color: 'brand.600',
+                  },
+                }}
+              >
+                <CloseIcon width={'2rem'} height={'2rem'} />
+              </ChakraIconButton>
+            </Link>
+          )}
           <Text
-            fontSize={'2xl'}
+            fontSize={'lg'}
             lineHeight={1.3}
             as={'span'}
             className={skuCode}
@@ -185,11 +163,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
             {entry.name}
           </Text>
         </Stack>
-        <Flex
-          direction={'row'}
-          alignItems={'flex-start'}
-          alignContent={'center'}
-        >
+        <Flex direction={'row'} alignItems={'center'} alignContent={'center'}>
           <Box flexGrow={1}>
             <HStack gap={2} flexWrap={'wrap'} alignItems={'center'}>
               <AnimatePresence mode={'sync'} initial={false}>
@@ -217,7 +191,27 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
               {remainingOptions.length > 0 && (
                 <Menu.Root variant={'outline'} size={'sm'}>
                   <Menu.Trigger asChild>
-                    <Button borderRadius={0} variant="text" size="sm" h={5}>
+                    <Button
+                      borderRadius={0}
+                      variant="text"
+                      size="sm"
+                      fontSize={'xs'}
+                      color={'#737373'}
+                      textDecorationColor={'transparent'}
+                      _hover={{
+                        color: 'black',
+                        textDecorationColor: 'black',
+                        textUnderlineOffset: '3px',
+                        textDecorationThickness: '2px',
+                      }}
+                      _expanded={{
+                        color: 'black',
+                        textDecorationColor: 'black',
+                        textUnderlineOffset: '3px',
+                        textDecorationThickness: '2px',
+                      }}
+                      h={5}
+                    >
                       {'Add license'}
                     </Button>
                   </Menu.Trigger>
@@ -248,7 +242,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
             pr={3}
           >
             <HStack gap={4}>
-              <Text as={'span'} fontSize={'sm'}>
+              <Text as={'span'} fontSize={'xs'} lineHeight={0.8}>
                 {displayPrice === 0 ? `–– EUR` : `${displayPrice} EUR`}
               </Text>
             </HStack>
@@ -256,7 +250,8 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
               <Text
                 as={'span'}
                 textDecoration={'line-through'}
-                fontSize={'sm'}
+                fontSize={'xs'}
+                lineHeight={1}
                 color={'brand.400'}
               >
                 {fullPrice} {'EUR'}

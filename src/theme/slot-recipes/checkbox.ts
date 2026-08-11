@@ -116,7 +116,8 @@ export const checkboxSlotRecipe = defineSlotRecipe({
           borderWidth: '2px',
           borderColor: 'colorPalette.fg',
           _hover: {
-            bg: 'colorPalette.fg',
+            // bg: 'colorPalette.fg',
+            borderWidth: '3px',
           },
           '&:is([data-state=checked], [data-state=indeterminate])': {
             color: 'colorPalette.fg',

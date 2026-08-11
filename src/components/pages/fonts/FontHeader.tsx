@@ -63,6 +63,7 @@ export default function FontHeader({
         <Video
           value={video}
           style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+          constrainHeight={true}
         />
       </Box>
     </Box>

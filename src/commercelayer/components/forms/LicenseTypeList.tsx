@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 import { SkuOption } from '@commercelayer/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
-import CustomLicenseType from '../pages/buy/custom-license-type'
+import CustomLicenseMetricDialog from './custom-license-metric'
 
 interface Props {
   label?: string
@@ -154,7 +154,14 @@ export const LicenseTypeList: React.FC<Props> = ({
         </Text>
         {`.`}
       </Text>
-      <CustomLicenseType open={open} setOpen={setOpen} />
+      <CustomLicenseMetricDialog
+        open={open}
+        setOpen={setOpen}
+        title={'Need something else?'}
+        body={
+          'Write us at info@ortype.is with details about the media you would like to use these fonts for!'
+        }
+      />
     </>
   )
 }

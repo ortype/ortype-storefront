@@ -113,9 +113,9 @@ export const menuSlotRecipe = defineSlotRecipe({
         content: {
           gap: '0',
           bg: 'none',
-          // boxShadow: 'none',
+          // boxShadow: 'sm',
+          boxShadow: 'none',
           p: 0,
-          boxShadow: 'sm',
         },
         item: {
           justifyContent: 'flex-start',
@@ -229,8 +229,8 @@ export const menuSlotRecipe = defineSlotRecipe({
         },
         item: {
           gap: '1',
-          textStyle: 'sm',
-          py: '0.5',
+          textStyle: 'xs',
+          py: '1',
           px: '1.5',
         },
       },
