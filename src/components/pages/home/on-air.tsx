@@ -19,6 +19,7 @@ interface VerticalTextProps extends BoxProps {
   letterSpacing?: string | number // Custom letter spacing
   color?: string
   fontSize?: string | number | object // Support responsive fontSize
+  wordSpacing?: string | number // Vertical size rendered in place of whitespace
 }
 
 export const VerticalText: FC<VerticalTextProps> = ({
@@ -26,6 +27,7 @@ export const VerticalText: FC<VerticalTextProps> = ({
   letterSpacing = '0.2em',
   color,
   fontSize,
+  wordSpacing = '0.4em',
   ...props
 }) => {
   return (
@@ -34,20 +36,32 @@ export const VerticalText: FC<VerticalTextProps> = ({
       gridAutoFlow="row"
       gap={letterSpacing}
       justifyContent="center"
+      aria-label={text}
       {...props}
     >
-      {text.split('').map((char, index) => (
-        <Span
-          key={`${char}-${index}`}
-          color={color}
-          fontSize={fontSize}
-          textAlign="center"
-          textTransform={'uppercase'}
-          fontFamily={'Alltaf-Bold'}
-        >
-          {char}
-        </Span>
-      ))}
+      {Array.from(text).map((char, index) =>
+        // Whitespace can't be rendered as a glyph in a grid row, so replace it
+        // with an empty spacer to keep words visually separated.
+        /\s/.test(char) ? (
+          <Box
+            key={`space-${index}`}
+            aria-hidden="true"
+            height={wordSpacing}
+          />
+        ) : (
+          <Span
+            key={`${char}-${index}`}
+            aria-hidden="true"
+            color={color}
+            fontSize={fontSize}
+            textAlign="center"
+            textTransform={'uppercase'}
+            fontFamily={'Alltaf-Bold'}
+          >
+            {char}
+          </Span>
+        )
+      )}
     </Box>
   )
 }
