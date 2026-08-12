@@ -17,7 +17,7 @@ const imageFields = `
   "blurDataUrl": asset->metadata.lqip    
 `
 
-const postFields = defineQuery(`
+const postFields = `
   _id,
   title,
   "slug": slug.current,
@@ -46,7 +46,7 @@ const postFields = defineQuery(`
   },
   excerpt,
   content
-`)
+`
 
 export const PAGES_SLUGS_QUERY = defineQuery(`
 *[_type == "page" && defined(slug.current)] {
@@ -178,7 +178,7 @@ export const uiLabelsQuery = defineQuery(`
 }
 `)
 
-const fontFields = defineQuery(`
+const fontFields = `
   _id,
   _type,
   name,
@@ -212,9 +212,9 @@ const fontFields = defineQuery(`
     variants[]->{_id, optionName},
     italicVariants[]->{_id, optionName}
   },
-`)
+`
 
-const fontVariantFields = defineQuery(`
+const fontVariantFields = `
   _id,
   _type,
   name,
@@ -224,7 +224,7 @@ const fontVariantFields = defineQuery(`
   parentUid,
   version,
   metafields[]{key, value}
-`)
+`
 
 export const fontSlugsQuery = defineQuery(`
 *[_type == "font" && defined(slug.current)][].slug.current

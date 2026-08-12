@@ -87,7 +87,27 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
         field: {
           bg: 'transparent',
           color: 'fg',
-          focusRingWidth: '2px',
+          focusRingWidth: '0',
+          borderRadius: 'none',
+          borderBottomWidth: '2px',
+          borderBottomColor: 'black',
+          _focus: {
+            borderBottomColor: 'black',
+          },
+          // Size the field to the selected value instead of the widest
+          // option. Scoped behind `@supports` so browsers without native
+          // `field-sizing` support (Safari/Firefox) keep `minWidth: 0` from
+          // the base styles — otherwise `minWidth: fit-content` resolves via
+          // the same widest-option quirk we're avoiding, and clamps out the
+          // JS-measured width the fallback sets inline.
+          '@supports (field-sizing: content)': {
+            width: 'fit-content',
+            minWidth: 'fit-content',
+            fieldSizing: 'content',
+          },
+        },
+        indicator: {
+          color: 'black',
         },
       },
     },
@@ -106,7 +126,7 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
       },
       sm: {
         field: {
-          textStyle: 'sm',
+          textStyle: 'md',
           ps: '2.5',
           pe: '8',
           height: '8',

@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import Editable from './Editable'
 import { TieredSelect } from './TieredSelect'
 import TypingIndicator from './TypingIndicator'
+import { TieredNativeSelect } from './tiered-native-select'
 
 interface Props {
   title: string
@@ -242,13 +243,17 @@ export const Tester: React.FC<Props> = (props) => {
           </Button>
           {variants.length > 1 && (
             <HStack gap={6} display={table ? 'none' : 'flex'}>
-              <TieredSelect
+              <TieredNativeSelect
+                currentVariantId={currentVariantId}
+                styleGroups={styleGroups}
+                handleVariantChange={handleVariantChange}
+              />
+              {/*<TieredSelect
                 currentVariantId={currentVariantId}
                 variants={variants}
                 styleGroups={styleGroups}
                 handleVariantChange={handleVariantChange}
-                tabIndex={-1} /* Prevent tab focus */
-              />
+                tabIndex={-1}              />*/}
             </HStack>
           )}
           <Button
