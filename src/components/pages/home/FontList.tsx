@@ -1,5 +1,6 @@
 'use client'
 import { Tester } from '@/components/composite/Tester'
+import { getTesterSizes } from '@/components/composite/Tester/tester-sizing'
 import type { Font } from '@/sanity/lib/queries'
 import { resolveHref } from '@/sanity/lib/utils'
 import { Box, Flex, SegmentGroup, Wrap, WrapItem } from '@chakra-ui/react'
@@ -46,27 +47,7 @@ export default function FontIndex({
                     }
                   : '100%'
               }
-              fontSize={
-                table
-                  ? {
-                      base: '2rem',
-                      sm: '3rem',
-                      '2xl': '3.25rem',
-                      '3xl': '4rem',
-                    }
-                  : '8rem'
-              }
-              lineHeight={
-                table
-                  ? {
-                      base: '3rem',
-                      sm: '4rem',
-                      '2xl': '4.25rem',
-                      '3xl': '5rem',
-                    }
-                  : '10rem'
-              }
-              pt={table ? '4rem' : '2rem'}
+              css={getTesterSizes(table)}
               flexDirection={'column'}
               alignItems={'center'}
               _hover={{

@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
+import { getTesterSizes } from '../tester-sizing'
 import BlinkingCursor from './blinking-cursor'
 
 // TypewriterAnimation component for animation phase
@@ -53,16 +54,7 @@ const TypewriterAnimation = ({
       display="flex"
       justifyContent="center"
       alignItems="center"
-      height={
-        table
-          ? {
-              base: '3rem',
-              sm: '4rem',
-              '2xl': '4.25rem',
-              '3xl': '5rem',
-            }
-          : '10rem'
-      }
+      height={getTesterSizes(table).lineHeight}
       width="100%"
     >
       <Box

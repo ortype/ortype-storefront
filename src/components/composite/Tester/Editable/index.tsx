@@ -1,5 +1,6 @@
 import { ActionBar, Box, Kbd, Portal, Text } from '@chakra-ui/react'
 import { useState } from 'react'
+import { getTesterSizes } from '../tester-sizing'
 import BlinkingCursor from './blinking-cursor'
 import TypewriterAnimation from './typewriter-animation'
 
@@ -82,10 +83,10 @@ const Editable = ({
           ) : (
             // Show input component after animation completes
             <Box
+              as={'input'}
               animation={limiter ? `nudge` : undefined}
               animationDuration={'0.2s'}
               animationTimingFunction={'ease-in-out'}
-              as={'input'}
               css={{
                 textAlign: `center`,
                 fontSize: 'inherit',
@@ -101,6 +102,7 @@ const Editable = ({
                   outline: `none`,
                 },
               }}
+              h={getTesterSizes(table).lineHeight}
               className={variantId}
               tabIndex={index} // Sequential tabIndex for navigating between inputs
               spellCheck={false}
@@ -126,16 +128,7 @@ const Editable = ({
           display="flex"
           justifyContent="center"
           alignItems="center"
-          height={
-            table
-              ? {
-                  base: '3rem',
-                  sm: '4rem',
-                  '2xl': '4.25rem',
-                  '3xl': '5rem',
-                }
-              : '10rem'
-          }
+          height={getTesterSizes(table).lineHeight}
         >
           <BlinkingCursor
             table={table}

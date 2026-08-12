@@ -17,7 +17,7 @@ import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Editable from './Editable'
-import { TieredSelect } from './TieredSelect'
+// import { TieredSelect } from './TieredSelect'
 import TypingIndicator from './TypingIndicator'
 import { TieredNativeSelect } from './tiered-native-select'
 
@@ -34,6 +34,7 @@ interface Props {
   }[]
   defaultVariantId: string
   href: string
+  table: boolean
   encodeDataAttribute?: EncodeDataAttributeCallback
 }
 
@@ -207,7 +208,7 @@ export const Tester: React.FC<Props> = (props) => {
 
   const disabled =
     isEditing?.length > 0 && isEditing !== sessionStorage.getItem('sessionId')
-  if (disabled) return <TypingIndicator />
+  if (disabled) return <TypingIndicator table={table} />
   // console.log('GET_FONT_TESTER_BY_ID: ', fontId, title, data?.fontTesterById)
   return (
     <>
