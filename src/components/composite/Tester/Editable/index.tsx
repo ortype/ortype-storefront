@@ -16,6 +16,8 @@ const Editable = ({
   limiter,
   loading,
   table,
+  focused,
+  setFocused,
   ...props
 }) => {
   const [hasInitialized, setHasInitialized] = useState(false)
@@ -26,8 +28,6 @@ const Editable = ({
   const handleAnimationComplete = () => {
     setHasInitialized(true)
   }
-
-  const [focused, setFocused] = useState(false)
 
   const handleBlur = () => {
     setFocused(false)
@@ -138,23 +138,17 @@ const Editable = ({
           />
         </Box>
       )}
-      <ActionBar.Root open={focused} closeOnInteractOutside={false} size={'sm'}>
+      {/*<ActionBar.Root open={focused} closeOnInteractOutside={false} size={'sm'}>
         <Portal>
           <ActionBar.Positioner>
             <ActionBar.Content>
               <ActionBar.SelectionTrigger>
                 {`${entry.length}/10 characters`}
               </ActionBar.SelectionTrigger>
-              {/*<ActionBar.Separator />
-              <Text fontSize={'sm'}>
-                Press <Kbd size={'sm'}>return</Kbd> to{' '}
-                <Kbd size={'sm'}>esc</Kbd> to exit and{' '}
-                <Kbd size={'sm'}>tab</Kbd> for next
-              </Text>*/}
             </ActionBar.Content>
           </ActionBar.Positioner>
         </Portal>
-      </ActionBar.Root>
+      </ActionBar.Root>*/}
     </Box>
   )
 }

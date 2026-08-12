@@ -55,6 +55,7 @@ export const Tester: React.FC<Props> = (props) => {
 
   // is controlled by the focus and blur events of the input
   const [isEditing, setEditing] = useState('')
+  const [focused, setFocused] = useState(false)
   const [entry, setEntry] = useState('')
   const [placeholder, setPlaceholder] = useState(undefined)
   const [currentVariantId, setVariantId] = useState(defaultVariantId)
@@ -224,9 +225,11 @@ export const Tester: React.FC<Props> = (props) => {
         isDisabled={disabled}
         loading={loading}
         limiter={limiter}
+        focused={focused}
+        setFocused={setFocused}
       />
-      <Flex align={'center'} justify={'center'} h={'2rem'} pos={'relative'}>
-        <HStack gap={6}>
+      <Flex align={'center'} justify={'center'} h={'2rem'}>
+        <HStack gap={6} pos={'relative'}>
           <Button
             variant={'block'}
             size={table ? 'xs' : 'sm'}
@@ -257,25 +260,37 @@ export const Tester: React.FC<Props> = (props) => {
                 tabIndex={-1}              />*/}
             </HStack>
           )}
-          <Button
-            // @TODO: look into how to set this up in button.ts
-            opacity={0}
-            pointerEvents={'none'}
-            pos={'absolute'}
-            left={'100%'}
-            ml={6}
-            className={'buy-button'}
-            bg={'red'}
-            color={'white'}
-            size={table ? 'xs' : 'sm'}
-            fontSize={'lg'}
-            px={'0.75rem'}
-            minW={'auto'}
-            borderRadius={'3rem'}
-            asChild
-          >
-            <Link href={`/fonts/${slug}/buy`}>{`Buy`}</Link>
-          </Button>
+          <HStack pos={'absolute'} left={'100%'} gap={4}>
+            <Button
+              // @TODO: look into how to set this up in button.ts
+              opacity={focused ? 1 : 0}
+              pointerEvents={'none'}
+              ml={6}
+              className={'buy-button'}
+              bg={'white'}
+              color={'black'}
+              size={table ? 'xs' : 'sm'}
+              fontSize={'md'}
+              px={'0.75rem'}
+              minW={'auto'}
+              borderRadius={'3rem'}
+              border={'2px solid black'}
+              _hover={{
+                bg: 'black',
+                color: 'white',
+              }}
+              asChild
+            >
+              <Link href={`/fonts/${slug}/buy`}>{`Buy`}</Link>
+            </Button>
+            <Text
+              as={'div'}
+              color={entry.length === 10 ? 'red' : '#737373'}
+              fontSize={'xs'}
+              display={focused && entry.length > 5 ? 'block' : 'none'}
+            >{`${entry.length}/10`}</Text>
+          </HStack>
+
           {/*<Box display={table ? 'none' : 'flex'}>
             <ChakraLink
               as={Link}
