@@ -47,9 +47,9 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
               pos={'relative'}
             >
               <HStack
-                position={'sticky'}
-                top={'0.5rem'}
-                zIndex={'docked'}
+                // position={'sticky'}
+                // top={'0.5rem'}
+                // zIndex={'docked'}
                 py={2}
                 px={2}
                 bg={'brand.50'}
@@ -112,9 +112,25 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                     </Flex>
                     <Box pos={'relative'}>
                       {sg.allSelected && (
+                        <Box
+                          _before={{
+                            content: '""',
+                            pos: 'absolute',
+                            left: -5,
+                            top: -3,
+                            bottom: 6,
+                            w: 3,
+                            borderLeft: '2px solid #D6D5D5',
+                            borderTop: '2px solid #D6D5D5',
+                            borderBottom: '2px solid #D6D5D5',
+                            borderRight: '2px solid transparent',
+                            zIndex: 0,
+                          }}
+                        />
+                      )}
+                      {sg.allSelected && (
                         <ChakraIconButton
                           left={-8}
-                          zIndex={'popover'}
                           position={'absolute'}
                           top={'50%'}
                           minW={'1.5rem'}
@@ -146,23 +162,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                           <CloseIcon width={'2rem'} height={'2rem'} />
                         </ChakraIconButton>
                       )}
-                      {sg.allSelected && (
-                        <Box
-                          _before={{
-                            content: '""',
-                            pos: 'absolute',
-                            left: -5,
-                            top: -3,
-                            bottom: 6,
-                            w: 3,
-                            borderLeft: '2px solid #D6D5D5',
-                            borderTop: '2px solid #D6D5D5',
-                            borderBottom: '2px solid #D6D5D5',
-                            borderRight: '2px solid transparent',
-                            zIndex: 0,
-                          }}
-                        />
-                      )}
+
                       {sg.items.map((item) => (
                         <CartItem key={item.skuCode} item={item} />
                       ))}
@@ -171,7 +171,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                 ))
               ) : (
                 <Box pos={'relative'}>
-                  {allSelected && (
+                  {/*{allSelected && (
                     <Box
                       _before={{
                         content: '""',
@@ -187,7 +187,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                         zIndex: 0,
                       }}
                     />
-                  )}
+                  )}*/}
                   {items.map((item) => (
                     <CartItem key={item.skuCode} item={item} />
                   ))}

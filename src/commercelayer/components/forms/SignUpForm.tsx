@@ -18,10 +18,10 @@ import {
   Box,
   Button,
   Center,
-  Spinner,
   Link as ChakraLink,
   Container,
   Fieldset,
+  Spinner,
   Stack,
 } from '@chakra-ui/react'
 
@@ -216,11 +216,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               <Button
                 variant={'subtle'}
                 w={'full'}
-                borderColor={'brand.50'}
-                borderWidth={'2px'}
+                borderColor={'none'}
+                borderWidth={'none'}
                 bg={'brand.50'}
-                _hover={{ bg: 'brand.50', borderColor: 'black' }}
-                borderRadius={'full'}
+                _hover={{
+                  bg: 'brand.50',
+                  // borderColor: 'black'
+                  borderRadius: '0px',
+                }}
+                borderRadius={'100px'}
+                transition={
+                  'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
+                }
                 size={'sm'}
                 py={5}
                 fontSize={'lg'}
