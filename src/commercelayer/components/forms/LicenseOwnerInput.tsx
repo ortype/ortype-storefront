@@ -88,6 +88,9 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
             size="lg"
             fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
             mt={1}
+            _hover={{
+              bg: '#e3e3e3',
+            }}
             borderRadius={0}
             placeholder="Enter License Owner / Company Name*"
           />

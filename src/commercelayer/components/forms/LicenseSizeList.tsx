@@ -56,8 +56,8 @@ export const LicenseSizeList: React.FC<Props> = ({
         // Clear license size so allLicenseInfoSet becomes false, preventing
         // Add to Cart and checkout until a valid size is selected. This path
         // intentionally bypasses the order-wide confirm dialog.
-        setEscapeHatch(true)
-        setLicenseSize({ licenseSize: undefined })
+        // setEscapeHatch(true)
+        // setLicenseSize({ licenseSize: undefined })
         setOpen(true)
         return
       }
@@ -103,7 +103,6 @@ export const LicenseSizeList: React.FC<Props> = ({
               </RadioGroup.Item>
             ))}
             <RadioGroup.Item
-              disabled
               cursor={'pointer'}
               onClick={() => setOpen(true)}
               key={'escapeHatch'}

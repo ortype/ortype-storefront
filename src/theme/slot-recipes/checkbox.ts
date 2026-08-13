@@ -98,6 +98,7 @@ export const checkboxSlotRecipe = defineSlotRecipe({
           boxShadow: 'inset 0 0 0 0px #000',
           bg: 'brand.50',
           _hover: {
+            bg: '#e3e3e3',
             borderRadius: '100px',
             cursor: 'pointer',
           },

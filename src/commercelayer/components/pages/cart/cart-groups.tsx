@@ -47,11 +47,9 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
               pos={'relative'}
             >
               <HStack
-                // position={'sticky'}
-                // top={'0.5rem'}
-                // zIndex={'docked'}
                 py={2}
                 px={2}
+                gap={2}
                 bg={'brand.50'}
                 w={'full'}
                 borderRadius={'full'}
@@ -83,6 +81,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                 <Text
                   fontSize={'2xl'}
                   lineHeight={1}
+                  ml={1}
                   as={'div'}
                   className={defaultVariantId}
                 >
@@ -95,7 +94,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                     <Flex
                       px={3}
                       pt={2}
-                      gap={2}
+                      gap={0.5}
                       minH={7}
                       justifyContent={'flex-start'}
                       alignItems={'center'}
@@ -103,42 +102,25 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                       <Text
                         as={'span'}
                         fontSize={'sm'}
-                        ml={-2.5}
+                        ml={10}
+                        pl={0.5}
+                        // ml={7}
                         textTransform={'uppercase'}
                         color={'#737373'}
                       >
                         {sg.groupName}
                       </Text>
-                    </Flex>
-                    <Box pos={'relative'}>
-                      {sg.allSelected && (
-                        <Box
-                          _before={{
-                            content: '""',
-                            pos: 'absolute',
-                            left: -5,
-                            top: -3,
-                            bottom: 6,
-                            w: 3,
-                            borderLeft: '2px solid #D6D5D5',
-                            borderTop: '2px solid #D6D5D5',
-                            borderBottom: '2px solid #D6D5D5',
-                            borderRight: '2px solid transparent',
-                            zIndex: 0,
-                          }}
-                        />
-                      )}
-                      {sg.allSelected && (
+                      {/*sg.allSelected && (
                         <ChakraIconButton
-                          left={-8}
-                          position={'absolute'}
-                          top={'50%'}
+                          // left={3}
+                          // position={'absolute'}
+                          // top={'50%'}
+                          // transform={'translateY(-2rem)'}
                           minW={'1.5rem'}
                           maxH={'1.5rem'}
-                          transform={'translateY(-2rem)'}
                           variant="ghost"
                           rounded={'full'}
-                          border={'2px solid #D6D5D5'}
+                          // border={'2px solid #D6D5D5'}
                           px={0}
                           size={'xs'}
                           bg={'white'}
@@ -161,8 +143,82 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                         >
                           <CloseIcon width={'2rem'} height={'2rem'} />
                         </ChakraIconButton>
+                      )*/}
+                    </Flex>
+                    <Box pos={'relative'}>
+                      {sg.allSelected && (
+                        <>
+                          {
+                            <Box
+                              _before={{
+                                content: '""',
+                                pos: 'absolute',
+                                left: 8,
+                                top: -3.5,
+                                w: 4,
+                                // borderLeft: '2px solid #D6D5D5',
+                                borderTop: '2px solid #D6D5D5',
+                                // borderBottom: '2px solid #D6D5D5',
+                                // borderRight: '2px solid transparent',
+                                zIndex: 0,
+                              }}
+                            />
+                          }
+                          <Box
+                            _before={{
+                              content: '""',
+                              pos: 'absolute',
+                              left: 6,
+                              top: -3.5,
+                              bottom: 6,
+                              w: 3,
+                              borderLeft: '2px solid #D6D5D5',
+                              borderTop: '2px solid #D6D5D5',
+                              borderBottom: '2px solid #D6D5D5',
+                              borderRight: '2px solid transparent',
+                              zIndex: 0,
+                            }}
+                          />
+                        </>
                       )}
-
+                      {sg.allSelected && (
+                        <ChakraIconButton
+                          left={3}
+                          ml={'1px'}
+                          position={'absolute'}
+                          // top={-6}
+                          // mt={-0.25}
+                          top={'50%'}
+                          transform={'translateY(-2rem)'}
+                          minW={'1.5rem'}
+                          maxH={'1.5rem'}
+                          variant="ghost"
+                          rounded={'full'}
+                          // border={'2px solid #D6D5D5'}
+                          border={'none'}
+                          px={0}
+                          size={'sm'}
+                          bg={'white'}
+                          _hover={{ bg: '#D6D5D5', borderColor: '#D6D5D5' }}
+                          aria-label="Remove group"
+                          onClick={() =>
+                            toggleGroup({
+                              parentUid,
+                              styles: sg.items.map((item) => ({
+                                skuCode: item.skuCode,
+                                styleMetadata: item.entry,
+                              })),
+                            })
+                          }
+                          css={{
+                            '& svg': {
+                              color: 'brand.600',
+                            },
+                          }}
+                        >
+                          <CloseIcon width={'2rem'} height={'2rem'} />
+                        </ChakraIconButton>
+                      )}
                       {sg.items.map((item) => (
                         <CartItem key={item.skuCode} item={item} />
                       ))}
@@ -171,23 +227,23 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                 ))
               ) : (
                 <Box pos={'relative'}>
-                  {/*{allSelected && (
+                  {allSelected && (
                     <Box
                       _before={{
                         content: '""',
                         pos: 'absolute',
-                        left: -5,
-                        top: -7,
-                        bottom: 6,
+                        left: 6,
+                        top: 1,
+                        bottom: 9,
                         w: 3,
                         borderLeft: '2px solid #D6D5D5',
-                        borderTop: '2px solid #D6D5D5',
+                        // borderTop: '2px solid #D6D5D5',
                         borderBottom: '2px solid #D6D5D5',
                         borderRight: '2px solid transparent',
                         zIndex: 0,
                       }}
                     />
-                  )}*/}
+                  )}
                   {items.map((item) => (
                     <CartItem key={item.skuCode} item={item} />
                   ))}

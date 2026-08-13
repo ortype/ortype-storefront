@@ -72,11 +72,19 @@ export const radioGroupSlotRecipe = defineSlotRecipe({
           boxShadow: 'inset 0 0 0 0px #000',
           bg: 'brand.50',
           _hover: {
+            bg: '#e3e3e3',
             borderRadius: '100px',
             cursor: 'pointer',
           },
           _focus: {
-            boxShadow: 'inset 0 0 0 2px #000',
+            // boxShadow: 'inset 0 0 0 2px #000',
+            boxShadow: 'none',
+          },
+          // @TODO: override the focusVisible or similar property
+          _focusVisible: {
+            outline: 'none',
+            outlineColor: 'transparent',
+            outlineOffset: '2px',
           },
           _checked: {
             borderRadius: '100px',

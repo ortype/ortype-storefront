@@ -132,7 +132,14 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   return (
     <>
-      <SimpleGrid columns={[1, null, 2]} bg={'#F8F8F8'} my={0.5} gap={3} p={3}>
+      <SimpleGrid
+        columns={[1, null, 2]}
+        bg={'#F8F8F8'}
+        my={0.5}
+        gap={3}
+        p={3}
+        ml={isInFullGroup ? 10 : 0}
+      >
         <Stack direction={'row'} gap={2} bg={'#F8F8F8'} alignItems={'center'}>
           {!isInFullGroup && (
             <Link onClick={handleRemove} cursor={'pointer'} ml={-1}>
@@ -157,6 +164,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
           <Text
             fontSize={'lg'}
             lineHeight={1.3}
+            ml={0.5}
             as={'span'}
             className={skuCode}
           >

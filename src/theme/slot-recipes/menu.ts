@@ -121,11 +121,13 @@ export const menuSlotRecipe = defineSlotRecipe({
           justifyContent: 'flex-start',
           gap: '2',
           cursor: 'pointer',
-          bg: 'colorPalette.bg',
+          bg: 'colorPalette.fg',
+          color: 'colorPalette.bg',
           borderRadius: 0,
-          transition: 'background 200ms ease-in-out',
+          // transition: 'background 200ms ease-in-out',
           _hover: {
-            // bg: 'brand.100',
+            bg: 'colorPalette.bg',
+            color: 'colorPalette.fg',
           },
           _highlighted: {
             // borderRadius: '100px',

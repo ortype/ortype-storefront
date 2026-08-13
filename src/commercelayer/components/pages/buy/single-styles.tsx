@@ -43,6 +43,7 @@ export const SingleStyles: React.FC<Props> = ({
           ? {}
           : {
               borderRadius: '100px',
+              bg: '#e3e3e3',
               '& .toggle-button': {
                 // bg: 'colorPalette.fg',
                 borderWidth: '3px',

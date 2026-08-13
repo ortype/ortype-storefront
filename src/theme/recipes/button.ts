@@ -210,7 +210,7 @@ export const buttonRecipe = defineRecipe({
         },
       },
       circle: {
-        borderWidth: '3px',
+        borderWidth: '4px',
         w: '10',
         borderColor: 'colorPalette.border',
         color: 'colorPalette.fg',

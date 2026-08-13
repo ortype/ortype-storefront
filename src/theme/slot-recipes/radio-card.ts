@@ -194,6 +194,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
           transition:
             'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
           _hover: {
+            bg: '#e3e3e3',
             opacity: 1,
             borderRadius: '100px',
           },

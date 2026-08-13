@@ -74,10 +74,11 @@ export const inputRecipe = defineRecipe({
         focusRingWidth: '2px',
         focusRingColor: 'black',
         _hover: {
+          bg: '#e3e3e3',
           outlineWidth: '1px',
-          outlineColor: 'black',
+          outlineColor: 'transparent',
           outlineStyle: 'solid',
-          borderColor: 'black',
+          borderColor: 'transparent',
         },
       },
       flushed: {
