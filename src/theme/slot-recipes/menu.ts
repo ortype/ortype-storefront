@@ -7,8 +7,8 @@ const customContentFields = {
 }
 
 const customItemFields = {
-  border: '3px solid black',
-  mt: '-3px',
+  border: '4px solid black',
+  mt: '-4px',
   borderRadius: 0,
   flex: '1',
   bg: 'bg',
@@ -206,17 +206,17 @@ export const menuSlotRecipe = defineSlotRecipe({
           overflow: 'hidden',
           overflowX: 'auto',
           border: 'none',
-          borderLeft: '3px solid black',
-          ml: '-3px',
+          borderLeft: '4px solid black',
+          ml: '-4px',
         },
         item: {
           ...customItemFields,
-          border: '3px solid black',
+          border: '4px solid black',
           _highlighted: {
             bg: 'black',
             color: 'white',
           },
-          ml: '-3px',
+          ml: '-4px',
           flex: '0 0 auto',
         },
       },
@@ -251,7 +251,7 @@ export const menuSlotRecipe = defineSlotRecipe({
         content: {
           minW: 'auto',
           px: 0,
-          pt: '3px',
+          pt: '4px',
         },
         item: {
           gap: '2',

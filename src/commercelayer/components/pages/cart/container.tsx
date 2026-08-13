@@ -26,8 +26,8 @@ const CartContainer = ({
     return (
       <Button
         variant={'block'}
-        borderWidth={'3px'}
-        fontSize={'xl'}
+        borderWidth={'4px'}
+        fontSize={'2xl'}
         px={2}
         // borderRadius={'full'}
         bg={'white'}
@@ -63,8 +63,9 @@ const CartContainer = ({
         // borderRadius={'full'}
         bg={'white'}
         _hover={{ color: 'white', bg: 'black' }}
-        borderWidth={'3px'}
-        fontSize={'xl'}
+        borderWidth={'4px'}
+        fontSize={'1.5rem'}
+        h={11}
         px={2}
         fontVariantNumeric={'tabular-nums'}
         position={'relative'}

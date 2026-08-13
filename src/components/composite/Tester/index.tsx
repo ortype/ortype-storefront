@@ -232,7 +232,7 @@ export const Tester: React.FC<Props> = (props) => {
         <HStack gap={6} pos={'relative'}>
           <Button
             variant={'block'}
-            size={table ? 'xs' : 'sm'}
+            size={table ? 'xs' : 'xs'}
             asChild
             tabIndex={-1}
           >
@@ -240,7 +240,7 @@ export const Tester: React.FC<Props> = (props) => {
               href={`/fonts/${slug}`}
               data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
             >
-              <Text as={'span'} fontSize="md">
+              <Text as={'span'} fontSize="sm">
                 {`${title}`}
               </Text>
             </Link>
@@ -269,7 +269,7 @@ export const Tester: React.FC<Props> = (props) => {
               className={'buy-button'}
               bg={'white'}
               color={'black'}
-              size={table ? 'xs' : 'sm'}
+              size={table ? 'xs' : 'xs'}
               fontSize={'md'}
               px={'0.75rem'}
               minW={'auto'}
@@ -287,7 +287,7 @@ export const Tester: React.FC<Props> = (props) => {
               as={'div'}
               color={entry.length === 10 ? 'red' : '#737373'}
               fontSize={'xs'}
-              display={focused && entry.length > 5 ? 'block' : 'none'}
+              display={focused ? 'block' : 'none'}
             >{`${entry.length}/10`}</Text>
           </HStack>
 

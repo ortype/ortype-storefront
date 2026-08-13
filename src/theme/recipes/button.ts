@@ -196,7 +196,7 @@ export const buttonRecipe = defineRecipe({
       // @TODO: perfect circle/square for these two new variants
       square: {
         borderRadius: 0,
-        borderWidth: '3px',
+        borderWidth: '4px',
         borderColor: 'colorPalette.border',
         px: 0,
         bg: 'white',

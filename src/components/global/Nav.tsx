@@ -99,13 +99,13 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
             <Text as={'span'} fontSize={'1.5rem'} lineHeight={'1.25rem'}>
               Or
             </Text>
-            <Box ref={ref} pos={'absolute'} bottom={'8px'} left={'-3px'}></Box>
+            <Box ref={ref} pos={'absolute'} bottom={'8px'} left={'-4px'}></Box>
           </NextLink>
         </Button>
 
         <Show when={currentFont || typeTrigger} fallback={<></>}>
           <Button
-            ml={'-3px'}
+            ml={'-4px'}
             p={2}
             variant={'square'}
             fontSize={'1.5rem'}
@@ -121,7 +121,7 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
             <Box
               ref={typeRef}
               pos={'absolute'}
-              top={'-11px'}
+              top={'-12px'}
               left={'0px'}
             ></Box>
           </Button>

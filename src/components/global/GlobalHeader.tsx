@@ -91,8 +91,9 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
               mr={1}
               variant={'block'}
               borderRadius={'full'}
-              borderWidth={'3px'}
-              fontSize={'lg'}
+              borderWidth={'4px'}
+              fontSize={'1.5rem'}
+              h={11}
               size={'md'}
               px={2}
               onClick={() => setLoginOpen(true)}

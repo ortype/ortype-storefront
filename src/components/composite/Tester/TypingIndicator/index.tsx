@@ -30,7 +30,9 @@ const TypingIndicator = ({ table }) => (
         border: `none`,
         width: `100%`,
         display: `block`,
-        ...getTesterSizes(table),
+        // ...getTesterSizes(table),
+        fontSize: `4rem`,
+        lineHeight: `8rem`,
       }}
     >
       <Bullet delay={500} />

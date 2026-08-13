@@ -126,10 +126,10 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
       },
       sm: {
         field: {
-          textStyle: 'md',
+          textStyle: 'sm',
           ps: '2.5',
-          pe: '8',
-          height: '8',
+          pe: '6',
+          height: '6',
         },
         indicator: {
           textStyle: 'md',
