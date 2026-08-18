@@ -37,7 +37,7 @@ function checkStagingAuth(request: NextRequest): NextResponse | null {
   })
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Check staging auth first
   const authResponse = checkStagingAuth(request)
   if (authResponse) {

@@ -6,16 +6,24 @@ import { resolveOpenGraphImage } from '@/sanity/lib/utils'
 import { Metadata, ResolvingMetadata } from 'next'
 import { defineQuery } from 'next-sanity'
 import { notFound } from 'next/navigation'
+import { PostAndMoreStoriesQueryResult } from 'sanity.types'
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  props: Props,
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const post = await client.fetch(postAndMoreStoriesQuery, params)
+  const params = await props.params
+  const { data: post }: { data: PostAndMoreStoriesQueryResult } =
+    await sanityFetch({
+      query: postAndMoreStoriesQuery,
+      params,
+      stega: false,
+    })
+
   const previousImages = (await parent).openGraph?.images || []
   const ogImage = resolveOpenGraphImage(post?.coverImage)
 
@@ -32,7 +40,7 @@ export async function generateMetadata(
 export const dynamic = 'force-dynamic'
 
 const postSlugs = defineQuery(
-  `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`
+  `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`,
 )
 
 export async function generateStaticParams() {

@@ -79,10 +79,12 @@ export const resolve: PresentationPluginOptions['resolve'] = {
       }),
     }),
     // Singleton used across every page; not independently routable.
-    settings: {
-      message: 'This document is used on all pages',
-      tone: 'caution',
-    } satisfies DocumentLocationsState,
+    // @NOTE: currently disabled because of how the stega overlay interacts
+    // with the buy overlay in draft mode
+    // settings: {
+    //   message: 'This document is used on all pages',
+    //   tone: 'caution',
+    // } satisfies DocumentLocationsState,
     // Referenced by posts for archive filtering; not independently routable.
     category: {
       message:

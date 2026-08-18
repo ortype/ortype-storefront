@@ -4,6 +4,7 @@ import { sanityFetch } from '@/sanity/lib/live'
 import { buyFontsQuery } from '@/sanity/lib/queries'
 import { QueryParams } from 'next-sanity'
 import { notFound } from 'next/navigation'
+import { BuyFontsQueryResult } from 'sanity.types'
 
 export const dynamic = 'force-static'
 
@@ -16,7 +17,7 @@ export default async function CartBuySlot({
 }: {
   params: Promise<QueryParams>
 }) {
-  const { data } = await sanityFetch({
+  const { data }: { data: BuyFontsQueryResult } = await sanityFetch({
     query: buyFontsQuery,
     params: await params,
   })

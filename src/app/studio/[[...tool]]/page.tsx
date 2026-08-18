@@ -8,10 +8,11 @@
  */
 
 export const dynamic = 'force-static'
-import Studio from './Studio'
 
 export { metadata, viewport } from 'next-sanity/studio'
 
+import { StudioWrapper } from '../studio-wrapper'
+
 export default function StudioPage() {
-  return <Studio />
+  return <StudioWrapper />
 }

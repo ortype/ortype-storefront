@@ -1,6 +1,6 @@
 import { Errors } from '@/commercelayer/components'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import '@adyen/adyen-web/dist/adyen.css'
+// import '@adyen/adyen-web/dist/adyen.css'
 import {
   Box,
   Card,

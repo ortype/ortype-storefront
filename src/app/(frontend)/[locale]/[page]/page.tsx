@@ -4,6 +4,7 @@ import PageComponent from '@/components/pages/page'
 import { sanityFetch } from '@/sanity/lib/live'
 import { PAGES_QUERY, PAGES_SLUGS_QUERY } from '@/sanity/lib/queries'
 import { notFound } from 'next/navigation'
+import { PAGES_QUERYResult, PAGES_SLUGS_QUERYResult } from 'sanity.types'
 // import { PageInfo as PageInfoType } from 'sanity.types'
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 }
 
 export async function generateStaticParams() {
-  const { data } = await sanityFetch({
+  const { data }: { data: PAGES_SLUGS_QUERYResult } = await sanityFetch({
     query: PAGES_SLUGS_QUERY,
     perspective: 'published',
     stega: false,
@@ -21,7 +22,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
-  const { data: page } = await sanityFetch({
+  const { data: page }: { data: PAGES_QUERYResult } = await sanityFetch({
     query: PAGES_QUERY,
     params,
     stega: false,

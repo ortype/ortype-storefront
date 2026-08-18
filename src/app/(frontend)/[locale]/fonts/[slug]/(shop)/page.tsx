@@ -1,21 +1,27 @@
 import { FontPage } from '@/components/pages/fonts/FontPage'
-import { client, getAllFontsSlugs } from '@/sanity/lib/client'
+import { getAllFontsSlugs } from '@/sanity/lib/client'
 import { sanityFetch } from '@/sanity/lib/live'
 import { fontQuery } from '@/sanity/lib/queries'
 import { toPlainText } from '@portabletext/react'
 import { Metadata, ResolvingMetadata } from 'next'
-import { defineQuery, QueryParams } from 'next-sanity'
+import { QueryParams } from 'next-sanity'
 import { notFound } from 'next/navigation'
+import { FontQueryResult } from 'sanity.types'
 
 type Props = {
   params: { slug: string }
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  props: Props,
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const { font } = await client.fetch(fontQuery, params)
+  const params = await props.params
+  const { data: font }: { data: FontQueryResult } = await sanityFetch({
+    query: fontQuery,
+    params,
+    stega: false,
+  })
   const ogImage = false
 
   return {

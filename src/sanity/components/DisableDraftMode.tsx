@@ -1,58 +1,49 @@
-// sanity/lib/components/DisableDraftMode.tsx
+// src/components/DisableDraftMode.tsx
 
 'use client'
 
-import { useDraftModeEnvironment } from 'next-sanity/hooks'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export function DisableDraftMode() {
-  const environment = useDraftModeEnvironment()
+  const [isPreview, setIsPreview] = useState(false)
+  const router = useRouter()
 
-  // Only show the disable draft mode button when outside of Presentation Tool
-  if (environment !== 'live' && environment !== 'unknown') {
-    return null
+  useEffect(() => {
+    // Check draft mode status via a simple fetch
+    const checkDraft = async () => {
+      const res = await fetch('/api/draft/status')
+      const data = await res.json()
+      setIsPreview(data.isEnabled)
+    }
+    checkDraft()
+  }, [])
+
+  const exitPreview = async () => {
+    await fetch('/api/draft-mode/disable', { method: 'POST' })
+    router.refresh()
   }
+
+  if (!isPreview) return null
 
   return (
     <a
+      // onClick={exitPreview}
       href="/api/draft-mode/disable"
-      className="fixed bottom-4 right-4 bg-gray-50 px-4 py-2"
       style={{
         position: 'fixed',
-        top: 0,
-        width: '100%',
+        bottom: 0,
+        right: 0,
         padding: '0.5rem',
+        margin: '1rem',
         background: '#eee',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        borderRadius: '10px',
       }}
     >
       Disable Draft Mode
     </a>
   )
 }
-
-/*
-// only works if wrapped in chakra provider
-'use client'
-
-import { toaster } from '@/components/ui/toaster'
-import { Box, Show } from '@chakra-ui/react'
-import { useDraftModeEnvironment } from 'next-sanity/hooks'
-import { useEffect } from 'react'
-
-export function DisableDraftMode() {
-  const environment = useDraftModeEnvironment()
-  return (
-    <Show
-      when={environment === 'live' || environment === 'unknown'}
-      fallback={<></>}
-    >
-      <Box position={'fixed'} w={'100%'} top={0} bg={'#eee'}>
-        <a href="/api/draft-mode/disable">Disable Draft Mode</a>
-      </Box>
-      )
-    </Show>
-  )
-}
-*/

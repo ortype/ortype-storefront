@@ -43,11 +43,9 @@ export async function POST(req: NextRequest) {
       return new Response('Bad Request', { status: 400 })
     }
 
-    // revalidateTag('sanity', { expire: 0 })
-    revalidateTag('sanity')
+    revalidateTag('sanity', { expire: 0 })
     if (body.slug) {
-      // revalidateTag(body._type, { expire: 0 })
-      revalidateTag(body._type)
+      revalidateTag(body._type, { expire: 0 })
     }
     return NextResponse.json({
       status: 200,

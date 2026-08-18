@@ -1,8 +1,9 @@
+// sanity/presentation/studio.tsx
 'use client'
 
-import config from 'sanity.config'
 import { NextStudio } from 'next-sanity/studio'
+import config from 'sanity.config'
 
-export default function Studio() {
+export function Studio() {
   return <NextStudio config={config} />
 }

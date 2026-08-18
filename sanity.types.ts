@@ -12,7 +12,29 @@
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol
+
 // Source: schema.json
+export type Config = {
+  display?: 'verso' | 'recto'
+}
+
+export type StylesConfig = {
+  italicToggle?: boolean
+}
+
+export type ImageConfig = {
+  display?: 'vertical' | 'horizontal'
+  thumbnail?: boolean
+}
+
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+}
+
 export type BlockContent = Array<
   | {
       children?: Array<{
@@ -33,12 +55,7 @@ export type BlockContent = Array<
       _key: string
     }
   | {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
+      asset?: SanityImageAssetReference
       media?: unknown
       hotspot?: SanityImageHotspot
       crop?: SanityImageCrop
@@ -47,6 +64,13 @@ export type BlockContent = Array<
       _key: string
     }
 >
+
+export type PostReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'post'
+}
 
 export type Body = Array<
   | {
@@ -65,12 +89,7 @@ export type Body = Array<
             _key: string
           }
         | {
-            reference?: {
-              _ref: string
-              _type: 'reference'
-              _weak?: boolean
-              [internalGroqTypeReferenceTo]?: 'post'
-            }
+            reference?: PostReference
             _type: 'internalLink'
             _key: string
           }
@@ -83,25 +102,44 @@ export type Body = Array<
       _key: string
     } & ModuleVideo)
   | {
-      asset?: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      }
+      asset?: SanityImageAssetReference
       media?: unknown
       hotspot?: SanityImageHotspot
       crop?: SanityImageCrop
       alt?: string
       caption?: string
-      config?: {
-        display?: 'vertical' | 'horizontal'
-        thumbnail?: boolean
-      }
+      config?: ImageConfig
       _type: 'image'
       _key: string
     }
 >
+
+export type ModuleVideo = {
+  _type: 'module.video'
+  url?: string
+  isBackground?: boolean
+  aspectRatio?: number
+  poster?: string
+  status?: string
+  caption?: Array<{
+    children?: Array<{
+      marks?: Array<string>
+      text?: string
+      _type: 'span'
+      _key: string
+    }>
+    style?: 'normal'
+    listItem?: never
+    markDefs?: Array<{
+      href?: string
+      _type: 'link'
+      _key: string
+    }>
+    level?: number
+    _type: 'block'
+    _key: string
+  }>
+}
 
 export type ModuleContent = {
   _type: 'module.content'
@@ -111,24 +149,24 @@ export type ModuleContent = {
   overflowCol?: boolean
 }
 
+export type FontVariantReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'fontVariant'
+}
+
 export type ModuleTester = {
   _type: 'module.tester'
   title?: string
   defaultText?: string
-  defaultVariant?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'fontVariant'
-  }
+  defaultVariant?: FontVariantReference
 }
 
 export type ModuleStyles = {
   _type: 'module.styles'
   title?: string
-  config?: {
-    italicToggle?: boolean
-  }
+  config?: StylesConfig
 }
 
 export type ModuleInfo = {
@@ -171,17 +209,17 @@ export type ModuleFeatures = {
   }>
 }
 
+export type BookReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'book'
+}
+
 export type ModuleBook = {
   _type: 'module.book'
-  book?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'book'
-  }
-  config?: {
-    display?: 'verso' | 'recto'
-  }
+  book?: BookReference
+  config?: Config
 }
 
 export type Settings = {
@@ -308,6 +346,42 @@ export type Page = {
   modules?: null
 }
 
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x?: number
+  y?: number
+  height?: number
+  width?: number
+}
+
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
+}
+
+export type CategoryReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'category'
+}
+
+export type FontReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'font'
+}
+
 export type Post = {
   _id: string
   _type: 'post'
@@ -317,41 +391,21 @@ export type Post = {
   title?: string
   slug?: Slug
   postType?: 'archive' | 'case-study' | 'faq'
-  category?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'category'
-  }
+  category?: CategoryReference
   fonts?: Array<{
-    font?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'font'
-    }
+    font?: FontReference
     _key: string
   }>
   date?: string
   coverImage?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     _type: 'image'
   }
   gallery?: Array<{
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
@@ -390,12 +444,7 @@ export type Font = {
   slug?: Slug
   isVisible?: boolean
   description?: string
-  defaultVariant?: {
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    [internalGroqTypeReferenceTo]?: 'fontVariant'
-  }
+  defaultVariant?: FontVariantReference
   title?: string
   headerVideo?: ModuleVideo
   modules?: Array<
@@ -425,30 +474,24 @@ export type Font = {
   modifiedAt?: string
   styleGroups?: Array<{
     groupName?: string
-    variants?: Array<{
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      _key: string
-      [internalGroqTypeReferenceTo]?: 'fontVariant'
-    }>
-    italicVariants?: Array<{
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      _key: string
-      [internalGroqTypeReferenceTo]?: 'fontVariant'
-    }>
+    variants?: Array<
+      {
+        _key: string
+      } & FontVariantReference
+    >
+    italicVariants?: Array<
+      {
+        _key: string
+      } & FontVariantReference
+    >
     _type: 'group'
     _key: string
   }>
-  variants?: Array<{
-    _ref: string
-    _type: 'reference'
-    _weak?: boolean
-    _key: string
-    [internalGroqTypeReferenceTo]?: 'fontVariant'
-  }>
+  variants?: Array<
+    {
+      _key: string
+    } & FontVariantReference
+  >
   features?: Array<{
     tag?: string
     name?: string
@@ -467,33 +510,6 @@ export type Font = {
     key?: string
     value?: string
     _type: 'metafield'
-    _key: string
-  }>
-}
-
-export type ModuleVideo = {
-  _type: 'module.video'
-  url?: string
-  isBackground?: boolean
-  aspectRatio?: number
-  poster?: string
-  status?: string
-  caption?: Array<{
-    children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
-    markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
     _key: string
   }>
 }
@@ -541,17 +557,29 @@ export type Author = {
   _rev: string
   name?: string
   picture?: {
-    asset?: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    }
+    asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     _type: 'image'
   }
+}
+
+export type MediaFolderReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'media.folder'
+}
+
+export type MediaFolder = {
+  _id: string
+  _type: 'media.folder'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name?: string
+  parent?: MediaFolderReference
 }
 
 export type MediaTag = {
@@ -589,20 +617,16 @@ export type SanityImageDimensions = {
   aspectRatio?: number
 }
 
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x?: number
-  y?: number
-  height?: number
-  width?: number
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
+export type SanityImageMetadata = {
+  _type: 'sanity.imageMetadata'
+  location?: Geopoint
+  dimensions?: SanityImageDimensions
+  palette?: SanityImagePalette
+  lqip?: string
+  blurHash?: string
+  thumbHash?: string
+  hasAlpha?: boolean
+  isOpaque?: boolean
 }
 
 export type SanityFileAsset = {
@@ -625,6 +649,13 @@ export type SanityFileAsset = {
   path?: string
   url?: string
   source?: SanityAssetSourceData
+}
+
+export type SanityAssetSourceData = {
+  _type: 'sanity.assetSourceData'
+  name?: string
+  id?: string
+  url?: string
 }
 
 export type SanityImageAsset = {
@@ -650,17 +681,6 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData
 }
 
-export type SanityImageMetadata = {
-  _type: 'sanity.imageMetadata'
-  location?: Geopoint
-  dimensions?: SanityImageDimensions
-  palette?: SanityImagePalette
-  lqip?: string
-  blurHash?: string
-  hasAlpha?: boolean
-  isOpaque?: boolean
-}
-
 export type Geopoint = {
   _type: 'geopoint'
   lat?: number
@@ -668,72 +688,74 @@ export type Geopoint = {
   alt?: number
 }
 
-export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
-}
-
-export type SanityAssetSourceData = {
-  _type: 'sanity.assetSourceData'
-  name?: string
-  id?: string
-  url?: string
-}
-
 export type AllSanitySchemaTypes =
+  | Config
+  | StylesConfig
+  | ImageConfig
+  | SanityImageAssetReference
   | BlockContent
+  | PostReference
   | Body
+  | ModuleVideo
   | ModuleContent
+  | FontVariantReference
   | ModuleTester
   | ModuleStyles
   | ModuleInfo
   | ModuleFeatures
+  | BookReference
   | ModuleBook
   | Settings
   | Book
   | Page
+  | SanityImageCrop
+  | SanityImageHotspot
+  | Slug
+  | CategoryReference
+  | FontReference
   | Post
   | Font
-  | ModuleVideo
   | FontVariant
   | Category
   | Author
+  | MediaFolderReference
+  | MediaFolder
   | MediaTag
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
-  | SanityImageHotspot
-  | SanityImageCrop
-  | SanityFileAsset
-  | SanityImageAsset
   | SanityImageMetadata
-  | Geopoint
-  | Slug
+  | SanityFileAsset
   | SanityAssetSourceData
-export declare const internalGroqTypeReferenceTo: unique symbol
-// Source: ./src/app/(frontend)/[locale]/archive/[slug]/page.tsx
+  | SanityImageAsset
+  | Geopoint
+
+// Source: src/app/(frontend)/[locale]/archive/[slug]/page.tsx
 // Variable: postSlugs
 // Query: *[_type == "post" && defined(slug.current)]{"slug": slug.current}
 export type PostSlugsResult = Array<{
   slug: string | null
 }>
 
-// Source: ./src/sanity/lib/queries.ts
+// Source: src/sanity/lib/queries.ts
 // Variable: PAGES_SLUGS_QUERY
 // Query: *[_type == "page" && defined(slug.current)] {    "slug": slug.current}
-export type PAGES_SLUGS_QUERYResult = Array<{
+export type PAGES_SLUGS_QUERY_RESULT = Array<{
   slug: string | null
 }>
+
+// Source: src/sanity/lib/queries.ts
 // Variable: PAGES_QUERY
 // Query: *[_type == 'page' && slug.current == $page][0]{    _id,    title,    "slug": slug.current,    blockContent,    "modules": modules[]{        ...,    }}
-export type PAGES_QUERYResult = {
+export type PAGES_QUERY_RESULT = {
   _id: string
   title: string | null
   slug: string | null
   blockContent: BlockContent | null
   modules: null
 } | null
+
+// Source: src/sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]
 export type SettingsQueryResult = {
@@ -827,13 +849,15 @@ export type SettingsQueryResult = {
     }
   }
 } | null
+
+// Source: src/sanity/lib/queries.ts
 // Variable: postsQuery
 // Query: *[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {    _id,  title,  "slug": slug.current,  postType,  "category": category->{    _id,    title,    "slug": slug.current  },  fonts[]{    "font": font->{      _id,      name,      shortName,      "slug": slug.current    }  },  date,  coverImage {     ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip       },  "gallery": gallery[] {    ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip      },  excerpt,  content}
 export type PostsQueryResult = Array<{
   _id: string
   title: string | null
   slug: string | null
-  postType: 'archive' | 'case-study' | 'faq' | null
+  postType: 'archive'
   category: {
     _id: string
     title: string | null
@@ -849,12 +873,7 @@ export type PostsQueryResult = Array<{
   }> | null
   date: string | null
   coverImage: {
-    asset: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    } | null
+    asset: SanityImageAssetReference | null
     media?: unknown
     hotspot: SanityImageHotspot | null
     crop: SanityImageCrop | null
@@ -863,12 +882,7 @@ export type PostsQueryResult = Array<{
     blurDataUrl: string | null
   } | null
   gallery: Array<{
-    asset: {
-      _ref: string
-      _type: 'reference'
-      _weak?: boolean
-      [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-    } | null
+    asset: SanityImageAssetReference | null
     media?: unknown
     hotspot: SanityImageHotspot | null
     crop: SanityImageCrop | null
@@ -897,6 +911,8 @@ export type PostsQueryResult = Array<{
     _key: string
   }> | null
 }>
+
+// Source: src/sanity/lib/queries.ts
 // Variable: postAndMoreStoriesQuery
 // Query: {  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {    content,      _id,  title,  "slug": slug.current,  postType,  "category": category->{    _id,    title,    "slug": slug.current  },  fonts[]{    "font": font->{      _id,      name,      shortName,      "slug": slug.current    }  },  date,  coverImage {     ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip       },  "gallery": gallery[] {    ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip      },  excerpt,  content  },  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {    content,      _id,  title,  "slug": slug.current,  postType,  "category": category->{    _id,    title,    "slug": slug.current  },  fonts[]{    "font": font->{      _id,      name,      shortName,      "slug": slug.current    }  },  date,  coverImage {     ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip       },  "gallery": gallery[] {    ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip      },  excerpt,  content  }}
 export type PostAndMoreStoriesQueryResult = {
@@ -938,12 +954,7 @@ export type PostAndMoreStoriesQueryResult = {
     }> | null
     date: string | null
     coverImage: {
-      asset: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      } | null
+      asset: SanityImageAssetReference | null
       media?: unknown
       hotspot: SanityImageHotspot | null
       crop: SanityImageCrop | null
@@ -952,12 +963,7 @@ export type PostAndMoreStoriesQueryResult = {
       blurDataUrl: string | null
     } | null
     gallery: Array<{
-      asset: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      } | null
+      asset: SanityImageAssetReference | null
       media?: unknown
       hotspot: SanityImageHotspot | null
       crop: SanityImageCrop | null
@@ -1006,12 +1012,7 @@ export type PostAndMoreStoriesQueryResult = {
     }> | null
     date: string | null
     coverImage: {
-      asset: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      } | null
+      asset: SanityImageAssetReference | null
       media?: unknown
       hotspot: SanityImageHotspot | null
       crop: SanityImageCrop | null
@@ -1020,12 +1021,7 @@ export type PostAndMoreStoriesQueryResult = {
       blurDataUrl: string | null
     } | null
     gallery: Array<{
-      asset: {
-        _ref: string
-        _type: 'reference'
-        _weak?: boolean
-        [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-      } | null
+      asset: SanityImageAssetReference | null
       media?: unknown
       hotspot: SanityImageHotspot | null
       crop: SanityImageCrop | null
@@ -1037,6 +1033,8 @@ export type PostAndMoreStoriesQueryResult = {
     excerpt: string | null
   }>
 }
+
+// Source: src/sanity/lib/queries.ts
 // Variable: licenseMetricsQuery
 // Query: *[_type == "settings"][0]{  "sizes": sizes[]{value, label, modifier},  "media": media[]{_key, value, label}}
 export type LicenseMetricsQueryResult = {
@@ -1051,6 +1049,8 @@ export type LicenseMetricsQueryResult = {
     label: string | null
   }> | null
 } | null
+
+// Source: src/sanity/lib/queries.ts
 // Variable: uiLabelsQuery
 // Query: *[_type == "settings"][0]{  buyPage,  cartPage}
 export type UiLabelsQueryResult = {
@@ -1103,9 +1103,13 @@ export type UiLabelsQueryResult = {
     }
   } | null
 } | null
+
+// Source: src/sanity/lib/queries.ts
 // Variable: fontSlugsQuery
 // Query: *[_type == "font" && defined(slug.current)][].slug.current
 export type FontSlugsQueryResult = Array<string | null>
+
+// Source: src/sanity/lib/queries.ts
 // Variable: categoryFiters
 // Query: *[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {    _id,    title,    "slug": slug.current,    "postCount": count(*[_type == 'post' && references(^._id)])  }
 export type CategoryFitersResult = Array<{
@@ -1114,6 +1118,8 @@ export type CategoryFitersResult = Array<{
   slug: string | null
   postCount: number
 }>
+
+// Source: src/sanity/lib/queries.ts
 // Variable: homePageQuery
 // Query: {  "fonts": *[_type == "font" && isVisible == true] {      _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },  }}
 export type HomePageQueryResult = {
@@ -1122,7 +1128,7 @@ export type HomePageQueryResult = {
     _type: 'font'
     name: string | null
     shortName: string | null
-    isVisible: boolean | null
+    isVisible: true
     slug: string | null
     variants: Array<{
       name: string | null
@@ -1152,9 +1158,7 @@ export type HomePageQueryResult = {
               _key: string
             }> | null
           } | null
-          config?: {
-            display?: 'recto' | 'verso'
-          }
+          config?: Config
           tester: null
           body: null
         }
@@ -1174,12 +1178,7 @@ export type HomePageQueryResult = {
                 listItem?: 'bullet' | 'number'
                 markDefs: Array<
                   | {
-                      reference?: {
-                        _ref: string
-                        _type: 'reference'
-                        _weak?: boolean
-                        [internalGroqTypeReferenceTo]?: 'post'
-                      }
+                      reference?: PostReference
                       _type: 'internalLink'
                       _key: string
                       slug: Slug | null
@@ -1195,21 +1194,13 @@ export type HomePageQueryResult = {
                 _key: string
               }
             | {
-                asset?: {
-                  _ref: string
-                  _type: 'reference'
-                  _weak?: boolean
-                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-                }
+                asset?: SanityImageAssetReference
                 media?: unknown
                 hotspot?: SanityImageHotspot
                 crop?: SanityImageCrop
                 alt?: string
                 caption?: string
-                config?: {
-                  display?: 'horizontal' | 'vertical'
-                  thumbnail?: boolean
-                }
+                config?: ImageConfig
                 _type: 'image'
                 _key: string
                 markDefs: null
@@ -1298,9 +1289,7 @@ export type HomePageQueryResult = {
           _key: string
           _type: 'module.styles'
           title?: string
-          config?: {
-            italicToggle?: boolean
-          }
+          config?: StylesConfig
           book: null
           tester: null
           body: null
@@ -1310,12 +1299,7 @@ export type HomePageQueryResult = {
           _type: 'module.tester'
           title?: string
           defaultText?: string
-          defaultVariant?: {
-            _ref: string
-            _type: 'reference'
-            _weak?: boolean
-            [internalGroqTypeReferenceTo]?: 'fontVariant'
-          }
+          defaultVariant?: FontVariantReference
           book: null
           tester: null
           body: null
@@ -1340,6 +1324,8 @@ export type HomePageQueryResult = {
     }> | null
   }>
 }
+
+// Source: src/sanity/lib/queries.ts
 // Variable: visibleFontsQuery
 // Query: *[_type == "font" && isVisible == true] {  _id,  defaultVariant->{_id, optionName},  "slug": slug.current,  name,  shortName,  metafields[]{key, value},}
 export type VisibleFontsQueryResult = Array<{
@@ -1356,6 +1342,8 @@ export type VisibleFontsQueryResult = Array<{
     value: string | null
   }> | null
 }>
+
+// Source: src/sanity/lib/queries.ts
 // Variable: buyFontsQuery
 // Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {    _id,    _type,    uid,    name,    shortName,    "slug": slug.current,    variants[]->{name, optionName, _id, parentUid},    defaultVariant->{_id, optionName},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName, parentUid},      italicVariants[]->{_id, optionName, parentUid}    }      },  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {      defaultVariant->{_id, optionName},      "slug": slug.current,      name,      shortName  }  }
 export type BuyFontsQueryResult = {
@@ -1401,6 +1389,8 @@ export type BuyFontsQueryResult = {
     shortName: string | null
   }>
 }
+
+// Source: src/sanity/lib/queries.ts
 // Variable: fontsQuery
 // Query: *[_type == "font"] {    _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },}
 export type FontsQueryResult = Array<{
@@ -1438,9 +1428,7 @@ export type FontsQueryResult = Array<{
             _key: string
           }> | null
         } | null
-        config?: {
-          display?: 'recto' | 'verso'
-        }
+        config?: Config
         tester: null
         body: null
       }
@@ -1460,12 +1448,7 @@ export type FontsQueryResult = Array<{
               listItem?: 'bullet' | 'number'
               markDefs: Array<
                 | {
-                    reference?: {
-                      _ref: string
-                      _type: 'reference'
-                      _weak?: boolean
-                      [internalGroqTypeReferenceTo]?: 'post'
-                    }
+                    reference?: PostReference
                     _type: 'internalLink'
                     _key: string
                     slug: Slug | null
@@ -1481,21 +1464,13 @@ export type FontsQueryResult = Array<{
               _key: string
             }
           | {
-              asset?: {
-                _ref: string
-                _type: 'reference'
-                _weak?: boolean
-                [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-              }
+              asset?: SanityImageAssetReference
               media?: unknown
               hotspot?: SanityImageHotspot
               crop?: SanityImageCrop
               alt?: string
               caption?: string
-              config?: {
-                display?: 'horizontal' | 'vertical'
-                thumbnail?: boolean
-              }
+              config?: ImageConfig
               _type: 'image'
               _key: string
               markDefs: null
@@ -1584,9 +1559,7 @@ export type FontsQueryResult = Array<{
         _key: string
         _type: 'module.styles'
         title?: string
-        config?: {
-          italicToggle?: boolean
-        }
+        config?: StylesConfig
         book: null
         tester: null
         body: null
@@ -1596,12 +1569,7 @@ export type FontsQueryResult = Array<{
         _type: 'module.tester'
         title?: string
         defaultText?: string
-        defaultVariant?: {
-          _ref: string
-          _type: 'reference'
-          _weak?: boolean
-          [internalGroqTypeReferenceTo]?: 'fontVariant'
-        }
+        defaultVariant?: FontVariantReference
         book: null
         tester: null
         body: null
@@ -1625,6 +1593,8 @@ export type FontsQueryResult = Array<{
     }> | null
   }> | null
 }>
+
+// Source: src/sanity/lib/queries.ts
 // Variable: fontVariantsQuery
 // Query: *[_type == "fontVariant"] {    _id,  _type,  name,  optionName,  "slug": slug.current,  uid,  parentUid,  version,  metafields[]{key, value}}
 export type FontVariantsQueryResult = Array<{
@@ -1641,6 +1611,8 @@ export type FontVariantsQueryResult = Array<{
     value: string | null
   }> | null
 }>
+
+// Source: src/sanity/lib/queries.ts
 // Variable: fontAndMoreFontsQuery
 // Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {      _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },  },  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(date desc, _updatedAt desc) [0...2] {      _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },  }}
 export type FontAndMoreFontsQueryResult = {
@@ -1679,9 +1651,7 @@ export type FontAndMoreFontsQueryResult = {
               _key: string
             }> | null
           } | null
-          config?: {
-            display?: 'recto' | 'verso'
-          }
+          config?: Config
           tester: null
           body: null
         }
@@ -1701,12 +1671,7 @@ export type FontAndMoreFontsQueryResult = {
                 listItem?: 'bullet' | 'number'
                 markDefs: Array<
                   | {
-                      reference?: {
-                        _ref: string
-                        _type: 'reference'
-                        _weak?: boolean
-                        [internalGroqTypeReferenceTo]?: 'post'
-                      }
+                      reference?: PostReference
                       _type: 'internalLink'
                       _key: string
                       slug: Slug | null
@@ -1722,21 +1687,13 @@ export type FontAndMoreFontsQueryResult = {
                 _key: string
               }
             | {
-                asset?: {
-                  _ref: string
-                  _type: 'reference'
-                  _weak?: boolean
-                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-                }
+                asset?: SanityImageAssetReference
                 media?: unknown
                 hotspot?: SanityImageHotspot
                 crop?: SanityImageCrop
                 alt?: string
                 caption?: string
-                config?: {
-                  display?: 'horizontal' | 'vertical'
-                  thumbnail?: boolean
-                }
+                config?: ImageConfig
                 _type: 'image'
                 _key: string
                 markDefs: null
@@ -1825,9 +1782,7 @@ export type FontAndMoreFontsQueryResult = {
           _key: string
           _type: 'module.styles'
           title?: string
-          config?: {
-            italicToggle?: boolean
-          }
+          config?: StylesConfig
           book: null
           tester: null
           body: null
@@ -1837,12 +1792,7 @@ export type FontAndMoreFontsQueryResult = {
           _type: 'module.tester'
           title?: string
           defaultText?: string
-          defaultVariant?: {
-            _ref: string
-            _type: 'reference'
-            _weak?: boolean
-            [internalGroqTypeReferenceTo]?: 'fontVariant'
-          }
+          defaultVariant?: FontVariantReference
           book: null
           tester: null
           body: null
@@ -1901,9 +1851,7 @@ export type FontAndMoreFontsQueryResult = {
               _key: string
             }> | null
           } | null
-          config?: {
-            display?: 'recto' | 'verso'
-          }
+          config?: Config
           tester: null
           body: null
         }
@@ -1923,12 +1871,7 @@ export type FontAndMoreFontsQueryResult = {
                 listItem?: 'bullet' | 'number'
                 markDefs: Array<
                   | {
-                      reference?: {
-                        _ref: string
-                        _type: 'reference'
-                        _weak?: boolean
-                        [internalGroqTypeReferenceTo]?: 'post'
-                      }
+                      reference?: PostReference
                       _type: 'internalLink'
                       _key: string
                       slug: Slug | null
@@ -1944,21 +1887,13 @@ export type FontAndMoreFontsQueryResult = {
                 _key: string
               }
             | {
-                asset?: {
-                  _ref: string
-                  _type: 'reference'
-                  _weak?: boolean
-                  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-                }
+                asset?: SanityImageAssetReference
                 media?: unknown
                 hotspot?: SanityImageHotspot
                 crop?: SanityImageCrop
                 alt?: string
                 caption?: string
-                config?: {
-                  display?: 'horizontal' | 'vertical'
-                  thumbnail?: boolean
-                }
+                config?: ImageConfig
                 _type: 'image'
                 _key: string
                 markDefs: null
@@ -2047,9 +1982,7 @@ export type FontAndMoreFontsQueryResult = {
           _key: string
           _type: 'module.styles'
           title?: string
-          config?: {
-            italicToggle?: boolean
-          }
+          config?: StylesConfig
           book: null
           tester: null
           body: null
@@ -2059,12 +1992,7 @@ export type FontAndMoreFontsQueryResult = {
           _type: 'module.tester'
           title?: string
           defaultText?: string
-          defaultVariant?: {
-            _ref: string
-            _type: 'reference'
-            _weak?: boolean
-            [internalGroqTypeReferenceTo]?: 'fontVariant'
-          }
+          defaultVariant?: FontVariantReference
           book: null
           tester: null
           body: null
@@ -2089,6 +2017,8 @@ export type FontAndMoreFontsQueryResult = {
     }> | null
   }>
 }
+
+// Source: src/sanity/lib/queries.ts
 // Variable: fontQuery
 // Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {    _id,    _type,    name,    shortName,    isVisible,    "slug": slug.current,    variants[]->{name, optionName, _id},    uid,    version,    metafields[]{key, value},    defaultVariant->{_id, optionName},    title,    headerVideo,    modules[]{      ...,       _type == "content" => {        body[]{          ...,          markDefs[]{            ...,            _type == "internalLink" => {              "slug": @.reference->slug            }          }        }               },      _type == "book" => {        book->{variantId, snapshots},      },      _type == "tester" => {        tester->{defaultVariant->{_id, optionName}, defaultText},        }    },    modifiedAt,    languages[]{html, name},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
 export type FontQueryResult = {
@@ -2120,15 +2050,8 @@ export type FontQueryResult = {
       | {
           _key: string
           _type: 'module.book'
-          book?: {
-            _ref: string
-            _type: 'reference'
-            _weak?: boolean
-            [internalGroqTypeReferenceTo]?: 'book'
-          }
-          config?: {
-            display?: 'recto' | 'verso'
-          }
+          book?: BookReference
+          config?: Config
         }
       | {
           _key: string
@@ -2182,21 +2105,14 @@ export type FontQueryResult = {
           _key: string
           _type: 'module.styles'
           title?: string
-          config?: {
-            italicToggle?: boolean
-          }
+          config?: StylesConfig
         }
       | {
           _key: string
           _type: 'module.tester'
           title?: string
           defaultText?: string
-          defaultVariant?: {
-            _ref: string
-            _type: 'reference'
-            _weak?: boolean
-            [internalGroqTypeReferenceTo]?: 'fontVariant'
-          }
+          defaultVariant?: FontVariantReference
         }
     > | null
     modifiedAt: string | null
@@ -2224,8 +2140,8 @@ import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
     '*[_type == "post" && defined(slug.current)]{"slug": slug.current}': PostSlugsResult
-    '\n*[_type == "page" && defined(slug.current)] {\n    "slug": slug.current\n}\n': PAGES_SLUGS_QUERYResult
-    '\n*[_type == \'page\' && slug.current == $page][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    blockContent,\n    "modules": modules[]{\n        ...,\n    }\n}\n': PAGES_QUERYResult
+    '\n*[_type == "page" && defined(slug.current)] {\n    "slug": slug.current\n}\n': PAGES_SLUGS_QUERY_RESULT
+    '\n*[_type == \'page\' && slug.current == $page][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    blockContent,\n    "modules": modules[]{\n        ...,\n    }\n}\n': PAGES_QUERY_RESULT
     '*[_type == "settings"][0]': SettingsQueryResult
     '\n*[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n}': PostsQueryResult
     '{\n  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  },\n  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  }\n}': PostAndMoreStoriesQueryResult

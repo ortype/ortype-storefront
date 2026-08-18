@@ -9,19 +9,27 @@ import {
   visibleFontsQuery,
 } from '@/sanity/lib/queries'
 import { resolveOpenGraphImage } from '@/sanity/lib/utils'
-import { Metadata, Viewport } from 'next'
+import { Metadata, ResolvingMetadata, Viewport } from 'next'
 import { toPlainText, type PortableTextBlock } from 'next-sanity'
 import { Suspense } from 'react'
 const i18nNamespaces = ['common']
 
-export async function generateMetadata(): Promise<Metadata> {
+type Props = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const [{ settings }, { homePage }] = await Promise.all([
     // sanityFetch<SettingsQueryResult>({
     sanityFetch({
       query: settingsQuery,
+      stega: false,
     }),
     // sanityFetch<HomePageQueryResult>({ query: homePageQuery }),
-    sanityFetch({ query: homePageQuery }),
+    sanityFetch({ query: homePageQuery, stega: false }),
   ])
 
   const ogImage = resolveOpenGraphImage(settings?.coverImage)
@@ -52,9 +60,7 @@ export default async function LocaleRoute({
 }: {
   children: React.ReactNode
   buy: React.ReactNode
-  params: {
-    locale: string
-  }
+  params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
   const fontData = await sanityFetch({ query: visibleFontsQuery })

@@ -11,7 +11,7 @@ import {
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { SessionProvider } from 'next-auth/react'
-import { VisualEditing } from 'next-sanity'
+import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { PreloadResources } from '../preload-resources'
@@ -57,7 +57,7 @@ export default async function FrontendLayout({
   const metrics = normalizeLicenseMetrics(metricsData)
   if (metrics.sizes.length === 0 || metrics.media.length === 0) {
     console.warn(
-      '[FrontendLayout] License metrics missing from Sanity settings — the shop requires company sizes and media types to be defined.'
+      '[FrontendLayout] License metrics missing from Sanity settings — the shop requires company sizes and media types to be defined.',
     )
   }
 
