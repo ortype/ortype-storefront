@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 // import Head from 'next/head'
-import { notFound } from 'next/navigation'
+import PageComponent from '@/components/pages/page'
 import { sanityFetch } from '@/sanity/lib/live'
 import { PAGES_QUERY, PAGES_SLUGS_QUERY } from '@/sanity/lib/queries'
-import PageComponent from '@/components/pages/page'
-// import { PageInfo as PageInfoType } from '@/sanity.types'
+import { notFound } from 'next/navigation'
+// import { PageInfo as PageInfoType } from 'sanity.types'
 
 type Props = {
   params: Promise<{ slug: string }>

@@ -1,6 +1,6 @@
 import Providers from '@/components/global/Providers'
 
-import { BASE_PATH, auth } from '@/lib/auth'
+import { auth, BASE_PATH } from '@/lib/auth'
 import { DisableDraftMode } from '@/sanity/components/DisableDraftMode'
 import { sanityFetch, SanityLive } from '@/sanity/lib/live'
 import {
@@ -69,9 +69,9 @@ export default async function FrontendLayout({
           {children}
         </Providers>
       </SessionProvider>
-      <SanityLive refreshOnFocus={false} />
       {(await draftMode()).isEnabled && (
         <>
+          <SanityLive refreshOnFocus={false} />
           <DisableDraftMode />
           <VisualEditing />
         </>

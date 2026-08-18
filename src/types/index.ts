@@ -1,4 +1,4 @@
-export type * from '@/sanity.types'
+export type * from 'sanity.types'
 
 import type { PortableTextBlock } from '@portabletext/types'
 // import type { Image } from 'sanity'
