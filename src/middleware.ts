@@ -2,12 +2,49 @@ import { i18nRouter } from 'next-i18n-router'
 import { NextRequest, NextResponse } from 'next/server'
 import i18nConfig from '../i18nConfig'
 
+function checkStagingAuth(request: NextRequest): NextResponse | null {
+  // Only enforce the staging gate in production deployments, never on
+  // localhost, even if staging credentials happen to be set locally.
+  if (process.env.NODE_ENV !== 'production') {
+    return null
+  }
+
+  const authHeader = request.headers.get('authorization')
+  const stagingUsername = process.env.STAGING_USERNAME
+  const stagingPassword = process.env.STAGING_PASSWORD
+
+  // If credentials aren't configured, skip the gate
+  if (!stagingUsername || !stagingPassword) {
+    return null
+  }
+
+  if (authHeader?.startsWith('Basic ')) {
+    const encoded = authHeader.slice(6)
+    const decoded = Buffer.from(encoded, 'base64').toString('utf-8')
+    const [username, password] = decoded.split(':')
+
+    if (username === stagingUsername && password === stagingPassword) {
+      return null // Auth passed, continue
+    }
+  }
+
+  // Auth failed or missing, return 401 with WWW-Authenticate header
+  return new NextResponse('Unauthorized', {
+    status: 401,
+    headers: {
+      'WWW-Authenticate': 'Basic realm="Staging"',
+    },
+  })
+}
+
 export async function middleware(request: NextRequest) {
-  // The i18nRouter function will take the request, detect the user’s
-  // preferred language using the accept-language header, and then redirect
-  // them to the path with their preferred language. If we don’t support
-  // their language, it will fallback to the default language.
-  // @NOTE: It also removes the locales segment from the URL for the default langauge
+  // Check staging auth first
+  const authResponse = checkStagingAuth(request)
+  if (authResponse) {
+    return authResponse
+  }
+
+  // If auth passed, continue with i18n routing
   return i18nRouter(request, i18nConfig)
 }
 
