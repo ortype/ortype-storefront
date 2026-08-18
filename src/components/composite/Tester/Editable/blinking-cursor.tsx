@@ -7,6 +7,7 @@ const BlinkingCursor = ({
   variantId = '',
   isLoading = false,
   table = false,
+  right = '-2px',
 }) => {
   return (
     <Box
@@ -26,6 +27,8 @@ const BlinkingCursor = ({
       opacity={isLoading ? 0.5 : 1}
       alignSelf="center"
       verticalAlign="middle"
+      pos={'absolute'}
+      right={right}
     />
   )
 }

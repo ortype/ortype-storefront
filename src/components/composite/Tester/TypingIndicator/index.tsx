@@ -1,7 +1,6 @@
 import { Box } from '@chakra-ui/react'
-import { getTesterSizes } from '../tester-sizing'
 
-const Bullet = ({ delay }) => {
+const Bullet = ({ delay }: { delay: string }) => {
   return (
     <Box
       as={'span'}
@@ -30,14 +29,13 @@ const TypingIndicator = ({ table }) => (
         border: `none`,
         width: `100%`,
         display: `block`,
-        // ...getTesterSizes(table),
         fontSize: `4rem`,
         lineHeight: `8rem`,
       }}
     >
-      <Bullet delay={500} />
-      <Bullet delay={1000} />
-      <Bullet delay={1500} />
+      <Bullet delay={'0ms'} />
+      <Bullet delay={'250ms'} />
+      <Bullet delay={'500ms'} />
     </Box>
     <Box h={'2rem'} />
   </>

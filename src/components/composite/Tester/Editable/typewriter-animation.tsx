@@ -65,9 +65,12 @@ const TypewriterAnimation = ({
         lineHeight={'inherit'}
         className={variantId}
         textAlign="center"
+        pos={'relative'}
       >
         {displayText}
-        {!isComplete && <BlinkingCursor table={table} variantId={variantId} />}
+        {!isComplete && (
+          <BlinkingCursor right={'-2px'} table={table} variantId={variantId} />
+        )}
       </Box>
     </Box>
   )

@@ -32,7 +32,7 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
   return (
     <>
       <Button
-        ml={'-3px'}
+        ml={'-4px'}
         p={2}
         variant={'square'}
         fontSize={'1.5rem'}
@@ -44,7 +44,7 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
         className={font ? font.defaultVariant?._id : ''}
       >
         {font ? font.shortName : 'Type'}
-        <Box ref={typeRef} pos={'absolute'} top={'-11px'} left={'0px'}></Box>
+        <Box ref={typeRef} pos={'absolute'} top={'-12px'} left={'0px'}></Box>
       </Button>
       <MenuRoot
         variant={'wrap'}

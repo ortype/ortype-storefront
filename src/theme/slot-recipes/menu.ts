@@ -120,10 +120,12 @@ export const menuSlotRecipe = defineSlotRecipe({
         item: {
           justifyContent: 'flex-start',
           gap: '2',
+          my: 0.5,
+          width: 'fit-content',
           cursor: 'pointer',
           bg: 'colorPalette.fg',
           color: 'colorPalette.bg',
-          borderRadius: 0,
+          borderRadius: '100px',
           // transition: 'background 200ms ease-in-out',
           _hover: {
             bg: 'colorPalette.bg',
@@ -224,6 +226,18 @@ export const menuSlotRecipe = defineSlotRecipe({
       },
     },
     size: {
+      xs: {
+        content: {
+          minW: '8rem',
+          padding: '0.5',
+        },
+        item: {
+          gap: '1',
+          textStyle: 'xs',
+          py: '0.5',
+          px: '1.5',
+        },
+      },
       sm: {
         content: {
           minW: '8rem',

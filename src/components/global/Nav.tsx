@@ -73,111 +73,118 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
 
   return (
     <>
-      <Flex pos={'relative'}>
-        <Button
-          pos={'relative'}
-          variant="square"
-          size="md"
-          bg={typeTrigger || openMenu ? 'white' : 'black'}
-          color={typeTrigger || openMenu ? 'black' : 'white'}
-          h={11}
-          w={11}
-          onMouseEnter={() => {
-            setMenuOpen(true)
-            showTypeTrigger(true)
-            setTypeMenuOpen(false)
-          }}
-          data-active={openMenu ? 'true' : undefined}
-          transition={'none'}
-          _hover={{
-            bg: typeTrigger || openMenu ? 'black' : 'white',
-            color: typeTrigger || openMenu ? 'white' : 'black',
-          }}
-          asChild
-        >
-          <NextLink href={'/'}>
-            <Text as={'span'} fontSize={'1.5rem'} lineHeight={'1.25rem'}>
-              Or
-            </Text>
-            <Box ref={ref} pos={'absolute'} bottom={'8px'} left={'-4px'}></Box>
-          </NextLink>
-        </Button>
-
-        <Show when={currentFont || typeTrigger} fallback={<></>}>
+      <Box p={4} pos={'fixed'} left={0} top={0} zIndex={'docked'}>
+        <Flex pos={'relative'}>
           <Button
-            ml={'-4px'}
-            p={2}
-            variant={'square'}
-            fontSize={'1.5rem'}
-            lineHeight={'1.25rem'}
+            pos={'relative'}
+            variant="square"
+            size="md"
+            bg={typeTrigger || openMenu ? 'white' : 'black'}
+            color={typeTrigger || openMenu ? 'black' : 'white'}
             h={11}
+            w={11}
             onMouseEnter={() => {
-              setTypeMenuOpen(true)
-              setMenuOpen(false)
-            }}
-            className={currentFont ? currentFont.defaultVariant?._id : ''}
-          >
-            {currentFont ? currentFont.shortName : 'Type'}
-            <Box
-              ref={typeRef}
-              pos={'absolute'}
-              top={'-12px'}
-              left={'0px'}
-            ></Box>
-          </Button>
-        </Show>
-        <MenuRoot
-          variant={'wrap'}
-          size={'custom'}
-          open={openTypeMenu}
-          onOpenChange={(e) => setTypeMenuOpen(e.open)}
-          positioning={{ getAnchorRect: getTypeAnchorRect }}
-        >
-          <MenuContent
-            maxW={'60vw'}
-            onMouseLeave={() => {
+              setMenuOpen(true)
+              showTypeTrigger(true)
               setTypeMenuOpen(false)
-              showTypeTrigger(false)
             }}
+            data-active={openMenu ? 'true' : undefined}
+            transition={'none'}
+            _hover={{
+              bg: typeTrigger || openMenu ? 'black' : 'white',
+              color: typeTrigger || openMenu ? 'white' : 'black',
+            }}
+            asChild
           >
-            <For each={sortedFonts}>
-              {(item, index) => (
-                <MenuItem
-                  key={index}
-                  value={item.slug}
-                  className={item.defaultVariant?._id}
-                  fontSize={'1.5rem'}
-                  lineHeight={'1.25rem'}
-                >
-                  <Box whiteSpace={'nowrap'} asChild>
-                    <NextLink href={`/fonts/${item.slug}`}>
-                      {item.shortName}
-                    </NextLink>
-                  </Box>
-                </MenuItem>
-              )}
-            </For>
-          </MenuContent>
-        </MenuRoot>
-        <MenuRoot
-          open={openMenu}
-          onOpenChange={(e) => setMenuOpen(e.open)}
-          positioning={{ getAnchorRect }}
-          size={'custom'}
+            <NextLink href={'/'}>
+              <Text as={'span'} fontSize={'1.5rem'} lineHeight={'1.25rem'}>
+                Or
+              </Text>
+              <Box
+                ref={ref}
+                pos={'absolute'}
+                bottom={'8px'}
+                left={'-4px'}
+              ></Box>
+            </NextLink>
+          </Button>
+
+          <Show when={currentFont || typeTrigger} fallback={<></>}>
+            <Button
+              ml={'-4px'}
+              p={2}
+              variant={'square'}
+              fontSize={'1.5rem'}
+              lineHeight={'1.25rem'}
+              h={11}
+              onMouseEnter={() => {
+                setTypeMenuOpen(true)
+                setMenuOpen(false)
+              }}
+              className={currentFont ? currentFont.defaultVariant?._id : ''}
+            >
+              {currentFont ? currentFont.shortName : 'Type'}
+              <Box
+                ref={typeRef}
+                pos={'absolute'}
+                top={'-12px'}
+                left={'0px'}
+              ></Box>
+            </Button>
+          </Show>
+        </Flex>
+      </Box>
+      <MenuRoot
+        variant={'wrap'}
+        size={'custom'}
+        open={openTypeMenu}
+        onOpenChange={(e) => setTypeMenuOpen(e.open)}
+        positioning={{ getAnchorRect: getTypeAnchorRect, strategy: 'fixed' }}
+      >
+        <MenuContent
+          maxW={'60vw'}
+          onMouseLeave={() => {
+            setTypeMenuOpen(false)
+            showTypeTrigger(false)
+          }}
         >
-          <MenuContent
-            fontSize={'1.5rem'}
-            onMouseLeave={() => setMenuOpen(false)}
-          >
-            <MenuItem asChild value="/archive">
-              <NextLink href={'/archive'}>{'Archive'}</NextLink>
-            </MenuItem>
-            <MenuItem asChild value="/info">
-              <NextLink href={'/info'}>{'Info'}</NextLink>
-            </MenuItem>
-          </MenuContent>
-        </MenuRoot>
-      </Flex>
+          <For each={sortedFonts}>
+            {(item, index) => (
+              <MenuItem
+                key={index}
+                value={item.slug}
+                className={item.defaultVariant?._id}
+                fontSize={'1.5rem'}
+                lineHeight={'1.25rem'}
+              >
+                <Box whiteSpace={'nowrap'} asChild>
+                  <NextLink href={`/fonts/${item.slug}`}>
+                    {item.shortName}
+                  </NextLink>
+                </Box>
+              </MenuItem>
+            )}
+          </For>
+        </MenuContent>
+      </MenuRoot>
+      <MenuRoot
+        open={openMenu}
+        onOpenChange={(e) => setMenuOpen(e.open)}
+        positioning={{ getAnchorRect, strategy: 'fixed' }}
+        size={'custom'}
+      >
+        <MenuContent
+          fontSize={'1.5rem'}
+          onMouseLeave={() => setMenuOpen(false)}
+        >
+          <MenuItem asChild value="/archive">
+            <NextLink href={'/archive'}>{'Archive'}</NextLink>
+          </MenuItem>
+          <MenuItem asChild value="/info">
+            <NextLink href={'/info'}>{'Info'}</NextLink>
+          </MenuItem>
+        </MenuContent>
+      </MenuRoot>
     </>
   )
 }

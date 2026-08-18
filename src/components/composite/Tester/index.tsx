@@ -228,7 +228,12 @@ export const Tester: React.FC<Props> = (props) => {
         focused={focused}
         setFocused={setFocused}
       />
-      <Flex align={'center'} justify={'center'} h={'2rem'}>
+      <Flex
+        align={'center'}
+        justify={'center'}
+        h={'2rem'}
+        visibility={loading ? 'hidden' : 'visible'}
+      >
         <HStack gap={6} pos={'relative'}>
           <Button
             variant={'block'}
@@ -290,19 +295,6 @@ export const Tester: React.FC<Props> = (props) => {
               display={focused ? 'block' : 'none'}
             >{`${entry.length}/10`}</Text>
           </HStack>
-
-          {/*<Box display={table ? 'none' : 'flex'}>
-            <ChakraLink
-              as={Link}
-              href={`/fonts/${slug}/book/`}
-              className="hover:underline"
-              tabIndex={-1}
-            >
-              <Text as={'span'} fontSize="xs">
-                ({'Book'})
-              </Text>
-            </ChakraLink>
-          </Box>*/}
         </HStack>
       </Flex>
     </>

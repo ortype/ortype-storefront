@@ -31,11 +31,6 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
       {...rest}
       cursor={closable ? 'pointer' : 'default'}
       onClick={handleOnClick}
-      borderRadius={'0px'}
-      _hover={{
-        borderRadius: '100px',
-      }}
-      transition={'border-radius 200ms ease-out'}
     >
       {startElement && (
         <ChakraTag.StartElement>{startElement}</ChakraTag.StartElement>

@@ -173,7 +173,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
         </Stack>
         <Flex direction={'row'} alignItems={'center'} alignContent={'center'}>
           <Box flexGrow={1}>
-            <HStack gap={2} flexWrap={'wrap'} alignItems={'center'}>
+            <HStack gap={1} flexWrap={'wrap'} alignItems={'center'}>
               <AnimatePresence mode={'sync'} initial={false}>
                 {selectedValues.map((value) => (
                   <motion.div
@@ -187,6 +187,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
                     <Tag
                       size={'md'}
                       variant={'solid'}
+                      borderRadius={'100px'}
                       closable
                       onClose={() => handleRemoveType(value)}
                     >
@@ -197,13 +198,14 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
               </AnimatePresence>
 
               {remainingOptions.length > 0 && (
-                <Menu.Root variant={'outline'} size={'sm'}>
+                <Menu.Root variant={'outline'} size={'xs'}>
                   <Menu.Trigger asChild>
                     <Button
                       borderRadius={0}
                       variant="text"
                       size="sm"
                       fontSize={'xs'}
+                      lineHeight={1}
                       color={'#737373'}
                       textDecorationColor={'transparent'}
                       _hover={{

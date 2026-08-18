@@ -61,9 +61,7 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
   return (
     <>
       <SessionId />
-      <Box p={4} pos={'fixed'} left={0} top={0} zIndex={'docked'}>
-        <Nav fonts={fonts} />
-      </Box>
+      <Nav fonts={fonts} />
       <Group gap={0} p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
         {settings.customerId ? (
           <Button

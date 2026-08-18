@@ -1,4 +1,4 @@
-import { ActionBar, Box, Kbd, Portal, Text } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { useState } from 'react'
 import { getTesterSizes } from '../tester-sizing'
 import BlinkingCursor from './blinking-cursor'
@@ -129,26 +129,17 @@ const Editable = ({
           justifyContent="center"
           alignItems="center"
           height={getTesterSizes(table).lineHeight}
+          pos={'relative'}
         >
           <BlinkingCursor
             table={table}
             isVisible={true}
             isLoading={true}
             variantId={variantId}
+            right={'50%'}
           />
         </Box>
       )}
-      {/*<ActionBar.Root open={focused} closeOnInteractOutside={false} size={'sm'}>
-        <Portal>
-          <ActionBar.Positioner>
-            <ActionBar.Content>
-              <ActionBar.SelectionTrigger>
-                {`${entry.length}/10 characters`}
-              </ActionBar.SelectionTrigger>
-            </ActionBar.Content>
-          </ActionBar.Positioner>
-        </Portal>
-      </ActionBar.Root>*/}
     </Box>
   )
 }

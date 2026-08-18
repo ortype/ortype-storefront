@@ -68,7 +68,7 @@ export const tagSlotRecipe = defineSlotRecipe({
       },
       md: {
         root: {
-          px: '1.5',
+          px: '2',
           minH: '5',
           gap: '1',
           '--tag-avatar-size': 'spacing.3.5',
@@ -115,9 +115,16 @@ export const tagSlotRecipe = defineSlotRecipe({
       },
       solid: {
         root: {
-          bg: 'colorPalette.bg',
+          bg: 'brand.50',
           color: 'colorPalette.fg',
-          borderRadius: 'none',
+          borderRadius: '100px',
+          boxShadow: 'inset 0 0 0 0px #000',
+          transition:
+            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
+          _hover: {
+            bg: 'colorPalette.bg',
+            boxShadow: 'inset 0 0 0 2px #000',
+          },
         },
       },
       outline: {
