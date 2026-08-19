@@ -46,6 +46,14 @@ export async function POST(req: NextRequest) {
     revalidateTag('sanity', { expire: 0 })
     if (body.slug) {
       revalidateTag(body._type, { expire: 0 })
+      /*
+        This revalidateTag(body._type, ...) call is still a dead no-op 
+        (nothing is tagged with a bare _type string), but it's harmless 
+        — we could drop it, or later evolve it into real per-type tags 
+        (e.g. tag queries with  `sanity:${_type}`  and match here) if 
+        we want more surgical invalidation instead of flushing everything 
+        on every content change.
+      */
     }
     return NextResponse.json({
       status: 200,
