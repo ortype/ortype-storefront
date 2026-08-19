@@ -6,19 +6,33 @@ let shippingCategory = undefined
 let market = undefined
 const skuLookup = {}
 
-const token = await authenticate('client_credentials', {
-  clientId: process.env.CL_SYNC_CLIENT_ID,
-  clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
-  endpoint: process.env.CL_ENDPOINT,
-})
+// Lazily authenticate and construct the Commerce Layer client on first use.
+// This file is imported by a Route Handler, and Next.js imports route
+// modules during `next build` to analyze them - a module-scope `await` here
+// would make a live network call at build/import time and crash the build
+// (or needlessly re-authenticate on every cold start) even when `cl` is
+// never actually used.
+let clPromise: ReturnType<typeof CommerceLayer> | null = null
 
-const cl = CommerceLayer({
-  organization: process.env.CL_SLUG,
-  accessToken: token.accessToken,
-})
+async function getClient() {
+  if (!clPromise) {
+    const token = await authenticate('client_credentials', {
+      clientId: process.env.CL_SYNC_CLIENT_ID,
+      clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
+      endpoint: process.env.CL_ENDPOINT,
+    })
+
+    clPromise = CommerceLayer({
+      organization: process.env.CL_SLUG,
+      accessToken: token.accessToken,
+    })
+  }
+  return clPromise
+}
 
 export async function getShippingCategory(fresh = false) {
   if (!shippingCategory || fresh) {
+    const cl = await getClient()
     const shippingCategories = await cl.shipping_categories.list({
       filters: { name_eq: 'Virtual' },
     })
@@ -34,6 +48,7 @@ export async function getShippingCategoryId(fresh = false) {
 
 export async function getMarket(fresh = false) {
   if (!market || fresh) {
+    const cl = await getClient()
     const markets = await cl.markets.list({
       filters: {
         name_eq: 'Global',
@@ -52,6 +67,7 @@ export async function lookupSkuId(code, fresh = false) {
   if (skuLookup[code]) {
     return skuLookup[code]
   }
+  const cl = await getClient()
   const skus = await cl.skus.list({ filters: { code_eq: code } })
   const id = skus.shift()?.id
   if (id) {
@@ -62,6 +78,7 @@ export async function lookupSkuId(code, fresh = false) {
 
 export async function jsonImport(resource_type, inputs) {
   try {
+    const cl = await getClient()
     const importObject = await cl.imports.create({
       resource_type,
       inputs,
@@ -84,7 +101,7 @@ export async function getSkuObject(sanityVariant) {
         key === 'otf' ||
         key === 'woff' ||
         key === 'woff2' ||
-        key === 'familyFile'
+        key === 'familyFile',
     )
     .map((file) => ({ key: file.key, value: file.value }))
   return {
@@ -151,14 +168,17 @@ export async function getGroupSkuObjects(font: GroupSkuFontInput) {
         if (i < variants.length && variants[i]) {
           merged.push({
             _id: variants[i]._id,
-            displayName: variants[i].optionName || variants[i].name || variants[i]._id,
+            displayName:
+              variants[i].optionName || variants[i].name || variants[i]._id,
           })
         }
         if (i < italicVariants.length && italicVariants[i]) {
           merged.push({
             _id: italicVariants[i]._id,
             displayName:
-              italicVariants[i].optionName || italicVariants[i].name || italicVariants[i]._id,
+              italicVariants[i].optionName ||
+              italicVariants[i].name ||
+              italicVariants[i]._id,
           })
         }
       }
@@ -173,7 +193,11 @@ export async function getGroupSkuObjects(font: GroupSkuFontInput) {
         _id: v._id,
         displayName: v.optionName || v.name || v._id,
       }))
-    groups.push({ groupName: 'Standard', groupSlug: 'standard', includedVariants: included })
+    groups.push({
+      groupName: 'Standard',
+      groupSlug: 'standard',
+      includedVariants: included,
+    })
   }
 
   return groups.map((g) => ({

@@ -8,7 +8,7 @@ import { PAGES_QUERYResult, PAGES_SLUGS_QUERYResult } from 'sanity.types'
 // import { PageInfo as PageInfoType } from 'sanity.types'
 
 type Props = {
-  params: Promise<{ slug: string }>
+  params: Promise<{ page: string }>
 }
 
 export async function generateStaticParams() {
@@ -17,7 +17,9 @@ export async function generateStaticParams() {
     perspective: 'published',
     stega: false,
   })
-  return data
+  // The dynamic segment is named `[page]`, so the returned key must be
+  // `page` (not `slug`) for Next.js to match these against it.
+  return data.map(({ slug }) => ({ page: slug }))
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {

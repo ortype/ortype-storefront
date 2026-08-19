@@ -9,6 +9,7 @@ import {
   visibleFontsQuery,
 } from '@/sanity/lib/queries'
 import { resolveOpenGraphImage } from '@/sanity/lib/utils'
+import i18nConfig from '../../../../i18nConfig'
 import { Metadata, ResolvingMetadata, Viewport } from 'next'
 import { toPlainText, type PortableTextBlock } from 'next-sanity'
 import { Suspense } from 'react'
@@ -51,6 +52,10 @@ export async function generateMetadata(
 
 export const viewport: Viewport = {
   themeColor: '#000',
+}
+
+export function generateStaticParams() {
+  return i18nConfig.locales.map((locale: string) => ({ locale }))
 }
 
 export default async function LocaleRoute({
