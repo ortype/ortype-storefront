@@ -1,6 +1,4 @@
 import Providers from '@/components/global/Providers'
-
-import { auth, BASE_PATH } from '@/lib/auth'
 import { DisableDraftMode } from '@/sanity/components/DisableDraftMode'
 import { sanityFetch, SanityLive } from '@/sanity/lib/live'
 import {
@@ -10,7 +8,6 @@ import {
 } from '@/sanity/lib/queries'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
-import { SessionProvider } from 'next-auth/react'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
@@ -49,7 +46,6 @@ export default async function FrontendLayout({
   children: React.ReactNode
 }>) {
   const marketId = (await getMarketId()) || ''
-  const session = await auth()
   const { data: labels } = await sanityFetch({ query: uiLabelsQuery })
   const { data: metricsData } = await sanityFetch({
     query: licenseMetricsQuery,
@@ -64,11 +60,9 @@ export default async function FrontendLayout({
   return (
     <>
       <PreloadResources />
-      <SessionProvider basePath={BASE_PATH} session={session}>
-        <Providers marketId={marketId} labels={labels} metrics={metrics}>
-          {children}
-        </Providers>
-      </SessionProvider>
+      <Providers marketId={marketId} labels={labels} metrics={metrics}>
+        {children}
+      </Providers>
       {(await draftMode()).isEnabled && (
         <>
           <SanityLive refreshOnFocus={false} />

@@ -1,8 +1,12 @@
+import { ApolloClientProvider } from '@/components/data/ApolloProvider'
 import { BookLayoutProvider } from '@/components/data/BookProvider'
 import { GET_BOOK_LAYOUTS } from '@/graphql/queries'
 import { createApolloClient } from '@/hooks/useApollo'
+import { auth, BASE_PATH } from '@/lib/auth'
 import { getFontAndMoreFonts, getVisibleFonts } from '@/sanity/lib/client'
 import { Font } from '@/sanity/lib/queries'
+import { SessionProvider, useSession } from 'next-auth/react'
+import { redirect } from 'next/navigation'
 import { cache } from 'react'
 
 const getData = cache(async ({ slug }) => {
@@ -39,7 +43,7 @@ const getData = cache(async ({ slug }) => {
     }
 
     const validVariants = font.variants.filter(
-      (variant): variant is NonNullable<typeof variant> => variant !== null
+      (variant): variant is NonNullable<typeof variant> => variant !== null,
     )
 
     return {
@@ -83,11 +87,24 @@ export default async function Layout({
   params,
 }: {
   children: React.ReactNode
-  params: {
-    slug: string
-  }
+  params: Promise<{ slug: string }>
 }) {
-  const data: DataProps | false = await getData({ slug: params.slug })
+  const { slug } = await params
+  const data: DataProps | false = await getData({ slug })
+  const session = await auth()
+  if (!session) {
+    const pathname = `${process.env.NEXT_PUBIC_STOREFRONT_URL}/fonts/${slug}/book`
+    const url = `${BASE_PATH}/signin?callbackUrl=${encodeURIComponent(
+      pathname,
+    )}`
+    redirect(url)
+  }
 
-  return <BookLayoutProvider data={data}>{children}</BookLayoutProvider>
+  return (
+    <SessionProvider basePath={BASE_PATH} session={session}>
+      <ApolloClientProvider initialApolloState={{}} token={session?.token}>
+        <BookLayoutProvider data={data}>{children}</BookLayoutProvider>
+      </ApolloClientProvider>
+    </SessionProvider>
+  )
 }

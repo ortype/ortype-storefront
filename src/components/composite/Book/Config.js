@@ -64,7 +64,7 @@ const Config = () => {
   return (
     <>
       <PopoverRoot>
-        <PopoverTrigger>
+        <PopoverTrigger asChild>
           <IconButton variant={'outline'}>
             <CogIcon width={'1.5rem'} height={'1.5rem'} />
           </IconButton>
@@ -170,7 +170,7 @@ const Config = () => {
                       options={regexOptions}
                       name="regex"
                       value={regexOptions?.find(
-                        (option) => option.value === bookLayoutStore.regex
+                        (option) => option.value === bookLayoutStore.regex,
                       )}
                       placeholder={'Select typecase'}
                       onChange={handleFilterAllChange}

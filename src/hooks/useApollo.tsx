@@ -84,13 +84,10 @@ export const createApolloClient = (
   })
 }
 
-export function initializeApollo(
-  initialState = null,
-  token = null,
-  ctx = null
+function hydrateCache(
+  client: ApolloClient<NormalizedCacheObject>,
+  initialState: object | null
 ) {
-  const client = apolloClient ?? createApolloClient(ctx, token)
-
   // If your page has Next.js data fetching methods that use Apollo Client,
   // the initial state gets hydrated here
   if (initialState) {
@@ -111,6 +108,26 @@ export function initializeApollo(
     // Restore the cache with the merged data
     client.cache.restore(data)
   }
+
+  return client
+}
+
+export function initializeApollo(
+  initialState = null,
+  token = null,
+  ctx = null
+) {
+  // Authenticated clients are scoped to whichever <ApolloClientProvider> created
+  // them (e.g. the /book route) and must never be read from or written to the
+  // public singleton below. Otherwise, a token-less provider mounted higher in
+  // the tree (e.g. the global Providers) would "win" the singleton first and
+  // every authenticated call would silently go out without an auth header.
+  if (token) {
+    return hydrateCache(createApolloClient(ctx, token), initialState)
+  }
+
+  const client = apolloClient ?? createApolloClient(ctx, token)
+  hydrateCache(client, initialState)
 
   // For SSG and SSR always create a new Apollo Client
   if (typeof window === 'undefined') {

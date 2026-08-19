@@ -1,11 +1,11 @@
-import { auth, BASE_PATH } from '@/lib/auth'
 import { GET_BOOK_LAYOUTS } from '@/graphql/queries'
 import { createApolloClient } from '@/hooks/useApollo'
 import { getFontAndMoreFonts, getVisibleFonts } from '@/sanity/lib/client'
 import { Font } from '@/sanity/lib/queries'
-import { redirect } from 'next/navigation'
 import { cache as ReactCache } from 'react'
+
 import BookPage from './BookPage'
+import { auth } from '@/lib/auth'
 
 export const dynamicParams = false
 // export const dynamic = 'force-dynamic'
@@ -87,15 +87,13 @@ interface DataProps {
   }
 }
 
-export default async function Page(props) {
-  const data: DataProps | false = await getData({ slug: props.params.slug })
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
+  const data: DataProps | false = await getData({ slug })
   const session = await auth()
-  if (!session) {
-    const pathname = `${process.env.NEXT_PUBIC_STOREFRONT_URL}/fonts/${props.params.slug}/book`
-    const url = `${BASE_PATH}/signin?callbackUrl=${encodeURIComponent(
-      pathname
-    )}`
-    redirect(url)
-  }
-  return <BookPage data={data} user={session.user} />
+  return <BookPage data={data} user={session?.user} />
 }
