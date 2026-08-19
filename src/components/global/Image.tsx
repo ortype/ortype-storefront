@@ -1,5 +1,5 @@
 import { client } from '@/sanity/lib/client'
-import { SanityImageObject } from '@sanity/image-url/lib/types/types'
+import { type SanityImageObject } from '@sanity/image-url'
 import { useNextSanityImage } from 'next-sanity-image'
 import Image from 'next/image'
 import { useCallback } from 'react'
@@ -23,7 +23,7 @@ export default function ImageSanityNext(props: ImageSanityNextProps) {
       }
       return imageUrlBuilder
     },
-    [square]
+    [square],
   )
 
   const imageProps = useNextSanityImage(client, image, {

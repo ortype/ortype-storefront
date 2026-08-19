@@ -1,4 +1,4 @@
-import createImageUrlBuilder from '@sanity/image-url'
+import { createImageUrlBuilder } from '@sanity/image-url'
 import type { Image } from 'sanity'
 
 import { dataset, projectId } from '../env'
@@ -26,7 +26,7 @@ export function resolveOpenGraphImage(image: any, width = 1200, height = 627) {
 
 export function resolveHref(
   documentType?: string,
-  slug?: string
+  slug?: string,
 ): string | undefined {
   switch (documentType) {
     case 'home':
