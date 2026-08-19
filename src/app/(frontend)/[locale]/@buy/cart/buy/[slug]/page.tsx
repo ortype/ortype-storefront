@@ -6,8 +6,6 @@ import { QueryParams } from 'next-sanity'
 import { notFound } from 'next/navigation'
 import { BuyFontsQueryResult } from 'sanity.types'
 
-export const dynamic = 'force-static'
-
 export async function generateStaticParams() {
   return await getAllFontsSlugs()
 }

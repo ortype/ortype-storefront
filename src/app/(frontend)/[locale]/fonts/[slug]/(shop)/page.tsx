@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation'
 import { FontQueryResult } from 'sanity.types'
 
 type Props = {
-  params: { slug: string }
+  params: Promise<QueryParams>
 }
 
 export async function generateMetadata(
@@ -36,8 +36,6 @@ export async function generateMetadata(
       : {},
   } satisfies Metadata
 }
-
-export const dynamic = 'force-static'
 
 export async function generateStaticParams() {
   return await getAllFontsSlugs()

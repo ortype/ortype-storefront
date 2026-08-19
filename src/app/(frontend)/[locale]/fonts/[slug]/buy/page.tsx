@@ -5,8 +5,6 @@ import { fontQuery } from '@/sanity/lib/queries'
 import { QueryParams } from 'next-sanity'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-static'
-
 export async function generateStaticParams() {
   return await getAllFontsSlugs()
 }

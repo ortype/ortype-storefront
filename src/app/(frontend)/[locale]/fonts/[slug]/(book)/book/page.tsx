@@ -4,23 +4,10 @@ import { getFontAndMoreFonts, getVisibleFonts } from '@/sanity/lib/client'
 import { Font } from '@/sanity/lib/queries'
 import { cache as ReactCache } from 'react'
 
-import BookPage from './BookPage'
 import { auth } from '@/lib/auth'
+import BookPage from './BookPage'
 
-export const dynamicParams = false
-// export const dynamic = 'force-dynamic'
-
-// @TODO: look at replacing with '@/sanity/loader/generateStaticSlugs'
-/*
-// 
-// `generateStaticParams` produces `HTTP status 429: Too Many Requests digest: '1272864709' 
-// removing it fixes the issue, so maybe it is related to this discussion
-// https://stackoverflow.com/questions/76305664/next-js-error-in-production-mode-digest-1782794309
-export async function generateStaticParams() {
-  const slugs = await getAllFontsSlugs()
-  return slugs?.map(({ slug }) => `/fonts/${slug}/book`) || []
-}
-*/
+// export const dynamicParams = false
 
 // @TODO: look into next data layer caching to reduce requests
 const getData = ReactCache(async ({ slug }) => {
