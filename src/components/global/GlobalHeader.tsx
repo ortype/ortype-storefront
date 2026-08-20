@@ -25,7 +25,7 @@ const DynamicCartContainer: any = dynamic(
     loading: function LoadingSkeleton() {
       return <div />
     },
-  }
+  },
 )
 const DynamicCart: any = dynamic(
   () => import('@/commercelayer/components/pages/cart/dialog'),
@@ -33,7 +33,7 @@ const DynamicCart: any = dynamic(
     loading: function LoadingSkeleton() {
       return <div />
     },
-  }
+  },
 )
 
 interface Props {
@@ -63,43 +63,43 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
       <SessionId />
       <Nav fonts={fonts} />
       <Group gap={0} p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
-        {settings.customerId ? (
-          <Button
-            _hover={{
-              bg: 'black',
-              color: 'white',
-            }}
-            variant={'circle'}
-            bg={'white'}
-            px={2}
-            mr={1}
-            fontSize={'3xl'}
-            className={'fontVariant-Ejdp7jjphH9hhnST6'}
-            textTransform={'uppercase'}
-            asChild
-          >
-            <Link href={'/account'}>{firstLetter}</Link>
-          </Button>
-        ) : (
-          !hideLogin && (
-            <Button
-              //mr={'-3px'}
-              bg={'white'}
-              _hover={{ color: 'white', bg: 'black' }}
-              mr={1}
-              variant={'block'}
-              borderRadius={'full'}
-              borderWidth={'4px'}
-              fontSize={'1.5rem'}
-              h={11}
-              size={'md'}
-              px={2}
-              onClick={() => setLoginOpen(true)}
-            >
-              {'Login'}
-            </Button>
-          )
-        )}
+        <Button
+          style={{ visiblity: settings.customerId ? 'visible' : 'hidden' }}
+          _hover={{
+            bg: 'black',
+            color: 'white',
+          }}
+          variant={'circle'}
+          bg={'white'}
+          px={2}
+          mr={1}
+          fontSize={'3xl'}
+          className={'fontVariant-Ejdp7jjphH9hhnST6'}
+          textTransform={'uppercase'}
+          asChild
+        >
+          <Link href={'/account'}>{firstLetter}</Link>
+        </Button>
+        <Button
+          style={{
+            visibility:
+              !settings.customerId && !hideLogin ? 'visible' : 'hidden',
+          }}
+          //mr={'-3px'}
+          bg={'white'}
+          _hover={{ color: 'white', bg: 'black' }}
+          mr={1}
+          variant={'block'}
+          borderRadius={'full'}
+          borderWidth={'4px'}
+          fontSize={'1.5rem'}
+          h={11}
+          size={'md'}
+          px={2}
+          onClick={() => setLoginOpen(true)}
+        >
+          {'Login'}
+        </Button>
         <DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu} />
         {/*<DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu}>
         <DynamicCart

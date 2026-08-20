@@ -9,10 +9,10 @@ import {
   visibleFontsQuery,
 } from '@/sanity/lib/queries'
 import { resolveOpenGraphImage } from '@/sanity/lib/utils'
-import i18nConfig from '../../../../i18nConfig'
 import { Metadata, ResolvingMetadata, Viewport } from 'next'
 import { toPlainText, type PortableTextBlock } from 'next-sanity'
 import { Suspense } from 'react'
+import i18nConfig from '../../../../i18nConfig'
 const i18nNamespaces = ['common']
 
 type Props = {
@@ -78,7 +78,7 @@ export default async function LocaleRoute({
         resources={resources}
       >
         <GlobalHeader fonts={fontData.data} />
-        <Suspense>{children}</Suspense>
+        {children}
         {buy}
         <Toaster />
       </TranslationsProvider>

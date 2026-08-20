@@ -79,14 +79,16 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
             pos={'relative'}
             variant="square"
             size="md"
-            bg={typeTrigger || openMenu ? 'white' : 'black'}
-            color={typeTrigger || openMenu ? 'black' : 'white'}
             h={11}
             w={11}
             onMouseEnter={() => {
               setMenuOpen(true)
               showTypeTrigger(true)
               setTypeMenuOpen(false)
+            }}
+            style={{
+              background: typeTrigger || openMenu ? 'white' : 'black',
+              color: typeTrigger || openMenu ? 'black' : 'white',
             }}
             data-active={openMenu ? 'true' : undefined}
             transition={'none'}
@@ -110,7 +112,9 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
           </Button>
 
           <Button
-            visibility={currentFont || typeTrigger ? 'visible' : 'hidden'}
+            style={{
+              visibility: currentFont || typeTrigger ? 'visible' : 'hidden',
+            }}
             ml={'-4px'}
             p={2}
             variant={'square'}

@@ -17,11 +17,11 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Editable from './Editable'
 // import { TieredSelect } from './TieredSelect'
+import { dataset, projectId, studioUrl } from '@/sanity/env'
+import { DataAttribute } from '@/types'
+import { createDataAttribute } from 'next-sanity'
 import TypingIndicator from './TypingIndicator'
 import { TieredNativeSelect } from './tiered-native-select'
-import { createDataAttribute } from 'next-sanity'
-import { DataAttribute } from '@/types'
-import { dataset, projectId, studioUrl } from '@/sanity/env'
 
 interface Props {
   title: string
@@ -250,13 +250,7 @@ export const Tester: React.FC<Props> = (props) => {
             asChild
             tabIndex={-1}
           >
-            <Link
-              href={`/fonts/${slug}`}
-              // const attrVal = attr(`[${index}]body[${props.index}][_key=="${props.value._key}"]`).toString()
-              // data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
-              data-sanity={attr(`slug`).toString()}
-              // data-sanity={attr.scope('portfolios').scope([{ _key: portfolio._key }])}
-            >
+            <Link href={`/fonts/${slug}`} data-sanity={attr(`slug`).toString()}>
               <Text as={'span'} fontSize="sm">
                 {`${title}`}
               </Text>
