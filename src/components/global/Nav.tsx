@@ -60,7 +60,7 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
     const sorted = [...fonts]
     if (currentFont) {
       const currentFontIndex = sorted.findIndex(
-        (font) => font.slug === currentFont.slug
+        (font) => font.slug === currentFont.slug,
       )
 
       if (currentFontIndex > -1) {
@@ -109,29 +109,28 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
             </NextLink>
           </Button>
 
-          <Show when={currentFont || typeTrigger} fallback={<></>}>
-            <Button
-              ml={'-4px'}
-              p={2}
-              variant={'square'}
-              fontSize={'1.5rem'}
-              lineHeight={'1.25rem'}
-              h={11}
-              onMouseEnter={() => {
-                setTypeMenuOpen(true)
-                setMenuOpen(false)
-              }}
-              className={currentFont ? currentFont.defaultVariant?._id : ''}
-            >
-              {currentFont ? currentFont.shortName : 'Type'}
-              <Box
-                ref={typeRef}
-                pos={'absolute'}
-                top={'-12px'}
-                left={'0px'}
-              ></Box>
-            </Button>
-          </Show>
+          <Button
+            visibility={currentFont || typeTrigger ? 'visible' : 'hidden'}
+            ml={'-4px'}
+            p={2}
+            variant={'square'}
+            fontSize={'1.5rem'}
+            lineHeight={'1.25rem'}
+            h={11}
+            onMouseEnter={() => {
+              setTypeMenuOpen(true)
+              setMenuOpen(false)
+            }}
+            className={currentFont ? currentFont.defaultVariant?._id : ''}
+          >
+            {currentFont ? currentFont.shortName : 'Type'}
+            <Box
+              ref={typeRef}
+              pos={'absolute'}
+              top={'-12px'}
+              left={'0px'}
+            ></Box>
+          </Button>
         </Flex>
       </Box>
       <MenuRoot

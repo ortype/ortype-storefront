@@ -47,7 +47,7 @@ function Providers({
                     labels={labels}
                     metrics={metrics}
                   >
-                    <div>{children}</div>
+                    {children}
                   </OrderProvider>
                 </OrderStorage>
               )}
