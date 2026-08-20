@@ -1,3 +1,4 @@
+import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integration-commerce-layer'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { parseBody } from 'next-sanity/webhook'
@@ -46,7 +47,7 @@ function clErrorMessage(e: unknown): string {
 
 async function syncMedia(
   media: SanityMediaItem[],
-  cl: ReturnType<typeof CommerceLayer>
+  cl: ReturnType<typeof CommerceLayer>,
 ): Promise<SyncResult> {
   const result: SyncResult = { created: 0, updated: 0, deleted: 0, errors: [] }
 
@@ -57,7 +58,7 @@ async function syncMedia(
   const managedByRef = new Map(
     allOptions
       .filter((opt) => opt.reference_origin === REFERENCE_ORIGIN)
-      .map((opt) => [opt.reference, opt])
+      .map((opt) => [opt.reference, opt]),
   )
 
   // Lookup by name (for merging pre-existing options)
@@ -89,7 +90,7 @@ async function syncMedia(
           result.errors.push(
             `Failed to update sku_option ${managed.id} (${
               item.label
-            }): ${clErrorMessage(e)}`
+            }): ${clErrorMessage(e)}`,
           )
         }
       }
@@ -114,13 +115,13 @@ async function syncMedia(
         managedByRef.set(item._key, { ...nameMatch, reference: item._key })
         result.updated++
         console.log(
-          `[sync-settings] Merged existing sku_option "${nameMatch.name}" (${nameMatch.id}) → reference: ${item._key}`
+          `[sync-settings] Merged existing sku_option "${nameMatch.name}" (${nameMatch.id}) → reference: ${item._key}`,
         )
       } catch (e) {
         result.errors.push(
           `Failed to merge sku_option ${nameMatch.id} (${
             item.label
-          }): ${clErrorMessage(e)}`
+          }): ${clErrorMessage(e)}`,
         )
       }
       continue
@@ -142,7 +143,7 @@ async function syncMedia(
       result.created++
     } catch (e) {
       result.errors.push(
-        `Failed to create sku_option for "${item.label}": ${clErrorMessage(e)}`
+        `Failed to create sku_option for "${item.label}": ${clErrorMessage(e)}`,
       )
     }
   }
@@ -157,7 +158,7 @@ async function syncMedia(
         result.errors.push(
           `Failed to delete orphaned sku_option ${opt.id} (${
             opt.name
-          }): ${clErrorMessage(e)}`
+          }): ${clErrorMessage(e)}`,
         )
       }
     }
@@ -174,7 +175,7 @@ type FieldSyncHandler = {
   key: keyof SettingsWebhookBody
   handler: (
     data: any,
-    cl: ReturnType<typeof CommerceLayer>
+    cl: ReturnType<typeof CommerceLayer>,
   ) => Promise<SyncResult>
 }
 
@@ -191,7 +192,7 @@ export async function POST(req: NextRequest) {
   try {
     const { body, isValidSignature } = await parseBody<SettingsWebhookBody>(
       req,
-      process.env.SANITY_WEBHOOK_SECRET
+      process.env.SANITY_WEBHOOK_SECRET,
     )
 
     if (!isValidSignature) {
@@ -207,17 +208,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Authenticate with Commerce Layer
-    const token = await authenticate('client_credentials', {
-      clientId: process.env.CL_SYNC_CLIENT_ID,
-      clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
-      endpoint: process.env.CL_ENDPOINT,
-    })
-
-    const cl = CommerceLayer({
-      organization: process.env.CL_SLUG,
-      accessToken: token.accessToken,
-    })
+    const cl = await getIntegrationCommerceLayer()
 
     // Run each registered field handler if its data is present
     const results: Record<string, SyncResult> = {}

@@ -1,3 +1,4 @@
+import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integration-commerce-layer'
 import Providers from '@/components/global/Providers'
 import { DisableDraftMode } from '@/sanity/components/DisableDraftMode'
 import { sanityFetch, SanityLive } from '@/sanity/lib/live'
@@ -6,8 +7,6 @@ import {
   normalizeLicenseMetrics,
   uiLabelsQuery,
 } from '@/sanity/lib/queries'
-import { authenticate } from '@commercelayer/js-auth'
-import CommerceLayer from '@commercelayer/sdk'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
@@ -17,15 +16,8 @@ import { PreloadResources } from '../preload-resources'
 
 const getMarketId = unstable_cache(async () => {
   try {
-    const token = await authenticate('client_credentials', {
-      clientId: process.env.CL_SYNC_CLIENT_ID || '',
-      clientSecret: process.env.CL_SYNC_CLIENT_SECRET || '',
-    })
+    const cl = await getIntegrationCommerceLayer()
 
-    const cl = CommerceLayer({
-      organization: process.env.CL_SLUG || '',
-      accessToken: token?.accessToken || '',
-    })
     const markets = await cl.markets.list({
       filters: {
         name_eq: 'Global',
@@ -65,7 +57,7 @@ export default async function FrontendLayout({
       </Providers>
       {(await draftMode()).isEnabled && (
         <>
-          <SanityLive refreshOnFocus={false} />
+          <SanityLive />
           <DisableDraftMode />
           <VisualEditing />
         </>

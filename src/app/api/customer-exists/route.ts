@@ -1,3 +1,4 @@
+import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integration-commerce-layer'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer from '@commercelayer/sdk'
 import { NextRequest, NextResponse } from 'next/server'
@@ -31,24 +32,11 @@ export async function POST(req: NextRequest) {
           hasPassword: false,
           error: 'Email is required',
         } as CustomerExistsResponse,
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    // Authenticate with integration credentials
-    console.log('🔐 [customer-exists] Authenticating with integration credentials...')
-    const token = await authenticate('client_credentials', {
-      clientId: process.env.CL_SYNC_CLIENT_ID!,
-      clientSecret: process.env.CL_SYNC_CLIENT_SECRET!,
-      endpoint: process.env.CL_ENDPOINT!,
-    })
-
-    console.log('✅ [customer-exists] Got access token')
-
-    const cl = CommerceLayer({
-      organization: process.env.CL_SLUG!,
-      accessToken: token.accessToken,
-    })
+    const cl = await getIntegrationCommerceLayer()
 
     // Query customers by email
     // SDK uses flat filter syntax (different from REST API's filter[q][email_eq])
@@ -94,7 +82,7 @@ export async function POST(req: NextRequest) {
         hasPassword: false,
         error: error instanceof Error ? error.message : 'Unknown error',
       } as CustomerExistsResponse,
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

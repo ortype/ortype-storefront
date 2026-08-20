@@ -1,38 +1,13 @@
-import { authenticate } from '@commercelayer/js-auth'
-import CommerceLayer from '@commercelayer/sdk'
 import slugify from 'slugify'
+import { getIntegrationCommerceLayer } from './get-integration-commerce-layer'
 
 let shippingCategory = undefined
 let market = undefined
 const skuLookup = {}
 
-// Lazily authenticate and construct the Commerce Layer client on first use.
-// This file is imported by a Route Handler, and Next.js imports route
-// modules during `next build` to analyze them - a module-scope `await` here
-// would make a live network call at build/import time and crash the build
-// (or needlessly re-authenticate on every cold start) even when `cl` is
-// never actually used.
-let clPromise: ReturnType<typeof CommerceLayer> | null = null
-
-async function getClient() {
-  if (!clPromise) {
-    const token = await authenticate('client_credentials', {
-      clientId: process.env.CL_SYNC_CLIENT_ID,
-      clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
-      endpoint: process.env.CL_ENDPOINT,
-    })
-
-    clPromise = CommerceLayer({
-      organization: process.env.CL_SLUG,
-      accessToken: token.accessToken,
-    })
-  }
-  return clPromise
-}
-
 export async function getShippingCategory(fresh = false) {
   if (!shippingCategory || fresh) {
-    const cl = await getClient()
+    const cl = await getIntegrationCommerceLayer()
     const shippingCategories = await cl.shipping_categories.list({
       filters: { name_eq: 'Virtual' },
     })
@@ -48,7 +23,7 @@ export async function getShippingCategoryId(fresh = false) {
 
 export async function getMarket(fresh = false) {
   if (!market || fresh) {
-    const cl = await getClient()
+    const cl = await getIntegrationCommerceLayer()
     const markets = await cl.markets.list({
       filters: {
         name_eq: 'Global',
@@ -67,7 +42,7 @@ export async function lookupSkuId(code, fresh = false) {
   if (skuLookup[code]) {
     return skuLookup[code]
   }
-  const cl = await getClient()
+  const cl = await getIntegrationCommerceLayer()
   const skus = await cl.skus.list({ filters: { code_eq: code } })
   const id = skus.shift()?.id
   if (id) {
@@ -78,7 +53,7 @@ export async function lookupSkuId(code, fresh = false) {
 
 export async function jsonImport(resource_type, inputs) {
   try {
-    const cl = await getClient()
+    const cl = await getIntegrationCommerceLayer()
     const importObject = await cl.imports.create({
       resource_type,
       inputs,

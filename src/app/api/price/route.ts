@@ -1,12 +1,12 @@
-import { getLicenseMetrics } from '@/sanity/lib/client'
-import { authenticate } from '@commercelayer/js-auth'
-import CommerceLayer, { type SkuOption } from '@commercelayer/sdk'
-import { NextRequest, NextResponse } from 'next/server'
+import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integration-commerce-layer'
 import {
   calculateLineItemPrice,
   calculateSkuOptionsTotal,
 } from '@/commercelayer/utils/prices'
+import { getLicenseMetrics } from '@/sanity/lib/client'
 import type { CompanySize } from '@/sanity/lib/queries'
+import { type SkuOption } from '@commercelayer/sdk'
+import { NextRequest, NextResponse } from 'next/server'
 // External prices URL is mananged at
 // `${process.env.CL_SLUG}.commercelayer.io/admin/settings/markets/${marketId}/edit`
 // e.g. https://owenhoskins.ngrok.app/api/price
@@ -17,31 +17,11 @@ import type { CompanySize } from '@/sanity/lib/queries'
 /* ------------------------------------------------------------------ */
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
-let cachedCl: ReturnType<typeof CommerceLayer> | null = null
-let cachedClExpiry = 0
-
 let cachedSizes: CompanySize[] | null = null
 let cachedSizesExpiry = 0
 
 let cachedSkuOptions: SkuOption[] | null = null
 let cachedSkuOptionsExpiry = 0
-
-async function getCl() {
-  const now = Date.now()
-  if (cachedCl && now < cachedClExpiry) return cachedCl
-
-  const token = await authenticate('client_credentials', {
-    clientId: process.env.CL_SYNC_CLIENT_ID,
-    clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
-    endpoint: process.env.CL_ENDPOINT,
-  })
-  cachedCl = CommerceLayer({
-    organization: process.env.CL_SLUG,
-    accessToken: token.accessToken,
-  })
-  cachedClExpiry = now + CACHE_TTL_MS
-  return cachedCl
-}
 
 async function getSizes() {
   const now = Date.now()
@@ -57,7 +37,7 @@ async function getSkuOptions() {
   const now = Date.now()
   if (cachedSkuOptions && now < cachedSkuOptionsExpiry) return cachedSkuOptions
 
-  const cl = await getCl()
+  const cl = await getIntegrationCommerceLayer()
   cachedSkuOptions = await cl.sku_options.list()
   cachedSkuOptionsExpiry = now + CACHE_TTL_MS
   return cachedSkuOptions
@@ -111,7 +91,7 @@ type PriceCalculationResponse = {
 
 export async function POST(
   req: NextRequest,
-  res: NextResponse<PriceCalculationResponse>
+  res: NextResponse<PriceCalculationResponse>,
 ) {
   const body = await req.json()
   // console.log('Price req.json(): body... ', body)
@@ -133,7 +113,7 @@ export async function POST(
     ])
 
     const size = sizes.find(
-      ({ value }) => value === metadata.license?.size?.value
+      ({ value }) => value === metadata.license?.size?.value,
     )
 
     if (!size) {
@@ -157,7 +137,7 @@ export async function POST(
       let groupTotal = 0
       for (const [styleSkuCode, typeRefs] of Object.entries(perStyleTypes)) {
         const styleOptions = allSkuOptions.filter(({ reference }) =>
-          typeRefs.includes(reference)
+          typeRefs.includes(reference),
         )
         const stylePrice = calculateLineItemPrice({
           skuOptions: styleOptions,
@@ -185,13 +165,13 @@ export async function POST(
         ({ type, attributes }) =>
           type === 'line_items' &&
           attributes.sku_code !== sku_code &&
-          attributes.metadata?.parentUid === metadata.parentUid
+          attributes.metadata?.parentUid === metadata.parentUid,
       )
 
       const count = metadata.batchSize ?? siblings.length + 1
 
       const selectedTypes = allSkuOptions.filter(({ reference }) =>
-        metadata.license?.types?.find((val: string) => val === reference)
+        metadata.license?.types?.find((val: string) => val === reference),
       )
 
       unit_amount_cents = calculateLineItemPrice({

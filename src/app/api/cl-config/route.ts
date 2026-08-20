@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integration-commerce-layer'
 import { authenticate } from '@commercelayer/js-auth'
 import CommerceLayer, {
   InventoryStockLocationCreate,
@@ -8,6 +8,7 @@ import CommerceLayer, {
   ShippingCategoryCreate,
 } from '@commercelayer/sdk'
 import { AddressCreate } from '@commercelayer/sdk/lib/cjs/resources/addresses'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -19,19 +20,10 @@ interface ExtendedNextApiRequest extends NextApiRequest {
 
 export default async function config(
   req: ExtendedNextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   try {
-    const token = await authenticate('client_credentials', {
-      clientId: process.env.CL_SYNC_CLIENT_ID,
-      clientSecret: process.env.CL_SYNC_CLIENT_SECRET,
-      endpoint: process.env.CL_ENDPOINT,
-    })
-
-    const cl = CommerceLayer({
-      organization: process.env.CL_SLUG,
-      accessToken: token.accessToken,
-    })
+    const cl = await getIntegrationCommerceLayer()
 
     console.log('req:', req.method, req.body)
 
