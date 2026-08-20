@@ -1,5 +1,12 @@
 export type * from 'sanity.types'
 
+import { CreateDataAttribute, CreateDataAttributeProps } from 'next-sanity'
+
+export type DataAttribute = CreateDataAttribute<
+  CreateDataAttributeProps &
+    Required<Pick<CreateDataAttributeProps, 'id' | 'type' | 'path'>>
+>
+
 import type { PortableTextBlock } from '@portabletext/types'
 // import type { Image } from 'sanity'
 

@@ -4,19 +4,14 @@ import { getTesterSizes } from '@/components/composite/Tester/tester-sizing'
 import type { Font } from '@/sanity/lib/queries'
 import { resolveHref } from '@/sanity/lib/utils'
 import { Box, Flex, SegmentGroup, Wrap, WrapItem } from '@chakra-ui/react'
-import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 import { useState } from 'react'
 
 export interface FontIndexProps {
   fonts: Font[]
-  encodeDataAttribute?: EncodeDataAttributeCallback
 }
 
-export default function FontIndex({
-  fonts,
-  encodeDataAttribute,
-}: FontIndexProps) {
+export default function FontIndex({ fonts }: FontIndexProps) {
   const [value, setValue] = useState('List')
   const table = value === 'Table'
 
@@ -32,7 +27,7 @@ export default function FontIndex({
           // Filter out null variants
           const validVariants = font.variants.filter(
             (variant): variant is NonNullable<typeof variant> =>
-              variant !== null
+              variant !== null,
           )
 
           return (
@@ -74,7 +69,6 @@ export default function FontIndex({
                 title={font.shortName}
                 slug={font.slug}
                 href={href}
-                encodeDataAttribute={encodeDataAttribute}
               />
             </WrapItem>
           )

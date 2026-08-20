@@ -13,13 +13,15 @@ import {
   HStack,
   Text,
 } from '@chakra-ui/react'
-import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Editable from './Editable'
 // import { TieredSelect } from './TieredSelect'
 import TypingIndicator from './TypingIndicator'
 import { TieredNativeSelect } from './tiered-native-select'
+import { createDataAttribute } from 'next-sanity'
+import { DataAttribute } from '@/types'
+import { dataset, projectId, studioUrl } from '@/sanity/env'
 
 interface Props {
   title: string
@@ -35,14 +37,12 @@ interface Props {
   defaultVariantId: string
   href: string
   table: boolean
-  encodeDataAttribute?: EncodeDataAttributeCallback
 }
 
 // export default function Tester({ _id, name, slug }: Omit<Font, '_type'>) {
 export const Tester: React.FC<Props> = (props) => {
   const {
     index,
-    encodeDataAttribute,
     fontId,
     title,
     slug,
@@ -52,6 +52,15 @@ export const Tester: React.FC<Props> = (props) => {
     href,
     table,
   } = props
+
+  // Memoize Sanity data attribute creation
+  const attr: DataAttribute = createDataAttribute({
+    projectId,
+    dataset,
+    baseUrl: studioUrl,
+    id: fontId ?? '',
+    type: 'font',
+  })
 
   // is controlled by the focus and blur events of the input
   const [isEditing, setEditing] = useState('')
@@ -243,7 +252,10 @@ export const Tester: React.FC<Props> = (props) => {
           >
             <Link
               href={`/fonts/${slug}`}
-              data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
+              // const attrVal = attr(`[${index}]body[${props.index}][_key=="${props.value._key}"]`).toString()
+              // data-sanity={encodeDataAttribute?.(['fonts', index, 'slug'])}
+              data-sanity={attr(`slug`).toString()}
+              // data-sanity={attr.scope('portfolios').scope([{ _key: portfolio._key }])}
             >
               <Text as={'span'} fontSize="sm">
                 {`${title}`}

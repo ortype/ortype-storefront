@@ -1,4 +1,3 @@
-import type { EncodeDataAttributeCallback } from '@sanity/react-loader'
 import Link from 'next/link'
 
 // import { CustomPortableText } from '@/components/shared/CustomPortableText'
@@ -17,12 +16,11 @@ import type { Post, PostPagePayload } from '@/types'
 
 export interface PostPageProps {
   data: PostPagePayload | null
-  encodeDataAttribute?: EncodeDataAttributeCallback
 }
 
 const NO_POSTS: Post[] = []
 
-export function PostPage({ data, encodeDataAttribute }: PostPageProps) {
+export function PostPage({ data }: PostPageProps) {
   // Default to an empty object to allow previews on non-existent documents
   const { post, morePosts = NO_POSTS } = data ?? {}
 
