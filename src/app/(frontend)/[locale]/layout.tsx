@@ -10,7 +10,7 @@ import {
 } from '@/sanity/lib/queries'
 import { resolveOpenGraphImage } from '@/sanity/lib/utils'
 import { Metadata, ResolvingMetadata, Viewport } from 'next'
-import { toPlainText, type PortableTextBlock } from 'next-sanity'
+import { stegaClean, toPlainText, type PortableTextBlock } from 'next-sanity'
 import { Suspense } from 'react'
 import i18nConfig from '../../../../i18nConfig'
 const i18nNamespaces = ['common']
@@ -68,7 +68,8 @@ export default async function LocaleRoute({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const fontData = await sanityFetch({ query: visibleFontsQuery })
+  const { data } = await sanityFetch({ query: visibleFontsQuery })
+  const fonts = stegaClean(data ?? [])
   const { t, resources } = await initTranslations(locale, i18nNamespaces)
   return (
     <>
@@ -77,7 +78,7 @@ export default async function LocaleRoute({
         locale={locale}
         resources={resources}
       >
-        <GlobalHeader fonts={fontData.data} />
+        <GlobalHeader fonts={fonts} />
         {children}
         {buy}
         <Toaster />

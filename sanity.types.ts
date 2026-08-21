@@ -1121,194 +1121,19 @@ export type CategoryFitersResult = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: homePageQuery
-// Query: {  "fonts": *[_type == "font" && isVisible == true] {      _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },  }}
+// Query: {  "fonts": *[_type == "font" && isVisible == true] {      _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},    variants[]->{_id, optionName},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
 export type HomePageQueryResult = {
   fonts: Array<{
     _id: string
     _type: 'font'
-    name: string | null
-    shortName: string | null
-    isVisible: true
     slug: string | null
-    variants: Array<{
-      name: string | null
-      optionName: string | null
-      _id: string
-    }> | null
-    uid: string | null
-    version: string | null
-    metafields: Array<{
-      key: string | null
-      value: string | null
-    }> | null
+    shortName: string | null
     defaultVariant: {
       _id: string
-      optionName: string | null
     } | null
-    modules: Array<
-      | {
-          _key: string
-          _type: 'module.book'
-          book: {
-            variantId: string | null
-            snapshots: Array<{
-              createdAt?: string
-              spread?: string
-              _type: 'snapshot'
-              _key: string
-            }> | null
-          } | null
-          config?: Config
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.content'
-          title?: string
-          body: Array<
-            | {
-                children?: Array<{
-                  marks?: Array<string>
-                  text?: string
-                  _type: 'span'
-                  _key: string
-                }>
-                style?: 'h2' | 'normal'
-                listItem?: 'bullet' | 'number'
-                markDefs: Array<
-                  | {
-                      reference?: PostReference
-                      _type: 'internalLink'
-                      _key: string
-                      slug: Slug | null
-                    }
-                  | {
-                      href?: string
-                      _type: 'link'
-                      _key: string
-                    }
-                > | null
-                level?: number
-                _type: 'block'
-                _key: string
-              }
-            | {
-                asset?: SanityImageAssetReference
-                media?: unknown
-                hotspot?: SanityImageHotspot
-                crop?: SanityImageCrop
-                alt?: string
-                caption?: string
-                config?: ImageConfig
-                _type: 'image'
-                _key: string
-                markDefs: null
-              }
-            | {
-                _key: string
-                _type: 'module.video'
-                url?: string
-                isBackground?: boolean
-                aspectRatio?: number
-                poster?: string
-                status?: string
-                caption?: Array<{
-                  children?: Array<{
-                    marks?: Array<string>
-                    text?: string
-                    _type: 'span'
-                    _key: string
-                  }>
-                  style?: 'normal'
-                  listItem?: never
-                  markDefs?: Array<{
-                    href?: string
-                    _type: 'link'
-                    _key: string
-                  }>
-                  level?: number
-                  _type: 'block'
-                  _key: string
-                }>
-                markDefs: null
-              }
-          > | null
-          centered?: boolean
-          overflowCol?: boolean
-          book: null
-          tester: null
-        }
-      | {
-          _key: string
-          _type: 'module.features'
-          label?: string
-          features?: Array<{
-            tag?: never
-            title?: string
-            example?: string
-            _type: 'feature'
-            _key: string
-          }>
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.info'
-          title?: string
-          items?: Array<{
-            key?: string
-            content?: Array<{
-              children?: Array<{
-                marks?: Array<string>
-                text?: string
-                _type: 'span'
-                _key: string
-              }>
-              style?: 'normal'
-              listItem?: never
-              markDefs?: Array<{
-                href?: string
-                _type: 'link'
-                _key: string
-              }>
-              level?: number
-              _type: 'block'
-              _key: string
-            }>
-            _type: 'item'
-            _key: string
-          }>
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.styles'
-          title?: string
-          config?: StylesConfig
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.tester'
-          title?: string
-          defaultText?: string
-          defaultVariant?: FontVariantReference
-          book: null
-          tester: null
-          body: null
-        }
-    > | null
-    modifiedAt: string | null
-    languages: Array<{
-      html: string | null
-      name: string | null
+    variants: Array<{
+      _id: string
+      optionName: string | null
     }> | null
     styleGroups: Array<{
       _type: 'group'
@@ -1327,20 +1152,15 @@ export type HomePageQueryResult = {
 
 // Source: src/sanity/lib/queries.ts
 // Variable: visibleFontsQuery
-// Query: *[_type == "font" && isVisible == true] {  _id,  defaultVariant->{_id, optionName},  "slug": slug.current,  name,  shortName,  metafields[]{key, value},}
+// Query: *[_type == "font" && isVisible == true] {    _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},}
 export type VisibleFontsQueryResult = Array<{
   _id: string
+  _type: 'font'
+  slug: string | null
+  shortName: string | null
   defaultVariant: {
     _id: string
-    optionName: string | null
   } | null
-  slug: string | null
-  name: string | null
-  shortName: string | null
-  metafields: Array<{
-    key: string | null
-    value: string | null
-  }> | null
 }>
 
 // Source: src/sanity/lib/queries.ts
@@ -2149,8 +1969,8 @@ declare module '@sanity/client' {
     '\n*[_type == "settings"][0]{\n  buyPage,\n  cartPage\n}\n': UiLabelsQueryResult
     '\n*[_type == "font" && defined(slug.current)][].slug.current\n': FontSlugsQueryResult
     "\n*[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    \"postCount\": count(*[_type == 'post' && references(^._id)])\n  }\n": CategoryFitersResult
-    '\n{\n  "fonts": *[_type == "font" && isVisible == true] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  }\n}\n': HomePageQueryResult
-    '\n*[_type == "font" && isVisible == true] {\n  _id,\n  defaultVariant->{_id, optionName},\n  "slug": slug.current,\n  name,\n  shortName,\n  metafields[]{key, value},\n}': VisibleFontsQueryResult
+    '\n{\n  "fonts": *[_type == "font" && isVisible == true] {\n    \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n\n    variants[]->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}\n': HomePageQueryResult
+    '\n*[_type == "font" && isVisible == true] {\n  \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n\n}': VisibleFontsQueryResult
     '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {\n    _id,\n    _type,\n    uid,\n    name,\n    shortName,\n    "slug": slug.current,\n    variants[]->{name, optionName, _id, parentUid},\n    defaultVariant->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName, parentUid},\n      italicVariants[]->{_id, optionName, parentUid}\n    }    \n  },\n  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {\n      defaultVariant->{_id, optionName},\n      "slug": slug.current,\n      name,\n      shortName\n  }  \n}': BuyFontsQueryResult
     '\n*[_type == "font"] {\n  \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n}': FontsQueryResult
     '\n*[_type == "fontVariant"] {\n  \n  _id,\n  _type,\n  name,\n  optionName,\n  "slug": slug.current,\n  uid,\n  parentUid,\n  version,\n  metafields[]{key, value}\n\n}': FontVariantsQueryResult

@@ -5,6 +5,7 @@ import {
   MenuTrigger,
   MenuTriggerItem,
 } from '@/components/ui/menu'
+import type { VisibleFont } from '@/types'
 import {
   Box,
   Button,
@@ -18,10 +19,9 @@ import {
 import NextLink from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Font } from 'sanity.types'
 
 interface Props {
-  fonts: Font[]
+  fonts: VisibleFont[]
 }
 
 export const Nav: React.FC<Props> = ({ fonts }) => {
@@ -38,7 +38,7 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
   // type sub-menu
   const [openTypeMenu, setTypeMenuOpen] = useState(false)
   const pathname = usePathname()
-  const [currentFont, setCurrentFont] = useState<Font | null>(null)
+  const [currentFont, setCurrentFont] = useState<VisibleFont | null>(null)
 
   useEffect(() => {
     const isFontPath = pathname.includes('fonts/')
@@ -155,7 +155,7 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
             {(item, index) => (
               <MenuItem
                 key={index}
-                value={item.slug}
+                value={item.slug ?? ''} // @TODO: declare slug as non-nullable (?)
                 className={item.defaultVariant?._id}
                 fontSize={'1.5rem'}
                 lineHeight={'1.25rem'}

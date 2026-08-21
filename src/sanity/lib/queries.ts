@@ -1,7 +1,7 @@
-import { defineQuery, PortableTextBlock } from 'next-sanity'
+import { defineQuery } from 'next-sanity'
 
 // src/sanity/lib/queries.ts — instead of hand-declaring the 4 interfaces
-import type { LicenseMetricsQueryResult, UiLabelsQueryResult } from '@/types'
+import type { UiLabelsQueryResult } from '@/types'
 
 export type UiLabels = NonNullable<UiLabelsQueryResult>
 export type BuyLabels = NonNullable<UiLabels['buyPage']>
@@ -84,6 +84,7 @@ export const postAndMoreStoriesQuery = defineQuery(`{
   }
 }`)
 
+// @TODO: move type/interface exports from queries.ts to /types
 export interface Author {
   name?: string
   picture?: any
@@ -147,28 +148,6 @@ export const licenseMetricsQuery = defineQuery(`
 export interface LicenseMetrics {
   sizes: CompanySize[]
   media: MediaType[]
-}
-
-/**
- * Normalization seam: map the (nullable) generated `licenseMetricsQuery`
- * result into the non-null domain types. Schema validation already requires
- * these fields, so incomplete entries are dropped rather than threaded as
- * nulls through the provider and consumers.
- */
-export function normalizeLicenseMetrics(
-  data: LicenseMetricsQueryResult
-): LicenseMetrics {
-  const sizes = (data?.sizes ?? []).flatMap((s) =>
-    s.value != null && s.label != null && s.modifier != null
-      ? [{ value: s.value, label: s.label, modifier: s.modifier }]
-      : []
-  )
-  const media = (data?.media ?? []).flatMap((m) =>
-    m.value != null && m.label != null
-      ? [{ _key: m._key, value: m.value, label: m.label }]
-      : []
-  )
-  return { sizes, media }
 }
 
 export const uiLabelsQuery = defineQuery(`
@@ -239,23 +218,37 @@ export const categoryFiters = defineQuery(`
   }
 `)
 
-// @TODO: unify `homePageQuery` with `visibleFontsQuery`
+// Shared by `homePageQuery` and `visibleFontsQuery` (font grid + nav), trimmed
+// to only the fields those components actually consume. Do not reuse
+// `fontFields` here - that fragment is for the font detail page and pulls in
+// `uid`, `version`, `metafields`, `modules`, `modifiedAt`, `languages`, none
+// of which the visible-font list needs.
+const visibleFontFields = `
+  _id,
+  _type,
+  "slug": slug.current,
+  shortName,
+  defaultVariant->{_id},
+`
+
 export const homePageQuery = defineQuery(`
 {
   "fonts": *[_type == "font" && isVisible == true] {
-    ${fontFields}
+    ${visibleFontFields}
+    variants[]->{_id, optionName},
+    styleGroups[]{
+      _type,
+      groupName,
+      variants[]->{_id, optionName},
+      italicVariants[]->{_id, optionName}
+    },
   }
 }
 `)
 
 export const visibleFontsQuery = defineQuery(`
 *[_type == "font" && isVisible == true] {
-  _id,
-  defaultVariant->{_id, optionName},
-  "slug": slug.current,
-  name,
-  shortName,
-  metafields[]{key, value},
+  ${visibleFontFields}
 }`)
 
 export const buyFontsQuery = defineQuery(`{

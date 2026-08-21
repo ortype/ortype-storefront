@@ -1,5 +1,3 @@
-import type { Font } from '@/sanity/lib/queries'
-
 /*
 // Define types for our data structure
 interface Variant {
@@ -30,76 +28,77 @@ interface Font {
 }
 
 */
+
+import type { HomeFont, HomeFontVariant, HomeStyleGroup } from '@/types'
+
+export type HomeFontVariantWithShortName = HomeFontVariant & {
+  shortName: string
+}
+
+type HomeStyleGroupWithShortNames = Omit<
+  HomeStyleGroup,
+  'variants' | 'italicVariants'
+> & {
+  variants: HomeFontVariantWithShortName[]
+  italicVariants: HomeFontVariantWithShortName[]
+}
+
+export type HomeFontWithShortNames = Omit<HomeFont, 'styleGroups'> & {
+  styleGroups: HomeStyleGroupWithShortNames[]
+}
+
 /**
  * Processes the variants data and adds a shortName field to each variant
  * by removing the groupName from the optionName.
  *
+ * `toHomeFont()` (src/sanity/lib/normalize.ts) already guarantees
+ * `styleGroups`/`variants`/`italicVariants` are plain, null-free arrays, so
+ * this only needs to map over them - no null-branching required.
+ *
  * @param fonts - The array of font objects containing styleGroups and variants
  * @returns The processed array with shortName fields added to all variants
  */
-export default function addShortNameToVariants(fonts: Font[]): Font[] {
+export default function addShortNameToVariants(
+  fonts: HomeFont[],
+): HomeFontWithShortNames[] {
   return fonts.map((font) => {
-    // If styleGroups is undefined, return the font as is
-    if (!font.styleGroups) {
-      return font
-    }
-
-    // Process all groups in the styleGroups array
-    const processedStyleGroups = font.styleGroups.map((group) => {
-      const { groupName } = group
-
-      // Process normal variants
-      const processedVariants = group.variants
-        ? group.variants.map((variant) => {
-            return {
-              ...variant,
-              shortName: removeGroupNameFromOption(
-                variant.optionName,
-                groupName
-              ),
-            }
-          })
-        : null
-
-      // Process italic variants
-      const processedItalicVariants = group.italicVariants
-        ? group.italicVariants.map((variant) => {
-            return {
-              ...variant,
-              shortName: removeGroupNameFromOption(
-                variant.optionName,
-                groupName
-              ),
-            }
-          })
-        : null
-
-      return {
-        ...group,
-        variants: processedVariants,
-        italicVariants: processedItalicVariants,
-      }
+    const addShortName = (
+      variant: HomeFontVariant,
+      groupName: string | null,
+    ): HomeFontVariantWithShortName => ({
+      ...variant,
+      shortName: removeGroupNameFromOption(variant.optionName, groupName),
     })
 
-    // Return the font with processed styleGroups
-    return {
-      ...font,
-      styleGroups: processedStyleGroups,
-    }
+    const styleGroups = font.styleGroups.map((group) => ({
+      ...group,
+      variants: group.variants.map((variant) =>
+        addShortName(variant, group.groupName),
+      ),
+      italicVariants: group.italicVariants.map((variant) =>
+        addShortName(variant, group.groupName),
+      ),
+    }))
+
+    return { ...font, styleGroups }
   })
 }
 
 /**
  * Helper function to remove the groupName from the optionName
  *
- * @param optionName - The original option name
+ * @param optionName - The original option name (may be null - the query
+ * result honestly reflects that the referenced variant could be missing it)
  * @param groupName - The group name to remove
  * @returns The processed option name with the group name removed
  */
 function removeGroupNameFromOption(
-  optionName: string,
-  groupName: string
+  optionName: string | null,
+  groupName: string | null,
 ): string {
+  if (!optionName) return ''
+  if (!groupName) return optionName
+
   // Remove the group name and trim any extra spaces
   // This handles cases like "Condensed Thin" or "Mono Bold Italic"
   return optionName
@@ -119,11 +118,8 @@ function removeGroupNameFromOption(
  * @param font - The font object to process
  * @returns The processed font with shortName fields added to all variants
  */
-export function addShortNameToSingleFont(font: Font): Font {
-  // If styleGroups is undefined, return the font as is
-  if (!font.styleGroups) {
-    return font
-  }
-
+export function addShortNameToSingleFont(
+  font: HomeFont,
+): HomeFontWithShortNames {
   return addShortNameToVariants([font])[0]
 }

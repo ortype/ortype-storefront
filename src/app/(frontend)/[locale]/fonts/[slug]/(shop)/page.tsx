@@ -1,10 +1,10 @@
 import { FontPage } from '@/components/pages/fonts/FontPage'
 import { getAllFontsSlugs } from '@/sanity/lib/client'
 import { sanityFetch } from '@/sanity/lib/live'
+import { toFont } from '@/sanity/lib/normalize'
 import { fontQuery } from '@/sanity/lib/queries'
-import { toPlainText } from '@portabletext/react'
 import { Metadata, ResolvingMetadata } from 'next'
-import { QueryParams } from 'next-sanity'
+import { QueryParams, stegaClean } from 'next-sanity'
 import { notFound } from 'next/navigation'
 import { FontQueryResult } from 'sanity.types'
 
@@ -17,7 +17,9 @@ export async function generateMetadata(
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const params = await props.params
-  const { data: font }: { data: FontQueryResult } = await sanityFetch({
+  const {
+    data: { font },
+  }: { data: FontQueryResult } = await sanityFetch({
     query: fontQuery,
     params,
     stega: false,
@@ -26,9 +28,7 @@ export async function generateMetadata(
 
   return {
     title: font?.name,
-    description: font?.version
-      ? toPlainText(font.version)
-      : (await parent).version,
+    description: font?.version ? font.version : (await parent).version,
     openGraph: ogImage
       ? {
           images: [ogImage, ...((await parent).openGraph?.images || [])],
@@ -51,9 +51,11 @@ export default async function FontSlugRoute({
     params: await params,
   })
 
-  if (!data?.font) {
+  const font = toFont(stegaClean(data.font))
+
+  if (font == null) {
     return notFound()
   }
 
-  return <FontPage data={data} />
+  return <FontPage data={{ font, moreFonts: [] }} />
 }

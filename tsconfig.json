@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
+      "*": [
+        "./*"
+      ],
       "@/*": [
         "./src/*"
       ]
@@ -36,9 +38,9 @@
     "src/types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
     "eslint.config.mjs",
     "next.config.mjs",
+    ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [

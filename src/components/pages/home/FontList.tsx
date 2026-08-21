@@ -1,14 +1,14 @@
 'use client'
 import { Tester } from '@/components/composite/Tester'
 import { getTesterSizes } from '@/components/composite/Tester/tester-sizing'
-import type { Font } from '@/sanity/lib/queries'
 import { resolveHref } from '@/sanity/lib/utils'
+import type { HomeFont } from '@/types'
 import { Box, Flex, SegmentGroup, Wrap, WrapItem } from '@chakra-ui/react'
 import Link from 'next/link'
 import { useState } from 'react'
 
 export interface FontIndexProps {
-  fonts: Font[]
+  fonts: HomeFont[]
 }
 
 export default function FontIndex({ fonts }: FontIndexProps) {
@@ -19,16 +19,33 @@ export default function FontIndex({ fonts }: FontIndexProps) {
     <>
       <Wrap pb={10} px={10} align={'center'} justifyContent={'center'} gap={2}>
         {fonts.map((font, key) => {
-          const href = resolveHref(font._type, font.slug)
+          const href = resolveHref(font._type, font.slug ?? undefined)
           if (!href) {
             return null
           }
 
-          // Filter out null variants
-          const validVariants = font.variants.filter(
-            (variant): variant is NonNullable<typeof variant> =>
-              variant !== null,
-          )
+          // `toHomeFont()` already guarantees `variants` is null-item-free.
+          const validVariants = font.variants
+
+          // `toHomeFont()` guarantees `styleGroups` is an array (never
+          // null), so `font.styleGroups ? ... : ...` always took this
+          // branch even for fonts with no real style groups - breaking the
+          // selector for fonts that only define top-level `variants`.
+          // Check length instead, and fall back to a synthetic group.
+          const styleGroups =
+            font.styleGroups.length > 0
+              ? font.styleGroups.map((group) => ({
+                  groupName: group.groupName ?? '',
+                  variants: group.variants,
+                  italicVariants: group.italicVariants,
+                }))
+              : [
+                  {
+                    groupName: 'standard',
+                    variants: validVariants,
+                    italicVariants: [],
+                  },
+                ]
 
           return (
             <WrapItem
@@ -56,18 +73,15 @@ export default function FontIndex({ fonts }: FontIndexProps) {
                 table={table}
                 fontId={font._id}
                 variants={validVariants}
-                styleGroups={
-                  font.styleGroups
-                    ? font.styleGroups
-                    : [{ groupName: 'standard', variants: validVariants }]
-                }
+                styleGroups={styleGroups}
                 defaultVariantId={
                   font.defaultVariant?._id ||
-                  (validVariants[0] && validVariants[0]._id)
+                  validVariants[0]?._id ||
+                  ''
                 }
                 index={key + 1} // Start tabIndex from 1 for sequential tab navigation
-                title={font.shortName}
-                slug={font.slug}
+                title={font.shortName ?? ''}
+                slug={font.slug ?? ''}
                 href={href}
               />
             </WrapItem>
@@ -77,7 +91,7 @@ export default function FontIndex({ fonts }: FontIndexProps) {
       <Box pos={'fixed'} bottom={4} right={4}>
         <SegmentGroup.Root
           value={value}
-          size={'md'}
+          size={'sm'}
           onValueChange={(e) => setValue(e.value)}
         >
           <SegmentGroup.Indicator />

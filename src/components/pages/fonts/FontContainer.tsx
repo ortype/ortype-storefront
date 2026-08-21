@@ -1,7 +1,6 @@
 'use client'
-import React, { createContext, useContext, ReactNode } from 'react'
-import { Font } from '@/sanity/lib/queries'
-import { validation } from 'sanity'
+import { Font } from '@/types'
+import React, { createContext, ReactNode, useContext } from 'react'
 
 // @TODO: consider moving to `components/data/` like `components/data/BuyProvider`
 
@@ -30,8 +29,9 @@ const FontContainer: React.FC<FontContainerProps> = ({
   children,
 }) => {
   // Filter out null variants
+  // @TODO: is this not now being done in the normalizer?
   const validVariants = font?.variants.filter(
-    (variant): variant is NonNullable<typeof variant> => variant !== null
+    (variant): variant is NonNullable<typeof variant> => variant !== null,
   )
 
   return (

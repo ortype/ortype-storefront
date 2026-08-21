@@ -204,7 +204,7 @@ export default defineType({
                     disableNew: true,
                     filter: ({ document, parent, parentPath }) => {
                       const group = document.styleGroups?.filter(
-                        (group) => group._key === parentPath[1]?._key
+                        (group) => group._key === parentPath[1]?._key,
                       )[0]
                       let filter =
                         '!(_id in $selected) && uid match $groupName && !(uid match "*Italic") && parentUid == $parentUid'
@@ -245,7 +245,7 @@ export default defineType({
                     disableNew: true,
                     filter: ({ document, parent, parentPath }) => {
                       const group = document.styleGroups?.filter(
-                        (group) => group._key === parentPath[1]._key
+                        (group) => group._key === parentPath[1]._key,
                       )[0]
                       // console.log('groupName: ', parentPath[1]._key, groupName)
                       /*
@@ -301,7 +301,7 @@ export default defineType({
           to: { type: variant.name },
         },
       ],
-      // validation: (rule) => rule.required(),
+      validation: (rule) => rule.required(),
       group: 'fontFileSync',
     }),
     defineField({
@@ -309,6 +309,7 @@ export default defineType({
       title: 'Features',
       type: 'array',
       group: 'fontFileSync',
+      validation: (rule) => rule.required(),
       readOnly: true,
       of: [
         defineArrayMember({
@@ -336,6 +337,7 @@ export default defineType({
       title: 'Languages',
       type: 'array',
       group: 'fontFileSync',
+      validation: (rule) => rule.required(),
       readOnly: true,
       of: [
         defineArrayMember({
@@ -362,11 +364,14 @@ export default defineType({
       name: 'metafields',
       title: 'Metafields',
       type: 'array',
+      readOnly: true,
+      validation: (rule) => rule.required(),
       of: [
         {
           type: 'object',
           name: 'metafield',
           title: 'Metafield',
+          validation: (rule) => rule.required(),
           preview: {
             select: {
               title: `key`,

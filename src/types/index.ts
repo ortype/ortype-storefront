@@ -1,14 +1,34 @@
 export type * from 'sanity.types'
 
-import { CreateDataAttribute, CreateDataAttributeProps } from 'next-sanity'
+import {
+  CreateDataAttribute,
+  CreateDataAttributeProps,
+  type StegaCleaned,
+} from 'next-sanity'
+import type {
+  FontQueryResult,
+  HomePageQueryResult,
+  VisibleFontsQueryResult,
+} from 'sanity.types'
+
+// Every "array field → item type" alias:
+// NonNullable<T> is applied to the checked type so the conditional is
+// non-distributive: a naked `T` would distribute over `Array<X> | null`, and the
+// `null` member matches with no inference candidate for `U`, widening the whole
+// result to `unknown`.
+export type ElementOf<T> =
+  NonNullable<T> extends readonly (infer U)[] ? U : never
 
 export type DataAttribute = CreateDataAttribute<
   CreateDataAttributeProps &
     Required<Pick<CreateDataAttributeProps, 'id' | 'type' | 'path'>>
 >
 
-import type { PortableTextBlock } from '@portabletext/types'
-// import type { Image } from 'sanity'
+// There's no `StegaEncodedValue` type. `next-sanity` re-exports
+// `@sanity/client/stega`'s `StegaCleaned<T>`, which already deep-strips the
+// `StegaString` brand recursively and has a matching runtime `stegaClean()`
+// helper (also re-exported from `next-sanity`) - no need to hand-roll this.
+export type WithoutStega<T> = StegaCleaned<T>
 
 export interface FontPagePayload {
   font: Font
@@ -18,7 +38,7 @@ export interface FontPagePayload {
 export interface HomePagePayload {
   // footer?: PortableTextBlock[]
   // overview?: PortableTextBlock[]
-  fonts?: Font[]
+  fonts?: HomeFont[]
   // title?: string
 }
 
@@ -53,58 +73,24 @@ export interface SettingsPayload {
   }
 }
 
-interface Snapshot {
-  createdAt: string
-  spread: string
-}
+// `Font` and friends mirror `fontQuery` (src/sanity/lib/queries.ts) exactly,
+// derived from typegen's `FontQueryResult` instead of hand-declared, so they
+// can't drift from what the query actually returns.
+type RawFont = NonNullable<FontQueryResult['font']>
+type RawStyleGroup = NonNullable<RawFont['styleGroups']>[number]
+type RawStyleGroupVariant = NonNullable<RawStyleGroup['variants']>[number]
 
-interface Book {
-  variantId: string
-  snapshots: Snapshot[]
-}
+export type FontVariant = NonNullable<RawFont['variants']>[number]
+export type Metafield = NonNullable<RawFont['metafields']>[number]
+export type Language = NonNullable<RawFont['languages']>[number]
 
-interface SpecialFeature {
-  title: string
-  example: string
-  tag: string
-}
-
-interface Module {
-  title: string
-  // different modules defined here
-  // book
-  book: Book
-  config: {
-    display: string
-  }
-  // features
-  label: string
-  features: SpecialFeature[]
-  // content
-  body: PortableTextBlock[]
-  // info
-  items: {
-    key: string
-    // content: @TODO sanity block types
-    content: PortableTextBlock[]
-  }
-}
-
-export interface Metafield {
-  key: string
-  value: string
-}
-
-export interface Feature {
-  tag: string // 'aalt'
-  name: string // 'Access All Alternates'
-  css: { feature: string } // { feature: 'font-feature-settings: "aalt"', variant: null }
-}
-
-export interface Language {
-  html: string // country code
-  name: string // full name
-  ot: string // another country code...
+// `toFont()` (src/sanity/lib/normalize.ts) filters null items out of every
+// dereferenced array below, so those fields are re-declared here as plain,
+// item-safe arrays rather than typegen's `Array<T | null> | null`. Every
+// other field keeps whatever nullability `FontQueryResult` actually reports.
+export type StyleGroup = Omit<RawStyleGroup, 'variants' | 'italicVariants'> & {
+  variants: RawStyleGroupVariant[]
+  italicVariants: RawStyleGroupVariant[]
 }
 
 export interface Metrics {
@@ -117,39 +103,38 @@ export interface Metrics {
   distanceTop: number
 }
 
-type StyleGroup = {
-  groupName: string
-  variants: { _id: string; optionName: string }[]
-  italicVariants: { _id: string; optionName: string }[]
-}
-
-export interface Font {
-  _id: string
-  _type: string
-  name: string
-  isVisible: boolean
-  uid?: string
-  version?: string
-  shortName?: string
-  slug: string
+export type Font = Omit<
+  RawFont,
+  'variants' | 'metafields' | 'languages' | 'styleGroups'
+> & {
   variants: FontVariant[]
-  modules?: Module[]
-  modifiedAt: string
   metafields: Metafield[]
-  styleGroups?: StyleGroup[]
+  languages: Language[]
+  styleGroups: StyleGroup[]
+  // Computed client-side in FontPage from `metafields`; not part of the query.
   metrics?: Metrics
-  features?: Feature[]
-  languages?: Language[]
-  defaultVariant: FontVariant
 }
 
-export interface FontVariant {
-  _id: string
-  _type: string
-  name: string
-  optionName: string
-  shortName?: string
-  uid?: string
-  parentUid?: string
-  version?: string
+// `VisibleFont` and `HomeFont` mirror `visibleFontsQuery` and `homePageQuery`
+// (src/sanity/lib/queries.ts), which share the trimmed `visibleFontFields`
+// GROQ fragment. Because `HomeFont` only adds fields on top of that shared
+// fragment, every `HomeFont` structurally satisfies `VisibleFont` too - so a
+// `HomeFont[]` can be passed anywhere a `VisibleFont[]` is expected.
+export type VisibleFont = VisibleFontsQueryResult[number]
+
+type RawHomeFont = NonNullable<HomePageQueryResult['fonts']>[number]
+
+export type HomeFontVariant = NonNullable<RawHomeFont['variants']>[number]
+
+export type HomeStyleGroup = Omit<
+  NonNullable<RawHomeFont['styleGroups']>[number],
+  'variants' | 'italicVariants'
+> & {
+  variants: HomeFontVariant[]
+  italicVariants: HomeFontVariant[]
+}
+
+export type HomeFont = Omit<RawHomeFont, 'variants' | 'styleGroups'> & {
+  variants: HomeFontVariant[]
+  styleGroups: HomeStyleGroup[]
 }

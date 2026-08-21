@@ -3,7 +3,7 @@ import { UPDATE_TESTER_BY_ID } from '@/graphql/mutations'
 import { GET_TESTER_BY_FONTID } from '@/graphql/queries'
 import { ON_TESTER_UPDATED } from '@/graphql/subscriptions'
 import { decodeOpaqueId } from '@/lib/utils/decoding'
-import type { Font, FontVariant } from '@/sanity/lib/queries'
+import type { HomeFontVariant } from '@/types'
 import { useMutation, useQuery } from '@apollo/client'
 import {
   Box,
@@ -28,11 +28,11 @@ interface Props {
   fontId: string
   index: number
   slug: string
-  variants: FontVariant[]
+  variants: HomeFontVariant[]
   styleGroups: {
     groupName: string
-    variants?: FontVariant[]
-    italicVariants?: FontVariant[]
+    variants?: HomeFontVariant[]
+    italicVariants?: HomeFontVariant[]
   }[]
   defaultVariantId: string
   href: string
@@ -244,12 +244,7 @@ export const Tester: React.FC<Props> = (props) => {
         visibility={loading ? 'hidden' : 'visible'}
       >
         <HStack gap={6} pos={'relative'}>
-          <Button
-            variant={'block'}
-            size={table ? 'xs' : 'xs'}
-            asChild
-            tabIndex={-1}
-          >
+          <Button variant={'block'} size={'xs'} asChild tabIndex={-1}>
             <Link href={`/fonts/${slug}`} data-sanity={attr(`slug`).toString()}>
               <Text as={'span'} fontSize="sm">
                 {`${title}`}
@@ -281,7 +276,7 @@ export const Tester: React.FC<Props> = (props) => {
               bg={'white'}
               color={'black'}
               size={table ? 'xs' : 'xs'}
-              fontSize={'md'}
+              fontSize={'sm'}
               px={'0.75rem'}
               minW={'auto'}
               borderRadius={'3rem'}

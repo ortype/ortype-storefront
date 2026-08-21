@@ -2,11 +2,8 @@ import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integrati
 import Providers from '@/components/global/Providers'
 import { DisableDraftMode } from '@/sanity/components/DisableDraftMode'
 import { sanityFetch, SanityLive } from '@/sanity/lib/live'
-import {
-  licenseMetricsQuery,
-  normalizeLicenseMetrics,
-  uiLabelsQuery,
-} from '@/sanity/lib/queries'
+import { normalizeLicenseMetrics } from '@/sanity/lib/normalize'
+import { licenseMetricsQuery, uiLabelsQuery } from '@/sanity/lib/queries'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'

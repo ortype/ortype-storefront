@@ -3,7 +3,7 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from '@/components/ui/native-select'
-import type { FontVariant } from '@/types'
+import { HomeFontVariantWithShortName } from '@/sanity/utils/add-short-name'
 import { createListCollection } from '@chakra-ui/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -11,8 +11,8 @@ interface Props {
   currentVariantId: string
   styleGroups: {
     groupName: string
-    variants?: FontVariant[]
-    italicVariants?: FontVariant[]
+    variants?: HomeFontVariantWithShortName[]
+    italicVariants?: HomeFontVariantWithShortName[]
   }[]
   handleVariantChange: (value: string[]) => void
 }
@@ -51,7 +51,7 @@ export const TieredNativeSelect: React.FC<Props> = (props) => {
       ...(currentGroup?.variants || []),
       ...(currentGroup?.italicVariants || []),
     ],
-    [currentGroup]
+    [currentGroup],
   )
 
   // Find the index of currently selected variant within a specified group
@@ -68,7 +68,7 @@ export const TieredNativeSelect: React.FC<Props> = (props) => {
       const index = groupVariants.findIndex((v) => v._id === variantId)
       return index !== -1 ? index : 0 // Return 0 as fallback when variant isn't found
     },
-    [styleGroups]
+    [styleGroups],
   )
 
   // When the selected group changes, maintain the same index position
@@ -82,7 +82,7 @@ export const TieredNativeSelect: React.FC<Props> = (props) => {
 
       // Get the new group and its variants
       const newGroup = styleGroups.find(
-        (group) => group.groupName === selectedGroup
+        (group) => group.groupName === selectedGroup,
       )
 
       if (!newGroup) return
@@ -121,7 +121,7 @@ export const TieredNativeSelect: React.FC<Props> = (props) => {
         label: group.groupName,
         value: group.groupName,
       })),
-    [styleGroups]
+    [styleGroups],
   )
 
   // Create options for the variant select based on selected group
@@ -131,18 +131,18 @@ export const TieredNativeSelect: React.FC<Props> = (props) => {
         label: variant.shortName || variant.optionName,
         value: variant._id,
       })),
-    [groupVariants]
+    [groupVariants],
   )
 
   // Create collections for both selects
   const groupCollection = useMemo(
     () => createListCollection({ items: groupOptions }),
-    [groupOptions]
+    [groupOptions],
   )
 
   const variantCollection = useMemo(
     () => createListCollection({ items: variantOptions }),
-    [variantOptions]
+    [variantOptions],
   )
 
   return (
