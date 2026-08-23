@@ -13,5 +13,6 @@ export default defineCliConfig({
   typegen: {
     overloadClientMethods: true,
     generates: './sanity.types.ts',
+    path: ['./src/sanity/lib/queries.ts'],
   },
 })

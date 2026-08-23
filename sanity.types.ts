@@ -730,13 +730,6 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
 
-// Source: src/app/(frontend)/[locale]/archive/[slug]/page.tsx
-// Variable: postSlugs
-// Query: *[_type == "post" && defined(slug.current)]{"slug": slug.current}
-export type PostSlugsResult = Array<{
-  slug: string | null
-}>
-
 // Source: src/sanity/lib/queries.ts
 // Variable: PAGES_SLUGS_QUERY
 // Query: *[_type == "page" && defined(slug.current)] {    "slug": slug.current}
@@ -910,6 +903,13 @@ export type PostsQueryResult = Array<{
     _type: 'block'
     _key: string
   }> | null
+}>
+
+// Source: src/sanity/lib/queries.ts
+// Variable: postSlugs
+// Query: *[_type == "post" && defined(slug.current)]{"slug": slug.current}
+export type PostSlugsResult = Array<{
+  slug: string | null
 }>
 
 // Source: src/sanity/lib/queries.ts
@@ -1121,7 +1121,7 @@ export type CategoryFitersResult = Array<{
 
 // Source: src/sanity/lib/queries.ts
 // Variable: homePageQuery
-// Query: {  "fonts": *[_type == "font" && isVisible == true] {      _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},    variants[]->{_id, optionName},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
+// Query: {  "fonts": *[_type == "font" && isVisible == true] {      _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},  metafields[]{key, value},    variants[]->{_id, optionName},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
 export type HomePageQueryResult = {
   fonts: Array<{
     _id: string
@@ -1131,6 +1131,10 @@ export type HomePageQueryResult = {
     defaultVariant: {
       _id: string
     } | null
+    metafields: Array<{
+      key: string | null
+      value: string | null
+    }> | null
     variants: Array<{
       _id: string
       optionName: string | null
@@ -1152,7 +1156,7 @@ export type HomePageQueryResult = {
 
 // Source: src/sanity/lib/queries.ts
 // Variable: visibleFontsQuery
-// Query: *[_type == "font" && isVisible == true] {    _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},}
+// Query: *[_type == "font" && isVisible == true] {    _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},  metafields[]{key, value},}
 export type VisibleFontsQueryResult = Array<{
   _id: string
   _type: 'font'
@@ -1161,6 +1165,10 @@ export type VisibleFontsQueryResult = Array<{
   defaultVariant: {
     _id: string
   } | null
+  metafields: Array<{
+    key: string | null
+    value: string | null
+  }> | null
 }>
 
 // Source: src/sanity/lib/queries.ts
@@ -1959,18 +1967,18 @@ export type FontQueryResult = {
 import '@sanity/client'
 declare module '@sanity/client' {
   interface SanityQueries {
-    '*[_type == "post" && defined(slug.current)]{"slug": slug.current}': PostSlugsResult
     '\n*[_type == "page" && defined(slug.current)] {\n    "slug": slug.current\n}\n': PAGES_SLUGS_QUERY_RESULT
     '\n*[_type == \'page\' && slug.current == $page][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    blockContent,\n    "modules": modules[]{\n        ...,\n    }\n}\n': PAGES_QUERY_RESULT
     '*[_type == "settings"][0]': SettingsQueryResult
     '\n*[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n}': PostsQueryResult
+    '*[_type == "post" && defined(slug.current)]{"slug": slug.current}': PostSlugsResult
     '{\n  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  },\n  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  }\n}': PostAndMoreStoriesQueryResult
     '\n*[_type == "settings"][0]{\n  "sizes": sizes[]{value, label, modifier},\n  "media": media[]{_key, value, label}\n}\n': LicenseMetricsQueryResult
     '\n*[_type == "settings"][0]{\n  buyPage,\n  cartPage\n}\n': UiLabelsQueryResult
     '\n*[_type == "font" && defined(slug.current)][].slug.current\n': FontSlugsQueryResult
     "\n*[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    \"postCount\": count(*[_type == 'post' && references(^._id)])\n  }\n": CategoryFitersResult
-    '\n{\n  "fonts": *[_type == "font" && isVisible == true] {\n    \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n\n    variants[]->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}\n': HomePageQueryResult
-    '\n*[_type == "font" && isVisible == true] {\n  \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n\n}': VisibleFontsQueryResult
+    '\n{\n  "fonts": *[_type == "font" && isVisible == true] {\n    \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n  metafields[]{key, value},\n\n    variants[]->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}\n': HomePageQueryResult
+    '\n*[_type == "font" && isVisible == true] {\n  \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n  metafields[]{key, value},\n\n}': VisibleFontsQueryResult
     '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {\n    _id,\n    _type,\n    uid,\n    name,\n    shortName,\n    "slug": slug.current,\n    variants[]->{name, optionName, _id, parentUid},\n    defaultVariant->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName, parentUid},\n      italicVariants[]->{_id, optionName, parentUid}\n    }    \n  },\n  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {\n      defaultVariant->{_id, optionName},\n      "slug": slug.current,\n      name,\n      shortName\n  }  \n}': BuyFontsQueryResult
     '\n*[_type == "font"] {\n  \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n}': FontsQueryResult
     '\n*[_type == "fontVariant"] {\n  \n  _id,\n  _type,\n  name,\n  optionName,\n  "slug": slug.current,\n  uid,\n  parentUid,\n  version,\n  metafields[]{key, value}\n\n}': FontVariantsQueryResult

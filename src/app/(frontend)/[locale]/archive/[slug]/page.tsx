@@ -1,10 +1,9 @@
 import { PostPage } from '@/components/pages/posts/PostPage'
 import { client } from '@/sanity/lib/client'
 import { sanityFetch } from '@/sanity/lib/live'
-import { postAndMoreStoriesQuery } from '@/sanity/lib/queries'
+import { postAndMoreStoriesQuery, postSlugs } from '@/sanity/lib/queries'
 import { resolveOpenGraphImage } from '@/sanity/lib/utils'
 import { Metadata, ResolvingMetadata } from 'next'
-import { defineQuery } from 'next-sanity'
 import { notFound } from 'next/navigation'
 import { PostAndMoreStoriesQueryResult } from 'sanity.types'
 
@@ -36,10 +35,6 @@ export async function generateMetadata(
     },
   } satisfies Metadata
 }
-
-const postSlugs = defineQuery(
-  `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`,
-)
 
 export async function generateStaticParams() {
   const slugs = await client.fetch(postSlugs)

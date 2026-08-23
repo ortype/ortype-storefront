@@ -73,6 +73,10 @@ export const postsQuery = defineQuery(`
   ${postFields}
 }`)
 
+export const postSlugs = defineQuery(
+  `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`,
+)
+
 export const postAndMoreStoriesQuery = defineQuery(`{
   "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {
     content,
@@ -218,7 +222,7 @@ export const categoryFiters = defineQuery(`
   }
 `)
 
-// Shared by `homePageQuery` and `visibleFontsQuery` (font grid + nav), trimmed
+// Shared by `homePageQuery` and `visibleFontsQuery` (font grid + nav + font preload), trimmed
 // to only the fields those components actually consume. Do not reuse
 // `fontFields` here - that fragment is for the font detail page and pulls in
 // `uid`, `version`, `metafields`, `modules`, `modifiedAt`, `languages`, none
@@ -229,6 +233,7 @@ const visibleFontFields = `
   "slug": slug.current,
   shortName,
   defaultVariant->{_id},
+  metafields[]{key, value},
 `
 
 export const homePageQuery = defineQuery(`
