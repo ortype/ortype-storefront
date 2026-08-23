@@ -18,7 +18,6 @@ interface Props {
 function OrderList({ id, type = 'orders' }: Props): JSX.Element {
   const { orders, subscriptions, getCustomerOrders, getCustomerSubscriptions } =
     useCustomerContext()
-  const ctx = useCustomerContext()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
 

@@ -135,7 +135,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           onSuccess()
         } else {
           console.log(
-            'ℹ️ Login successful - no step advancement or callback needed'
+            'ℹ️ Login successful - no step advancement or callback needed',
           )
         }
       } else {
@@ -193,9 +193,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 borderWidth={'none'}
                 bg={'brand.50'}
                 _hover={{
-                  bg: 'brand.50',
-                  // borderColor: 'black'
-                  borderRadius: '0px',
+                  bg: '#e3e3e3',
                 }}
                 borderRadius={'100px'}
                 transition={

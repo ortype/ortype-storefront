@@ -50,7 +50,7 @@ const validationSchema = yup.object().shape({
         const hasSpecialChar = /[^\w\s]/.test(value)
 
         return hasLowercase && hasUppercase && hasNumber && hasSpecialChar
-      }
+      },
     ),
   customerConfirmPassword: yup
     .string()
@@ -220,9 +220,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 borderWidth={'none'}
                 bg={'brand.50'}
                 _hover={{
-                  bg: 'brand.50',
-                  // borderColor: 'black'
-                  borderRadius: '0px',
+                  bg: '#e3e3e3',
                 }}
                 borderRadius={'100px'}
                 transition={

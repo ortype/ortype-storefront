@@ -7,9 +7,14 @@ const DynamicOrderPage: any = dynamic(
     loading: function LoadingSkeleton() {
       return <div />
     },
-  }
+  },
 )
 
-export default function Order({ params }: { params: { orderId: string } }) {
-  return <DynamicOrderPage orderId={params.orderId} />
+export default async function Order({
+  params,
+}: {
+  params: { orderId: string }
+}) {
+  const { orderId } = await params
+  return <DynamicOrderPage orderId={orderId} />
 }

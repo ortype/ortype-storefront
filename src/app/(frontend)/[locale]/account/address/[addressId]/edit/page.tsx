@@ -2,20 +2,19 @@ import dynamic from 'next/dynamic'
 
 const DynamicAccountAddressFormPage: any = dynamic(
   () =>
-    import(
-      '@/commercelayer/components/pages/account/address/address-form-page'
-    ),
+    import('@/commercelayer/components/pages/account/address/address-form-page'),
   {
     loading: function LoadingSkeleton() {
       return <div />
     },
-  }
+  },
 )
 
-export default function EditAddress({
+export default async function Page({
   params,
 }: {
-  params: { addressId: string }
+  params: Promise<{ addressId: string }>
 }) {
-  return <DynamicAccountAddressFormPage addressId={params.addressId} />
+  const { addressId } = await params
+  return <DynamicAccountAddressFormPage addressId={addressId} />
 }

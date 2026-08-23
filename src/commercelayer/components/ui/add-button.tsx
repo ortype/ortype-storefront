@@ -17,11 +17,14 @@ export function AddButton(props: Props): JSX.Element {
       onClick={action}
       data-test-id={testId}
       variant={'subtle'}
-      borderColor={'brand.50'}
+      borderColor={'transparent'}
       borderWidth={'2px'}
       bg={'brand.50'}
-      _hover={{ bg: 'brand.50', borderColor: 'black' }}
-      borderRadius={'full'}
+      _hover={{ bg: '#e3e3e3', borderRadius: '0px' }}
+      borderRadius={'100px'}
+      transition={
+        'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
+      }
       size={'sm'}
       fontSize={'lg'}
       {...props}
