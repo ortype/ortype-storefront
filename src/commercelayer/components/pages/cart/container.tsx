@@ -22,8 +22,10 @@ const CartContainer = ({
     return null
 
   if (!orderId || itemsCount === 0) {
+    return null
     // @TODO: if orderId does not exist, show an empty cart instead of an error
-    return (
+    /*return (
+    
       <Button
         variant={'block'}
         borderWidth={'4px'}
@@ -37,8 +39,7 @@ const CartContainer = ({
         asChild
       >
         <Link href={'/cart'}>{`Cart`}</Link>
-      </Button>
-    )
+      </Button>)*/
     /*
     return (
       <Button
@@ -64,7 +65,7 @@ const CartContainer = ({
         bg={'white'}
         _hover={{ color: 'white', bg: 'black' }}
         borderWidth={'4px'}
-        fontSize={'1.5rem'}
+        fontSize={'1.4rem'}
         h={11}
         px={2}
         fontVariantNumeric={'tabular-nums'}

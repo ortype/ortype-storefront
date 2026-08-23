@@ -79,7 +79,7 @@ export default async function LocaleRoute({
         resources={resources}
       >
         <GlobalHeader fonts={fonts} />
-        {children}
+        <Suspense>{children}</Suspense>
         {buy}
         <Toaster />
       </TranslationsProvider>
