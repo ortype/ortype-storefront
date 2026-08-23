@@ -292,6 +292,13 @@ export const fontVariantsQuery = defineQuery(`
   ${fontVariantFields}
 }`)
 
+// Matches ortype-graphql-api's `fontVariantsQuery` filter: only variants
+// actually referenced by a font (excludes orphaned fontVariant docs).
+export const webfontsQuery = defineQuery(`
+*[_type == "fontVariant" && count(*[references(^._id)]) > 0] {
+  ${fontVariantFields}
+}`)
+
 export const fontAndMoreFontsQuery = defineQuery(`{
   "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
     ${fontFields}

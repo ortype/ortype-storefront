@@ -7,7 +7,8 @@ import { licenseMetricsQuery, uiLabelsQuery } from '@/sanity/lib/queries'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
-import { PreloadResources } from '../preload-resources'
+import Globals from 'src/components/global/Globals'
+import './storefront.css'
 
 // https://github.com/vercel/next.js/discussions/54075
 
@@ -48,7 +49,7 @@ export default async function FrontendLayout({
 
   return (
     <>
-      <PreloadResources />
+      <Globals />
       <Providers marketId={marketId} labels={labels} metrics={metrics}>
         {children}
       </Providers>

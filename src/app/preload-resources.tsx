@@ -1,44 +1,76 @@
-'use client'
-
-import { client } from '@/sanity/lib/client'
-import { useEffect } from 'react'
+import type { Webfont } from '@/sanity/lib/webfonts'
 import ReactDOM from 'react-dom'
 
-import { visibleFontsQuery } from '@/sanity/lib/queries'
+function resourceType(webfont: Webfont) {
+  if (webfont.vf) return 'font/truetype-variations'
+  if (webfont.woff2) return 'font/woff2'
+  return 'font/woff'
+}
 
-export function PreloadResources() {
-  useEffect(() => {
-    const preloadFonts = async () => {
-      try {
-        const fonts = await client.fetch<string[]>(visibleFontsQuery)
-        fonts?.forEach((font) => {
-          let familyFile = font?.metafields.find(
-            (metafield) => metafield.key === 'familyFile'
-          )?.value
+function fontFaceBlock(webfont: Webfont) {
+  const {
+    classId,
+    fontFamily,
+    fontFamilyVariable,
+    woff,
+    woff2,
+    vf,
+    fontVariationSettings,
+  } = webfont
 
-          if (familyFile?.includes('public')) {
-            familyFile = familyFile.replace(
-              'public',
-              process.env.NEXT_PUBLIC_API_URL || ''
-            )
-          }
-
-          const type = familyFile?.includes('.ttf')
-            ? 'font/truetype-variations'
-            : 'font/woff2'
-          ReactDOM.preload(familyFile, {
-            as: 'font',
-            type,
-            crossOrigin: 'anonymous',
-          })
-        })
-      } catch (error) {
-        console.error('Failed to preload fonts:', error)
+  if (fontVariationSettings && vf) {
+    return `
+      @font-face {
+        font-display: block;
+        font-family: "${fontFamilyVariable}";
+        src: url("${vf}") format("truetype-variations");
+        font-weight: normal;
+        font-style: normal;
       }
-    }
+      @supports (font-variation-settings: normal) {
+        .${classId} {
+          font-family: "${fontFamilyVariable}";
+          font-variation-settings: ${fontVariationSettings};
+        }
+      }`
+  }
 
-    preloadFonts()
-  }, []) // Empty dependency array means this runs once on mount
+  if (woff2 || woff) {
+    const src = [
+      woff2 && `url("${woff2}") format("woff2")`,
+      woff && `url("${woff}") format("woff")`,
+    ]
+      .filter(Boolean)
+      .join(', ')
 
-  return null
+    return `
+@font-face {
+  font-display: block;
+  font-family: "${fontFamily}";
+  src: ${src};
+  font-weight: normal;
+  font-style: normal;
+}
+.${classId} {
+  font-family: "${fontFamily}", "Comic Sans MS";
+}`
+  }
+
+  return ''
+}
+
+export async function PreloadResources({ webfonts }: { webfonts: Webfont[] }) {
+  for (const webfont of webfonts) {
+    const url = webfont.vf ?? webfont.woff2 ?? webfont.woff
+    if (!url) continue
+    ReactDOM.preload(url, {
+      as: 'font',
+      type: resourceType(webfont),
+      crossOrigin: 'anonymous',
+    })
+  }
+
+  const css = webfonts.map(fontFaceBlock).filter(Boolean).join('\n')
+
+  return css ? <style>{css}</style> : null
 }

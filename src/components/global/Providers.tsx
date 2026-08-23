@@ -3,7 +3,6 @@ import { IdentityProvider } from '@/commercelayer/providers/identity'
 import { OrderProvider } from '@/commercelayer/providers/Order'
 import OrderStorage from '@/commercelayer/providers/Order/Storage'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
-import Webfonts from '@/components/global/Webfonts'
 import { Provider as ChakraProvider } from '@/components/ui/provider'
 import { type LicenseMetrics, type UiLabels } from '@/sanity/lib/queries'
 
@@ -31,28 +30,26 @@ function Providers({
     <>
       <ChakraProvider>
         <ApolloClientProvider initialApolloState={{}}>
-          <Webfonts>
-            <IdentityProvider
-              config={{
-                ...config,
-                scope: marketId,
-                returnUrl: '/',
-                resetPasswordUrl: '/forgot-password',
-              }}
-            >
-              {(ctx) => (
-                <OrderStorage persistKey={config.persistKey}>
-                  <OrderProvider
-                    config={ctx.clientConfig}
-                    labels={labels}
-                    metrics={metrics}
-                  >
-                    {children}
-                  </OrderProvider>
-                </OrderStorage>
-              )}
-            </IdentityProvider>
-          </Webfonts>
+          <IdentityProvider
+            config={{
+              ...config,
+              scope: marketId,
+              returnUrl: '/',
+              resetPasswordUrl: '/forgot-password',
+            }}
+          >
+            {(ctx) => (
+              <OrderStorage persistKey={config.persistKey}>
+                <OrderProvider
+                  config={ctx.clientConfig}
+                  labels={labels}
+                  metrics={metrics}
+                >
+                  {children}
+                </OrderProvider>
+              </OrderStorage>
+            )}
+          </IdentityProvider>
         </ApolloClientProvider>
       </ChakraProvider>
     </>
