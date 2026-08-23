@@ -11,24 +11,32 @@ import Globals from 'src/components/global/Globals'
 import './storefront.css'
 
 // https://github.com/vercel/next.js/discussions/54075
+const isDev = process.env.NODE_ENV === 'development'
 
-const getMarketId = unstable_cache(async () => {
-  try {
-    const cl = await getIntegrationCommerceLayer()
+const getMarketId = unstable_cache(
+  async () => {
+    try {
+      const cl = await getIntegrationCommerceLayer()
 
-    const markets = await cl.markets.list({
-      filters: {
-        name_eq: 'Global',
-      },
-    })
-    if (markets.length) {
-      return `market:id:${markets.shift().id}`
+      const markets = await cl.markets.list({
+        filters: {
+          name_eq: 'Global',
+        },
+      })
+      if (markets.length) {
+        return `market:id:${markets.shift().id}`
+      }
+    } catch (e) {
+      console.log('getmarketId error: ', e)
     }
-  } catch (e) {
-    console.log('getmarketId error: ', e)
-  }
-  return null
-}, ['commerce-layer-marketId'])
+    return null
+  },
+  ['commerce-layer-marketId'],
+  {
+    revalidate: isDev ? 60 : 3600, // Faster revalidation in dev
+    tags: ['commerce-layer'],
+  },
+)
 
 export default async function FrontendLayout({
   children,
