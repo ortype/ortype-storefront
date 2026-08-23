@@ -24,7 +24,7 @@ const RETRIES = 3
  * @returns the `FetchResource<T>` object containing the resolved data and the status of requests.
  */
 export const retryCall = async <T>(
-  f: () => Promise<T>
+  f: () => Promise<T>,
 ): Promise<FetchResource<T> | undefined> => {
   return await retry(
     async (_, attempt) => {
@@ -34,11 +34,30 @@ export const retryCall = async <T>(
           success: true,
         }
       } catch (error: any) {
-        // sdk return sa structured object in case of api error
-        // we assume we hit a not-retriable error when the error object returned has no keys
-        const isNotRetryiable =
+        const isNotRetryable =
           error.status === 401 || !Object.keys(error).length
-        if (isNotRetryiable) {
+
+        // NEW: Handle rate limits explicitly
+        if (error.status === 429) {
+          const retryAfter = error.headers?.['retry-after'] || 60
+
+          if (attempt === RETRIES + 1) {
+            return {
+              object: undefined,
+              success: false,
+              bailed: true, // Don't continue after exhausting retries on 429
+            }
+          }
+
+          // Wait before next attempt
+          await new Promise((resolve) =>
+            setTimeout(resolve, parseInt(retryAfter) * 1000 || 2000),
+          )
+
+          throw error // Retry with delay
+        }
+
+        if (isNotRetryable) {
           return {
             object: undefined,
             success: false,
@@ -58,6 +77,9 @@ export const retryCall = async <T>(
     },
     {
       retries: RETRIES,
-    }
+      minTimeout: 1000,
+      maxTimeout: 5000,
+      factor: 2, // Exponential backoff
+    },
   )
 }

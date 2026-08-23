@@ -8,7 +8,7 @@
 
 import type { CommerceLayerClient } from '@commercelayer/sdk'
 
-import { retryCall } from '@/utils/retryCall'
+import { retryCall } from '@/commercelayer/utils/retryCall'
 
 interface GetOrderConfig {
   /**
@@ -35,7 +35,7 @@ export const getOrder = async (config: GetOrderConfig) => {
 
 export const getAsyncOrder = async (
   client: CommerceLayerClient,
-  orderId: string
+  orderId: string,
 ) => {
   return await client.orders.retrieve(orderId, {
     fields: {

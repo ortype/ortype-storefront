@@ -1,7 +1,7 @@
 import type { CommerceLayerClient } from '@commercelayer/sdk'
 import type { Settings } from 'CustomApp'
 
-import { retryCall } from '@/utils/retryCall'
+import { retryCall } from '@/commercelayer/utils/retryCall'
 
 type GetCustomerDetailsConfig = Pick<Settings, 'customerId'> & {
   client: CommerceLayerClient
@@ -21,7 +21,7 @@ export const getCustomerDetails = async (config: GetCustomerDetailsConfig) => {
 
 const getAsyncCustomer = async (
   client: CommerceLayerClient,
-  customerId: string
+  customerId: string,
 ) => {
   return await client.customers.retrieve(customerId, {
     fields: {
