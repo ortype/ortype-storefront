@@ -75,13 +75,12 @@ export default function FontIndex({ fonts }: FontIndexProps) {
                 variants={validVariants}
                 styleGroups={styleGroups}
                 defaultVariantId={
-                  font.defaultVariant?._id ||
-                  validVariants[0]?._id ||
-                  ''
+                  font.defaultVariant?._id || validVariants[0]?._id || ''
                 }
                 index={key + 1} // Start tabIndex from 1 for sequential tab navigation
                 title={font.shortName ?? ''}
                 slug={font.slug ?? ''}
+                badge={font.badge ?? {}}
                 href={href}
               />
             </WrapItem>

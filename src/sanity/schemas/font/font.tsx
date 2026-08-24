@@ -70,6 +70,23 @@ export default defineType({
       group: 'presentation',
     }),
     defineField({
+      type: 'object',
+      name: 'badge',
+      group: 'presentation',
+      fields: [
+        defineArrayMember({
+          type: 'string',
+          name: 'label',
+          validation: (rule) => rule.required(),
+        }),
+        defineArrayMember({
+          type: 'date',
+          name: 'endDate',
+          validation: (rule) => rule.required(),
+        }),
+      ],
+    }),
+    defineField({
       name: 'description',
       title: 'Description',
       type: 'text',

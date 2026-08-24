@@ -240,6 +240,10 @@ export const homePageQuery = defineQuery(`
 {
   "fonts": *[_type == "font" && isVisible == true]|order(orderRank) {
     ${visibleFontFields}
+    badge {
+      label,
+      endDate
+    },
     variants[]->{_id, optionName},
     styleGroups[]{
       _type,

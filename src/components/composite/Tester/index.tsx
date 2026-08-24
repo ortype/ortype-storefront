@@ -6,10 +6,12 @@ import { decodeOpaqueId } from '@/lib/utils/decoding'
 import type { HomeFontVariant } from '@/types'
 import { useMutation, useQuery } from '@apollo/client'
 import {
+  Badge,
   Box,
   Button,
   Link as ChakraLink,
   Flex,
+  Float,
   HStack,
   Text,
 } from '@chakra-ui/react'
@@ -19,6 +21,7 @@ import Editable from './Editable'
 // import { TieredSelect } from './TieredSelect'
 import { dataset, projectId, studioUrl } from '@/sanity/env'
 import { DataAttribute } from '@/types'
+import { format } from 'date-fns'
 import { createDataAttribute } from 'next-sanity'
 import TypingIndicator from './TypingIndicator'
 import { TieredNativeSelect } from './tiered-native-select'
@@ -35,8 +38,11 @@ interface Props {
     italicVariants?: HomeFontVariant[]
   }[]
   defaultVariantId: string
-  href: string
   table: boolean
+  badge: {
+    label: string
+    endDate: string
+  }
 }
 
 // export default function Tester({ _id, name, slug }: Omit<Font, '_type'>) {
@@ -49,7 +55,7 @@ export const Tester: React.FC<Props> = (props) => {
     variants,
     styleGroups,
     defaultVariantId,
-    href,
+    badge,
     table,
   } = props
 
@@ -71,7 +77,6 @@ export const Tester: React.FC<Props> = (props) => {
   const [limiter, setLimiter] = useState(false)
 
   const handleVariantChange = (value) => {
-    console.log('handleVariantChange: ', value)
     if (!value || value.length === 0) return
     setVariantId(value[0])
     handleUpdateFontTester({
@@ -216,6 +221,12 @@ export const Tester: React.FC<Props> = (props) => {
     }
   }, [isEditing, fontId, entry, currentVariantId, updateFontTesterById])
 
+  // 2017-02-12
+  const showBadge =
+    badge.label &&
+    badge.endDate &&
+    badge.endDate > format(new Date(), 'yyyy-mm-dd')
+
   const disabled =
     isEditing?.length > 0 && isEditing !== sessionStorage.getItem('sessionId')
   if (disabled) return <TypingIndicator table={table} />
@@ -249,8 +260,27 @@ export const Tester: React.FC<Props> = (props) => {
               <Text as={'span'} fontSize="sm">
                 {`${title}`}
               </Text>
+              {showBadge && (
+                <Float
+                  placement={'top-end'}
+                  offsetX={badge.label.length > 5 ? '3' : '1'}
+                  as={'span'}
+                >
+                  <Badge
+                    size={'xs'}
+                    bg={'red'}
+                    color={'white'}
+                    variant={'solid'}
+                    borderRadius={'full'}
+                    textTransform={'uppercase'}
+                  >
+                    {badge.label}
+                  </Badge>
+                </Float>
+              )}
             </Link>
           </Button>
+
           {variants.length > 1 && (
             <HStack gap={6} display={table ? 'none' : 'flex'}>
               <TieredNativeSelect
