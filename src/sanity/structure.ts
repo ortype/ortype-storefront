@@ -1,7 +1,10 @@
 import settingsType from '@/sanity/schemas/settings'
+import { TranslateIcon } from '@sanity/icons'
+import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list'
 import type { StructureResolver } from 'sanity/structure'
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = (S) => {
+  const { context } = S
   // Goes through all of the singletons that were provided and translates them into something the
   // Desktool can understand
   const singletonItems = [settingsType].map((typeDef) => {
@@ -12,17 +15,30 @@ export const structure: StructureResolver = (S) => {
         S.editor()
           .id(typeDef.name)
           .schemaType(typeDef.name)
-          .documentId(typeDef.name)
+          .documentId(typeDef.name),
       )
   })
 
-  // The default root list items (except custom ones)
   const defaultListItems = S.documentTypeListItems().filter(
     (listItem) =>
-      ![settingsType].find((singleton) => singleton.name === listItem.getId())
+      !['font', 'fontVariant', 'media.tag', 'media.folder', 'author'].includes(
+        listItem.getId(),
+      ) &&
+      ![settingsType].find((singleton) => singleton.name === listItem.getId()),
   )
 
   return S.list()
     .title('Content')
-    .items([...singletonItems, S.divider(), ...defaultListItems])
+    .items([
+      orderableDocumentListDeskItem({
+        type: 'font',
+        title: 'Fonts',
+        icon: TranslateIcon,
+        S,
+        context,
+      }),
+      ...singletonItems,
+      S.divider(),
+      ...defaultListItems,
+    ])
 }

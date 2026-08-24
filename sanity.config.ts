@@ -3,7 +3,7 @@
  */
 
 import { visionTool } from '@sanity/vision'
-import { PluginOptions, defineConfig } from 'sanity'
+import { defineConfig, PluginOptions } from 'sanity'
 import { media } from 'sanity-plugin-media'
 import { presentationTool, type DocumentLocation } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'

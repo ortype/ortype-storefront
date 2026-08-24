@@ -238,7 +238,7 @@ const visibleFontFields = `
 
 export const homePageQuery = defineQuery(`
 {
-  "fonts": *[_type == "font" && isVisible == true] {
+  "fonts": *[_type == "font" && isVisible == true]|order(orderRank) {
     ${visibleFontFields}
     variants[]->{_id, optionName},
     styleGroups[]{
@@ -252,12 +252,12 @@ export const homePageQuery = defineQuery(`
 `)
 
 export const visibleFontsQuery = defineQuery(`
-*[_type == "font" && isVisible == true] {
+*[_type == "font" && isVisible == true]|order(orderRank) {
   ${visibleFontFields}
 }`)
 
 export const buyFontsQuery = defineQuery(`{
-  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
+  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {
     _id,
     _type,
     uid,
@@ -273,7 +273,7 @@ export const buyFontsQuery = defineQuery(`{
       italicVariants[]->{_id, optionName, parentUid}
     }    
   },
-  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(shortName desc) {
+  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(orderRank) {
       defaultVariant->{_id, optionName},
       "slug": slug.current,
       name,
@@ -283,7 +283,7 @@ export const buyFontsQuery = defineQuery(`{
 
 // used in `getAllFonts` @TODO: consider removing if not really needed
 export const fontsQuery = defineQuery(`
-*[_type == "font"] {
+*[_type == "font"] | order(orderRank) {
   ${fontFields}
 }`)
 
@@ -300,16 +300,16 @@ export const webfontsQuery = defineQuery(`
 }`)
 
 export const fontAndMoreFontsQuery = defineQuery(`{
-  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
+  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {
     ${fontFields}
   },
-  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(date desc, _updatedAt desc) [0...2] {
+  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(orderRank) [0...2] {
     ${fontFields}
   }
 }`)
 
 export const fontQuery = defineQuery(`{
-  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(_updatedAt desc) [0] {
+  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {
     _id,
     _type,
     name,

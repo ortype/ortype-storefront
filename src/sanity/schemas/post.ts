@@ -1,4 +1,4 @@
-import { BookIcon } from '@sanity/icons'
+import { ArchiveIcon } from '@sanity/icons'
 import { format, parseISO } from 'date-fns'
 import { defineField, defineType } from 'sanity'
 
@@ -20,8 +20,8 @@ import font from './font/font'
 
 export default defineType({
   name: 'post',
-  title: 'Post',
-  icon: BookIcon,
+  title: 'Archive',
+  icon: ArchiveIcon,
   type: 'document',
   initialValue: {
     postType: 'archive',

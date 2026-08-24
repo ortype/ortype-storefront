@@ -1,9 +1,11 @@
 import { defineField, defineType } from 'sanity'
 import blockContent from './blockContent'
+import { InfoFilledIcon } from '@sanity/icons'
 
 const page = {
   name: 'page',
-  title: 'Page',
+  title: 'Info',
+  icon: InfoFilledIcon,
   type: 'document',
   // groups: [
   //   {

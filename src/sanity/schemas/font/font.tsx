@@ -4,9 +4,9 @@ import moduleFeatures from '@/sanity/schemas/font/modules/features'
 import moduleInfo from '@/sanity/schemas/font/modules/info'
 import moduleStyles from '@/sanity/schemas/font/modules/styles'
 import moduleTester from '@/sanity/schemas/font/modules/tester'
-import { BookIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 // import productImage from '../productImage'
+import { orderRankField } from '@sanity/orderable-document-list'
 import variant from './variant'
 
 // @TODO: Only allow creation via the API (not through the Studio UI)
@@ -43,6 +43,7 @@ export default defineType({
       readOnly: true,
       group: 'fontFileSync',
     }),
+    orderRankField({ type: 'font' }),
     defineField({
       name: 'shortName',
       title: 'Short name',
