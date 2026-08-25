@@ -107,7 +107,7 @@ export const FontGroup: React.FC<Props> = ({
               <Text
                 className={'discount'}
                 as={'span'}
-                fontSize={'2xs'}
+                fontSize={'xs'}
               >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
               <Text className={'discount'} as={'span'} fontSize={'xs'}>
                 {`${totalPrice} EUR`}

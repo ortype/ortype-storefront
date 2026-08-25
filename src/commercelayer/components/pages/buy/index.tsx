@@ -265,12 +265,12 @@ export const Buy = () => {
             >
               <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
                 {' '}
-                {`Styles`}
+                {`Licenses`}
               </Text>
               <Text
                 pl={1}
                 textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-              >{`${fontLineItemCount}`}</Text>
+              >{`${licensesCount}`}</Text>
             </Flex>
             <Flex
               w={'full'}
@@ -281,12 +281,12 @@ export const Buy = () => {
             >
               <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
                 {' '}
-                {`Licenses`}
+                {`Styles`}
               </Text>
               <Text
                 pl={1}
                 textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
-              >{`${licensesCount}`}</Text>
+              >{`${fontLineItemCount}`}</Text>
             </Flex>
             <Flex
               w={'full'}

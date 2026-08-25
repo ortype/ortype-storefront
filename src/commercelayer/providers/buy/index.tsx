@@ -266,17 +266,31 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     }
   }, [selectedSkus, selectedSkuOptions, licenseSize])
 
-  /** Base unit price (count=1, no volume discount) — stable regardless of selection count */
-  const baseUnitPrice = useMemo(() => {
-    if (!licenseSize?.modifier || !selectedSkuOptions?.length) return 0
-    return formatPrice(
-      calculateLineItemPrice({
-        skuOptions: selectedSkuOptions,
-        sizeModifier: licenseSize.modifier,
-        count: 1,
-      })
-    )
-  }, [selectedSkuOptions, licenseSize])
+  /** Both a group's discounted total and its undiscounted (count=1) reference
+   * total, in display units (EUR). Reuses `calculateLineItemPrice` — the same
+   * source of truth CL uses to actually charge — so these previews can never
+   * diverge from what the customer is charged once they select the group. */
+  const computeGroupPrices = (
+    styleCount: number
+  ): { fullPrice: number; totalPrice: number } => {
+    if (!styleCount || !licenseSize?.modifier || !selectedSkuOptions?.length) {
+      return { fullPrice: 0, totalPrice: 0 }
+    }
+    const fullUnitCents = calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: 1,
+    })
+    const unitPriceCents = calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: styleCount,
+    })
+    return {
+      fullPrice: formatPrice(fullUnitCents * styleCount),
+      totalPrice: formatPrice(unitPriceCents * styleCount),
+    }
+  }
 
   /** Pre-computed "full family" group summary */
   const fullFamilySummary = useMemo<GroupPriceSummary>(() => {
@@ -284,10 +298,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     const percentageDiscount = styleCount ? calculateDiscount(styleCount) : 0
     const allSelected =
       styleCount > 0 && Object.keys(selectedSkus).length === styleCount
-    const fullPrice = baseUnitPrice * styleCount
-    const totalPrice = Math.round(fullPrice - fullPrice * percentageDiscount)
+    const { fullPrice, totalPrice } = computeGroupPrices(styleCount)
     return { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice }
-  }, [font.variants, selectedSkus, baseUnitPrice])
+  }, [font.variants, selectedSkus, selectedSkuOptions, licenseSize])
 
   /** Pre-computed group summaries keyed by groupName */
   const groupSummaries = useMemo<{ [groupName: string]: GroupPriceSummary }>(
@@ -306,10 +319,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         ]
         const allSelected =
           styleCount > 0 && allVariantIds.every((id) => id in selectedSkus)
-        const fullPrice = baseUnitPrice * styleCount
-        const totalPrice = Math.round(
-          fullPrice - fullPrice * percentageDiscount
-        )
+        const { fullPrice, totalPrice } = computeGroupPrices(styleCount)
         result[group.groupName] = {
           styleCount,
           allSelected,
@@ -320,7 +330,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       }
       return result
     },
-    [font.styleGroups, selectedSkus, baseUnitPrice]
+    [font.styleGroups, selectedSkus, selectedSkuOptions, licenseSize]
   )
 
   return (
