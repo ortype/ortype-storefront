@@ -81,7 +81,11 @@ export function calculateLineItemPrice({
 
   const discount = calculateDiscount(count)
   const unit = basePer * (1 - discount)
-  return Math.floor(unit / 100) * 100 // Math.floor(2549 / 100) * 100 → 2500 cents
+  // Round to the nearest cent before flooring to the nearest whole currency
+  // unit. Without this, floating-point noise (e.g. `1 - 0.78` evaluates to
+  // 0.21999999999999997 in JS, not 0.22) can push `unit` just under a 100-cent
+  // boundary and cause Math.floor to drop an entire extra currency unit.
+  return Math.floor(Math.round(unit) / 100) * 100 // Math.floor(2549 / 100) * 100 → 2500 cents
 }
 
 /**

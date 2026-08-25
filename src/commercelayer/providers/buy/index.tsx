@@ -1,6 +1,5 @@
 import { ActionType, reducer } from '@/commercelayer/providers/buy/reducer'
 import {
-  calculateDiscount,
   calculateLineItemPrice,
   formatPrice,
 } from '@/commercelayer/utils/prices'
@@ -252,7 +251,12 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     // Total: discounted price × count
     const totalCents = unitPriceCents * styleCount
 
-    const discount = calculateDiscount(styleCount)
+    // Derived from the actual (rounded) prices rather than
+    // `calculateDiscount(styleCount)` directly, so the displayed percentage
+    // always matches what the customer is really being charged — including
+    // the small rounding-down applied to unitPriceCents.
+    const discount =
+      fullPriceCents > 0 ? 1 - unitPriceCents / fullPriceCents : 0
 
     return {
       show: true,
@@ -266,15 +270,18 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     }
   }, [selectedSkus, selectedSkuOptions, licenseSize])
 
-  /** Both a group's discounted total and its undiscounted (count=1) reference
-   * total, in display units (EUR). Reuses `calculateLineItemPrice` — the same
-   * source of truth CL uses to actually charge — so these previews can never
-   * diverge from what the customer is charged once they select the group. */
+  /** A group's discounted total, its undiscounted (count=1) reference total,
+   * and the actual discount percentage those two imply — all in display
+   * units (EUR / 0–1). Reuses `calculateLineItemPrice` — the same source of
+   * truth CL uses to actually charge — so these previews can never diverge
+   * from what the customer is charged once they select the group, and the
+   * displayed percentage always matches the actual (rounded) prices shown
+   * alongside it. */
   const computeGroupPrices = (
     styleCount: number
-  ): { fullPrice: number; totalPrice: number } => {
+  ): { fullPrice: number; totalPrice: number; percentageDiscount: number } => {
     if (!styleCount || !licenseSize?.modifier || !selectedSkuOptions?.length) {
-      return { fullPrice: 0, totalPrice: 0 }
+      return { fullPrice: 0, totalPrice: 0, percentageDiscount: 0 }
     }
     const fullUnitCents = calculateLineItemPrice({
       skuOptions: selectedSkuOptions,
@@ -289,16 +296,18 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     return {
       fullPrice: formatPrice(fullUnitCents * styleCount),
       totalPrice: formatPrice(unitPriceCents * styleCount),
+      percentageDiscount:
+        fullUnitCents > 0 ? 1 - unitPriceCents / fullUnitCents : 0,
     }
   }
 
   /** Pre-computed "full family" group summary */
   const fullFamilySummary = useMemo<GroupPriceSummary>(() => {
     const styleCount = font.variants?.length || 0
-    const percentageDiscount = styleCount ? calculateDiscount(styleCount) : 0
     const allSelected =
       styleCount > 0 && Object.keys(selectedSkus).length === styleCount
-    const { fullPrice, totalPrice } = computeGroupPrices(styleCount)
+    const { fullPrice, totalPrice, percentageDiscount } =
+      computeGroupPrices(styleCount)
     return { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice }
   }, [font.variants, selectedSkus, selectedSkuOptions, licenseSize])
 
@@ -310,16 +319,14 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       for (const group of font.styleGroups) {
         const styleCount =
           (group.variants?.length || 0) + (group.italicVariants?.length || 0)
-        const percentageDiscount = styleCount
-          ? calculateDiscount(styleCount)
-          : 0
         const allVariantIds = [
           ...(group.variants || []).map((v) => v._id),
           ...(group.italicVariants || []).map((v) => v._id),
         ]
         const allSelected =
           styleCount > 0 && allVariantIds.every((id) => id in selectedSkus)
-        const { fullPrice, totalPrice } = computeGroupPrices(styleCount)
+        const { fullPrice, totalPrice, percentageDiscount } =
+          computeGroupPrices(styleCount)
         result[group.groupName] = {
           styleCount,
           allSelected,
