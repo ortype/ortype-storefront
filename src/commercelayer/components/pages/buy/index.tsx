@@ -341,7 +341,7 @@ export const Buy = () => {
                   w={'50%'}
                   whiteSpace={'nowrap'}
                 >
-                  {`Discount (${percentageDiscount * 100}%)`}
+                  {`Discount (~${percentageDiscount}%)`}
                 </Text>
                 <Text
                   pl={1}

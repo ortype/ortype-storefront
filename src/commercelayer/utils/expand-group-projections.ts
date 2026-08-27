@@ -6,6 +6,8 @@
  * orders) and downstream processing (fulfillment, license generation).
  */
 
+import { formatPrice } from "./prices"
+
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
@@ -282,12 +284,12 @@ export function groupByFont(
 
 /** Computed order-level totals from expanded font groups. */
 export interface OrderTotals {
-  /** Sum of undiscounted per-style prices (float, e.g. 490.00) */
-  subtotalAmount: number
-  /** Sum of discounted per-style prices (float) */
-  discountedTotal: number
+  /** Sum of undiscounted per-style prices (string, e.g. 490.00) */
+  subtotalAmount: string
+  /** Sum of discounted per-style prices (string) */
+  discountedTotal: string
   /** subtotalAmount - discountedTotal */
-  totalDiscount: number
+  totalDiscount: string
 }
 
 /**
@@ -307,10 +309,10 @@ export function computeOrderTotals(
     }
   }
 
-  const subtotalAmount = Math.round(subtotalCents) / 100
-  const discountedTotal = Math.round(discountedCents) / 100
+  const subtotalAmount = formatPrice(subtotalCents)
+  const discountedTotal = formatPrice(discountedCents)
   const totalDiscount =
-    Math.round((subtotalAmount - discountedTotal) * 100) / 100
+    formatPrice(subtotalCents - discountedCents)
 
   return { subtotalAmount, discountedTotal, totalDiscount }
 }

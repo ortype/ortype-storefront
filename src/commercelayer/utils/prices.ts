@@ -27,9 +27,9 @@ export function calculateDiscount(n: number): number {
   const percentage = Math.min(
     MAX_DISCOUNT,
     MAX_DISCOUNT -
-      (MAX_DISCOUNT - START_DISCOUNT) * Math.exp(-K * Math.pow(n - 2, P))
+      (MAX_DISCOUNT - START_DISCOUNT) * Math.exp(-K * Math.pow(n - 2, P)),
   )
-  return Math.round(percentage * 100) / 100
+  return (percentage * 100) / 100
 }
 
 /**
@@ -77,22 +77,18 @@ export function calculateLineItemPrice({
 }): number {
   const skuOptionsTotal = calculateSkuOptionsTotal(skuOptions)
   const basePer = skuOptionsTotal * sizeModifier
-  if (count <= 1) return basePer
+  if (count <= 1) return Math.round(basePer)
 
   const discount = calculateDiscount(count)
   const unit = basePer * (1 - discount)
-  // Round to the nearest cent before flooring to the nearest whole currency
-  // unit. Without this, floating-point noise (e.g. `1 - 0.78` evaluates to
-  // 0.21999999999999997 in JS, not 0.22) can push `unit` just under a 100-cent
-  // boundary and cause Math.floor to drop an entire extra currency unit.
-  return Math.floor(Math.round(unit) / 100) * 100 // Math.floor(2549 / 100) * 100 → 2500 cents
+  return Math.round(unit) // 2 decimal places
 }
 
 /**
- * Convert cents to a display-friendly float (e.g. 15000 → 150).
+ * Convert cents to a display-friendly string with 2 decimal places (e.g. 15000 → "150.00").
  */
-export function formatPrice(cents: number): number {
-  return Math.floor(cents / 100)
+export function formatPrice(cents: number): string {
+  return (cents / 100).toFixed(2)
 }
 
 /**

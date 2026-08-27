@@ -1,18 +1,19 @@
 import { ActionType, reducer } from '@/commercelayer/providers/buy/reducer'
 import {
+  calculateDiscount,
   calculateLineItemPrice,
   formatPrice,
 } from '@/commercelayer/utils/prices'
 import { Font } from '@/sanity/lib/queries'
-import slugify from 'slugify'
 import { createContext, FC, useContext, useEffect, useMemo, useReducer, useRef } from 'react'
+import slugify from 'slugify'
+import { useOrderContext } from '../Order'
 import type {
   FontSelectionSummary,
   GroupPriceSummary,
   ResolvedFontGroup,
   StyleEntry,
 } from '../Order/types'
-import { useOrderContext } from '../Order'
 
 /** Minimal params for toggling a single style — font-level context is auto-filled */
 export interface ToggleStyleParams {
@@ -233,6 +234,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       count: styleCount,
     })
 
+
     // Unit price if one more style were added
     const nextUnitPriceCents = calculateLineItemPrice({
       skuOptions: selectedSkuOptions,
@@ -240,24 +242,21 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       count: styleCount + 1,
     })
 
+
     // Subtotal: full price as if each style had no discount (count=1)
     const fullPriceCents = calculateLineItemPrice({
       skuOptions: selectedSkuOptions,
       sizeModifier: licenseSize.modifier,
       count: 1,
     })
+
     const subtotalCents = fullPriceCents * styleCount
 
     // Total: discounted price × count
     const totalCents = unitPriceCents * styleCount
 
-    // Derived from the actual (rounded) prices rather than
-    // `calculateDiscount(styleCount)` directly, so the displayed percentage
-    // always matches what the customer is really being charged — including
-    // the small rounding-down applied to unitPriceCents.
-    const discount =
-      fullPriceCents > 0 ? 1 - unitPriceCents / fullPriceCents : 0
-
+    const discount = Math.round(calculateDiscount(styleCount) * 100)
+    
     return {
       show: true,
       fontStyleCount: styleCount,
@@ -279,10 +278,11 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
    * alongside it. */
   const computeGroupPrices = (
     styleCount: number
-  ): { fullPrice: number; totalPrice: number; percentageDiscount: number } => {
+  ): { fullPrice: string; totalPrice: string; percentageDiscount: number } => {
     if (!styleCount || !licenseSize?.modifier || !selectedSkuOptions?.length) {
-      return { fullPrice: 0, totalPrice: 0, percentageDiscount: 0 }
+      return { fullPrice: '0.00', totalPrice: '0.00', percentageDiscount: 0 }
     }
+
     const fullUnitCents = calculateLineItemPrice({
       skuOptions: selectedSkuOptions,
       sizeModifier: licenseSize.modifier,
@@ -325,11 +325,15 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         ]
         const allSelected =
           styleCount > 0 && allVariantIds.every((id) => id in selectedSkus)
+        const countSelected = allVariantIds.filter((id) => id in selectedSkus).length
+
         const { fullPrice, totalPrice, percentageDiscount } =
           computeGroupPrices(styleCount)
+
         result[group.groupName] = {
           styleCount,
           allSelected,
+          countSelected,
           percentageDiscount,
           fullPrice,
           totalPrice,

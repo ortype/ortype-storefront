@@ -49,9 +49,10 @@ export type FontSelectionSummary = {
 export type GroupPriceSummary = {
   styleCount: number
   allSelected: boolean
+  countSelected: number
   percentageDiscount: number
-  fullPrice: number
-  totalPrice: number
+  fullPrice: string
+  totalPrice: string
 }
 /** Tracks a single committed parentUid group on the CL order */
 export type CommittedGroup = {

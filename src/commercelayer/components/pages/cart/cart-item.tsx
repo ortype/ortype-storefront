@@ -89,7 +89,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   // Optimistic price from buffer
   const displayPrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0) return 0
+    if (!licenseSize || selectedSkuOptions.length === 0) return '0.00'
     return formatPrice(
       calculateLineItemPrice({
         skuOptions: selectedSkuOptions,
@@ -101,7 +101,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   // Full price (no discount) for strike-through
   const fullPrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0) return 0
+    if (!licenseSize || selectedSkuOptions.length === 0) return '0.00'
     return formatPrice(
       calculateLineItemPrice({
         skuOptions: selectedSkuOptions,
@@ -253,7 +253,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
           >
             <HStack gap={4}>
               <Text as={'span'} fontSize={'xs'} lineHeight={0.8}>
-                {displayPrice === 0 ? `–– EUR` : `${displayPrice} EUR`}
+                {parseFloat(displayPrice) === 0 ? `–– EUR` : `${displayPrice} EUR`}
               </Text>
             </HStack>
             {displayPrice !== fullPrice && (

@@ -189,7 +189,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         hasSubGroups,
         allSelected,
         fullUnitPriceTotal: formatPrice(fullTotalCents),
-        percentageDiscount: count ? calculateDiscount(count) : 0,
+        percentageDiscount: count ? Math.round(calculateDiscount(count) * 100) : 0,
         discountedPriceTotal: formatPrice(discountedTotalCents),
       }
     })

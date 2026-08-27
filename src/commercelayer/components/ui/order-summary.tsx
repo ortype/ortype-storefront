@@ -17,6 +17,7 @@ import {
 import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
+import { formatPrice } from 'src/commercelayer/utils/prices'
 
 const MotionBox = motion(Box)
 
@@ -142,8 +143,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         groups: [] as ExpandedFontGroup[],
         parentFontCount: '0 fonts',
         allStylesCount: '0 styles',
-        subtotalAmount: 0,
-        totalDiscount: 0,
+        subtotalAmount: '0.00',
+        totalDiscount: '0.00',
       }
     }
 
@@ -156,10 +157,12 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       groups,
       parentFontCount: fontCount + ' ' + (fontCount === 1 ? 'font' : 'fonts'),
       allStylesCount: styleCount + ' styles',
-      subtotalAmount: Math.round(subtotalAmount * 100) / 100,
+      subtotalAmount,
       totalDiscount,
     }
   }, [order?.line_items])
+
+  console.log({order})
 
   return (
     <Show
@@ -232,7 +235,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               {`${subtotalAmount} EUR`}
             </Box>
           </SimpleGrid>
-          {totalDiscount > 0 && (
+          {parseFloat(totalDiscount) > 0 && (
             <SimpleGrid
               columns={2}
               pb={2}
@@ -265,7 +268,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               textAlign={'right'}
               fontVariantNumeric={'tabular-nums'}
             >
-              {`${order?.total_amount_with_taxes_float} EUR`}
+              {`${order && formatPrice(order.subtotal_taxable_amount_cents)} EUR`}
             </Box>
           </SimpleGrid>
         </MotionBox>

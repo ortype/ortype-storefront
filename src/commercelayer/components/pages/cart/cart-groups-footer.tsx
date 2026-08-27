@@ -66,7 +66,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
             fontSize={'xl'}
             lineHeight={0.9}
           >
-            <Box>{`${percentageDiscount * 100}%`}</Box>
+            <Box>{`${percentageDiscount}%`}</Box>
             <Box>{'OFF'}</Box>
           </VStack>
           <Box
