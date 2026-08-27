@@ -24,7 +24,7 @@ import type {
 export type {
   CartBufferGroup,
   CartBufferItem,
-  CartSubFamilyGroup,
+  CartSubFamilyGroup
 } from './types'
 
 export interface CartProviderData {

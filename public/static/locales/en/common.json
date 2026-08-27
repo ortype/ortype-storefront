@@ -100,7 +100,7 @@
   },
 
   "stepPayment": {
-    "title": "Dreams can't be bought – but fonts can",
+    "title": "Cash or Card",
     "label": "Payment",
     "methodUnselected": "Select a payment method",
     "creditCard": "Pay with card",

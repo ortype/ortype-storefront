@@ -87,6 +87,7 @@ export const FontItem: React.FC<Props> = ({
               <Collapsible.Context>
                 {({ open, setOpen }) => (
                   <FontGroup
+                    open={open}
                     name={font.shortName + ' ' + group.groupName}
                     group={group}
                     summary={groupSummaries[group.groupName]}

@@ -75,7 +75,7 @@ export const FontFull: React.FC<Props> = ({
             {font.shortName + ' ' + 'Full Family'}
           </Text>
           <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
-            {`${styleCount} Styles — Variable Font Included`}
+            {`${styleCount} styles — variable font included`}
           </Text>
         </Stack>
       </Stack>
@@ -93,7 +93,7 @@ export const FontFull: React.FC<Props> = ({
                 className={'discount'}
                 as={'span'}
                 fontSize={'xs'}
-              >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
+              >{`${percentageDiscount}%`}</Text>
               <Text className={'discount'} as={'span'} fontSize={'xs'}>
                 {`${totalPrice} EUR`}
               </Text>

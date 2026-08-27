@@ -275,13 +275,27 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
    * truth CL uses to actually charge — so these previews can never diverge
    * from what the customer is charged once they select the group, and the
    * displayed percentage always matches the actual (rounded) prices shown
-   * alongside it. */
+   * alongside it.
+   *
+   * `otherSelectedCount` is the number of styles already selected elsewhere
+   * in this font (outside of the group being priced). It's folded into the
+   * count used to look up the discount rate so the projection reflects what
+   * the discount WOULD BE if every style in this group were selected *in
+   * combination with* whatever else is already selected — without double
+   * counting styles that are both already selected and part of this group
+   * (styleCount already assumes the group is selected in full). totalPrice
+   * only reflects this group's own share of that combined total (unit price
+   * at the combined count × this group's styleCount), not the whole font's
+   * total. */
   const computeGroupPrices = (
-    styleCount: number
+    styleCount: number,
+    otherSelectedCount = 0
   ): { fullPrice: string; totalPrice: string; percentageDiscount: number } => {
     if (!styleCount || !licenseSize?.modifier || !selectedSkuOptions?.length) {
       return { fullPrice: '0.00', totalPrice: '0.00', percentageDiscount: 0 }
     }
+
+    const projectedCount = styleCount + Math.max(0, otherSelectedCount)
 
     const fullUnitCents = calculateLineItemPrice({
       skuOptions: selectedSkuOptions,
@@ -291,13 +305,17 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     const unitPriceCents = calculateLineItemPrice({
       skuOptions: selectedSkuOptions,
       sizeModifier: licenseSize.modifier,
-      count: styleCount,
+      count: projectedCount,
     })
     return {
       fullPrice: formatPrice(fullUnitCents * styleCount),
       totalPrice: formatPrice(unitPriceCents * styleCount),
+      // Whole percentage points (0-100), matching FontSelectionSummary and
+      // the cart provider's percentageDiscount convention.
       percentageDiscount:
-        fullUnitCents > 0 ? 1 - unitPriceCents / fullUnitCents : 0,
+        fullUnitCents > 0
+          ? Math.round((1 - unitPriceCents / fullUnitCents) * 100)
+          : 0,
     }
   }
 
@@ -306,6 +324,8 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     const styleCount = font.variants?.length || 0
     const allSelected =
       styleCount > 0 && Object.keys(selectedSkus).length === styleCount
+    // The "full family" group spans every style in the font, so there's
+    // nothing selected outside of it to combine with.
     const { fullPrice, totalPrice, percentageDiscount } =
       computeGroupPrices(styleCount)
     return { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice }
@@ -316,6 +336,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     () => {
       if (!font.styleGroups) return {}
       const result: { [groupName: string]: GroupPriceSummary } = {}
+      const totalSelectedInFont = Object.keys(selectedSkus).length
       for (const group of font.styleGroups) {
         const styleCount =
           (group.variants?.length || 0) + (group.italicVariants?.length || 0)
@@ -327,8 +348,13 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
           styleCount > 0 && allVariantIds.every((id) => id in selectedSkus)
         const countSelected = allVariantIds.filter((id) => id in selectedSkus).length
 
+        // Styles already selected elsewhere in the font, excluding this
+        // group's own (already-counted) selections, so they aren't counted
+        // twice when projecting the combined discount.
+        const otherSelectedCount = totalSelectedInFont - countSelected
+
         const { fullPrice, totalPrice, percentageDiscount } =
-          computeGroupPrices(styleCount)
+          computeGroupPrices(styleCount, otherSelectedCount)
 
         result[group.groupName] = {
           styleCount,

@@ -89,7 +89,7 @@ export function BuyDialog({ data }: BuyDialogProps) {
             my={4}
             lineHeight={1}
           >
-            {`you or me or they are buying fonts`}
+            {`buy or shop or purchase`}
           </DialogTitle>
           <DynamicBuyContainer font={font}>
             <DynamicBuy />

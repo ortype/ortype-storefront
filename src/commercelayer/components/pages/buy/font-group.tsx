@@ -11,6 +11,7 @@ interface FontVariant {
 
 interface Props {
   name: string
+  open: boolean
   group: FontGroupType
   summary: GroupPriceSummary
   onToggle: () => void
@@ -23,6 +24,7 @@ const getMiddleIndex = (array: FontVariant[]): number => {
 export const FontGroup: React.FC<Props> = ({
   group,
   name,
+  open,
   summary,
   onToggle,
 }) => {
@@ -30,7 +32,7 @@ export const FontGroup: React.FC<Props> = ({
   const middleVariant = group.variants[middleIndex]
   const className = middleVariant._id
 
-  const { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice } =
+  const { styleCount, allSelected, countSelected, percentageDiscount, fullPrice, totalPrice } =
     summary
 
   const [isLoading, setIsLoading] = useState(false)
@@ -89,9 +91,15 @@ export const FontGroup: React.FC<Props> = ({
           >
             {name}
           </Text>
+          <Stack direction={'row'}>
           <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
-            {`${styleCount} Styles — Variable Font Included`}
+            {`${styleCount} styles — variable font included`}
           </Text>
+          {!open && countSelected > 0 && countSelected < styleCount &&
+          <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
+            {`(${countSelected} of ${styleCount} styles selected)`}
+          </Text>}
+        </Stack>
         </Stack>
       </Stack>
       <Flex
@@ -108,7 +116,7 @@ export const FontGroup: React.FC<Props> = ({
                 className={'discount'}
                 as={'span'}
                 fontSize={'xs'}
-              >{`${Math.floor(percentageDiscount * 100)}%`}</Text>
+              >{`${percentageDiscount}%`}</Text>
               <Text className={'discount'} as={'span'} fontSize={'xs'}>
                 {`${totalPrice} EUR`}
               </Text>
