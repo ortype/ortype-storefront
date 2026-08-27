@@ -12,910 +12,847 @@
  * ---------------------------------------------------------------------------------
  */
 
-export declare const internalGroqTypeReferenceTo: unique symbol
+export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
 export type Config = {
-  display?: 'verso' | 'recto'
-}
+  display?: "verso" | "recto";
+};
 
 export type StylesConfig = {
-  italicToggle?: boolean
-}
+  italicToggle?: boolean;
+};
 
 export type ImageConfig = {
-  display?: 'vertical' | 'horizontal'
-  thumbnail?: boolean
-}
+  display?: "vertical" | "horizontal";
+  thumbnail?: boolean;
+};
 
 export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-}
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
 
-export type BlockContent = Array<
-  | {
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-      listItem?: 'bullet' | 'number'
-      markDefs?: Array<{
-        href?: string
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }
-  | {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
-      _key: string
-    }
->
+export type BlockContent = Array<{
+  children?: Array<{
+    marks?: Array<string>;
+    text?: string;
+    _type: "span";
+    _key: string;
+  }>;
+  style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+  listItem?: "bullet" | "number";
+  markDefs?: Array<{
+    href?: string;
+    _type: "link";
+    _key: string;
+  }>;
+  level?: number;
+  _type: "block";
+  _key: string;
+} | {
+  asset?: SanityImageAssetReference;
+  media?: unknown;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  _type: "image";
+  _key: string;
+}>;
 
 export type PostReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'post'
-}
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "post";
+};
 
-export type Body = Array<
-  | {
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal' | 'h2'
-      listItem?: 'bullet' | 'number'
-      markDefs?: Array<
-        | {
-            href?: string
-            _type: 'link'
-            _key: string
-          }
-        | {
-            reference?: PostReference
-            _type: 'internalLink'
-            _key: string
-          }
-      >
-      level?: number
-      _type: 'block'
-      _key: string
-    }
-  | ({
-      _key: string
-    } & ModuleVideo)
-  | {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      caption?: string
-      config?: ImageConfig
-      _type: 'image'
-      _key: string
-    }
->
+export type Body = Array<{
+  children?: Array<{
+    marks?: Array<string>;
+    text?: string;
+    _type: "span";
+    _key: string;
+  }>;
+  style?: "normal" | "h2";
+  listItem?: "bullet" | "number";
+  markDefs?: Array<{
+    href?: string;
+    _type: "link";
+    _key: string;
+  } | {
+    reference?: PostReference;
+    _type: "internalLink";
+    _key: string;
+  }>;
+  level?: number;
+  _type: "block";
+  _key: string;
+} | {
+  _key: string;
+} & ModuleVideo | {
+  asset?: SanityImageAssetReference;
+  media?: unknown;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  caption?: string;
+  config?: ImageConfig;
+  _type: "image";
+  _key: string;
+}>;
 
 export type ModuleVideo = {
-  _type: 'module.video'
-  url?: string
-  isBackground?: boolean
-  aspectRatio?: number
-  poster?: string
-  status?: string
+  _type: "module.video";
+  url?: string;
+  isBackground?: boolean;
+  aspectRatio?: number;
+  poster?: string;
+  status?: string;
   caption?: Array<{
     children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal";
+    listItem?: never;
     markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-}
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+};
 
 export type ModuleContent = {
-  _type: 'module.content'
-  title?: string
-  body?: Body
-  centered?: boolean
-  overflowCol?: boolean
-}
+  _type: "module.content";
+  title?: string;
+  body?: Body;
+  centered?: boolean;
+  overflowCol?: boolean;
+};
 
 export type FontVariantReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'fontVariant'
-}
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "fontVariant";
+};
 
 export type ModuleTester = {
-  _type: 'module.tester'
-  title?: string
-  defaultText?: string
-  defaultVariant?: FontVariantReference
-}
+  _type: "module.tester";
+  title?: string;
+  defaultText?: string;
+  defaultVariant?: FontVariantReference;
+};
 
 export type ModuleStyles = {
-  _type: 'module.styles'
-  title?: string
-  config?: StylesConfig
-}
+  _type: "module.styles";
+  title?: string;
+  config?: StylesConfig;
+};
 
 export type ModuleInfo = {
-  _type: 'module.info'
-  title?: string
+  _type: "module.info";
+  title?: string;
   items?: Array<{
-    key?: string
+    key?: string;
     content?: Array<{
       children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal'
-      listItem?: never
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "normal";
+      listItem?: never;
       markDefs?: Array<{
-        href?: string
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }>
-    _type: 'item'
-    _key: string
-  }>
-}
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+    _type: "item";
+    _key: string;
+  }>;
+};
 
 export type ModuleFeatures = {
-  _type: 'module.features'
-  label?: string
+  _type: "module.features";
+  label?: string;
   features?: Array<{
-    tag?: never
-    title?: string
-    example?: string
-    _type: 'feature'
-    _key: string
-  }>
-}
+    tag?: never;
+    title?: string;
+    example?: string;
+    _type: "feature";
+    _key: string;
+  }>;
+};
 
 export type BookReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'book'
-}
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "book";
+};
 
 export type ModuleBook = {
-  _type: 'module.book'
-  book?: BookReference
-  config?: Config
-}
+  _type: "module.book";
+  book?: BookReference;
+  config?: Config;
+};
 
 export type Settings = {
-  _id: string
-  _type: 'settings'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
+  _id: string;
+  _type: "settings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
   description?: Array<{
     children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal";
+    listItem?: never;
     markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-  groupings?: Array<string>
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+  groupings?: Array<string>;
   ogImage?: {
-    title?: string
-  }
+    title?: string;
+  };
   sizes?: Array<{
-    value?: string
-    label?: string
-    modifier?: number
-    _type: 'size'
-    _key: string
-  }>
+    value?: string;
+    label?: string;
+    modifier?: number;
+    _type: "size";
+    _key: string;
+  }>;
   media?: Array<{
-    value?: number
-    label?: string
-    _type: 'type'
-    _key: string
-  }>
+    value?: number;
+    label?: string;
+    _type: "type";
+    _key: string;
+  }>;
   buyPage?: {
     licenseHolder?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     licenseType?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     companySize?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     fonts?: {
-      label?: string
-      info?: string
-    }
-  }
+      label?: string;
+      info?: string;
+    };
+  };
   cartPage?: {
     licenseHolder?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     companySize?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     fonts?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     licenseType?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     price?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     addMoreStyles?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     bundleHint?: {
-      label?: string
-      info?: string
-    }
-  }
-}
+      label?: string;
+      info?: string;
+    };
+  };
+};
 
 export type Book = {
-  _id: string
-  _type: 'book'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name?: string
-  bookLayoutId?: string
-  fontId?: string
-  fontUid?: string
-  variantId?: string
-  variantUid?: string
+  _id: string;
+  _type: "book";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  bookLayoutId?: string;
+  fontId?: string;
+  fontUid?: string;
+  variantId?: string;
+  variantUid?: string;
   snapshots?: Array<{
-    createdAt?: string
-    spread?: string
-    _type: 'snapshot'
-    _key: string
-  }>
-}
+    createdAt?: string;
+    spread?: string;
+    _type: "snapshot";
+    _key: string;
+  }>;
+};
 
 export type Page = {
-  _id: string
-  _type: 'page'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  slug?: Slug
-  blockContent?: BlockContent
-  modules?: null
-}
+  _id: string;
+  _type: "page";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  blockContent?: BlockContent;
+  modules?: null;
+};
 
 export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top?: number
-  bottom?: number
-  left?: number
-  right?: number
-}
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
 
 export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x?: number
-  y?: number
-  height?: number
-  width?: number
-}
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
 
 export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
-}
+  _type: "slug";
+  current?: string;
+  source?: string;
+};
 
 export type CategoryReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'category'
-}
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "category";
+};
 
 export type FontReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'font'
-}
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "font";
+};
 
 export type Post = {
-  _id: string
-  _type: 'post'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  slug?: Slug
-  postType?: 'archive' | 'case-study' | 'faq'
-  category?: CategoryReference
+  _id: string;
+  _type: "post";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  postType?: "archive" | "case-study" | "faq";
+  category?: CategoryReference;
   fonts?: Array<{
-    font?: FontReference
-    _key: string
-  }>
-  date?: string
+    font?: FontReference;
+    _key: string;
+  }>;
+  date?: string;
   coverImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-  }
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
   gallery?: Array<{
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-    _key: string
-  }>
-  excerpt?: string
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+  excerpt?: string;
   content?: Array<{
     children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
-    listItem?: 'bullet' | 'number'
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+    listItem?: "bullet" | "number";
     markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-}
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+};
 
 export type Font = {
-  _id: string
-  _type: 'font'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name?: string
-  orderRank?: string
-  shortName?: string
-  slug?: Slug
-  isVisible?: boolean
+  _id: string;
+  _type: "font";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  orderRank?: string;
+  shortName?: string;
+  slug?: Slug;
+  isVisible?: boolean;
   badge?: {
-    label?: string
-    endDate?: string
-  }
-  description?: string
-  defaultVariant?: FontVariantReference
-  title?: string
-  headerVideo?: ModuleVideo
-  modules?: Array<
-    | ({
-        _key: string
-      } & ModuleContent)
-    | ({
-        _key: string
-      } & ModuleBook)
-    | ({
-        _key: string
-      } & ModuleFeatures)
-    | ({
-        _key: string
-      } & ModuleInfo)
-    | ({
-        _key: string
-      } & ModuleStyles)
-    | ({
-        _key: string
-      } & ModuleTester)
-  >
-  price?: number
-  compareAt?: number
-  uid?: string
-  version?: string
-  modifiedAt?: string
+    label?: string;
+    endDate?: string;
+  };
+  description?: string;
+  defaultVariant?: FontVariantReference;
+  title?: string;
+  headerVideo?: ModuleVideo;
+  modules?: Array<{
+    _key: string;
+  } & ModuleContent | {
+    _key: string;
+  } & ModuleBook | {
+    _key: string;
+  } & ModuleFeatures | {
+    _key: string;
+  } & ModuleInfo | {
+    _key: string;
+  } & ModuleStyles | {
+    _key: string;
+  } & ModuleTester>;
+  price?: number;
+  compareAt?: number;
+  uid?: string;
+  version?: string;
+  modifiedAt?: string;
   styleGroups?: Array<{
-    groupName?: string
-    variants?: Array<
-      {
-        _key: string
-      } & FontVariantReference
-    >
-    italicVariants?: Array<
-      {
-        _key: string
-      } & FontVariantReference
-    >
-    _type: 'group'
-    _key: string
-  }>
-  variants?: Array<
-    {
-      _key: string
-    } & FontVariantReference
-  >
+    groupName?: string;
+    variants?: Array<{
+      _key: string;
+    } & FontVariantReference>;
+    italicVariants?: Array<{
+      _key: string;
+    } & FontVariantReference>;
+    _type: "group";
+    _key: string;
+  }>;
+  variants?: Array<{
+    _key: string;
+  } & FontVariantReference>;
   features?: Array<{
-    tag?: string
-    name?: string
-    css?: string
-    _type: 'feature'
-    _key: string
-  }>
+    tag?: string;
+    name?: string;
+    css?: string;
+    _type: "feature";
+    _key: string;
+  }>;
   languages?: Array<{
-    html?: string
-    name?: string
-    ot?: string
-    _type: 'language'
-    _key: string
-  }>
+    html?: string;
+    name?: string;
+    ot?: string;
+    _type: "language";
+    _key: string;
+  }>;
   metafields?: Array<{
-    key?: string
-    value?: string
-    _type: 'metafield'
-    _key: string
-  }>
-}
+    key?: string;
+    value?: string;
+    _type: "metafield";
+    _key: string;
+  }>;
+};
 
 export type FontVariant = {
-  _id: string
-  _type: 'fontVariant'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name?: string
-  optionName?: string
-  description?: string
-  tags?: Array<string>
-  slug?: Slug
-  price?: number
-  uid?: string
-  parentUid?: string
-  version?: string
-  index?: number
+  _id: string;
+  _type: "fontVariant";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  optionName?: string;
+  description?: string;
+  tags?: Array<string>;
+  slug?: Slug;
+  price?: number;
+  uid?: string;
+  parentUid?: string;
+  version?: string;
+  index?: number;
   metafields?: Array<{
-    key?: string
-    value?: string
-    _type: 'metafield'
-    _key: string
-  }>
-}
+    key?: string;
+    value?: string;
+    _type: "metafield";
+    _key: string;
+  }>;
+};
 
 export type Category = {
-  _id: string
-  _type: 'category'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  slug?: Slug
-  description?: string
-}
+  _id: string;
+  _type: "category";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  description?: string;
+};
 
 export type Author = {
-  _id: string
-  _type: 'author'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name?: string
+  _id: string;
+  _type: "author";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
   picture?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    _type: 'image'
-  }
-}
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+};
 
 export type MediaFolderReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'media.folder'
-}
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "media.folder";
+};
 
 export type MediaFolder = {
-  _id: string
-  _type: 'media.folder'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name?: string
-  parent?: MediaFolderReference
-}
+  _id: string;
+  _type: "media.folder";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  parent?: MediaFolderReference;
+};
 
 export type MediaTag = {
-  _id: string
-  _type: 'media.tag'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name?: Slug
-}
+  _id: string;
+  _type: "media.tag";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: Slug;
+};
 
 export type SanityImagePaletteSwatch = {
-  _type: 'sanity.imagePaletteSwatch'
-  background?: string
-  foreground?: string
-  population?: number
-  title?: string
-}
+  _type: "sanity.imagePaletteSwatch";
+  background?: string;
+  foreground?: string;
+  population?: number;
+  title?: string;
+};
 
 export type SanityImagePalette = {
-  _type: 'sanity.imagePalette'
-  darkMuted?: SanityImagePaletteSwatch
-  lightVibrant?: SanityImagePaletteSwatch
-  darkVibrant?: SanityImagePaletteSwatch
-  vibrant?: SanityImagePaletteSwatch
-  dominant?: SanityImagePaletteSwatch
-  lightMuted?: SanityImagePaletteSwatch
-  muted?: SanityImagePaletteSwatch
-}
+  _type: "sanity.imagePalette";
+  darkMuted?: SanityImagePaletteSwatch;
+  lightVibrant?: SanityImagePaletteSwatch;
+  darkVibrant?: SanityImagePaletteSwatch;
+  vibrant?: SanityImagePaletteSwatch;
+  dominant?: SanityImagePaletteSwatch;
+  lightMuted?: SanityImagePaletteSwatch;
+  muted?: SanityImagePaletteSwatch;
+};
 
 export type SanityImageDimensions = {
-  _type: 'sanity.imageDimensions'
-  height?: number
-  width?: number
-  aspectRatio?: number
-}
+  _type: "sanity.imageDimensions";
+  height?: number;
+  width?: number;
+  aspectRatio?: number;
+};
 
 export type SanityImageMetadata = {
-  _type: 'sanity.imageMetadata'
-  location?: Geopoint
-  dimensions?: SanityImageDimensions
-  palette?: SanityImagePalette
-  lqip?: string
-  blurHash?: string
-  thumbHash?: string
-  hasAlpha?: boolean
-  isOpaque?: boolean
-}
+  _type: "sanity.imageMetadata";
+  location?: Geopoint;
+  dimensions?: SanityImageDimensions;
+  palette?: SanityImagePalette;
+  lqip?: string;
+  blurHash?: string;
+  thumbHash?: string;
+  hasAlpha?: boolean;
+  isOpaque?: boolean;
+};
 
 export type SanityFileAsset = {
-  _id: string
-  _type: 'sanity.fileAsset'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  originalFilename?: string
-  label?: string
-  title?: string
-  description?: string
-  altText?: string
-  sha1hash?: string
-  extension?: string
-  mimeType?: string
-  size?: number
-  assetId?: string
-  uploadId?: string
-  path?: string
-  url?: string
-  source?: SanityAssetSourceData
-}
+  _id: string;
+  _type: "sanity.fileAsset";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  originalFilename?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  altText?: string;
+  sha1hash?: string;
+  extension?: string;
+  mimeType?: string;
+  size?: number;
+  assetId?: string;
+  uploadId?: string;
+  path?: string;
+  url?: string;
+  source?: SanityAssetSourceData;
+};
 
 export type SanityAssetSourceData = {
-  _type: 'sanity.assetSourceData'
-  name?: string
-  id?: string
-  url?: string
-}
+  _type: "sanity.assetSourceData";
+  name?: string;
+  id?: string;
+  url?: string;
+};
 
 export type SanityImageAsset = {
-  _id: string
-  _type: 'sanity.imageAsset'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  originalFilename?: string
-  label?: string
-  title?: string
-  description?: string
-  altText?: string
-  sha1hash?: string
-  extension?: string
-  mimeType?: string
-  size?: number
-  assetId?: string
-  uploadId?: string
-  path?: string
-  url?: string
-  metadata?: SanityImageMetadata
-  source?: SanityAssetSourceData
-}
+  _id: string;
+  _type: "sanity.imageAsset";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  originalFilename?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  altText?: string;
+  sha1hash?: string;
+  extension?: string;
+  mimeType?: string;
+  size?: number;
+  assetId?: string;
+  uploadId?: string;
+  path?: string;
+  url?: string;
+  metadata?: SanityImageMetadata;
+  source?: SanityAssetSourceData;
+};
 
 export type Geopoint = {
-  _type: 'geopoint'
-  lat?: number
-  lng?: number
-  alt?: number
-}
+  _type: "geopoint";
+  lat?: number;
+  lng?: number;
+  alt?: number;
+};
 
-export type AllSanitySchemaTypes =
-  | Config
-  | StylesConfig
-  | ImageConfig
-  | SanityImageAssetReference
-  | BlockContent
-  | PostReference
-  | Body
-  | ModuleVideo
-  | ModuleContent
-  | FontVariantReference
-  | ModuleTester
-  | ModuleStyles
-  | ModuleInfo
-  | ModuleFeatures
-  | BookReference
-  | ModuleBook
-  | Settings
-  | Book
-  | Page
-  | SanityImageCrop
-  | SanityImageHotspot
-  | Slug
-  | CategoryReference
-  | FontReference
-  | Post
-  | Font
-  | FontVariant
-  | Category
-  | Author
-  | MediaFolderReference
-  | MediaFolder
-  | MediaTag
-  | SanityImagePaletteSwatch
-  | SanityImagePalette
-  | SanityImageDimensions
-  | SanityImageMetadata
-  | SanityFileAsset
-  | SanityAssetSourceData
-  | SanityImageAsset
-  | Geopoint
+export type AllSanitySchemaTypes = Config | StylesConfig | ImageConfig | SanityImageAssetReference | BlockContent | PostReference | Body | ModuleVideo | ModuleContent | FontVariantReference | ModuleTester | ModuleStyles | ModuleInfo | ModuleFeatures | BookReference | ModuleBook | Settings | Book | Page | SanityImageCrop | SanityImageHotspot | Slug | CategoryReference | FontReference | Post | Font | FontVariant | Category | Author | MediaFolderReference | MediaFolder | MediaTag | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: PAGES_SLUGS_QUERY
 // Query: *[_type == "page" && defined(slug.current)] {    "slug": slug.current}
 export type PAGES_SLUGS_QUERY_RESULT = Array<{
-  slug: string | null
-}>
+  slug: string | null;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: PAGES_QUERY
 // Query: *[_type == 'page' && slug.current == $page][0]{    _id,    title,    "slug": slug.current,    blockContent,    "modules": modules[]{        ...,    }}
 export type PAGES_QUERY_RESULT = {
-  _id: string
-  title: string | null
-  slug: string | null
-  blockContent: BlockContent | null
-  modules: null
-} | null
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  blockContent: BlockContent | null;
+  modules: null;
+} | null;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]
 export type SettingsQueryResult = {
-  _id: string
-  _type: 'settings'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
+  _id: string;
+  _type: "settings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
   description?: Array<{
     children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'normal'
-    listItem?: never
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal";
+    listItem?: never;
     markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }>
-  groupings?: Array<string>
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+  groupings?: Array<string>;
   ogImage?: {
-    title?: string
-  }
+    title?: string;
+  };
   sizes?: Array<{
-    value?: string
-    label?: string
-    modifier?: number
-    _type: 'size'
-    _key: string
-  }>
+    value?: string;
+    label?: string;
+    modifier?: number;
+    _type: "size";
+    _key: string;
+  }>;
   media?: Array<{
-    value?: number
-    label?: string
-    _type: 'type'
-    _key: string
-  }>
+    value?: number;
+    label?: string;
+    _type: "type";
+    _key: string;
+  }>;
   buyPage?: {
     licenseHolder?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     licenseType?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     companySize?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     fonts?: {
-      label?: string
-      info?: string
-    }
-  }
+      label?: string;
+      info?: string;
+    };
+  };
   cartPage?: {
     licenseHolder?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     companySize?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     fonts?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     licenseType?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     price?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     addMoreStyles?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     bundleHint?: {
-      label?: string
-      info?: string
-    }
-  }
-} | null
+      label?: string;
+      info?: string;
+    };
+  };
+} | null;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: postsQuery
 // Query: *[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {    _id,  title,  "slug": slug.current,  postType,  "category": category->{    _id,    title,    "slug": slug.current  },  fonts[]{    "font": font->{      _id,      name,      shortName,      "slug": slug.current    }  },  date,  coverImage {     ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip       },  "gallery": gallery[] {    ...,      _type,  hotspot,  crop,  asset,  "aspectRatio": asset->metadata.dimensions.aspectRatio,  "blurDataUrl": asset->metadata.lqip      },  excerpt,  content}
 export type PostsQueryResult = Array<{
-  _id: string
-  title: string | null
-  slug: string | null
-  postType: 'archive'
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  postType: "archive";
   category: {
-    _id: string
-    title: string | null
-    slug: string | null
-  } | null
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  } | null;
   fonts: Array<{
     font: {
-      _id: string
-      name: string | null
-      shortName: string | null
-      slug: string | null
-    } | null
-  }> | null
-  date: string | null
+      _id: string;
+      name: string | null;
+      shortName: string | null;
+      slug: string | null;
+    } | null;
+  }> | null;
+  date: string | null;
   coverImage: {
-    asset: SanityImageAssetReference | null
-    media?: unknown
-    hotspot: SanityImageHotspot | null
-    crop: SanityImageCrop | null
-    _type: 'image'
-    aspectRatio: number | null
-    blurDataUrl: string | null
-  } | null
+    asset: SanityImageAssetReference | null;
+    media?: unknown;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    _type: "image";
+    aspectRatio: number | null;
+    blurDataUrl: string | null;
+  } | null;
   gallery: Array<{
-    asset: SanityImageAssetReference | null
-    media?: unknown
-    hotspot: SanityImageHotspot | null
-    crop: SanityImageCrop | null
-    _type: 'image'
-    _key: string
-    aspectRatio: number | null
-    blurDataUrl: string | null
-  }> | null
-  excerpt: string | null
+    asset: SanityImageAssetReference | null;
+    media?: unknown;
+    hotspot: SanityImageHotspot | null;
+    crop: SanityImageCrop | null;
+    _type: "image";
+    _key: string;
+    aspectRatio: number | null;
+    blurDataUrl: string | null;
+  }> | null;
+  excerpt: string | null;
   content: Array<{
     children?: Array<{
-      marks?: Array<string>
-      text?: string
-      _type: 'span'
-      _key: string
-    }>
-    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-    listItem?: 'bullet' | 'number'
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+    listItem?: "bullet" | "number";
     markDefs?: Array<{
-      href?: string
-      _type: 'link'
-      _key: string
-    }>
-    level?: number
-    _type: 'block'
-    _key: string
-  }> | null
-}>
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }> | null;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: postSlugs
 // Query: *[_type == "post" && defined(slug.current)]{"slug": slug.current}
 export type PostSlugsResult = Array<{
-  slug: string | null
-}>
+  slug: string | null;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: postAndMoreStoriesQuery
@@ -924,136 +861,136 @@ export type PostAndMoreStoriesQueryResult = {
   post: {
     content: Array<{
       children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-      listItem?: 'bullet' | 'number'
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+      listItem?: "bullet" | "number";
       markDefs?: Array<{
-        href?: string
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }> | null
-    _id: string
-    title: string | null
-    slug: string | null
-    postType: 'archive' | 'case-study' | 'faq' | null
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }> | null;
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    postType: "archive" | "case-study" | "faq" | null;
     category: {
-      _id: string
-      title: string | null
-      slug: string | null
-    } | null
+      _id: string;
+      title: string | null;
+      slug: string | null;
+    } | null;
     fonts: Array<{
       font: {
-        _id: string
-        name: string | null
-        shortName: string | null
-        slug: string | null
-      } | null
-    }> | null
-    date: string | null
+        _id: string;
+        name: string | null;
+        shortName: string | null;
+        slug: string | null;
+      } | null;
+    }> | null;
+    date: string | null;
     coverImage: {
-      asset: SanityImageAssetReference | null
-      media?: unknown
-      hotspot: SanityImageHotspot | null
-      crop: SanityImageCrop | null
-      _type: 'image'
-      aspectRatio: number | null
-      blurDataUrl: string | null
-    } | null
+      asset: SanityImageAssetReference | null;
+      media?: unknown;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      _type: "image";
+      aspectRatio: number | null;
+      blurDataUrl: string | null;
+    } | null;
     gallery: Array<{
-      asset: SanityImageAssetReference | null
-      media?: unknown
-      hotspot: SanityImageHotspot | null
-      crop: SanityImageCrop | null
-      _type: 'image'
-      _key: string
-      aspectRatio: number | null
-      blurDataUrl: string | null
-    }> | null
-    excerpt: string | null
-  } | null
+      asset: SanityImageAssetReference | null;
+      media?: unknown;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      _type: "image";
+      _key: string;
+      aspectRatio: number | null;
+      blurDataUrl: string | null;
+    }> | null;
+    excerpt: string | null;
+  } | null;
   morePosts: Array<{
     content: Array<{
       children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-      listItem?: 'bullet' | 'number'
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+      listItem?: "bullet" | "number";
       markDefs?: Array<{
-        href?: string
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }> | null
-    _id: string
-    title: string | null
-    slug: string | null
-    postType: 'archive' | 'case-study' | 'faq' | null
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }> | null;
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    postType: "archive" | "case-study" | "faq" | null;
     category: {
-      _id: string
-      title: string | null
-      slug: string | null
-    } | null
+      _id: string;
+      title: string | null;
+      slug: string | null;
+    } | null;
     fonts: Array<{
       font: {
-        _id: string
-        name: string | null
-        shortName: string | null
-        slug: string | null
-      } | null
-    }> | null
-    date: string | null
+        _id: string;
+        name: string | null;
+        shortName: string | null;
+        slug: string | null;
+      } | null;
+    }> | null;
+    date: string | null;
     coverImage: {
-      asset: SanityImageAssetReference | null
-      media?: unknown
-      hotspot: SanityImageHotspot | null
-      crop: SanityImageCrop | null
-      _type: 'image'
-      aspectRatio: number | null
-      blurDataUrl: string | null
-    } | null
+      asset: SanityImageAssetReference | null;
+      media?: unknown;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      _type: "image";
+      aspectRatio: number | null;
+      blurDataUrl: string | null;
+    } | null;
     gallery: Array<{
-      asset: SanityImageAssetReference | null
-      media?: unknown
-      hotspot: SanityImageHotspot | null
-      crop: SanityImageCrop | null
-      _type: 'image'
-      _key: string
-      aspectRatio: number | null
-      blurDataUrl: string | null
-    }> | null
-    excerpt: string | null
-  }>
-}
+      asset: SanityImageAssetReference | null;
+      media?: unknown;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+      _type: "image";
+      _key: string;
+      aspectRatio: number | null;
+      blurDataUrl: string | null;
+    }> | null;
+    excerpt: string | null;
+  }>;
+};
 
 // Source: src/sanity/lib/queries.ts
 // Variable: licenseMetricsQuery
 // Query: *[_type == "settings"][0]{  "sizes": sizes[]{value, label, modifier},  "media": media[]{_key, value, label}}
 export type LicenseMetricsQueryResult = {
   sizes: Array<{
-    value: string | null
-    label: string | null
-    modifier: number | null
-  }> | null
+    value: string | null;
+    label: string | null;
+    modifier: number | null;
+  }> | null;
   media: Array<{
-    _key: string
-    value: number | null
-    label: string | null
-  }> | null
-} | null
+    _key: string;
+    value: number | null;
+    label: string | null;
+  }> | null;
+} | null;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: uiLabelsQuery
@@ -1061,956 +998,908 @@ export type LicenseMetricsQueryResult = {
 export type UiLabelsQueryResult = {
   buyPage: {
     licenseHolder?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     licenseType?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     companySize?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     fonts?: {
-      label?: string
-      info?: string
-    }
-  } | null
+      label?: string;
+      info?: string;
+    };
+  } | null;
   cartPage: {
     licenseHolder?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     companySize?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     fonts?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     licenseType?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     price?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     addMoreStyles?: {
-      label?: string
-      info?: string
-    }
+      label?: string;
+      info?: string;
+    };
     bundleHint?: {
-      label?: string
-      info?: string
-    }
-  } | null
-} | null
+      label?: string;
+      info?: string;
+    };
+  } | null;
+} | null;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: fontSlugsQuery
 // Query: *[_type == "font" && defined(slug.current)][].slug.current
-export type FontSlugsQueryResult = Array<string | null>
+export type FontSlugsQueryResult = Array<string | null>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: categoryFiters
 // Query: *[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {    _id,    title,    "slug": slug.current,    "postCount": count(*[_type == 'post' && references(^._id)])  }
 export type CategoryFitersResult = Array<{
-  _id: string
-  title: string | null
-  slug: string | null
-  postCount: number
-}>
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  postCount: number;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: homePageQuery
 // Query: {  "fonts": *[_type == "font" && isVisible == true]|order(orderRank) {      _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},  metafields[]{key, value},    badge {      label,      endDate    },    variants[]->{_id, optionName},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
 export type HomePageQueryResult = {
   fonts: Array<{
-    _id: string
-    _type: 'font'
-    slug: string | null
-    shortName: string | null
+    _id: string;
+    _type: "font";
+    slug: string | null;
+    shortName: string | null;
     defaultVariant: {
-      _id: string
-    } | null
+      _id: string;
+    } | null;
     metafields: Array<{
-      key: string | null
-      value: string | null
-    }> | null
+      key: string | null;
+      value: string | null;
+    }> | null;
     badge: {
-      label: string | null
-      endDate: string | null
-    } | null
+      label: string | null;
+      endDate: string | null;
+    } | null;
     variants: Array<{
-      _id: string
-      optionName: string | null
-    }> | null
+      _id: string;
+      optionName: string | null;
+    }> | null;
     styleGroups: Array<{
-      _type: 'group'
-      groupName: string | null
+      _type: "group";
+      groupName: string | null;
       variants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
+        _id: string;
+        optionName: string | null;
+      }> | null;
       italicVariants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
-    }> | null
-  }>
-}
+        _id: string;
+        optionName: string | null;
+      }> | null;
+    }> | null;
+  }>;
+};
 
 // Source: src/sanity/lib/queries.ts
 // Variable: visibleFontsQuery
 // Query: *[_type == "font" && isVisible == true]|order(orderRank) {    _id,  _type,  "slug": slug.current,  shortName,  defaultVariant->{_id},  metafields[]{key, value},}
 export type VisibleFontsQueryResult = Array<{
-  _id: string
-  _type: 'font'
-  slug: string | null
-  shortName: string | null
+  _id: string;
+  _type: "font";
+  slug: string | null;
+  shortName: string | null;
   defaultVariant: {
-    _id: string
-  } | null
+    _id: string;
+  } | null;
   metafields: Array<{
-    key: string | null
-    value: string | null
-  }> | null
-}>
+    key: string | null;
+    value: string | null;
+  }> | null;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: buyFontsQuery
 // Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {    _id,    _type,    uid,    name,    shortName,    "slug": slug.current,    variants[]->{name, optionName, _id, parentUid},    defaultVariant->{_id, optionName},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName, parentUid},      italicVariants[]->{_id, optionName, parentUid}    }      },  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(orderRank) {      defaultVariant->{_id, optionName},      "slug": slug.current,      name,      shortName  }  }
 export type BuyFontsQueryResult = {
   font: {
-    _id: string
-    _type: 'font'
-    uid: string | null
-    name: string | null
-    shortName: string | null
-    slug: string | null
+    _id: string;
+    _type: "font";
+    uid: string | null;
+    name: string | null;
+    shortName: string | null;
+    slug: string | null;
     variants: Array<{
-      name: string | null
-      optionName: string | null
-      _id: string
-      parentUid: string | null
-    }> | null
+      name: string | null;
+      optionName: string | null;
+      _id: string;
+      parentUid: string | null;
+    }> | null;
     defaultVariant: {
-      _id: string
-      optionName: string | null
-    } | null
+      _id: string;
+      optionName: string | null;
+    } | null;
     styleGroups: Array<{
-      _type: 'group'
-      groupName: string | null
+      _type: "group";
+      groupName: string | null;
       variants: Array<{
-        _id: string
-        optionName: string | null
-        parentUid: string | null
-      }> | null
+        _id: string;
+        optionName: string | null;
+        parentUid: string | null;
+      }> | null;
       italicVariants: Array<{
-        _id: string
-        optionName: string | null
-        parentUid: string | null
-      }> | null
-    }> | null
-  } | null
+        _id: string;
+        optionName: string | null;
+        parentUid: string | null;
+      }> | null;
+    }> | null;
+  } | null;
   moreFonts: Array<{
     defaultVariant: {
-      _id: string
-      optionName: string | null
-    } | null
-    slug: string | null
-    name: string | null
-    shortName: string | null
-  }>
-}
+      _id: string;
+      optionName: string | null;
+    } | null;
+    slug: string | null;
+    name: string | null;
+    shortName: string | null;
+  }>;
+};
 
 // Source: src/sanity/lib/queries.ts
 // Variable: fontsQuery
 // Query: *[_type == "font"] | order(orderRank) {    _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },}
 export type FontsQueryResult = Array<{
-  _id: string
-  _type: 'font'
-  name: string | null
-  shortName: string | null
-  isVisible: boolean | null
-  slug: string | null
+  _id: string;
+  _type: "font";
+  name: string | null;
+  shortName: string | null;
+  isVisible: boolean | null;
+  slug: string | null;
   variants: Array<{
-    name: string | null
-    optionName: string | null
-    _id: string
-  }> | null
-  uid: string | null
-  version: string | null
+    name: string | null;
+    optionName: string | null;
+    _id: string;
+  }> | null;
+  uid: string | null;
+  version: string | null;
   metafields: Array<{
-    key: string | null
-    value: string | null
-  }> | null
+    key: string | null;
+    value: string | null;
+  }> | null;
   defaultVariant: {
-    _id: string
-    optionName: string | null
-  } | null
-  modules: Array<
-    | {
-        _key: string
-        _type: 'module.book'
-        book: {
-          variantId: string | null
-          snapshots: Array<{
-            createdAt?: string
-            spread?: string
-            _type: 'snapshot'
-            _key: string
-          }> | null
-        } | null
-        config?: Config
-        tester: null
-        body: null
-      }
-    | {
-        _key: string
-        _type: 'module.content'
-        title?: string
-        body: Array<
-          | {
-              children?: Array<{
-                marks?: Array<string>
-                text?: string
-                _type: 'span'
-                _key: string
-              }>
-              style?: 'h2' | 'normal'
-              listItem?: 'bullet' | 'number'
-              markDefs: Array<
-                | {
-                    reference?: PostReference
-                    _type: 'internalLink'
-                    _key: string
-                    slug: Slug | null
-                  }
-                | {
-                    href?: string
-                    _type: 'link'
-                    _key: string
-                  }
-              > | null
-              level?: number
-              _type: 'block'
-              _key: string
-            }
-          | {
-              asset?: SanityImageAssetReference
-              media?: unknown
-              hotspot?: SanityImageHotspot
-              crop?: SanityImageCrop
-              alt?: string
-              caption?: string
-              config?: ImageConfig
-              _type: 'image'
-              _key: string
-              markDefs: null
-            }
-          | {
-              _key: string
-              _type: 'module.video'
-              url?: string
-              isBackground?: boolean
-              aspectRatio?: number
-              poster?: string
-              status?: string
-              caption?: Array<{
-                children?: Array<{
-                  marks?: Array<string>
-                  text?: string
-                  _type: 'span'
-                  _key: string
-                }>
-                style?: 'normal'
-                listItem?: never
-                markDefs?: Array<{
-                  href?: string
-                  _type: 'link'
-                  _key: string
-                }>
-                level?: number
-                _type: 'block'
-                _key: string
-              }>
-              markDefs: null
-            }
-        > | null
-        centered?: boolean
-        overflowCol?: boolean
-        book: null
-        tester: null
-      }
-    | {
-        _key: string
-        _type: 'module.features'
-        label?: string
-        features?: Array<{
-          tag?: never
-          title?: string
-          example?: string
-          _type: 'feature'
-          _key: string
-        }>
-        book: null
-        tester: null
-        body: null
-      }
-    | {
-        _key: string
-        _type: 'module.info'
-        title?: string
-        items?: Array<{
-          key?: string
-          content?: Array<{
-            children?: Array<{
-              marks?: Array<string>
-              text?: string
-              _type: 'span'
-              _key: string
-            }>
-            style?: 'normal'
-            listItem?: never
-            markDefs?: Array<{
-              href?: string
-              _type: 'link'
-              _key: string
-            }>
-            level?: number
-            _type: 'block'
-            _key: string
-          }>
-          _type: 'item'
-          _key: string
-        }>
-        book: null
-        tester: null
-        body: null
-      }
-    | {
-        _key: string
-        _type: 'module.styles'
-        title?: string
-        config?: StylesConfig
-        book: null
-        tester: null
-        body: null
-      }
-    | {
-        _key: string
-        _type: 'module.tester'
-        title?: string
-        defaultText?: string
-        defaultVariant?: FontVariantReference
-        book: null
-        tester: null
-        body: null
-      }
-  > | null
-  modifiedAt: string | null
+    _id: string;
+    optionName: string | null;
+  } | null;
+  modules: Array<{
+    _key: string;
+    _type: "module.book";
+    book: {
+      variantId: string | null;
+      snapshots: Array<{
+        createdAt?: string;
+        spread?: string;
+        _type: "snapshot";
+        _key: string;
+      }> | null;
+    } | null;
+    config?: Config;
+    tester: null;
+    body: null;
+  } | {
+    _key: string;
+    _type: "module.content";
+    title?: string;
+    body: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "h2" | "normal";
+      listItem?: "bullet" | "number";
+      markDefs: Array<{
+        reference?: PostReference;
+        _type: "internalLink";
+        _key: string;
+        slug: Slug | null;
+      } | {
+        href?: string;
+        _type: "link";
+        _key: string;
+      }> | null;
+      level?: number;
+      _type: "block";
+      _key: string;
+    } | {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      caption?: string;
+      config?: ImageConfig;
+      _type: "image";
+      _key: string;
+      markDefs: null;
+    } | {
+      _key: string;
+      _type: "module.video";
+      url?: string;
+      isBackground?: boolean;
+      aspectRatio?: number;
+      poster?: string;
+      status?: string;
+      caption?: Array<{
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "normal";
+        listItem?: never;
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }>;
+      markDefs: null;
+    }> | null;
+    centered?: boolean;
+    overflowCol?: boolean;
+    book: null;
+    tester: null;
+  } | {
+    _key: string;
+    _type: "module.features";
+    label?: string;
+    features?: Array<{
+      tag?: never;
+      title?: string;
+      example?: string;
+      _type: "feature";
+      _key: string;
+    }>;
+    book: null;
+    tester: null;
+    body: null;
+  } | {
+    _key: string;
+    _type: "module.info";
+    title?: string;
+    items?: Array<{
+      key?: string;
+      content?: Array<{
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "normal";
+        listItem?: never;
+        markDefs?: Array<{
+          href?: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }>;
+      _type: "item";
+      _key: string;
+    }>;
+    book: null;
+    tester: null;
+    body: null;
+  } | {
+    _key: string;
+    _type: "module.styles";
+    title?: string;
+    config?: StylesConfig;
+    book: null;
+    tester: null;
+    body: null;
+  } | {
+    _key: string;
+    _type: "module.tester";
+    title?: string;
+    defaultText?: string;
+    defaultVariant?: FontVariantReference;
+    book: null;
+    tester: null;
+    body: null;
+  }> | null;
+  modifiedAt: string | null;
   languages: Array<{
-    html: string | null
-    name: string | null
-  }> | null
+    html: string | null;
+    name: string | null;
+  }> | null;
   styleGroups: Array<{
-    _type: 'group'
-    groupName: string | null
+    _type: "group";
+    groupName: string | null;
     variants: Array<{
-      _id: string
-      optionName: string | null
-    }> | null
+      _id: string;
+      optionName: string | null;
+    }> | null;
     italicVariants: Array<{
-      _id: string
-      optionName: string | null
-    }> | null
-  }> | null
-}>
+      _id: string;
+      optionName: string | null;
+    }> | null;
+  }> | null;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: fontVariantsQuery
 // Query: *[_type == "fontVariant"] {    _id,  _type,  name,  optionName,  "slug": slug.current,  uid,  parentUid,  version,  metafields[]{key, value}}
 export type FontVariantsQueryResult = Array<{
-  _id: string
-  _type: 'fontVariant'
-  name: string | null
-  optionName: string | null
-  slug: string | null
-  uid: string | null
-  parentUid: string | null
-  version: string | null
+  _id: string;
+  _type: "fontVariant";
+  name: string | null;
+  optionName: string | null;
+  slug: string | null;
+  uid: string | null;
+  parentUid: string | null;
+  version: string | null;
   metafields: Array<{
-    key: string | null
-    value: string | null
-  }> | null
-}>
+    key: string | null;
+    value: string | null;
+  }> | null;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: webfontsQuery
 // Query: *[_type == "fontVariant" && count(*[references(^._id)]) > 0] {    _id,  _type,  name,  optionName,  "slug": slug.current,  uid,  parentUid,  version,  metafields[]{key, value}}
 export type WebfontsQueryResult = Array<{
-  _id: string
-  _type: 'fontVariant'
-  name: string | null
-  optionName: string | null
-  slug: string | null
-  uid: string | null
-  parentUid: string | null
-  version: string | null
+  _id: string;
+  _type: "fontVariant";
+  name: string | null;
+  optionName: string | null;
+  slug: string | null;
+  uid: string | null;
+  parentUid: string | null;
+  version: string | null;
   metafields: Array<{
-    key: string | null
-    value: string | null
-  }> | null
-}>
+    key: string | null;
+    value: string | null;
+  }> | null;
+}>;
 
 // Source: src/sanity/lib/queries.ts
 // Variable: fontAndMoreFontsQuery
 // Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {      _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },  },  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(orderRank) [0...2] {      _id,  _type,  name,  shortName,  isVisible,  "slug": slug.current,  variants[]->{name, optionName, _id},  uid,  version,  metafields[]{key, value},  defaultVariant->{_id, optionName},  modules[]{    ...,     book->{variantId, snapshots},    tester->{defaultVariant->{_id, optionName}, defaultText},    body[]{      ...,      markDefs[]{        ...,        _type == "internalLink" => {          "slug": @.reference->slug        }      }    }   },  modifiedAt,  languages[]{html, name},  styleGroups[]{    _type,    groupName,    variants[]->{_id, optionName},    italicVariants[]->{_id, optionName}  },  }}
 export type FontAndMoreFontsQueryResult = {
   font: {
-    _id: string
-    _type: 'font'
-    name: string | null
-    shortName: string | null
-    isVisible: boolean | null
-    slug: string | null
+    _id: string;
+    _type: "font";
+    name: string | null;
+    shortName: string | null;
+    isVisible: boolean | null;
+    slug: string | null;
     variants: Array<{
-      name: string | null
-      optionName: string | null
-      _id: string
-    }> | null
-    uid: string | null
-    version: string | null
+      name: string | null;
+      optionName: string | null;
+      _id: string;
+    }> | null;
+    uid: string | null;
+    version: string | null;
     metafields: Array<{
-      key: string | null
-      value: string | null
-    }> | null
+      key: string | null;
+      value: string | null;
+    }> | null;
     defaultVariant: {
-      _id: string
-      optionName: string | null
-    } | null
-    modules: Array<
-      | {
-          _key: string
-          _type: 'module.book'
-          book: {
-            variantId: string | null
-            snapshots: Array<{
-              createdAt?: string
-              spread?: string
-              _type: 'snapshot'
-              _key: string
-            }> | null
-          } | null
-          config?: Config
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.content'
-          title?: string
-          body: Array<
-            | {
-                children?: Array<{
-                  marks?: Array<string>
-                  text?: string
-                  _type: 'span'
-                  _key: string
-                }>
-                style?: 'h2' | 'normal'
-                listItem?: 'bullet' | 'number'
-                markDefs: Array<
-                  | {
-                      reference?: PostReference
-                      _type: 'internalLink'
-                      _key: string
-                      slug: Slug | null
-                    }
-                  | {
-                      href?: string
-                      _type: 'link'
-                      _key: string
-                    }
-                > | null
-                level?: number
-                _type: 'block'
-                _key: string
-              }
-            | {
-                asset?: SanityImageAssetReference
-                media?: unknown
-                hotspot?: SanityImageHotspot
-                crop?: SanityImageCrop
-                alt?: string
-                caption?: string
-                config?: ImageConfig
-                _type: 'image'
-                _key: string
-                markDefs: null
-              }
-            | {
-                _key: string
-                _type: 'module.video'
-                url?: string
-                isBackground?: boolean
-                aspectRatio?: number
-                poster?: string
-                status?: string
-                caption?: Array<{
-                  children?: Array<{
-                    marks?: Array<string>
-                    text?: string
-                    _type: 'span'
-                    _key: string
-                  }>
-                  style?: 'normal'
-                  listItem?: never
-                  markDefs?: Array<{
-                    href?: string
-                    _type: 'link'
-                    _key: string
-                  }>
-                  level?: number
-                  _type: 'block'
-                  _key: string
-                }>
-                markDefs: null
-              }
-          > | null
-          centered?: boolean
-          overflowCol?: boolean
-          book: null
-          tester: null
-        }
-      | {
-          _key: string
-          _type: 'module.features'
-          label?: string
-          features?: Array<{
-            tag?: never
-            title?: string
-            example?: string
-            _type: 'feature'
-            _key: string
-          }>
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.info'
-          title?: string
-          items?: Array<{
-            key?: string
-            content?: Array<{
-              children?: Array<{
-                marks?: Array<string>
-                text?: string
-                _type: 'span'
-                _key: string
-              }>
-              style?: 'normal'
-              listItem?: never
-              markDefs?: Array<{
-                href?: string
-                _type: 'link'
-                _key: string
-              }>
-              level?: number
-              _type: 'block'
-              _key: string
-            }>
-            _type: 'item'
-            _key: string
-          }>
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.styles'
-          title?: string
-          config?: StylesConfig
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.tester'
-          title?: string
-          defaultText?: string
-          defaultVariant?: FontVariantReference
-          book: null
-          tester: null
-          body: null
-        }
-    > | null
-    modifiedAt: string | null
+      _id: string;
+      optionName: string | null;
+    } | null;
+    modules: Array<{
+      _key: string;
+      _type: "module.book";
+      book: {
+        variantId: string | null;
+        snapshots: Array<{
+          createdAt?: string;
+          spread?: string;
+          _type: "snapshot";
+          _key: string;
+        }> | null;
+      } | null;
+      config?: Config;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.content";
+      title?: string;
+      body: Array<{
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "h2" | "normal";
+        listItem?: "bullet" | "number";
+        markDefs: Array<{
+          reference?: PostReference;
+          _type: "internalLink";
+          _key: string;
+          slug: Slug | null;
+        } | {
+          href?: string;
+          _type: "link";
+          _key: string;
+        }> | null;
+        level?: number;
+        _type: "block";
+        _key: string;
+      } | {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        caption?: string;
+        config?: ImageConfig;
+        _type: "image";
+        _key: string;
+        markDefs: null;
+      } | {
+        _key: string;
+        _type: "module.video";
+        url?: string;
+        isBackground?: boolean;
+        aspectRatio?: number;
+        poster?: string;
+        status?: string;
+        caption?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal";
+          listItem?: never;
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }>;
+        markDefs: null;
+      }> | null;
+      centered?: boolean;
+      overflowCol?: boolean;
+      book: null;
+      tester: null;
+    } | {
+      _key: string;
+      _type: "module.features";
+      label?: string;
+      features?: Array<{
+        tag?: never;
+        title?: string;
+        example?: string;
+        _type: "feature";
+        _key: string;
+      }>;
+      book: null;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.info";
+      title?: string;
+      items?: Array<{
+        key?: string;
+        content?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal";
+          listItem?: never;
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }>;
+        _type: "item";
+        _key: string;
+      }>;
+      book: null;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.styles";
+      title?: string;
+      config?: StylesConfig;
+      book: null;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.tester";
+      title?: string;
+      defaultText?: string;
+      defaultVariant?: FontVariantReference;
+      book: null;
+      tester: null;
+      body: null;
+    }> | null;
+    modifiedAt: string | null;
     languages: Array<{
-      html: string | null
-      name: string | null
-    }> | null
+      html: string | null;
+      name: string | null;
+    }> | null;
     styleGroups: Array<{
-      _type: 'group'
-      groupName: string | null
+      _type: "group";
+      groupName: string | null;
       variants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
+        _id: string;
+        optionName: string | null;
+      }> | null;
       italicVariants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
-    }> | null
-  } | null
+        _id: string;
+        optionName: string | null;
+      }> | null;
+    }> | null;
+  } | null;
   moreFonts: Array<{
-    _id: string
-    _type: 'font'
-    name: string | null
-    shortName: string | null
-    isVisible: boolean | null
-    slug: string | null
+    _id: string;
+    _type: "font";
+    name: string | null;
+    shortName: string | null;
+    isVisible: boolean | null;
+    slug: string | null;
     variants: Array<{
-      name: string | null
-      optionName: string | null
-      _id: string
-    }> | null
-    uid: string | null
-    version: string | null
+      name: string | null;
+      optionName: string | null;
+      _id: string;
+    }> | null;
+    uid: string | null;
+    version: string | null;
     metafields: Array<{
-      key: string | null
-      value: string | null
-    }> | null
+      key: string | null;
+      value: string | null;
+    }> | null;
     defaultVariant: {
-      _id: string
-      optionName: string | null
-    } | null
-    modules: Array<
-      | {
-          _key: string
-          _type: 'module.book'
-          book: {
-            variantId: string | null
-            snapshots: Array<{
-              createdAt?: string
-              spread?: string
-              _type: 'snapshot'
-              _key: string
-            }> | null
-          } | null
-          config?: Config
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.content'
-          title?: string
-          body: Array<
-            | {
-                children?: Array<{
-                  marks?: Array<string>
-                  text?: string
-                  _type: 'span'
-                  _key: string
-                }>
-                style?: 'h2' | 'normal'
-                listItem?: 'bullet' | 'number'
-                markDefs: Array<
-                  | {
-                      reference?: PostReference
-                      _type: 'internalLink'
-                      _key: string
-                      slug: Slug | null
-                    }
-                  | {
-                      href?: string
-                      _type: 'link'
-                      _key: string
-                    }
-                > | null
-                level?: number
-                _type: 'block'
-                _key: string
-              }
-            | {
-                asset?: SanityImageAssetReference
-                media?: unknown
-                hotspot?: SanityImageHotspot
-                crop?: SanityImageCrop
-                alt?: string
-                caption?: string
-                config?: ImageConfig
-                _type: 'image'
-                _key: string
-                markDefs: null
-              }
-            | {
-                _key: string
-                _type: 'module.video'
-                url?: string
-                isBackground?: boolean
-                aspectRatio?: number
-                poster?: string
-                status?: string
-                caption?: Array<{
-                  children?: Array<{
-                    marks?: Array<string>
-                    text?: string
-                    _type: 'span'
-                    _key: string
-                  }>
-                  style?: 'normal'
-                  listItem?: never
-                  markDefs?: Array<{
-                    href?: string
-                    _type: 'link'
-                    _key: string
-                  }>
-                  level?: number
-                  _type: 'block'
-                  _key: string
-                }>
-                markDefs: null
-              }
-          > | null
-          centered?: boolean
-          overflowCol?: boolean
-          book: null
-          tester: null
-        }
-      | {
-          _key: string
-          _type: 'module.features'
-          label?: string
-          features?: Array<{
-            tag?: never
-            title?: string
-            example?: string
-            _type: 'feature'
-            _key: string
-          }>
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.info'
-          title?: string
-          items?: Array<{
-            key?: string
-            content?: Array<{
-              children?: Array<{
-                marks?: Array<string>
-                text?: string
-                _type: 'span'
-                _key: string
-              }>
-              style?: 'normal'
-              listItem?: never
-              markDefs?: Array<{
-                href?: string
-                _type: 'link'
-                _key: string
-              }>
-              level?: number
-              _type: 'block'
-              _key: string
-            }>
-            _type: 'item'
-            _key: string
-          }>
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.styles'
-          title?: string
-          config?: StylesConfig
-          book: null
-          tester: null
-          body: null
-        }
-      | {
-          _key: string
-          _type: 'module.tester'
-          title?: string
-          defaultText?: string
-          defaultVariant?: FontVariantReference
-          book: null
-          tester: null
-          body: null
-        }
-    > | null
-    modifiedAt: string | null
+      _id: string;
+      optionName: string | null;
+    } | null;
+    modules: Array<{
+      _key: string;
+      _type: "module.book";
+      book: {
+        variantId: string | null;
+        snapshots: Array<{
+          createdAt?: string;
+          spread?: string;
+          _type: "snapshot";
+          _key: string;
+        }> | null;
+      } | null;
+      config?: Config;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.content";
+      title?: string;
+      body: Array<{
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "h2" | "normal";
+        listItem?: "bullet" | "number";
+        markDefs: Array<{
+          reference?: PostReference;
+          _type: "internalLink";
+          _key: string;
+          slug: Slug | null;
+        } | {
+          href?: string;
+          _type: "link";
+          _key: string;
+        }> | null;
+        level?: number;
+        _type: "block";
+        _key: string;
+      } | {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        alt?: string;
+        caption?: string;
+        config?: ImageConfig;
+        _type: "image";
+        _key: string;
+        markDefs: null;
+      } | {
+        _key: string;
+        _type: "module.video";
+        url?: string;
+        isBackground?: boolean;
+        aspectRatio?: number;
+        poster?: string;
+        status?: string;
+        caption?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal";
+          listItem?: never;
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }>;
+        markDefs: null;
+      }> | null;
+      centered?: boolean;
+      overflowCol?: boolean;
+      book: null;
+      tester: null;
+    } | {
+      _key: string;
+      _type: "module.features";
+      label?: string;
+      features?: Array<{
+        tag?: never;
+        title?: string;
+        example?: string;
+        _type: "feature";
+        _key: string;
+      }>;
+      book: null;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.info";
+      title?: string;
+      items?: Array<{
+        key?: string;
+        content?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal";
+          listItem?: never;
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }>;
+        _type: "item";
+        _key: string;
+      }>;
+      book: null;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.styles";
+      title?: string;
+      config?: StylesConfig;
+      book: null;
+      tester: null;
+      body: null;
+    } | {
+      _key: string;
+      _type: "module.tester";
+      title?: string;
+      defaultText?: string;
+      defaultVariant?: FontVariantReference;
+      book: null;
+      tester: null;
+      body: null;
+    }> | null;
+    modifiedAt: string | null;
     languages: Array<{
-      html: string | null
-      name: string | null
-    }> | null
+      html: string | null;
+      name: string | null;
+    }> | null;
     styleGroups: Array<{
-      _type: 'group'
-      groupName: string | null
+      _type: "group";
+      groupName: string | null;
       variants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
+        _id: string;
+        optionName: string | null;
+      }> | null;
       italicVariants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
-    }> | null
-  }>
-}
+        _id: string;
+        optionName: string | null;
+      }> | null;
+    }> | null;
+  }>;
+};
 
 // Source: src/sanity/lib/queries.ts
 // Variable: fontQuery
 // Query: {  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {    _id,    _type,    name,    shortName,    isVisible,    "slug": slug.current,    variants[]->{name, optionName, _id},    uid,    version,    metafields[]{key, value},    defaultVariant->{_id, optionName},    title,    headerVideo,    modules[]{      ...,       _type == "content" => {        body[]{          ...,          markDefs[]{            ...,            _type == "internalLink" => {              "slug": @.reference->slug            }          }        }               },      _type == "book" => {        book->{variantId, snapshots},      },      _type == "tester" => {        tester->{defaultVariant->{_id, optionName}, defaultText},        }    },    modifiedAt,    languages[]{html, name},    styleGroups[]{      _type,      groupName,      variants[]->{_id, optionName},      italicVariants[]->{_id, optionName}    },  }}
 export type FontQueryResult = {
   font: {
-    _id: string
-    _type: 'font'
-    name: string | null
-    shortName: string | null
-    isVisible: boolean | null
-    slug: string | null
+    _id: string;
+    _type: "font";
+    name: string | null;
+    shortName: string | null;
+    isVisible: boolean | null;
+    slug: string | null;
     variants: Array<{
-      name: string | null
-      optionName: string | null
-      _id: string
-    }> | null
-    uid: string | null
-    version: string | null
+      name: string | null;
+      optionName: string | null;
+      _id: string;
+    }> | null;
+    uid: string | null;
+    version: string | null;
     metafields: Array<{
-      key: string | null
-      value: string | null
-    }> | null
+      key: string | null;
+      value: string | null;
+    }> | null;
     defaultVariant: {
-      _id: string
-      optionName: string | null
-    } | null
-    title: string | null
-    headerVideo: ModuleVideo | null
-    modules: Array<
-      | {
-          _key: string
-          _type: 'module.book'
-          book?: BookReference
-          config?: Config
-        }
-      | {
-          _key: string
-          _type: 'module.content'
-          title?: string
-          body?: Body
-          centered?: boolean
-          overflowCol?: boolean
-        }
-      | {
-          _key: string
-          _type: 'module.features'
-          label?: string
-          features?: Array<{
-            tag?: never
-            title?: string
-            example?: string
-            _type: 'feature'
-            _key: string
-          }>
-        }
-      | {
-          _key: string
-          _type: 'module.info'
-          title?: string
-          items?: Array<{
-            key?: string
-            content?: Array<{
-              children?: Array<{
-                marks?: Array<string>
-                text?: string
-                _type: 'span'
-                _key: string
-              }>
-              style?: 'normal'
-              listItem?: never
-              markDefs?: Array<{
-                href?: string
-                _type: 'link'
-                _key: string
-              }>
-              level?: number
-              _type: 'block'
-              _key: string
-            }>
-            _type: 'item'
-            _key: string
-          }>
-        }
-      | {
-          _key: string
-          _type: 'module.styles'
-          title?: string
-          config?: StylesConfig
-        }
-      | {
-          _key: string
-          _type: 'module.tester'
-          title?: string
-          defaultText?: string
-          defaultVariant?: FontVariantReference
-        }
-    > | null
-    modifiedAt: string | null
+      _id: string;
+      optionName: string | null;
+    } | null;
+    title: string | null;
+    headerVideo: ModuleVideo | null;
+    modules: Array<{
+      _key: string;
+      _type: "module.book";
+      book?: BookReference;
+      config?: Config;
+    } | {
+      _key: string;
+      _type: "module.content";
+      title?: string;
+      body?: Body;
+      centered?: boolean;
+      overflowCol?: boolean;
+    } | {
+      _key: string;
+      _type: "module.features";
+      label?: string;
+      features?: Array<{
+        tag?: never;
+        title?: string;
+        example?: string;
+        _type: "feature";
+        _key: string;
+      }>;
+    } | {
+      _key: string;
+      _type: "module.info";
+      title?: string;
+      items?: Array<{
+        key?: string;
+        content?: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: "span";
+            _key: string;
+          }>;
+          style?: "normal";
+          listItem?: never;
+          markDefs?: Array<{
+            href?: string;
+            _type: "link";
+            _key: string;
+          }>;
+          level?: number;
+          _type: "block";
+          _key: string;
+        }>;
+        _type: "item";
+        _key: string;
+      }>;
+    } | {
+      _key: string;
+      _type: "module.styles";
+      title?: string;
+      config?: StylesConfig;
+    } | {
+      _key: string;
+      _type: "module.tester";
+      title?: string;
+      defaultText?: string;
+      defaultVariant?: FontVariantReference;
+    }> | null;
+    modifiedAt: string | null;
     languages: Array<{
-      html: string | null
-      name: string | null
-    }> | null
+      html: string | null;
+      name: string | null;
+    }> | null;
     styleGroups: Array<{
-      _type: 'group'
-      groupName: string | null
+      _type: "group";
+      groupName: string | null;
       variants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
+        _id: string;
+        optionName: string | null;
+      }> | null;
       italicVariants: Array<{
-        _id: string
-        optionName: string | null
-      }> | null
-    }> | null
-  } | null
-}
+        _id: string;
+        optionName: string | null;
+      }> | null;
+    }> | null;
+  } | null;
+};
 
 // Query TypeMap
-import '@sanity/client'
-declare module '@sanity/client' {
+import "@sanity/client";
+declare module "@sanity/client" {
   interface SanityQueries {
-    '\n*[_type == "page" && defined(slug.current)] {\n    "slug": slug.current\n}\n': PAGES_SLUGS_QUERY_RESULT
-    '\n*[_type == \'page\' && slug.current == $page][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    blockContent,\n    "modules": modules[]{\n        ...,\n    }\n}\n': PAGES_QUERY_RESULT
-    '*[_type == "settings"][0]': SettingsQueryResult
-    '\n*[_type == "post" && postType == "archive"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n}': PostsQueryResult
-    '*[_type == "post" && defined(slug.current)]{"slug": slug.current}': PostSlugsResult
-    '{\n  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  },\n  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  "slug": slug.current,\n  postType,\n  "category": category->{\n    _id,\n    title,\n    "slug": slug.current\n  },\n  fonts[]{\n    "font": font->{\n      _id,\n      name,\n      shortName,\n      "slug": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n \n  },\n  "gallery": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  "aspectRatio": asset->metadata.dimensions.aspectRatio,\n  "blurDataUrl": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  }\n}': PostAndMoreStoriesQueryResult
-    '\n*[_type == "settings"][0]{\n  "sizes": sizes[]{value, label, modifier},\n  "media": media[]{_key, value, label}\n}\n': LicenseMetricsQueryResult
-    '\n*[_type == "settings"][0]{\n  buyPage,\n  cartPage\n}\n': UiLabelsQueryResult
-    '\n*[_type == "font" && defined(slug.current)][].slug.current\n': FontSlugsQueryResult
-    "\n*[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    \"postCount\": count(*[_type == 'post' && references(^._id)])\n  }\n": CategoryFitersResult
-    '\n{\n  "fonts": *[_type == "font" && isVisible == true]|order(orderRank) {\n    \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n  metafields[]{key, value},\n\n    badge {\n      label,\n      endDate\n    },\n    variants[]->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}\n': HomePageQueryResult
-    '\n*[_type == "font" && isVisible == true]|order(orderRank) {\n  \n  _id,\n  _type,\n  "slug": slug.current,\n  shortName,\n  defaultVariant->{_id},\n  metafields[]{key, value},\n\n}': VisibleFontsQueryResult
-    '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {\n    _id,\n    _type,\n    uid,\n    name,\n    shortName,\n    "slug": slug.current,\n    variants[]->{name, optionName, _id, parentUid},\n    defaultVariant->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName, parentUid},\n      italicVariants[]->{_id, optionName, parentUid}\n    }    \n  },\n  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(orderRank) {\n      defaultVariant->{_id, optionName},\n      "slug": slug.current,\n      name,\n      shortName\n  }  \n}': BuyFontsQueryResult
-    '\n*[_type == "font"] | order(orderRank) {\n  \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n}': FontsQueryResult
-    '\n*[_type == "fontVariant"] {\n  \n  _id,\n  _type,\n  name,\n  optionName,\n  "slug": slug.current,\n  uid,\n  parentUid,\n  version,\n  metafields[]{key, value}\n\n}': FontVariantsQueryResult
-    '\n*[_type == "fontVariant" && count(*[references(^._id)]) > 0] {\n  \n  _id,\n  _type,\n  name,\n  optionName,\n  "slug": slug.current,\n  uid,\n  parentUid,\n  version,\n  metafields[]{key, value}\n\n}': WebfontsQueryResult
-    '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  },\n  "moreFonts": *[_type == "font" && slug.current != $slug && isVisible == true] | order(orderRank) [0...2] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  "slug": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == "internalLink" => {\n          "slug": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  }\n}': FontAndMoreFontsQueryResult
-    '{\n  "font": *[_type == "font" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {\n    _id,\n    _type,\n    name,\n    shortName,\n    isVisible,\n    "slug": slug.current,\n    variants[]->{name, optionName, _id},\n    uid,\n    version,\n    metafields[]{key, value},\n    defaultVariant->{_id, optionName},\n    title,\n    headerVideo,\n    modules[]{\n      ..., \n      _type == "content" => {\n        body[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == "internalLink" => {\n              "slug": @.reference->slug\n            }\n          }\n        }         \n      },\n      _type == "book" => {\n        book->{variantId, snapshots},\n      },\n      _type == "tester" => {\n        tester->{defaultVariant->{_id, optionName}, defaultText},\n  \n      }\n    },\n    modifiedAt,\n    languages[]{html, name},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}': FontQueryResult
+    "\n*[_type == \"page\" && defined(slug.current)] {\n    \"slug\": slug.current\n}\n": PAGES_SLUGS_QUERY_RESULT;
+    "\n*[_type == 'page' && slug.current == $page][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    blockContent,\n    \"modules\": modules[]{\n        ...,\n    }\n}\n": PAGES_QUERY_RESULT;
+    "*[_type == \"settings\"][0]": SettingsQueryResult;
+    "\n*[_type == \"post\" && postType == \"archive\"] | order(date desc, _updatedAt desc) {\n  \n  _id,\n  title,\n  \"slug\": slug.current,\n  postType,\n  \"category\": category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  fonts[]{\n    \"font\": font->{\n      _id,\n      name,\n      shortName,\n      \"slug\": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  \"aspectRatio\": asset->metadata.dimensions.aspectRatio,\n  \"blurDataUrl\": asset->metadata.lqip    \n \n  },\n  \"gallery\": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  \"aspectRatio\": asset->metadata.dimensions.aspectRatio,\n  \"blurDataUrl\": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n}": PostsQueryResult;
+    "*[_type == \"post\" && defined(slug.current)]{\"slug\": slug.current}": PostSlugsResult;
+    "{\n  \"post\": *[_type == \"post\" && slug.current == $slug] | order(_updatedAt desc) [0] {\n    content,\n    \n  _id,\n  title,\n  \"slug\": slug.current,\n  postType,\n  \"category\": category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  fonts[]{\n    \"font\": font->{\n      _id,\n      name,\n      shortName,\n      \"slug\": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  \"aspectRatio\": asset->metadata.dimensions.aspectRatio,\n  \"blurDataUrl\": asset->metadata.lqip    \n \n  },\n  \"gallery\": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  \"aspectRatio\": asset->metadata.dimensions.aspectRatio,\n  \"blurDataUrl\": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  },\n  \"morePosts\": *[_type == \"post\" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {\n    content,\n    \n  _id,\n  title,\n  \"slug\": slug.current,\n  postType,\n  \"category\": category->{\n    _id,\n    title,\n    \"slug\": slug.current\n  },\n  fonts[]{\n    \"font\": font->{\n      _id,\n      name,\n      shortName,\n      \"slug\": slug.current\n    }\n  },\n  date,\n  coverImage { \n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  \"aspectRatio\": asset->metadata.dimensions.aspectRatio,\n  \"blurDataUrl\": asset->metadata.lqip    \n \n  },\n  \"gallery\": gallery[] {\n    ...,\n    \n  _type,\n  hotspot,\n  crop,\n  asset,\n  \"aspectRatio\": asset->metadata.dimensions.aspectRatio,\n  \"blurDataUrl\": asset->metadata.lqip    \n\n  },\n  excerpt,\n  content\n\n  }\n}": PostAndMoreStoriesQueryResult;
+    "\n*[_type == \"settings\"][0]{\n  \"sizes\": sizes[]{value, label, modifier},\n  \"media\": media[]{_key, value, label}\n}\n": LicenseMetricsQueryResult;
+    "\n*[_type == \"settings\"][0]{\n  buyPage,\n  cartPage\n}\n": UiLabelsQueryResult;
+    "\n*[_type == \"font\" && defined(slug.current)][].slug.current\n": FontSlugsQueryResult;
+    "\n*[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    \"postCount\": count(*[_type == 'post' && references(^._id)])\n  }\n": CategoryFitersResult;
+    "\n{\n  \"fonts\": *[_type == \"font\" && isVisible == true]|order(orderRank) {\n    \n  _id,\n  _type,\n  \"slug\": slug.current,\n  shortName,\n  defaultVariant->{_id},\n  metafields[]{key, value},\n\n    badge {\n      label,\n      endDate\n    },\n    variants[]->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}\n": HomePageQueryResult;
+    "\n*[_type == \"font\" && isVisible == true]|order(orderRank) {\n  \n  _id,\n  _type,\n  \"slug\": slug.current,\n  shortName,\n  defaultVariant->{_id},\n  metafields[]{key, value},\n\n}": VisibleFontsQueryResult;
+    "{\n  \"font\": *[_type == \"font\" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {\n    _id,\n    _type,\n    uid,\n    name,\n    shortName,\n    \"slug\": slug.current,\n    variants[]->{name, optionName, _id, parentUid},\n    defaultVariant->{_id, optionName},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName, parentUid},\n      italicVariants[]->{_id, optionName, parentUid}\n    }    \n  },\n  \"moreFonts\": *[_type == \"font\" && slug.current != $slug && isVisible == true] | order(orderRank) {\n      defaultVariant->{_id, optionName},\n      \"slug\": slug.current,\n      name,\n      shortName\n  }  \n}": BuyFontsQueryResult;
+    "\n*[_type == \"font\"] | order(orderRank) {\n  \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  \"slug\": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == \"internalLink\" => {\n          \"slug\": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n}": FontsQueryResult;
+    "\n*[_type == \"fontVariant\"] {\n  \n  _id,\n  _type,\n  name,\n  optionName,\n  \"slug\": slug.current,\n  uid,\n  parentUid,\n  version,\n  metafields[]{key, value}\n\n}": FontVariantsQueryResult;
+    "\n*[_type == \"fontVariant\" && count(*[references(^._id)]) > 0] {\n  \n  _id,\n  _type,\n  name,\n  optionName,\n  \"slug\": slug.current,\n  uid,\n  parentUid,\n  version,\n  metafields[]{key, value}\n\n}": WebfontsQueryResult;
+    "{\n  \"font\": *[_type == \"font\" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  \"slug\": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == \"internalLink\" => {\n          \"slug\": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  },\n  \"moreFonts\": *[_type == \"font\" && slug.current != $slug && isVisible == true] | order(orderRank) [0...2] {\n    \n  _id,\n  _type,\n  name,\n  shortName,\n  isVisible,\n  \"slug\": slug.current,\n  variants[]->{name, optionName, _id},\n  uid,\n  version,\n  metafields[]{key, value},\n  defaultVariant->{_id, optionName},\n  modules[]{\n    ..., \n    book->{variantId, snapshots},\n    tester->{defaultVariant->{_id, optionName}, defaultText},\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == \"internalLink\" => {\n          \"slug\": @.reference->slug\n        }\n      }\n    } \n  },\n  modifiedAt,\n  languages[]{html, name},\n  styleGroups[]{\n    _type,\n    groupName,\n    variants[]->{_id, optionName},\n    italicVariants[]->{_id, optionName}\n  },\n\n  }\n}": FontAndMoreFontsQueryResult;
+    "{\n  \"font\": *[_type == \"font\" && slug.current == $slug && isVisible == true] | order(orderRank) [0] {\n    _id,\n    _type,\n    name,\n    shortName,\n    isVisible,\n    \"slug\": slug.current,\n    variants[]->{name, optionName, _id},\n    uid,\n    version,\n    metafields[]{key, value},\n    defaultVariant->{_id, optionName},\n    title,\n    headerVideo,\n    modules[]{\n      ..., \n      _type == \"content\" => {\n        body[]{\n          ...,\n          markDefs[]{\n            ...,\n            _type == \"internalLink\" => {\n              \"slug\": @.reference->slug\n            }\n          }\n        }         \n      },\n      _type == \"book\" => {\n        book->{variantId, snapshots},\n      },\n      _type == \"tester\" => {\n        tester->{defaultVariant->{_id, optionName}, defaultText},\n  \n      }\n    },\n    modifiedAt,\n    languages[]{html, name},\n    styleGroups[]{\n      _type,\n      groupName,\n      variants[]->{_id, optionName},\n      italicVariants[]->{_id, optionName}\n    },\n  }\n}": FontQueryResult;
   }
 }
+
