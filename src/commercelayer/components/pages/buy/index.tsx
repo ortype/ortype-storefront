@@ -109,16 +109,17 @@ export const Buy = () => {
     total,
   } = summary
 
+  const summaryFontSize = { base: 'lg', lg: 'sm', xl: 'sm', '2xl': 'sm' }
+
   return (
     <Box pos={'relative'}>
       <Box
         maxW={['100%']}
-        ml={{ base: '1rem', xl: '15rem', '3xl': '21rem' }}
+        ml={{ base: '1rem', '2xl': '19rem', '3xl': '21rem' }}
         mr={{
           base: '1rem',
-          lg: '15rem',
-          xl: '15rem',
-          '2xl': '17rem',
+          lg: '18rem',
+          '2xl': '19rem',
           '3xl': '21rem',
         }}
         position={'relative'}
@@ -189,6 +190,31 @@ export const Buy = () => {
           </Flex>
         )}
       </Box>
+            <Presence
+        present={!showSummaryPanel}
+        animationName={{
+          _open: 'slide-from-right, fade-in',
+          _closed: 'slide-to-right, fade-out',
+        }}
+        animationDuration="moderate"
+        pos={{ base: 'relative', lg: 'fixed' }}
+        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
+        top={{ base: 'auto', lg: 5 }}
+      >
+        <Box
+          w={{ base: '100%', lg: '16rem', '2xl': '17rem', '3xl': '18rem' }}
+          bg={'#FFF8D3'}
+          my={{ base: 4, xl: 0 }}
+          borderRadius={20}
+          px={4}
+          py={5}
+        >
+          <VStack gap={2}>
+            <Text textStyle={summaryFontSize} w={'full'}>
+              {'Complete selection'}
+            </Text>
+          </VStack>
+        </Box></Presence>
       <Presence
         present={showSummaryPanel}
         animationName={{
@@ -201,7 +227,7 @@ export const Buy = () => {
         top={{ base: 'auto', lg: 5 }}
       >
         <Box
-          w={{ base: '100%', lg: '13rem', '2xl': '15rem', '3xl': '17rem' }}
+          w={{ base: '100%', lg: '16rem', '2xl': '17rem', '3xl': '18rem' }}
           bg={'#FFF8D3'}
           my={{ base: 4, xl: 0 }}
           borderRadius={20}
@@ -218,7 +244,7 @@ export const Buy = () => {
               h={8}
             >
               <Text
-                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                textStyle={{ base: 'md', lg: 'xs', xl: 'md'}}
                 w={'50%'}
                 textTransform={'uppercase'}
               >
@@ -263,13 +289,13 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+              <Text textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Licenses`}
               </Text>
               <Text
                 pl={1}
-                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                textStyle={summaryFontSize}
               >{`${licensesCount}`}</Text>
             </Flex>
             <Flex
@@ -279,13 +305,13 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+              <Text textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Styles`}
               </Text>
               <Text
                 pl={1}
-                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                textStyle={summaryFontSize}
               >{`${fontLineItemCount}`}</Text>
             </Flex>
             <Flex
@@ -295,13 +321,13 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+              <Text textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Unit Price`}
               </Text>
               <Text
                 pl={1}
-                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                textStyle={summaryFontSize}
               >{`${unitPrice} EUR`}</Text>
             </Flex>
             <Flex
@@ -311,13 +337,13 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }} w={'50%'}>
+              <Text textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Subtotal`}
               </Text>
               <Text
                 pl={1}
-                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                textStyle={summaryFontSize}
               >{`${subtotal} EUR`}</Text>
             </Flex>
             <Presence
@@ -337,15 +363,15 @@ export const Buy = () => {
                 pb={2}
               >
                 <Text
-                  textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                  textStyle={summaryFontSize}
                   w={'50%'}
                   whiteSpace={'nowrap'}
                 >
-                  {`Discount (~${percentageDiscount}%)`}
+                  {`Discount (${percentageDiscount}%)`}
                 </Text>
                 <Text
                   pl={1}
-                  textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                  textStyle={summaryFontSize}
                 >{`-${totalDiscount} EUR`}</Text>
               </Flex>
             </Presence>
@@ -358,13 +384,13 @@ export const Buy = () => {
               pt={2}
             >
               <Text
-                textStyle={{ base: 'md', xl: 'sm', '2xl': 'md' }}
+                textStyle={summaryFontSize}
                 w={'50%'}
                 textTransform={'uppercase'}
               >
                 {`TOTAL`}
               </Text>
-              <Text pl={1} textStyle={'md'}>{`${total} EUR`}</Text>
+              <Text pl={1} textStyle={{ base: 'xl', lg: 'md'}}>{`${total} EUR`}</Text>
             </Flex>
           </VStack>
           {/* SAVE CONFIGURATION */}

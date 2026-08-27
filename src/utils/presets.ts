@@ -4,7 +4,7 @@ export const BASE_URL = 'https://www.ortype.is'
 
 // em = 16px
 export const LARGER_DISPLAY_WIDTH = '100em' // 1600px
-export const LARGE_DISPLAY_WIDTH = '77.5em' // 1240px
+export const LARGE_DISPLAY_WIDTH = '85em' // 1360px
 export const DEFAULT_WIDTH = '64em' // 1024px
 export const TABLET_WIDTH = '48em' // 768px
 export const MOBILE_WIDTH = '375px' // '30em' // 480px
