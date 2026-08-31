@@ -3,7 +3,14 @@ import { Tester } from '@/components/composite/Tester'
 import { getTesterSizes } from '@/components/composite/Tester/tester-sizing'
 import { resolveHref } from '@/sanity/lib/utils'
 import type { HomeFont } from '@/types'
-import { Box, Flex, SegmentGroup, Wrap, WrapItem } from '@chakra-ui/react'
+import {
+  Box,
+  Tabs,
+  Flex,
+  SegmentGroup,
+  Wrap,
+  WrapItem,
+} from '@chakra-ui/react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -94,14 +101,28 @@ export default function FontIndex({ fonts }: FontIndexProps) {
         })}
       </Wrap>
       <Box pos={'fixed'} bottom={4} right={4}>
-        <SegmentGroup.Root
+        <Tabs.Root
+          size={'sm'}
+          value={value}
+          defaultValue={'List'}
+          variant={'enclosed'}
+          onValueChange={(e) => setValue(e.value)}
+        >
+          <Tabs.List>
+            <Tabs.Trigger value='List'>List</Tabs.Trigger>
+            <Tabs.Trigger value='Table'>Table</Tabs.Trigger>
+            <Tabs.Indicator />
+          </Tabs.List>
+        </Tabs.Root>
+
+        {/*<SegmentGroup.Root
           value={value}
           size={'sm'}
           onValueChange={(e) => setValue(e.value)}
         >
           <SegmentGroup.Indicator />
           <SegmentGroup.Items items={['List', 'Table']} />
-        </SegmentGroup.Root>
+        </SegmentGroup.Root>*/}
       </Box>
     </>
   )

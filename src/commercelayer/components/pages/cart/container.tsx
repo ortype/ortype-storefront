@@ -60,15 +60,18 @@ const CartContainer = ({
   return (
     children || (
       <Button
-        variant={'block'}
-        // borderRadius={'full'}
         bg={'white'}
-        _hover={{ color: 'white', bg: 'black' }}
-        borderWidth={'4px'}
-        fontSize={'1.4rem'}
-        h={11}
+        color={'black'}
+        size={'sm'}
+        fontSize={'md'}
         px={2}
-        fontVariantNumeric={'tabular-nums'}
+        minW={'auto'}
+        borderRadius={'none'}
+        border={'2px solid black'}
+        _hover={{
+          bg: 'black',
+          color: 'white',
+        }}
         position={'relative'}
         // onClick={() => setCartOpen(true)}
         asChild
@@ -77,7 +80,7 @@ const CartContainer = ({
           {`Cart`}
           <Float>
             <Circle
-              fontSize={'sm'}
+              fontSize={'xs'}
               // size={5}
               width={
                 itemsCount < 10 ? 'var(--or-sizes-5) !important' : 'auto'

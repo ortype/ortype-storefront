@@ -2,8 +2,8 @@
 import { Account } from '@/commercelayer/components/global/account'
 import { usePathname } from 'next/navigation'
 
-import { Box, Button, Flex, Group } from '@chakra-ui/react'
 import type { VisibleFont } from '@/types'
+import { Box, Button, Flex, Group } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Nav } from './Nav'
@@ -64,14 +64,21 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
       <Nav fonts={fonts} />
       <Group gap={0} p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
         {settings.customerId ? (
+          // CUSTOMER
           <Button
+            bg={'white'}
+            color={'black'}
+            size={'sm'}
+            w={8}
+            h={8}
+            minW={'auto'}
+            border={'2px solid black'}
+            // borderRadius={'full'}
             _hover={{
               bg: 'black',
               color: 'white',
             }}
             variant={'circle'}
-            bg={'white'}
-            px={2}
             mr={1}
             fontSize={'3xl'}
             className={'fontVariant-Ejdp7jjphH9hhnST6'}
@@ -82,18 +89,21 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
           </Button>
         ) : (
           !hideLogin && (
+            // LOGIN
             <Button
-              //mr={'-3px'}
-              bg={'white'}
-              _hover={{ color: 'white', bg: 'black' }}
               mr={1}
-              variant={'block'}
-              borderRadius={'full'}
-              borderWidth={'4px'}
-              fontSize={'1.4rem'}
-              h={11}
-              size={'md'}
+              bg={'white'}
+              color={'black'}
+              size={'sm'}
+              fontSize={'md'}
               px={2}
+              minW={'auto'}
+              borderRadius={'full'}
+              border={'2px solid black'}
+              _hover={{
+                bg: 'black',
+                color: 'white',
+              }}
               onClick={() => setLoginOpen(true)}
             >
               {'Login'}

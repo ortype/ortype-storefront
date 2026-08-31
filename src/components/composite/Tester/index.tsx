@@ -255,12 +255,12 @@ export const Tester: React.FC<Props> = (props) => {
         visibility={loading ? 'hidden' : 'visible'}
       >
         <HStack gap={6} pos={'relative'}>
-          <Button variant={'block'} size={'xs'} asChild tabIndex={-1}>
+          <Button variant={'block'} size={'sm'} asChild tabIndex={-1}>
             <Link
               href={`/fonts/${slug}`}
               data-sanity={attr(`slug`).toString()}
             >
-              <Text as={'span'} fontSize='sm'>
+              <Text as={'span'} fontSize='md'>
                 {`${title}`}
               </Text>
               {showBadge && (
@@ -308,8 +308,8 @@ export const Tester: React.FC<Props> = (props) => {
               className={'buy-button'}
               bg={'white'}
               color={'black'}
-              size={table ? 'xs' : 'xs'}
-              fontSize={'sm'}
+              size={'sm'}
+              fontSize={'md'}
               px={'0.75rem'}
               minW={'auto'}
               borderRadius={'3rem'}
