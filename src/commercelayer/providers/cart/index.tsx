@@ -175,10 +175,10 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
           // Per-subgroup: every code in this group's spec is selected
           allSelected:
             rg.includedSkuCodes.length > 0 &&
-            rg.includedSkuCodes.every((code) => code in selectedSkus),
+            rg.includedSkuCodes.every((code) => code in selectedSkus)
         }))
         .filter((sg) => sg.items.length > 0)
-      const hasSubGroups = subGroupsRaw.length > 1
+      const hasSubGroups = subGroupsRaw.length > 0
 
       return {
         parentUid,
