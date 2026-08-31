@@ -42,7 +42,11 @@ const Editable = ({
       })
     } else {
       // let's just free up that input
-      handleUpdateFontTester({ addEntry: false, sessionId: '', isEditing: '' })
+      handleUpdateFontTester({
+        addEntry: false,
+        sessionId: '',
+        isEditing: '',
+      })
     }
   }
 
@@ -68,7 +72,7 @@ const Editable = ({
   }
 
   return (
-    <Box {...props} textAlign={'center'} mt={1} position="relative">
+    <Box {...props} textAlign={'center'} mt={1} position='relative'>
       {!loading ? (
         <>
           {!hasInitialized && shouldAnimate ? (
@@ -106,11 +110,11 @@ const Editable = ({
               className={variantId}
               tabIndex={index} // Sequential tabIndex for navigating between inputs
               spellCheck={false}
-              type="text"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              name="entry"
+              type='text'
+              autoComplete='off'
+              autoCorrect='off'
+              autoCapitalize='off'
+              name='entry'
               placeholder={placeholder}
               value={entry}
               onFocus={handleFocus}
@@ -125,9 +129,9 @@ const Editable = ({
       ) : (
         // Loading state with centered cursor
         <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
+          display='flex'
+          justifyContent='center'
+          alignItems='center'
           height={getTesterSizes(table).lineHeight}
           pos={'relative'}
         >

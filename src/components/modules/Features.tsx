@@ -122,7 +122,9 @@ export default function FeaturesModule({ value }: FeaturesModuleProps) {
                     <Box border={'1px solid #000'} flex={'1'}>
                       <Center
                         h={'100%'}
-                        style={{ fontSize: `${140 * conversion}px` }}
+                        style={{
+                          fontSize: `${140 * conversion}px`,
+                        }}
                         className={font?.defaultVariant?._id}
                       >
                         {feature.example}

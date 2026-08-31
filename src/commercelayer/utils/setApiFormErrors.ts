@@ -110,7 +110,7 @@ export function setApiFormErrors({
       const guessedField = guessField(item)
       const field =
         guessedField != null
-          ? fieldMap?.[guessedField] ?? guessedField
+          ? (fieldMap?.[guessedField] ?? guessedField)
           : undefined
 
       // Once we have a field name we check if it's part of the form fields, otherwise we cannot
@@ -118,9 +118,15 @@ export function setApiFormErrors({
       // This because API can still return `VALIDATION_ERROR` for a field that is no part of the form.
       // If we don't perform this check here, the form will not be submitted and the user will not see any errors.
       // Example: `VALIDATION_ERROR` is returned for field `quantity` but we don't have a field with that name in the form.
-      const isFieldInForm = Boolean(field != null && formFields.includes(field))
+      const isFieldInForm = Boolean(
+        field != null && formFields.includes(field)
+      )
 
-      if (item.code === 'VALIDATION_ERROR' && field != null && isFieldInForm) {
+      if (
+        item.code === 'VALIDATION_ERROR' &&
+        field != null &&
+        isFieldInForm
+      ) {
         return {
           ...allErrors,
           validation: [
@@ -139,7 +145,10 @@ export function setApiFormErrors({
       }
     },
     {
-      validation: [] as Array<{ field: string; message: string }>,
+      validation: [] as Array<{
+        field: string
+        message: string
+      }>,
       others: [] as string[],
     }
   )

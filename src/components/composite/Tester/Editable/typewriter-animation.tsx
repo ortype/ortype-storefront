@@ -51,25 +51,29 @@ const TypewriterAnimation = ({
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
+      display='flex'
+      justifyContent='center'
+      alignItems='center'
       height={getTesterSizes(table).lineHeight}
-      width="100%"
+      width='100%'
     >
       <Box
-        display="inline-flex"
-        alignItems="center"
-        justifyContent="center"
+        display='inline-flex'
+        alignItems='center'
+        justifyContent='center'
         fontSize={'inherit'}
         lineHeight={'inherit'}
         className={variantId}
-        textAlign="center"
+        textAlign='center'
         pos={'relative'}
       >
         {displayText}
         {!isComplete && (
-          <BlinkingCursor right={'-2px'} table={table} variantId={variantId} />
+          <BlinkingCursor
+            right={'-2px'}
+            table={table}
+            variantId={variantId}
+          />
         )}
       </Box>
     </Box>

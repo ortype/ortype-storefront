@@ -35,7 +35,8 @@ async function getSizes() {
 
 async function getSkuOptions() {
   const now = Date.now()
-  if (cachedSkuOptions && now < cachedSkuOptionsExpiry) return cachedSkuOptions
+  if (cachedSkuOptions && now < cachedSkuOptionsExpiry)
+    return cachedSkuOptions
 
   const cl = await getIntegrationCommerceLayer()
   cachedSkuOptions = await cl.sku_options.list()
@@ -48,7 +49,10 @@ type IncludedLineItem = {
   attributes: {
     sku_code: string
     created_at?: string
-    metadata?: { parentUid?: string; license?: { parentUid?: string } }
+    metadata?: {
+      parentUid?: string
+      license?: { parentUid?: string }
+    }
     [key: string]: any
   }
 }
@@ -91,7 +95,7 @@ type PriceCalculationResponse = {
 
 export async function POST(
   req: NextRequest,
-  res: NextResponse<PriceCalculationResponse>,
+  res: NextResponse<PriceCalculationResponse>
 ) {
   const body = await req.json()
   // console.log('Price req.json(): body... ', body)
@@ -113,11 +117,14 @@ export async function POST(
     ])
 
     const size = sizes.find(
-      ({ value }) => value === metadata.license?.size?.value,
+      ({ value }) => value === metadata.license?.size?.value
     )
 
     if (!size) {
-      console.error('[PRICE API] Unknown license size:', metadata.license?.size)
+      console.error(
+        '[PRICE API] Unknown license size:',
+        metadata.license?.size
+      )
       return NextResponse.json({
         success: true,
         status: 200,
@@ -132,12 +139,13 @@ export async function POST(
       // Sum per-style prices using perStyleTypes and the group batchSize.
       const perStyleTypes: Record<string, string[]> =
         metadata.license?.perStyleTypes ?? {}
-      const batchSize = metadata.batchSize ?? Object.keys(perStyleTypes).length
+      const batchSize =
+        metadata.batchSize ?? Object.keys(perStyleTypes).length
 
       let groupTotal = 0
       for (const [styleSkuCode, typeRefs] of Object.entries(perStyleTypes)) {
         const styleOptions = allSkuOptions.filter(({ reference }) =>
-          typeRefs.includes(reference),
+          typeRefs.includes(reference)
         )
         const stylePrice = calculateLineItemPrice({
           skuOptions: styleOptions,
@@ -165,13 +173,13 @@ export async function POST(
         ({ type, attributes }) =>
           type === 'line_items' &&
           attributes.sku_code !== sku_code &&
-          attributes.metadata?.parentUid === metadata.parentUid,
+          attributes.metadata?.parentUid === metadata.parentUid
       )
 
       const count = metadata.batchSize ?? siblings.length + 1
 
       const selectedTypes = allSkuOptions.filter(({ reference }) =>
-        metadata.license?.types?.find((val: string) => val === reference),
+        metadata.license?.types?.find((val: string) => val === reference)
       )
 
       unit_amount_cents = calculateLineItemPrice({

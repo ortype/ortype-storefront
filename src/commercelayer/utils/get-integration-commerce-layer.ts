@@ -32,7 +32,7 @@ async function authenticateAndBuildClient(): Promise<
   if (!CL_SYNC_CLIENT_ID || !CL_SYNC_CLIENT_SECRET || !CL_SLUG) {
     throw new Error(
       'Missing Commerce Layer integration credentials: CL_SYNC_CLIENT_ID, ' +
-        'CL_SYNC_CLIENT_SECRET, and CL_SLUG must all be set',
+        'CL_SYNC_CLIENT_SECRET, and CL_SLUG must all be set'
     )
   }
 
@@ -81,7 +81,9 @@ async function authenticateAndBuildClient(): Promise<
  */
 export async function getIntegrationCommerceLayer({
   forceRefresh = false,
-}: { forceRefresh?: boolean } = {}): Promise<ReturnType<typeof CommerceLayer>> {
+}: { forceRefresh?: boolean } = {}): Promise<
+  ReturnType<typeof CommerceLayer>
+> {
   const now = Date.now()
   if (!forceRefresh && cachedClient && now < cachedClientExpiry) {
     return cachedClient

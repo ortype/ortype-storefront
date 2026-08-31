@@ -13,8 +13,7 @@ interface ButtonLoadingProps {
 }
 
 export interface ButtonProps
-  extends ChakraIconButtonProps,
-    ButtonLoadingProps {}
+  extends ChakraIconButtonProps, ButtonLoadingProps {}
 
 export const IconButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function IconButton(props, ref) {
@@ -26,7 +25,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...rest}
       >
-        <AbsoluteCenter display="inline-flex" axis={'horizontal'}>
+        <AbsoluteCenter display='inline-flex' axis={'horizontal'}>
           <Span>{children}</Span>
         </AbsoluteCenter>
       </ChakraIconButton>

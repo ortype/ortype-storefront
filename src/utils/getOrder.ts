@@ -35,7 +35,7 @@ export const getOrder = async (config: GetOrderConfig) => {
 
 export const getAsyncOrder = async (
   client: CommerceLayerClient,
-  orderId: string,
+  orderId: string
 ) => {
   return await client.orders.retrieve(orderId, {
     fields: {

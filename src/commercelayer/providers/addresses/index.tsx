@@ -68,7 +68,9 @@ export const AddressesContext = createContext<DefaultContext>(
 export const useAddressesContext = () => {
   const context = useContext(AddressesContext)
   if (!context) {
-    throw new Error('useCustomerContext must be used within a CustomerProvider')
+    throw new Error(
+      'useCustomerContext must be used within a CustomerProvider'
+    )
   }
   return context
 }
@@ -146,7 +148,10 @@ export function AddressesContainer(props: Props): JSX.Element {
       })
     },
     setAddress: (params: SetAddressParams<TCustomerAddress>) => {
-      defaultAddressContext.setAddress({ ...params, dispatch })
+      defaultAddressContext.setAddress({
+        ...params,
+        dispatch,
+      })
     },
     saveAddresses: async (params: {
       customerEmail?: string

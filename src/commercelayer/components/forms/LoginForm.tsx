@@ -97,9 +97,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         centerContent
         position={'relative'}
       >
-        <Box inset="0" minH={16}>
-          <Center h="full">
-            <Spinner color="black" size={'xl'} />
+        <Box inset='0' minH={16}>
+          <Center h='full'>
+            <Spinner color='black' size={'xl'} />
           </Center>
         </Box>
       </Container>
@@ -135,7 +135,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           onSuccess()
         } else {
           console.log(
-            'ℹ️ Login successful - no step advancement or callback needed',
+            'ℹ️ Login successful - no step advancement or callback needed'
           )
         }
       } else {
@@ -152,7 +152,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       if (parsed.type === 'RATE_LIMIT' && parsed.retryAfter) {
         setRateLimitCountdown(parsed.retryAfter)
         const rateLimitMessage = `Too many attempts. Try again in ${parsed.retryAfter} seconds.`
-        form.setError('root', { type: parsed.type, message: rateLimitMessage })
+        form.setError('root', {
+          type: parsed.type,
+          message: rateLimitMessage,
+        })
       } else {
         form.setError('root', {
           type: parsed.type,
@@ -175,17 +178,17 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       >
         <Fieldset.Root>
           <Fieldset.Content>
-            <Stack gap={2} align="flex-start" minW={'sm'}>
+            <Stack gap={2} align='flex-start' minW={'sm'}>
               <FloatingLabelInput
-                name="customerEmail"
-                label="Email"
-                type="email"
-                variant="subtle"
-                size="lg"
-                fontSize="lg"
+                name='customerEmail'
+                label='Email'
+                type='email'
+                variant='subtle'
+                size='lg'
+                fontSize='lg'
                 borderRadius={0}
               />
-              <PasswordInput name="customerPassword" label="Password" />
+              <PasswordInput name='customerPassword' label='Password' />
               <Button
                 variant={'subtle'}
                 w={'full'}
@@ -202,7 +205,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 size={'sm'}
                 py={5}
                 fontSize={'lg'}
-                type="submit"
+                type='submit'
                 loadingText={'Submitting'}
                 disabled={isSubmitting || isRateLimited}
                 loading={isSubmitting}
@@ -211,7 +214,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               </Button>
 
               {form.formState.errors.root && (
-                <Alert status="error" my="4">
+                <Alert status='error' my='4'>
                   {form.formState.errors.root.type === 'RATE_LIMIT' &&
                   rateLimitCountdown > 0
                     ? `Too many attempts. Try again in ${rateLimitCountdown} seconds.`

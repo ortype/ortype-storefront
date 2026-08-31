@@ -29,7 +29,9 @@ const NameForm = ({ bookLayoutId, name }) => {
   const layoutsRefetchQueries = [
     {
       query: GET_BOOK_LAYOUTS,
-      variables: { fontId: bookLayoutStore.fontFamily.value },
+      variables: {
+        fontId: bookLayoutStore.fontFamily.value,
+      },
     },
     {
       query: GET_BOOK_LAYOUTS,
@@ -87,7 +89,7 @@ const NameForm = ({ bookLayoutId, name }) => {
       w={'100%'}
       my={'0.5rem'}
       ref={submitValidation}
-      autoComplete="off"
+      autoComplete='off'
       onSubmit={handleSubmit(s)}
     >
       <Text fontSize={'sm'}>{'Name'}</Text>

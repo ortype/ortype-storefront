@@ -12,7 +12,7 @@ export function DisableDraftMode() {
 
   return (
     <a
-      href="/api/draft-mode/disable"
+      href='/api/draft-mode/disable'
       style={{
         position: 'fixed',
         top: 0,

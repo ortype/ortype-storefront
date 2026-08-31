@@ -74,7 +74,7 @@ export const postsQuery = defineQuery(`
 }`)
 
 export const postSlugs = defineQuery(
-  `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`,
+  `*[_type == "post" && defined(slug.current)]{"slug": slug.current}`
 )
 
 export const postAndMoreStoriesQuery = defineQuery(`{

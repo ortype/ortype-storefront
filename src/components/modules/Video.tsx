@@ -113,7 +113,7 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
 
   return (
     <>
-      <Box ref={containerRef} mx="auto">
+      <Box ref={containerRef} mx='auto'>
         {useNativePlayer ? (
           <VimeoPlayerNative
             videoId={videoId}
@@ -128,11 +128,14 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
             isBackground={isBackground}
           />
         ) : (
-          <AspectRatio ratio={ratio} overflow="hidden">
+          <AspectRatio ratio={ratio} overflow='hidden'>
             <Presence
               present={true}
-              animationName={{ _open: 'fade-in', _closed: 'fade-out' }}
-              animationDuration="moderate"
+              animationName={{
+                _open: 'fade-in',
+                _closed: 'fade-out',
+              }}
+              animationDuration='moderate'
             >
               <ReactPlayer
                 url={src}
@@ -143,8 +146,8 @@ const Video: React.FC<VideoProps> = ({ value = {}, style }) => {
                 playing={isBackground && isInView}
                 loop={isBackground}
                 config={config}
-                width="100%"
-                height="100%"
+                width='100%'
+                height='100%'
                 style={style}
               />
             </Presence>

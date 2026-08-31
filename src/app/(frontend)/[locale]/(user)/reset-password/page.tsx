@@ -151,9 +151,9 @@ export default function ResetPassword() {
         centerContent
         position={'relative'}
       >
-        <Box inset="0" minH={16}>
-          <Center h="full">
-            <Spinner color="black" size={'xl'} />
+        <Box inset='0' minH={16}>
+          <Center h='full'>
+            <Spinner color='black' size={'xl'} />
           </Center>
         </Box>
       </Container>
@@ -164,7 +164,7 @@ export default function ResetPassword() {
     return (
       <Container
         my={6}
-        maxW="40rem"
+        maxW='40rem'
         minH={'40rem'}
         justifyContent={'center'}
         centerContent
@@ -198,7 +198,7 @@ export default function ResetPassword() {
             variant={'subtle'}
             borderRadius={'full'}
           >
-            <ChakraLink as={Link} href="/">
+            <ChakraLink as={Link} href='/'>
               Go to login now
             </ChakraLink>
           </Button>
@@ -243,7 +243,7 @@ export default function ResetPassword() {
             variant={'subtle'}
             borderRadius={'full'}
           >
-            <ChakraLink as={Link} href="/forgot-password">
+            <ChakraLink as={Link} href='/forgot-password'>
               Request a new reset link
             </ChakraLink>
           </Button>
@@ -294,28 +294,31 @@ export default function ResetPassword() {
         <Box as={'form'} w={'full'} onSubmit={onSubmit}>
           <Stack gap={2}>
             <PasswordInput
-              name="password"
-              label="New password"
-              placeholder="Enter your new password"
+              name='password'
+              label='New password'
+              placeholder='Enter your new password'
             />
 
             <PasswordInput
-              name="confirmPassword"
-              label="Confirm new password"
-              placeholder="Confirm your new password"
+              name='confirmPassword'
+              label='Confirm new password'
+              placeholder='Confirm your new password'
             />
 
             <Button
-              type="submit"
+              type='submit'
               loading={isSubmitting}
-              loadingText="Updating..."
+              loadingText='Updating...'
               disabled={isSubmitting}
               variant={'subtle'}
               w={'full'}
               borderColor={'brand.50'}
               borderWidth={'2px'}
               bg={'brand.50'}
-              _hover={{ bg: 'brand.50', borderColor: 'black' }}
+              _hover={{
+                bg: 'brand.50',
+                borderColor: 'black',
+              }}
               borderRadius={'full'}
               size={'sm'}
               py={5}
@@ -326,9 +329,9 @@ export default function ResetPassword() {
             <Box w={'100%'}>
               <PasswordStrengthMeter value={passwordStrength} py={1} />
             </Box>
-            {apiError && <Alert status="error">{apiError}</Alert>}
+            {apiError && <Alert status='error'>{apiError}</Alert>}
             <Group gap={2} justifyContent={'center'}>
-              <Text textStyle={'xs'} textAlign="center">
+              <Text textStyle={'xs'} textAlign='center'>
                 Remember your password?{' '}
               </Text>
               <Button
@@ -338,7 +341,7 @@ export default function ResetPassword() {
                 variant={'subtle'}
                 borderRadius={'full'}
               >
-                <ChakraLink as={Link} href="/login">
+                <ChakraLink as={Link} href='/login'>
                   Login
                 </ChakraLink>
               </Button>

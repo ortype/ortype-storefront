@@ -45,8 +45,8 @@ const Cart = ({ openMenu, setMenuOpen, openCart, setCartOpen }) => {
         onOpenChange={(e) => setCartOpen(e.open)}
         size={'full'}
         // placement="center"
-        motionPreset="slide-in-bottom"
-        scrollBehavior="inside"
+        motionPreset='slide-in-bottom'
+        scrollBehavior='inside'
         // modal
       >
         {/*<DialogBackdrop />*/}

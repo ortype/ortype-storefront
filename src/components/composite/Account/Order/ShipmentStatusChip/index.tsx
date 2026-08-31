@@ -35,7 +35,7 @@ function ShipmentStatusChip({ status }: Props): JSX.Element {
   return (
     <Box
       // color handlerStatusColor(status)
-      className="inline text-sm text-center capitalize text-sm w-auto uppercase font-bold py-[2px] px-[8px] leading-snug rounded-xl align-middle"
+      className='inline text-sm text-center capitalize text-sm w-auto uppercase font-bold py-[2px] px-[8px] leading-snug rounded-xl align-middle'
     >
       {getStatusTranslations(status, t)}
     </Box>

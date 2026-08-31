@@ -32,8 +32,14 @@ export const FontGroup: React.FC<Props> = ({
   const middleVariant = group.variants[middleIndex]
   const className = middleVariant._id
 
-  const { styleCount, allSelected, countSelected, percentageDiscount, fullPrice, totalPrice } =
-    summary
+  const {
+    styleCount,
+    allSelected,
+    countSelected,
+    percentageDiscount,
+    fullPrice,
+    totalPrice,
+  } = summary
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -47,7 +53,9 @@ export const FontGroup: React.FC<Props> = ({
     <Flex
       justifyContent={'space-between'}
       bg={allSelected ? 'colorPalette.bg' : 'brand.50'}
-      boxShadow={allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
+      boxShadow={
+        allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'
+      }
       // borderRadius={allSelected ? '0px' : '100px'}
       borderRadius={'full'}
       cursor={allSelected ? 'default' : 'pointer'}
@@ -92,14 +100,15 @@ export const FontGroup: React.FC<Props> = ({
             {name}
           </Text>
           <Stack direction={'row'}>
-          <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
-            {`${styleCount} styles — variable font included`}
-          </Text>
-          {!open && countSelected > 0 && countSelected < styleCount &&
-          <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
-            {`(${countSelected} of ${styleCount} styles selected)`}
-          </Text>}
-        </Stack>
+            <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
+              {`${styleCount} styles — variable font included`}
+            </Text>
+            {!open && countSelected > 0 && countSelected < styleCount && (
+              <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
+                {`(${countSelected} of ${styleCount} styles selected)`}
+              </Text>
+            )}
+          </Stack>
         </Stack>
       </Stack>
       <Flex

@@ -5,6 +5,7 @@ A React component that provides step-by-step navigation for the checkout process
 ## Overview
 
 The StepNav component integrates with Commerce Layer's checkout context and Chakra UI's Steps component to provide:
+
 - Visual step progression
 - Smart navigation controls
 - Step completion validation
@@ -26,15 +27,16 @@ interface Props {
 
 ### Props Details
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `variant` | `'line' \| 'solid'` | `'line'` | Visual style of the step indicators |
-| `showDescription` | `boolean` | `false` | Whether to display step descriptions |
-| `steps` | `Array<StepConfig>` | - | **Required.** Array of step configurations |
+| Prop              | Type                | Default  | Description                                |
+| ----------------- | ------------------- | -------- | ------------------------------------------ |
+| `variant`         | `'line' \| 'solid'` | `'line'` | Visual style of the step indicators        |
+| `showDescription` | `boolean`           | `false`  | Whether to display step descriptions       |
+| `steps`           | `Array<StepConfig>` | -        | **Required.** Array of step configurations |
 
 ### Step Configuration
 
 Each step in the `steps` array should have:
+
 - `key`: A `SingleStepEnum` value ('Email', 'Address', 'License', 'Shipping', 'Payment', 'Complete')
 - `title`: Display title for the step
 - `description`: Optional description text
@@ -58,13 +60,13 @@ The component implements intelligent navigation rules:
 
 Each step has specific completion criteria checked via the checkout context:
 
-| Step | Completion Criteria |
-|------|-------------------|
-| Email | `ctx.hasEmailAddress` |
-| Address | `ctx.hasBillingAddress && (!ctx.isShipmentRequired \|\| ctx.hasShippingAddress)` |
-| License | `ctx.hasLicenseOwner` |
-| Shipping | `!ctx.isShipmentRequired \|\| ctx.hasShippingMethod` |
-| Payment | `ctx.hasPaymentMethod` |
+| Step     | Completion Criteria                                                              |
+| -------- | -------------------------------------------------------------------------------- |
+| Email    | `ctx.hasEmailAddress`                                                            |
+| Address  | `ctx.hasBillingAddress && (!ctx.isShipmentRequired \|\| ctx.hasShippingAddress)` |
+| License  | `ctx.hasLicenseOwner`                                                            |
+| Shipping | `!ctx.isShipmentRequired \|\| ctx.hasShippingMethod`                             |
+| Payment  | `ctx.hasPaymentMethod`                                                           |
 
 ## Usage Example
 
@@ -72,21 +74,37 @@ Each step has specific completion criteria checked via the checkout context:
 import { StepNav } from './step-nav'
 
 const checkoutSteps = [
-  { key: 'Email', title: 'Email', description: 'Enter your email' },
-  { key: 'Address', title: 'Address', description: 'Billing & shipping' },
-  { key: 'License', title: 'License', description: 'Select license owner' },
-  { key: 'Shipping', title: 'Shipping', description: 'Choose shipping method' },
-  { key: 'Payment', title: 'Payment', description: 'Payment details' }
+  {
+    key: 'Email',
+    title: 'Email',
+    description: 'Enter your email',
+  },
+  {
+    key: 'Address',
+    title: 'Address',
+    description: 'Billing & shipping',
+  },
+  {
+    key: 'License',
+    title: 'License',
+    description: 'Select license owner',
+  },
+  {
+    key: 'Shipping',
+    title: 'Shipping',
+    description: 'Choose shipping method',
+  },
+  {
+    key: 'Payment',
+    title: 'Payment',
+    description: 'Payment details',
+  },
 ]
 
 function Checkout() {
   return (
     <Steps.RootProvider value={stepperHook}>
-      <StepNav 
-        steps={checkoutSteps}
-        variant="line"
-        showDescription={true}
-      />
+      <StepNav steps={checkoutSteps} variant='line' showDescription={true} />
       {/* Step content components */}
     </Steps.RootProvider>
   )
@@ -103,6 +121,7 @@ function Checkout() {
 ## Context Requirements
 
 This component requires:
+
 - `CheckoutContext` from `@/commercelayer/providers/checkout`
 - Chakra UI's `Steps.RootProvider` wrapper
 - Translation context via `react-i18next`
@@ -110,6 +129,7 @@ This component requires:
 ## Internationalization
 
 The component supports i18n through translation keys:
+
 - Step titles: `step${stepKey}.title` (e.g., `stepEmail.title`)
 - Step descriptions: `step${stepKey}.description` (e.g., `stepEmail.description`)
 
@@ -118,6 +138,7 @@ Fallback to the provided `title` and `description` props if translations are not
 ## Visual States
 
 Steps can appear in several visual states:
+
 - **Clickable/Active**: Steps that can be navigated to (wrapped in `Steps.Trigger`)
 - **Non-clickable**: Steps that cannot be navigated to (no trigger wrapper)
 - **Complete**: Steps that have been completed (determined by completion logic)

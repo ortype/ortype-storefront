@@ -16,8 +16,12 @@ interface Props {
 }
 
 function OrderList({ id, type = 'orders' }: Props): JSX.Element {
-  const { orders, subscriptions, getCustomerOrders, getCustomerSubscriptions } =
-    useCustomerContext()
+  const {
+    orders,
+    subscriptions,
+    getCustomerOrders,
+    getCustomerSubscriptions,
+  } = useCustomerContext()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
 
@@ -63,7 +67,9 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
             <Table.ColumnHeader>{'Date'}</Table.ColumnHeader>
             {/*<Table.ColumnHeader>{'Items'}</Table.ColumnHeader>*/}
             <Table.ColumnHeader>{'Status'}</Table.ColumnHeader>
-            <Table.ColumnHeader textAlign="end">{'Amount'}</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign='end'>
+              {'Amount'}
+            </Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -110,7 +116,7 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
                   {order.payment_status}
                 </Badge>
               </Table.Cell>
-              <Table.Cell textAlign="end">{`EUR ${order.total_amount_with_taxes_float}`}</Table.Cell>
+              <Table.Cell textAlign='end'>{`EUR ${order.total_amount_with_taxes_float}`}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

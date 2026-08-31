@@ -94,7 +94,9 @@ const ChangePassword = () => {
 
   const onSubmit = form.handleSubmit(async (data) => {
     try {
-      await updateCustomer?.({ password: data.customerPassword })
+      await updateCustomer?.({
+        password: data.customerPassword,
+      })
       handleClose()
     } catch {
       form.setError('root', {
@@ -136,16 +138,16 @@ const ChangePassword = () => {
                 }}
               >
                 <Stack gap={4}>
-                  <PasswordInput name="customerPassword" label="Password" />
+                  <PasswordInput name='customerPassword' label='Password' />
                   <PasswordInput
-                    name="customerConfirmPassword"
-                    label="Confirm Password"
+                    name='customerConfirmPassword'
+                    label='Confirm Password'
                   />
                   <Box w={'100%'}>
                     <PasswordStrengthMeter value={passwordStrength} py={1} />
                   </Box>
                   {form.formState.errors.root && (
-                    <Alert status="error">
+                    <Alert status='error'>
                       {form.formState.errors.root.message}
                     </Alert>
                   )}
@@ -165,7 +167,7 @@ const ChangePassword = () => {
                       variant={'rounded'}
                       bg={'colorPalette.fg'}
                       color={'colorPalette.bg'}
-                      type="submit"
+                      type='submit'
                       loading={isSubmitting}
                     >
                       Save
@@ -177,11 +179,11 @@ const ChangePassword = () => {
           </DialogBody>
         </DialogContent>
       </DialogRoot>
-      <Field.Root w="full" pos="relative">
+      <Field.Root w='full' pos='relative'>
         <InputGroup
           attached
           w={'full'}
-          flex="1"
+          flex='1'
           endElement={
             <Button
               onClick={() => setEditing(true)}

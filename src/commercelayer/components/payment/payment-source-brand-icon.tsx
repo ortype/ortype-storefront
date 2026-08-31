@@ -6,9 +6,9 @@ interface PaymentSourceBrandIconProps {
   className?: string
 }
 
-export const PaymentSourceBrandIcon: React.FC<PaymentSourceBrandIconProps> = ({
-  className,
-}) => {
+export const PaymentSourceBrandIcon: React.FC<
+  PaymentSourceBrandIconProps
+> = ({ className }) => {
   const paymentSource = usePaymentSourceContext()
 
   if (!paymentSource) {

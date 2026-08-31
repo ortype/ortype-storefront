@@ -9,7 +9,7 @@ export const RetryError = () => {
   return (
     <ErrorContainer>
       <Heading>{t('general.retry_error_code')}</Heading>
-      <Text data-test-id="invalid-checkout">
+      <Text data-test-id='invalid-checkout'>
         {t('general.retry_error_description')}
       </Text>
     </ErrorContainer>

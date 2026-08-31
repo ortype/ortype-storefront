@@ -35,7 +35,7 @@ const getMarketId = unstable_cache(
   {
     revalidate: isDev ? 60 : 3600, // Faster revalidation in dev
     tags: ['commerce-layer'],
-  },
+  }
 )
 
 export default async function FrontendLayout({
@@ -44,14 +44,16 @@ export default async function FrontendLayout({
   children: React.ReactNode
 }>) {
   const marketId = (await getMarketId()) || ''
-  const { data: labels } = await sanityFetch({ query: uiLabelsQuery })
+  const { data: labels } = await sanityFetch({
+    query: uiLabelsQuery,
+  })
   const { data: metricsData } = await sanityFetch({
     query: licenseMetricsQuery,
   })
   const metrics = normalizeLicenseMetrics(metricsData)
   if (metrics.sizes.length === 0 || metrics.media.length === 0) {
     console.warn(
-      '[FrontendLayout] License metrics missing from Sanity settings — the shop requires company sizes and media types to be defined.',
+      '[FrontendLayout] License metrics missing from Sanity settings — the shop requires company sizes and media types to be defined.'
     )
   }
 

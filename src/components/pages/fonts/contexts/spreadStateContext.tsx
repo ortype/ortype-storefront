@@ -35,16 +35,19 @@ export const SpreadStateProvider: React.FC<SpreadStateProviderProps> =
     // Create initial state from items with memoization
     const initialState = useMemo<State>(
       () => ({
-        items: initialItems.reduce((acc, item, index) => {
-          acc[item._key] = {
-            index,
-            _key: item._key,
-            _type: item._type,
-            overflowCol: item.overflowCol,
-            isOverflowing: false,
-          }
-          return acc
-        }, {} as { [key: string]: Item }),
+        items: initialItems.reduce(
+          (acc, item, index) => {
+            acc[item._key] = {
+              index,
+              _key: item._key,
+              _type: item._type,
+              overflowCol: item.overflowCol,
+              isOverflowing: false,
+            }
+            return acc
+          },
+          {} as { [key: string]: Item }
+        ),
         order: initialItems.map((item) => item._key),
       }),
       [initialItems]
@@ -89,7 +92,9 @@ export const useSpreadState = (): SpreadStateContextValue => {
   const context = useContext(SpreadStateContext)
 
   if (context === undefined) {
-    throw new Error('useSpreadState must be used within a SpreadStateProvider')
+    throw new Error(
+      'useSpreadState must be used within a SpreadStateProvider'
+    )
   }
 
   return context

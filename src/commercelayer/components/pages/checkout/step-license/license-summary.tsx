@@ -49,7 +49,7 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
   const stepsContext = useStepsContext()
 
   return (
-    <VStack gap={2} mb={4} align="start">
+    <VStack gap={2} mb={4} align='start'>
       <Box
         px={3}
         fontSize={'xs'}
@@ -61,8 +61,8 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
           {t('stepLicense.summaryTitle', 'License Owner')}
         </Flex>
       </Box>
-      <Box bg={'brand.50'} p={4} w="full">
-        <VStack align="start" gap={2}>
+      <Box bg={'brand.50'} p={4} w='full'>
+        <VStack align='start' gap={2}>
           {licenseOwner?.company && <Text>{licenseOwner.company}</Text>}
 
           <Text>{licenseOwner.full_name}</Text>
@@ -84,7 +84,7 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
             onOpenChange={(e) => setEditing(e.open)}
           >
             <DialogTrigger asChild>
-              <Button variant="text" size="sm">
+              <Button variant='text' size='sm'>
                 {t('stepLicense.editButton', 'Edit address')}
               </Button>
             </DialogTrigger>

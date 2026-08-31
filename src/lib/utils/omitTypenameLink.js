@@ -1,6 +1,7 @@
 import { ApolloLink } from '@apollo/client'
 
-const omitTypename = (key, value) => (key === '__typename' ? undefined : value)
+const omitTypename = (key, value) =>
+  key === '__typename' ? undefined : value
 
 export const omitTypenameLink = new ApolloLink((operation, forward) => {
   if (operation.variables) {

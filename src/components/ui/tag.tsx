@@ -8,40 +8,41 @@ export interface TagProps extends ChakraTag.RootProps {
   closable?: boolean
 }
 
-export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
-  props,
-  ref
-) {
-  const {
-    startElement,
-    endElement,
-    onClose,
-    closable = !!onClose,
-    children,
-    ...rest
-  } = props
+export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
+  function Tag(props, ref) {
+    const {
+      startElement,
+      endElement,
+      onClose,
+      closable = !!onClose,
+      children,
+      ...rest
+    } = props
 
-  const handleOnClick = () => {
-    if (closable && onClose) onClose()
+    const handleOnClick = () => {
+      if (closable && onClose) onClose()
+    }
+
+    return (
+      <ChakraTag.Root
+        ref={ref}
+        {...rest}
+        cursor={closable ? 'pointer' : 'default'}
+        onClick={handleOnClick}
+      >
+        {startElement && (
+          <ChakraTag.StartElement>{startElement}</ChakraTag.StartElement>
+        )}
+        <ChakraTag.Label>{children}</ChakraTag.Label>
+        {endElement && (
+          <ChakraTag.EndElement>{endElement}</ChakraTag.EndElement>
+        )}
+        {closable && (
+          <ChakraTag.EndElement>
+            <ChakraTag.CloseTrigger cursor={'pointer'} />
+          </ChakraTag.EndElement>
+        )}
+      </ChakraTag.Root>
+    )
   }
-
-  return (
-    <ChakraTag.Root
-      ref={ref}
-      {...rest}
-      cursor={closable ? 'pointer' : 'default'}
-      onClick={handleOnClick}
-    >
-      {startElement && (
-        <ChakraTag.StartElement>{startElement}</ChakraTag.StartElement>
-      )}
-      <ChakraTag.Label>{children}</ChakraTag.Label>
-      {endElement && <ChakraTag.EndElement>{endElement}</ChakraTag.EndElement>}
-      {closable && (
-        <ChakraTag.EndElement>
-          <ChakraTag.CloseTrigger cursor={'pointer'} />
-        </ChakraTag.EndElement>
-      )}
-    </ChakraTag.Root>
-  )
-})
+)

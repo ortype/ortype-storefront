@@ -31,7 +31,7 @@ const FontContainer: React.FC<FontContainerProps> = ({
   // Filter out null variants
   // @TODO: is this not now being done in the normalizer?
   const validVariants = font?.variants.filter(
-    (variant): variant is NonNullable<typeof variant> => variant !== null,
+    (variant): variant is NonNullable<typeof variant> => variant !== null
   )
 
   return (

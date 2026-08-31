@@ -99,10 +99,13 @@ function AddressForm() {
   return (
     <form>
       <AddressField
-        label="First Name"
+        label='First Name'
         value={formData.firstName}
         onChange={(value) =>
-          setFormData((prev) => ({ ...prev, firstName: value }))
+          setFormData((prev) => ({
+            ...prev,
+            firstName: value,
+          }))
         }
       />
 

@@ -38,11 +38,11 @@ const SelectClearTrigger = React.forwardRef<
   return (
     <ChakraSelect.ClearTrigger asChild {...props} ref={ref}>
       <CloseButton
-        size="xs"
-        variant="plain"
-        focusVisibleRing="inside"
-        focusRingWidth="2px"
-        pointerEvents="auto"
+        size='xs'
+        variant='plain'
+        focusVisibleRing='inside'
+        focusRingWidth='2px'
+        pointerEvents='auto'
       />
     </ChakraSelect.ClearTrigger>
   )
@@ -80,8 +80,10 @@ export const SelectItem = React.forwardRef<
   )
 })
 
-interface SelectValueTextProps
-  extends Omit<ChakraSelect.ValueTextProps, 'children'> {
+interface SelectValueTextProps extends Omit<
+  ChakraSelect.ValueTextProps,
+  'children'
+> {
   children?(items: CollectionItem[]): React.ReactNode
 }
 
@@ -121,7 +123,10 @@ export const SelectRoot = React.forwardRef<
       // The sameWidth: true setting ensures the dropdown width matches the trigger width,
       // which will depend on the inner text when combined with width: 'auto' in the theme
       borderBottom={'none'}
-      positioning={{ sameWidth: false, ...props.positioning }}
+      positioning={{
+        sameWidth: false,
+        ...props.positioning,
+      }}
     >
       {props.asChild ? (
         props.children

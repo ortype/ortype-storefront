@@ -24,7 +24,7 @@ import type {
 export type {
   CartBufferGroup,
   CartBufferItem,
-  CartSubFamilyGroup
+  CartSubFamilyGroup,
 } from './types'
 
 export interface CartProviderData {
@@ -139,7 +139,8 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
       )
       const skuOrder = new Map(allOrderedCodes.map((id, i) => [id, i]))
       const sortedSkuCodes = [...skuCodes].sort(
-        (a, b) => (skuOrder.get(a) ?? Infinity) - (skuOrder.get(b) ?? Infinity)
+        (a, b) =>
+          (skuOrder.get(a) ?? Infinity) - (skuOrder.get(b) ?? Infinity)
       )
 
       // Top-level allSelected: used when the font has no sub-groups
@@ -175,7 +176,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
           // Per-subgroup: every code in this group's spec is selected
           allSelected:
             rg.includedSkuCodes.length > 0 &&
-            rg.includedSkuCodes.every((code) => code in selectedSkus)
+            rg.includedSkuCodes.every((code) => code in selectedSkus),
         }))
         .filter((sg) => sg.items.length > 0)
       const hasSubGroups = subGroupsRaw.length > 0
@@ -189,7 +190,9 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         hasSubGroups,
         allSelected,
         fullUnitPriceTotal: formatPrice(fullTotalCents),
-        percentageDiscount: count ? Math.round(calculateDiscount(count) * 100) : 0,
+        percentageDiscount: count
+          ? Math.round(calculateDiscount(count) * 100)
+          : 0,
         discountedPriceTotal: formatPrice(discountedTotalCents),
       }
     })

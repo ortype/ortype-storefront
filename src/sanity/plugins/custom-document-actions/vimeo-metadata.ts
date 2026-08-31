@@ -53,7 +53,14 @@ function findVideoModules(
 // Helper function to update video modules in document with metadata
 function updateVideoModules(
   obj: any,
-  videoMap: Map<string, { aspectRatio?: number; poster?: string; status?: string }>
+  videoMap: Map<
+    string,
+    {
+      aspectRatio?: number
+      poster?: string
+      status?: string
+    }
+  >
 ): any {
   if (!obj || typeof obj !== 'object') {
     return obj
@@ -119,7 +126,9 @@ export function VimeoMetadataAction(props: any) {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ data: vimeoVideosToFetch }),
+            body: JSON.stringify({
+              data: vimeoVideosToFetch,
+            }),
           })
 
           if (response.ok) {
@@ -128,7 +137,11 @@ export function VimeoMetadataAction(props: any) {
             // Create a map of _key to video metadata
             const videoMap = new Map<
               string,
-              { aspectRatio?: number; poster?: string; status?: string }
+              {
+                aspectRatio?: number
+                poster?: string
+                status?: string
+              }
             >()
             results.forEach((result: any) => {
               if (result.aspectRatio || result.poster) {

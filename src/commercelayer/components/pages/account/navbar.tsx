@@ -44,8 +44,8 @@ function Navbar({ onClick }: Props): JSX.Element {
 
   return (
     <ButtonGroup size={'sm'} my={2} gap={1}>
-      <NavLink id="orders" {...menu.purchases} />
-      <NavLink id="profile" {...menu.profile} />
+      <NavLink id='orders' {...menu.purchases} />
+      <NavLink id='profile' {...menu.profile} />
     </ButtonGroup>
   )
 }

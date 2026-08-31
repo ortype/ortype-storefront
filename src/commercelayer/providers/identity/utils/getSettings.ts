@@ -55,7 +55,9 @@ export const getSettings = async ({
   )
 
   if (!storedToken || !storedToken.access_token) {
-    console.warn('Identity: getSettings: storedToken/access_token is missing.')
+    console.warn(
+      'Identity: getSettings: storedToken/access_token is missing.'
+    )
     return makeInvalidSettings()
   }
 

@@ -11,7 +11,8 @@ export default function BookModule({ value, index }: BookModuleProps) {
   let page = null
   if (book?.snapshots?.length > 0) {
     const spread = JSON.parse(
-      book.snapshots[Math.floor(Math.random() * book.snapshots.length)]?.spread
+      book.snapshots[Math.floor(Math.random() * book.snapshots.length)]
+        ?.spread
     )
     page = spread[config.display]
   }

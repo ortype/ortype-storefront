@@ -103,7 +103,9 @@ const Config = () => {
                     <MenuRoot
                       variant={'right'}
                       size={'custom'}
-                      positioning={{ placement: 'right-start' }}
+                      positioning={{
+                        placement: 'right-start',
+                      }}
                     >
                       <MenuTrigger
                         // width={'50%'}
@@ -129,7 +131,10 @@ const Config = () => {
                         </MenuItem>
                         <MenuItem
                           icon={
-                            <ArrowLeftIcon width={'1.5rem'} height={'1.5rem'} />
+                            <ArrowLeftIcon
+                              width={'1.5rem'}
+                              height={'1.5rem'}
+                            />
                           }
                           onClick={() => handleDuplicate('recto', 'verso')}
                         >
@@ -151,7 +156,7 @@ const Config = () => {
                       fontSize={'sm'}
                     >{`Select ${bookLayoutStore.fontFamily.label} style (global)`}</Text>
                     <StyledSelect
-                      placeholder="Select style"
+                      placeholder='Select style'
                       options={
                         bookLayoutStore.variantOptions &&
                         bookLayoutStore.variantOptions.constructor === Array
@@ -159,7 +164,7 @@ const Config = () => {
                           : []
                       }
                       value={bookLayoutStore.variantOption}
-                      name="variant"
+                      name='variant'
                       onChange={bookLayoutStore.setVariantOption}
                     />
                   </Box>
@@ -168,9 +173,9 @@ const Config = () => {
                     <StyledSelect
                       width={'18rem'}
                       options={regexOptions}
-                      name="regex"
+                      name='regex'
                       value={regexOptions?.find(
-                        (option) => option.value === bookLayoutStore.regex,
+                        (option) => option.value === bookLayoutStore.regex
                       )}
                       placeholder={'Select typecase'}
                       onChange={handleFilterAllChange}

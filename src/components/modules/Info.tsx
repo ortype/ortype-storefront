@@ -38,8 +38,8 @@ function InfoPortableText({
             color={'#0000FF'}
             textDecoration={'underline'}
             href={href}
-            target="_blank"
-            rel="noopener"
+            target='_blank'
+            rel='noopener'
           >
             {children}
           </Link>

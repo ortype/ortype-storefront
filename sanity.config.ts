@@ -13,7 +13,11 @@ import { resolve } from './src/sanity/presentation/resolve'
 import authorType from './src/sanity/schemas/author'
 import blockContent from './src/sanity/schemas/blockContent'
 import categoryType from './src/sanity/schemas/categoryType'
-import { bookType, fontType, fontVariantType } from './src/sanity/schemas/font'
+import {
+  bookType,
+  fontType,
+  fontVariantType,
+} from './src/sanity/schemas/font'
 import fontPageBody from './src/sanity/schemas/font/blocks/body'
 import fontModuleBook from './src/sanity/schemas/font/modules/book'
 import fontModuleContent from './src/sanity/schemas/font/modules/content'
@@ -63,7 +67,9 @@ export default defineConfig({
   plugins: [
     presentationTool({
       resolve,
-      previewUrl: { previewMode: { enable: '/api/draft-mode/enable' } },
+      previewUrl: {
+        previewMode: { enable: '/api/draft-mode/enable' },
+      },
     }),
     structureTool({ structure }),
     media(),
@@ -79,7 +85,7 @@ export default defineConfig({
         return prev.map((originalAction: any) =>
           originalAction.action === 'publish'
             ? VimeoMetadataAction
-            : originalAction,
+            : originalAction
         )
       }
       return prev

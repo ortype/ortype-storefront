@@ -32,10 +32,10 @@ export const VerticalText: FC<VerticalTextProps> = ({
 }) => {
   return (
     <Box
-      display="grid"
-      gridAutoFlow="row"
+      display='grid'
+      gridAutoFlow='row'
       gap={letterSpacing}
-      justifyContent="center"
+      justifyContent='center'
       aria-label={text}
       {...props}
     >
@@ -45,16 +45,16 @@ export const VerticalText: FC<VerticalTextProps> = ({
         /\s/.test(char) ? (
           <Box
             key={`space-${index}`}
-            aria-hidden="true"
+            aria-hidden='true'
             height={wordSpacing}
           />
         ) : (
           <Span
             key={`${char}-${index}`}
-            aria-hidden="true"
+            aria-hidden='true'
             color={color}
             fontSize={fontSize}
-            textAlign="center"
+            textAlign='center'
             textTransform={'uppercase'}
             fontFamily={'Alltaf-Bold'}
           >
@@ -176,10 +176,10 @@ export const OnAir: FC<OnAirProps> = ({ ...props }) => {
       >
         <Link href={'/poem'}>
           <AbsoluteCenter
-            display="inline-flex"
+            display='inline-flex'
             axis={'horizontal'}
-            className="vertical-text"
-            transition="opacity 0.2s ease"
+            className='vertical-text'
+            transition='opacity 0.2s ease'
             opacity={isHovered ? 1 : 0}
           >
             <Span>
@@ -196,7 +196,7 @@ export const OnAir: FC<OnAirProps> = ({ ...props }) => {
           bottom={0}
           gap={2}
         >
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode='popLayout'>
             {limitedPoem.map((item, index) => (
               <MotionBox
                 key={item._id}

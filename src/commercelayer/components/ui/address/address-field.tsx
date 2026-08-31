@@ -25,9 +25,9 @@ export const AddressField = forwardRef<HTMLInputElement, AddressFieldProps>(
         {...props}
         label={label}
         error={error}
-        variant="subtle"
-        size="lg"
-        fontSize="md"
+        variant='subtle'
+        size='lg'
+        fontSize='md'
         borderRadius={0}
         value={value}
         onChange={handleChange}

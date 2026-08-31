@@ -21,9 +21,9 @@ const ArrayMemberPreview = (props) => {
       padding={1}
       // style={{ borderLeftColor: '#2196F3' }}
     >
-      <Flex gap={3} align="center">
+      <Flex gap={3} align='center'>
         {index !== null && (
-          <Badge tone="primary" padding={2}>
+          <Badge tone='primary' padding={2}>
             #{index}
           </Badge>
         )}

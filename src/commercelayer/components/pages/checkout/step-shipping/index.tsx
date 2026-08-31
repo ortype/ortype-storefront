@@ -140,35 +140,39 @@ export const StepShipping: React.FC<Props> = () => {
                       {!shippingMethodError && !outOfStockError && (
                         <>
                           <Shipment
-                            autoSelectSingleShippingMethod={autoSelectCallback}
+                            autoSelectSingleShippingMethod={
+                              autoSelectCallback
+                            }
                             loader={
-                              <div className="animate-pulse">
-                                <div className="w-1/2 h-5 bg-gray-200" />
-                                <div className="h-20 my-5 bg-gray-200" />
+                              <div className='animate-pulse'>
+                                <div className='w-1/2 h-5 bg-gray-200' />
+                                <div className='h-20 my-5 bg-gray-200' />
                               </div>
                             }
                           >
-                            <Box data-testid="shipments-container">
+                            <Box data-testid='shipments-container'>
                               {shipments.length > 1 && (
                                 <Heading>
-                                  <ShipmentField name="key_number">
+                                  <ShipmentField name='key_number'>
                                     {(props) => {
                                       const index = shipments.findIndex(
                                         (item) =>
-                                          item.shipmentId === props.shipment.id
+                                          item.shipmentId ===
+                                          props.shipment.id
                                       )
 
                                       return (
                                         <Trans
-                                          i18nKey="stepShipping.shipment"
+                                          i18nKey='stepShipping.shipment'
                                           components={{
                                             Wrap: (
-                                              <span className="text-sm font-medium text-gray-500" />
+                                              <span className='text-sm font-medium text-gray-500' />
                                             ),
                                           }}
                                           values={{
                                             current: index + 1,
-                                            total: shipments.length.toString(),
+                                            total:
+                                              shipments.length.toString(),
                                           }}
                                         />
                                       )
@@ -176,19 +180,19 @@ export const StepShipping: React.FC<Props> = () => {
                                   </ShipmentField>
                                 </Heading>
                               )}
-                              <Grid className="mb-6">
+                              <Grid className='mb-6'>
                                 <ShippingMethod
                                   emptyText={t('stepShipping.notAvailable')}
                                 >
-                                  <Box data-testid="shipping-methods-container">
+                                  <Box data-testid='shipping-methods-container'>
                                     <Radio
-                                      data-testid="shipping-method-button"
-                                      className="form-radio mt-0.5 md:mt-0"
+                                      data-testid='shipping-method-button'
+                                      className='form-radio mt-0.5 md:mt-0'
                                       onChange={(params) =>
                                         handleChange(params)
                                       }
                                     />
-                                    <ShippingMethodName data-testid="shipping-method-name">
+                                    <ShippingMethodName data-testid='shipping-method-name'>
                                       {(props) => {
                                         const deliveryLeadTime =
                                           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -196,7 +200,7 @@ export const StepShipping: React.FC<Props> = () => {
                                           props?.deliveryLeadTimeForShipment
                                         return (
                                           <label
-                                            className="flex flex-col p-3 border rounded cursor-pointer hover:border-black transition duration-200 ease-in"
+                                            className='flex flex-col p-3 border rounded cursor-pointer hover:border-black transition duration-200 ease-in'
                                             htmlFor={props.htmlFor}
                                           >
                                             <Heading>{props.label}</Heading>
@@ -205,22 +209,22 @@ export const StepShipping: React.FC<Props> = () => {
                                               // @ts-ignore
                                               deliveryLeadTime?.max_days && (
                                                 <Box>
-                                                  <Trans i18nKey="stepShipping.deliveryLeadTime">
+                                                  <Trans i18nKey='stepShipping.deliveryLeadTime'>
                                                     <DeliveryLeadTime
-                                                      type="min_days"
-                                                      data-testid="delivery-lead-time-min-days"
+                                                      type='min_days'
+                                                      data-testid='delivery-lead-time-min-days'
                                                     />
                                                     <DeliveryLeadTime
-                                                      type="max_days"
-                                                      data-testid="delivery-lead-time-max-days"
-                                                      className="mr-1"
+                                                      type='max_days'
+                                                      data-testid='delivery-lead-time-max-days'
+                                                      className='mr-1'
                                                     />
                                                   </Trans>
                                                 </Box>
                                               )}
                                             <Box>
                                               <ShippingMethodPrice
-                                                data-testid="shipping-method-price"
+                                                data-testid='shipping-method-price'
                                                 labelFreeOver={t(
                                                   'general.free'
                                                 )}
@@ -239,11 +243,11 @@ export const StepShipping: React.FC<Props> = () => {
                                     <Box>
                                       <LineItemImage
                                         width={50}
-                                        className="self-start p-1 border rounded"
+                                        className='self-start p-1 border rounded'
                                       />
                                       <Box>
                                         <Heading>
-                                          <LineItemName data-testid="line-item-name" />
+                                          <LineItemName data-testid='line-item-name' />
                                         </Heading>
                                         <Box>
                                           <LineItemQuantity readonly>
@@ -262,17 +266,17 @@ export const StepShipping: React.FC<Props> = () => {
                                     <StockTransfer>
                                       <Box>
                                         <StockTransferField
-                                          attribute="image_url"
-                                          tagElement="img"
+                                          attribute='image_url'
+                                          tagElement='img'
                                           width={50}
-                                          className="self-start p-1 border rounded"
+                                          className='self-start p-1 border rounded'
                                         />
                                         <Box>
                                           <Heading>
                                             <StockTransferField
-                                              attribute="name"
-                                              tagElement="p"
-                                              data-testid="line-item-name"
+                                              attribute='name'
+                                              tagElement='p'
+                                              data-testid='line-item-name'
                                             />
                                           </Heading>
                                           <Box>
@@ -282,8 +286,8 @@ export const StepShipping: React.FC<Props> = () => {
                                               }
                                             >
                                               <StockTransferField
-                                                attribute="quantity"
-                                                tagElement="span"
+                                                attribute='quantity'
+                                                tagElement='span'
                                               />
                                             </Trans>
                                           </Box>
@@ -298,7 +302,7 @@ export const StepShipping: React.FC<Props> = () => {
                           <Button
                             disabled={!canContinue || isLocalLoader}
                             // disabled={!canContinue || isLocalLoader}
-                            data-testid="save-shipping-button"
+                            data-testid='save-shipping-button'
                             onClick={handleSave}
                           >
                             {t('stepShipping.continueToPayment')}

@@ -18,11 +18,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }>(req, process.env.SANITY_WEBHOOK_SECRET)
 
     if (!isValidSignature && !importAll) {
-      return new Response('Invalid Signature', { status: 401 })
+      return new Response('Invalid Signature', {
+        status: 401,
+      })
     }
 
     if (!body?.variants && !importAll) {
-      return new Response('Payload is missing variants', { status: 400 })
+      return new Response('Payload is missing variants', {
+        status: 400,
+      })
     }
 
     try {

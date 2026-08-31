@@ -22,8 +22,10 @@ interface TOnClick {
   success: boolean
 }
 
-interface Props
-  extends Omit<JSX.IntrinsicElements['button'], 'children' | 'onClick'> {
+interface Props extends Omit<
+  JSX.IntrinsicElements['button'],
+  'children' | 'onClick'
+> {
   label?: string | ReactNode
   onClick?: (params: TOnClick) => void
   addressId?: string
@@ -61,7 +63,7 @@ export function SaveAddressesButton(props: Props): JSX.Element {
 
   return (
     <Button
-      type="button"
+      type='button'
       variant={'rounded'}
       bg={'colorPalette.fg'}
       color={'colorPalette.bg'}

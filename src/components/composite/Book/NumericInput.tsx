@@ -5,11 +5,20 @@ import {
   NumberInputLabel,
   NumberInputRoot,
 } from '@/components/ui/number-input'
-import type { NumberFormatOptions, ValueChangeDetails } from '@chakra-ui/react'
+import type {
+  NumberFormatOptions,
+  ValueChangeDetails,
+} from '@chakra-ui/react'
 import { InputGroup, Text } from '@chakra-ui/react'
 
 import debounce from 'lodash.debounce'
-import React, { useCallback, useEffect, useRef, useMemo, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+} from 'react'
 
 interface NumericInputProps {
   value?: number
@@ -185,9 +194,9 @@ const NumericInput: React.FC<NumericInputProps> = (props) => {
   }
 
   return (
-    <Flex alignItems={`center`} position="relative">
+    <Flex alignItems={`center`} position='relative'>
       {usePointFormat ? (
-        <InputGroup endElement="pt">
+        <InputGroup endElement='pt'>
           <NumberInputRoot {...numberInputProps}>
             <NumberInputField fontSize={'sm'} h={'2rem'} />
           </NumberInputRoot>

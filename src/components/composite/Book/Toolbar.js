@@ -110,21 +110,31 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
   // get layout data from api
   const { loading: assignedLayoutsLoading, data: assignedLayouts } = useQuery(
     GET_BOOK_LAYOUTS,
-    { variables: { fontId: bookLayoutStore.fontFamily.value } }
+    {
+      variables: {
+        fontId: bookLayoutStore.fontFamily.value,
+      },
+    }
   )
 
   const { loading: templateLayoutsLoading, data: templateLayouts } = useQuery(
     GET_BOOK_LAYOUTS,
-    { variables: { isTemplate: true } }
+    {
+      variables: { isTemplate: true },
+    }
   )
 
   const { loading: unassignedLayoutsLoading, data: unassignedLayouts } =
-    useQuery(GET_BOOK_LAYOUTS, { variables: { isTemplate: false } })
+    useQuery(GET_BOOK_LAYOUTS, {
+      variables: { isTemplate: false },
+    })
 
   const layoutsRefetchQueries = [
     {
       query: GET_BOOK_LAYOUTS,
-      variables: { fontId: bookLayoutStore.fontFamily.value },
+      variables: {
+        fontId: bookLayoutStore.fontFamily.value,
+      },
     },
     {
       query: GET_BOOK_LAYOUTS,
@@ -137,7 +147,9 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
   ]
 
   const layoutsLoading =
-    assignedLayoutsLoading || templateLayoutsLoading || unassignedLayoutsLoading
+    assignedLayoutsLoading ||
+    templateLayoutsLoading ||
+    unassignedLayoutsLoading
 
   const groupedLayoutOptions = [
     {
@@ -266,7 +278,9 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       refetchQueries: [
         {
           query: GET_BOOK_LAYOUT,
-          variables: { _id: bookLayoutStore.layoutOption.value },
+          variables: {
+            _id: bookLayoutStore.layoutOption.value,
+          },
         },
         ...layoutsRefetchQueries,
       ],
@@ -288,7 +302,9 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       refetchQueries: [
         {
           query: GET_BOOK_LAYOUT,
-          variables: { _id: bookLayoutStore.layoutOption.value },
+          variables: {
+            _id: bookLayoutStore.layoutOption.value,
+          },
         },
         ...layoutsRefetchQueries,
       ],
@@ -316,7 +332,9 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
       refetchQueries: [
         {
           query: GET_BOOK_LAYOUT,
-          variables: { _id: bookLayoutStore.layoutOption.value },
+          variables: {
+            _id: bookLayoutStore.layoutOption.value,
+          },
         },
         ...layoutsRefetchQueries,
       ],
@@ -368,7 +386,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         <>
           <HStack spacing={2}>
             <StyledSelect
-              placeholder="Select font"
+              placeholder='Select font'
               options={
                 bookLayoutStore.fontFamilyOptions &&
                 bookLayoutStore.fontFamilyOptions.constructor === Array
@@ -377,16 +395,16 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
               }
               value={bookLayoutStore.fontFamily}
               isLoading={fontLoading}
-              name="font"
+              name='font'
               onChange={handleFontFamilyChange}
             />
             <StyledSelect
-              placeholder="Select layout"
+              placeholder='Select layout'
               isReadOnly={layoutsLoading}
               isLoading={layoutsLoading}
               options={groupedLayoutOptions}
               value={bookLayoutStore.layoutOption} // @TODO: re-render this value when NameInput submits
-              name="layouts"
+              name='layouts'
               onChange={handleLayoutChange}
             />
 
@@ -439,13 +457,13 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
               </MenuRoot>
             </ButtonGroup>
             <DialogRoot
-              role="alertdialog"
+              role='alertdialog'
               lazyMount
               open={open}
               onOpenChange={(e) => setOpen(e.open)}
             >
               <DialogContent>
-                <DialogHeader fontSize="lg" fontWeight="normal">
+                <DialogHeader fontSize='lg' fontWeight='normal'>
                   Delete layout
                 </DialogHeader>
                 <DialogBody>
@@ -456,7 +474,7 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                   <DialogActionTrigger asChild ref={cancelRef}>
                     <Button variant={'outline'}>Cancel</Button>
                   </DialogActionTrigger>
-                  <Button colorScheme="red" onClick={handleRemove} ml={3}>
+                  <Button colorScheme='red' onClick={handleRemove} ml={3}>
                     Delete
                   </Button>
                 </DialogFooter>

@@ -103,10 +103,13 @@ const DoublePage: React.FC<DoublePageProps> = ({
   return (
     <Box
       className={'spread-page'}
-      flex={{ base: '0 0 100%', lg: isSpread ? '0 0 100%' : '0 0 50%' }} // responsive values
+      flex={{
+        base: '0 0 100%',
+        lg: isSpread ? '0 0 100%' : '0 0 50%',
+      }} // responsive values
       data-sanity={attr(`[${index}]`).toString()}
       mb={marginBottom}
-      position="relative"
+      position='relative'
       // the before creates the height
       _before={{
         height: 0,
@@ -115,7 +118,10 @@ const DoublePage: React.FC<DoublePageProps> = ({
         // @TODO: no aspect for < lg breakpoint? only if it is not the book which
         // always has an aspect?
         // paddingBottom: isSpread ? spreadAspect : pageAspect,
-        paddingBottom: { base: 0, lg: isSpread ? spreadAspect : pageAspect },
+        paddingBottom: {
+          base: 0,
+          lg: isSpread ? spreadAspect : pageAspect,
+        },
       }}
       css={{
         p: {
@@ -183,7 +189,10 @@ const SinglePage: React.FC<SinglePageProps> = ({
   const { state } = useSpreadState()
 
   // Memoize state item to prevent unnecessary rerenders
-  const itemState = useMemo(() => state.items[itemKey], [state.items, itemKey])
+  const itemState = useMemo(
+    () => state.items[itemKey],
+    [state.items, itemKey]
+  )
 
   // Memoize Sanity data attribute creation
   const attr = useMemo(
@@ -202,7 +211,7 @@ const SinglePage: React.FC<SinglePageProps> = ({
       data-sanity={attr(`[${index}]`).toString()}
       flex={{ base: '0 0 100%', lg: '0 0 50%' }} // responsive values
       mb={marginBottom}
-      position="relative"
+      position='relative'
       // the before creates the height
       _before={{
         height: 0,

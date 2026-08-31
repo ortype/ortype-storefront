@@ -50,7 +50,8 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
     if (!mediaKeyOrder) return refs
     return [...refs].sort(
       (a, b) =>
-        (mediaKeyOrder.get(a) ?? Infinity) - (mediaKeyOrder.get(b) ?? Infinity)
+        (mediaKeyOrder.get(a) ?? Infinity) -
+        (mediaKeyOrder.get(b) ?? Infinity)
     )
   }
 
@@ -113,12 +114,20 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   const handleAddType = (value: string) => {
     const next = sortByReference([...selectedValues, value])
-    setStyleLicenseTypes({ parentUid, skuCode, licenseTypes: next })
+    setStyleLicenseTypes({
+      parentUid,
+      skuCode,
+      licenseTypes: next,
+    })
   }
 
   const handleRemoveType = (value: string) => {
     const next = sortByReference(selectedValues.filter((v) => v !== value))
-    setStyleLicenseTypes({ parentUid, skuCode, licenseTypes: next })
+    setStyleLicenseTypes({
+      parentUid,
+      skuCode,
+      licenseTypes: next,
+    })
   }
 
   const handleRemove = () => {
@@ -144,13 +153,13 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
           {!isInFullGroup && (
             <Link onClick={handleRemove} cursor={'pointer'} ml={-1}>
               <ChakraIconButton
-                variant="ghost"
+                variant='ghost'
                 rounded={'full'}
                 disabled={!canRemove}
                 px={0}
                 size={'sm'}
                 _hover={{ bg: 'white' }}
-                aria-label="Remove"
+                aria-label='Remove'
                 css={{
                   '& svg': {
                     color: 'brand.600',
@@ -182,7 +191,10 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    transition={{
+                      duration: 0.2,
+                      ease: 'easeOut',
+                    }}
                   >
                     <Tag
                       size={'md'}
@@ -202,8 +214,8 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
                   <Menu.Trigger asChild>
                     <Button
                       borderRadius={0}
-                      variant="text"
-                      size="sm"
+                      variant='text'
+                      size='sm'
                       fontSize={'xs'}
                       lineHeight={1}
                       color={'#737373'}
@@ -253,7 +265,9 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
           >
             <HStack gap={4}>
               <Text as={'span'} fontSize={'xs'} lineHeight={0.8}>
-                {parseFloat(displayPrice) === 0 ? `–– EUR` : `${displayPrice} EUR`}
+                {parseFloat(displayPrice) === 0
+                  ? `–– EUR`
+                  : `${displayPrice} EUR`}
               </Text>
             </HStack>
             {displayPrice !== fullPrice && (

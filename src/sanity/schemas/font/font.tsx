@@ -133,13 +133,31 @@ export default defineType({
       type: 'array',
       of: [
         // Item of type 'object' not valid for this list, must be type array
-        defineArrayMember({ type: moduleContent.name, name: 'content' }),
-        defineArrayMember({ type: moduleBook.name, name: 'book' }),
+        defineArrayMember({
+          type: moduleContent.name,
+          name: 'content',
+        }),
+        defineArrayMember({
+          type: moduleBook.name,
+          name: 'book',
+        }),
         // @TODO: rename to 'features'?
-        defineArrayMember({ type: moduleFeatures.name, name: 'feature' }),
-        defineArrayMember({ type: moduleInfo.name, name: 'info' }),
-        defineArrayMember({ type: moduleStyles.name, name: 'styles' }),
-        defineArrayMember({ type: moduleTester.name, name: 'tester' }),
+        defineArrayMember({
+          type: moduleFeatures.name,
+          name: 'feature',
+        }),
+        defineArrayMember({
+          type: moduleInfo.name,
+          name: 'info',
+        }),
+        defineArrayMember({
+          type: moduleStyles.name,
+          name: 'styles',
+        }),
+        defineArrayMember({
+          type: moduleTester.name,
+          name: 'tester',
+        }),
       ],
       group: 'presentation',
     },
@@ -222,7 +240,7 @@ export default defineType({
                     disableNew: true,
                     filter: ({ document, parent, parentPath }) => {
                       const group = document.styleGroups?.filter(
-                        (group) => group._key === parentPath[1]?._key,
+                        (group) => group._key === parentPath[1]?._key
                       )[0]
                       let filter =
                         '!(_id in $selected) && uid match $groupName && !(uid match "*Italic") && parentUid == $parentUid'
@@ -263,7 +281,7 @@ export default defineType({
                     disableNew: true,
                     filter: ({ document, parent, parentPath }) => {
                       const group = document.styleGroups?.filter(
-                        (group) => group._key === parentPath[1]._key,
+                        (group) => group._key === parentPath[1]._key
                       )[0]
                       // console.log('groupName: ', parentPath[1]._key, groupName)
                       /*

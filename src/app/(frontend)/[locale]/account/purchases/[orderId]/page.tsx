@@ -7,7 +7,7 @@ const DynamicOrderPage: any = dynamic(
     loading: function LoadingSkeleton() {
       return <div />
     },
-  },
+  }
 )
 
 export default async function Order({

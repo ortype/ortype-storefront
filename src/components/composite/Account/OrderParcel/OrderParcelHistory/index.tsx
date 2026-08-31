@@ -36,9 +36,8 @@ function OrderParcelHistoryTime({
   const dateTimeIsLast = dateIndex === 0 && timeIndex === 0
   const timeIsFirstOfDate = timeIndex === 0
   const timeFormatted = time.datetime && formatDate(time.datetime, amPmTime)
-  const parcelStatusTrans = `parcelStatus.${
-    time.status as string
-  }` as ParcelStatus
+  const parcelStatusTrans =
+    `parcelStatus.${time.status as string}` as ParcelStatus
   return (
     <Box timeIsFirstOfDate={timeIsFirstOfDate} key={timeIndex}>
       <Box>{timeFormatted}</Box>
@@ -90,7 +89,7 @@ function OrderParcelHistoryDate({
 
 function OrderParcelHistory(): JSX.Element {
   return (
-    <ParcelField attribute="tracking_details" tagElement="span">
+    <ParcelField attribute='tracking_details' tagElement='span'>
       {(props: any) => {
         if (
           props?.attributeValue === null ||
@@ -107,7 +106,7 @@ function OrderParcelHistory(): JSX.Element {
           useParcelTrackingDetailsParser(parsedDetails)
 
         return (
-          <Box className="mt-12 -mx-5 px-5 pb-10">
+          <Box className='mt-12 -mx-5 px-5 pb-10'>
             {Object.keys(OrderParcelHistoryParsed).map(
               (dateKey: string, dateIndex: number) => (
                 <OrderParcelHistoryDate

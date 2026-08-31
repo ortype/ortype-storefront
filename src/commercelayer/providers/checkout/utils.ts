@@ -446,11 +446,11 @@ export function isValidLicenseOwner(licenseOwner?: any): boolean {
   // Check for required fields regardless of is_client value
   const hasRequiredFields = Boolean(
     licenseOwner.full_name &&
-      licenseOwner.line_1 &&
-      licenseOwner.city &&
-      licenseOwner.zip_code &&
-      licenseOwner.country_code &&
-      typeof licenseOwner.is_client === 'boolean'
+    licenseOwner.line_1 &&
+    licenseOwner.city &&
+    licenseOwner.zip_code &&
+    licenseOwner.country_code &&
+    typeof licenseOwner.is_client === 'boolean'
   )
 
   // For client licenses, company is also required
@@ -509,8 +509,8 @@ export function calculateSettings(
   // and fallback for hot reload scenarios
   const hasLineItems = Boolean(
     order?.line_items &&
-      Array.isArray(order.line_items) &&
-      order.line_items.length > 0
+    Array.isArray(order.line_items) &&
+    order.line_items.length > 0
   )
 
   return {
@@ -545,8 +545,8 @@ export function checkPaymentMethod(order: Order) {
 
   let hasPaymentMethod = Boolean(
     paymentSource?.metadata?.card ||
-      paymentSource?.options?.card ||
-      paymentSource?.payment_response?.source
+    paymentSource?.options?.card ||
+    paymentSource?.payment_response?.source
   )
 
   const paymentRequired = isPaymentRequired(order)
@@ -592,7 +592,10 @@ export function calculateSelectedShipments(
       : shipment
   })
   const hasShippingMethod = hasShippingMethodSet(shipmentsSelected)
-  return { shipments: shipmentsSelected, ...hasShippingMethod }
+  return {
+    shipments: shipmentsSelected,
+    ...hasShippingMethod,
+  }
 }
 
 export function prepareShipments(shipments?: Shipment[]): ShipmentSelected[] {

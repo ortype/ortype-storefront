@@ -182,13 +182,21 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   saveAddress: (
     addressData: AddressInput,
     useAsShipping?: boolean
-  ) => Promise<{ success: boolean; error?: string; order?: Order }>
+  ) => Promise<{
+    success: boolean
+    error?: string
+    order?: Order
+  }>
 
   // Enhanced save method for license owner (orchestrates multiple steps)
   saveLicenseOwner: (
     formData: LicenseOwnerInput,
     isForClient: boolean
-  ) => Promise<{ success: boolean; error?: string; order?: Order }>
+  ) => Promise<{
+    success: boolean
+    error?: string
+    order?: Order
+  }>
 
   // Payment submission registry
   registerPaymentSubmitter: (submitter: () => Promise<boolean>) => void
@@ -242,12 +250,16 @@ const initialState: AppStateData = {
   hasLineItems: false,
 }
 
-export const CheckoutContext = createContext<CheckoutProviderData | null>(null)
+export const CheckoutContext = createContext<CheckoutProviderData | null>(
+  null
+)
 
 export const useCheckoutContext = () => {
   const context = React.useContext(CheckoutContext)
   if (!context) {
-    throw new Error('useCheckoutContext must be used within a CheckoutProvider')
+    throw new Error(
+      'useCheckoutContext must be used within a CheckoutProvider'
+    )
   }
   return context
 }
@@ -301,7 +313,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     }
     dispatch({ type: ActionType.START_LOADING })
     const order = preloadedOrder ?? (await getOrderFromRef())
-    const isShipmentRequired = await checkIfShipmentRequired(cl, orderId, order)
+    const isShipmentRequired = await checkIfShipmentRequired(
+      cl,
+      orderId,
+      order
+    )
 
     const addressInfos = await checkAndSetDefaultAddressForOrder({
       cl,
@@ -490,7 +506,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         updatedOrder = await cl.orders.update(
           {
             id: orderId,
-            payment_method: cl.payment_methods.relationship(params.payment.id),
+            payment_method: cl.payment_methods.relationship(
+              params.payment.id
+            ),
           },
           {
             include: [
@@ -560,7 +578,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     })
     dispatch({
       type: ActionType.SET_PAYMENT,
-      payload: { payment: params.payment, order: updatedOrder, others },
+      payload: {
+        payment: params.payment,
+        order: updatedOrder,
+        others,
+      },
     })
   }
 
@@ -679,7 +701,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         }
 
         const resource = { ...attributes, id }
-        const updatedOrder = await cl.orders.update(resource, { include })
+        const updatedOrder = await cl.orders.update(resource, {
+          include,
+        })
         console.log('updateOrder util: ', updatedOrder)
 
         const mergedOrder = {
@@ -720,7 +744,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     }> => {
       try {
         if (!cl) {
-          return { success: false, error: 'CommerceLayer client not available' }
+          return {
+            success: false,
+            error: 'CommerceLayer client not available',
+          }
         }
 
         const result = await saveCustomerUserUtil({
@@ -759,7 +786,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     }> => {
       try {
         if (!cl) {
-          return { success: false, error: 'CommerceLayer client not available' }
+          return {
+            success: false,
+            error: 'CommerceLayer client not available',
+          }
         }
 
         // Use Commerce Layer's shortcut to sign up the associated customer
@@ -793,7 +823,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     const currentOrder = params.order ?? (await getOrderFromRef())
     dispatch({
       type: ActionType.SET_LICENSE_OWNER,
-      payload: { licenseOwner: params.licenseOwner, order: currentOrder },
+      payload: {
+        licenseOwner: params.licenseOwner,
+        order: currentOrder,
+      },
     })
   }
 
@@ -816,7 +849,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         }
 
         if (!state.billingAddress) {
-          return { success: false, error: 'Billing address is required' }
+          return {
+            success: false,
+            error: 'Billing address is required',
+          }
         }
 
         // Prepare the license owner data based on project type
@@ -837,7 +873,9 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
               country_code: state.billingAddress.country_code,
             }
 
-        console.log('saveLicenseOwner: Saving license owner:', { owner })
+        console.log('saveLicenseOwner: Saving license owner:', {
+          owner,
+        })
 
         // Update the order with license metadata
         const result = await updateOrder({
@@ -919,7 +957,10 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         }
       }
 
-      return await createBillingAddressUtil({ cl, addressData })
+      return await createBillingAddressUtil({
+        cl,
+        addressData,
+      })
     },
     [cl]
   )
@@ -944,7 +985,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         }
       }
 
-      return await updateBillingAddressUtil({ cl, addressId, addressData })
+      return await updateBillingAddressUtil({
+        cl,
+        addressId,
+        addressData,
+      })
     },
     [cl]
   )
@@ -1003,10 +1048,16 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }> => {
     try {
       if (!cl) {
-        return { success: false, error: 'CommerceLayer client not available' }
+        return {
+          success: false,
+          error: 'CommerceLayer client not available',
+        }
       }
 
-      const result = await fetchPaymentMethods({ cl, orderId })
+      const result = await fetchPaymentMethods({
+        cl,
+        orderId,
+      })
 
       if (result.success && result.order) {
         // Merge payment methods data with existing order data
@@ -1049,14 +1100,20 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
     async (
       addressData: AddressInput,
       useAsShipping: boolean = false
-    ): Promise<{ success: boolean; error?: string; order?: Order }> => {
+    ): Promise<{
+      success: boolean
+      error?: string
+      order?: Order
+    }> => {
       try {
         if (!cl) {
           throw new Error('Commerce Layer client not available')
         }
 
         // Step 1: Validate the address data locally
-        const validationResult = validateAddress({ addressData })
+        const validationResult = validateAddress({
+          addressData,
+        })
         if (!validationResult.success) {
           const errorMessage =
             validationResult.error?.errors?.[0]?.detail ||
@@ -1139,7 +1196,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   }, [])
 
   useEffect(() => {
-    fetchInitialOrder({ orderId, accessToken, preloadedOrder: initialOrder })
+    fetchInitialOrder({
+      orderId,
+      accessToken,
+      preloadedOrder: initialOrder,
+    })
   }, [orderId, accessToken, initialOrder])
 
   return (

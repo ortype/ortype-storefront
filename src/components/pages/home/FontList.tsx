@@ -17,7 +17,13 @@ export default function FontIndex({ fonts }: FontIndexProps) {
 
   return (
     <>
-      <Wrap pb={10} px={10} align={'center'} justifyContent={'center'} gap={2}>
+      <Wrap
+        pb={10}
+        px={10}
+        align={'center'}
+        justifyContent={'center'}
+        gap={2}
+      >
         {fonts.map((font, key) => {
           const href = resolveHref(font._type, font.slug ?? undefined)
           if (!href) {

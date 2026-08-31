@@ -50,7 +50,7 @@ const validationSchema = yup.object().shape({
         const hasSpecialChar = /[^\w\s]/.test(value)
 
         return hasLowercase && hasUppercase && hasNumber && hasSpecialChar
-      },
+      }
     ),
   customerConfirmPassword: yup
     .string()
@@ -109,7 +109,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   const onSubmit = form.handleSubmit(async (formData) => {
     if (!isValidCommerceLayerConfig(clientConfig)) {
       setApiError({
-        errors: [{ detail: 'Invalid Commerce Layer configuration' }],
+        errors: [
+          {
+            detail: 'Invalid Commerce Layer configuration',
+          },
+        ],
       })
       return
     }
@@ -164,9 +168,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         centerContent
         position={'relative'}
       >
-        <Box inset="0" minH={16}>
-          <Center h="full">
-            <Spinner color="black" size={'xl'} />
+        <Box inset='0' minH={16}>
+          <Center h='full'>
+            <Spinner color='black' size={'xl'} />
           </Center>
         </Box>
       </Container>
@@ -190,27 +194,27 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           <Fieldset.Content>
             <Stack gap={2} minW={'sm'}>
               <FloatingLabelInput
-                name="customerEmail"
-                label="Email"
-                type="email"
-                variant="subtle"
-                size="lg"
-                fontSize="lg"
+                name='customerEmail'
+                label='Email'
+                type='email'
+                variant='subtle'
+                size='lg'
+                fontSize='lg'
                 borderRadius={0}
               />
               <FloatingLabelInput
-                name="customerName"
-                label="Full name"
-                type="text"
-                variant="subtle"
-                size="lg"
-                fontSize="lg"
+                name='customerName'
+                label='Full name'
+                type='text'
+                variant='subtle'
+                size='lg'
+                fontSize='lg'
                 borderRadius={0}
               />
-              <PasswordInput name="customerPassword" label="Password" />
+              <PasswordInput name='customerPassword' label='Password' />
               <PasswordInput
-                name="customerConfirmPassword"
-                label="Confirm Password"
+                name='customerConfirmPassword'
+                label='Confirm Password'
               />
 
               <Button
@@ -229,7 +233,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 size={'sm'}
                 py={5}
                 fontSize={'lg'}
-                type="submit"
+                type='submit'
                 loadingText={'Submitting'}
                 disabled={isSubmitting}
                 loading={isSubmitting}
@@ -241,7 +245,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               </Box>
 
               {form.formState.errors.root && (
-                <Alert status="error" my="4">
+                <Alert status='error' my='4'>
                   {form.formState.errors.root.message}
                 </Alert>
               )}

@@ -4,7 +4,7 @@
 
 export interface CreditCardFormData {
   cardNumber: string
-  expiryDate: string  // MM/YY format
+  expiryDate: string // MM/YY format
   cvc: string
   cardholderName: string
   saveToWallet?: boolean

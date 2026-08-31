@@ -11,13 +11,13 @@ function ShipmentSection(): JSX.Element {
     <ShipmentsContainer>
       <Shipment>
         <Text>
-          <Trans t={t} i18nKey="order.shipments.shipment">
-            <ShipmentField name="key_number" />
+          <Trans t={t} i18nKey='order.shipments.shipment'>
+            <ShipmentField name='key_number' />
           </Trans>
         </Text>
         <Text>
-          <Trans t={t} i18nKey="order.shipments.shipmentStatus">
-            <ShipmentField name="status" />
+          <Trans t={t} i18nKey='order.shipments.shipmentStatus'>
+            <ShipmentField name='status' />
           </Trans>
         </Text>
       </Shipment>

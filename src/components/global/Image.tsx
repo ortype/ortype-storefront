@@ -5,7 +5,10 @@ import Image from 'next/image'
 import { useCallback } from 'react'
 
 interface ImageSanityNextProps {
-  image: SanityImageObject & { blurDataUrl?: string; alt?: string }
+  image: SanityImageObject & {
+    blurDataUrl?: string
+    alt?: string
+  }
   sizes?: string
   priority?: boolean
   style?: any
@@ -23,7 +26,7 @@ export default function ImageSanityNext(props: ImageSanityNextProps) {
       }
       return imageUrlBuilder
     },
-    [square],
+    [square]
   )
 
   const imageProps = useNextSanityImage(client, image, {

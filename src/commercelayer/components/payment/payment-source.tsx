@@ -16,7 +16,10 @@ export type CustomerCardsTemplateChildren = (props: {
     handleClick: () => void
     card: any
   }>
-  PaymentSourceProvider: React.FC<{ value: any; children: ReactNode }>
+  PaymentSourceProvider: React.FC<{
+    value: any
+    children: ReactNode
+  }>
 }) => JSX.Element
 
 interface PaymentSourceProps {

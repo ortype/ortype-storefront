@@ -98,12 +98,14 @@ const StepPlaceOrder: React.FC<Props> = ({ termsUrl, privacyUrl }) => {
                 <Checkbox.Label>
                   {"I agree with Or Type's"}{' '}
                   <Link
-                    href="https://assets.ortype.is/pdfs/Or-Type-EULA-2022.pdf"
+                    href='https://assets.ortype.is/pdfs/Or-Type-EULA-2022.pdf'
                     variant={'underline'}
                   >
                     {'Licensing Terms'}
                   </Link>{' '}
-                  {'and confirm that all the information provided is truthful.'}
+                  {
+                    'and confirm that all the information provided is truthful.'
+                  }
                 </Checkbox.Label>
               </Checkbox.Root>
               <Field.ErrorText>
@@ -112,9 +114,14 @@ const StepPlaceOrder: React.FC<Props> = ({ termsUrl, privacyUrl }) => {
             </Card.Body>
           </Card.Root>
         </Field.Root>
-        <Flex my={4} justifyContent={'center'} alignItems={'start'} w={'full'}>
+        <Flex
+          my={4}
+          justifyContent={'center'}
+          alignItems={'start'}
+          w={'full'}
+        >
           <PlaceOrderButton
-            data-testid="save-payment-button"
+            data-testid='save-payment-button'
             onClick={handlePlaceOrder}
             termsChecked={checked}
             // disabled={!checked} // @NOTE: do not disable button, but alert user to the checkbox with a red outline

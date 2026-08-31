@@ -5,11 +5,18 @@ import {
   NativeSelectRoot,
   type NativeSelectFieldProps,
 } from '@/components/ui/native-select'
-import { Box, defineStyle, Field, useControllableState } from '@chakra-ui/react'
+import {
+  Box,
+  defineStyle,
+  Field,
+  useControllableState,
+} from '@chakra-ui/react'
 import { forwardRef, useState } from 'react'
 
-interface FloatingLabelSelectProps
-  extends Omit<NativeSelectFieldProps, 'onValueChange'> {
+interface FloatingLabelSelectProps extends Omit<
+  NativeSelectFieldProps,
+  'onValueChange'
+> {
   label: React.ReactNode
   value?: string | undefined
   defaultValue?: string | undefined
@@ -56,22 +63,23 @@ export const FloatingLabelSelect = forwardRef<
 
   // Check if items already has a placeholder with empty value
   const hasEmptyValueOption = rest.items?.some((item) => item.value === '')
-  
+
   // Only add placeholder if items don't already have one
-  const itemsWithPlaceholder = rest.items && !hasEmptyValueOption
-    ? [
-        {
-          value: '',
-          label: typeof label === 'string' ? label : String(label),
-          disabled: false,
-        },
-        ...rest.items,
-      ]
-    : rest.items
+  const itemsWithPlaceholder =
+    rest.items && !hasEmptyValueOption
+      ? [
+          {
+            value: '',
+            label: typeof label === 'string' ? label : String(label),
+            disabled: false,
+          },
+          ...rest.items,
+        ]
+      : rest.items
 
   return (
     <Field.Root invalid={!!error}>
-      <Box pos="relative" w="full">
+      <Box pos='relative' w='full'>
         <NativeSelectRoot
           disabled={disabled}
           variant={variant}

@@ -53,8 +53,8 @@ export const MenuRadioItem = React.forwardRef<
 >(function MenuRadioItem(props, ref) {
   const { children, ...rest } = props
   return (
-    <ChakraMenu.RadioItem ps="8" ref={ref} {...rest}>
-      <AbsoluteCenter axis="horizontal" left="4" asChild>
+    <ChakraMenu.RadioItem ps='8' ref={ref} {...rest}>
+      <AbsoluteCenter axis='horizontal' left='4' asChild>
         <ChakraMenu.ItemIndicator>
           <LuCheck />
         </ChakraMenu.ItemIndicator>
@@ -72,7 +72,7 @@ export const MenuItemGroup = React.forwardRef<
   return (
     <ChakraMenu.ItemGroup ref={ref} {...rest}>
       {title && (
-        <ChakraMenu.ItemGroupLabel userSelect="none">
+        <ChakraMenu.ItemGroupLabel userSelect='none'>
           {title}
         </ChakraMenu.ItemGroupLabel>
       )}

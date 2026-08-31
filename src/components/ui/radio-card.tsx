@@ -23,7 +23,7 @@ export const RadioCardItem = React.forwardRef<
     description,
     addon,
     icon,
-    indicator = <RadioCard.ItemIndicator className="dot" />,
+    indicator = <RadioCard.ItemIndicator className='dot' />,
     indicatorPlacement = 'end',
     ...rest
   } = props

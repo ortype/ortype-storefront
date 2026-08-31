@@ -19,7 +19,7 @@ interface Props {
 const BuyContainer = ({ font, children }: Props): JSX.Element => {
   // const { isLoading, isInvalid } = useOrderContext()
   return (
-    <DialogRoot size={'full'} lazyMount motionPreset="slide-in-bottom">
+    <DialogRoot size={'full'} lazyMount motionPreset='slide-in-bottom'>
       <DialogTrigger asChild>
         <Button
           // @TODO: look into how to set this up in button.ts

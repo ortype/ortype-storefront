@@ -47,9 +47,14 @@ function clErrorMessage(e: unknown): string {
 
 async function syncMedia(
   media: SanityMediaItem[],
-  cl: ReturnType<typeof CommerceLayer>,
+  cl: ReturnType<typeof CommerceLayer>
 ): Promise<SyncResult> {
-  const result: SyncResult = { created: 0, updated: 0, deleted: 0, errors: [] }
+  const result: SyncResult = {
+    created: 0,
+    updated: 0,
+    deleted: 0,
+    errors: [],
+  }
 
   // 1. Fetch ALL sku_options so we can merge by name across origins
   const allOptions = await cl.sku_options.list()
@@ -58,7 +63,7 @@ async function syncMedia(
   const managedByRef = new Map(
     allOptions
       .filter((opt) => opt.reference_origin === REFERENCE_ORIGIN)
-      .map((opt) => [opt.reference, opt]),
+      .map((opt) => [opt.reference, opt])
   )
 
   // Lookup by name (for merging pre-existing options)
@@ -88,9 +93,7 @@ async function syncMedia(
           result.updated++
         } catch (e) {
           result.errors.push(
-            `Failed to update sku_option ${managed.id} (${
-              item.label
-            }): ${clErrorMessage(e)}`,
+            `Failed to update sku_option ${managed.id} (${item.label}): ${clErrorMessage(e)}`
           )
         }
       }
@@ -112,16 +115,17 @@ async function syncMedia(
           sku_code_regex: '', // empty string matches all SKUs
         })
         // Track it as managed so orphan cleanup won't miss it
-        managedByRef.set(item._key, { ...nameMatch, reference: item._key })
+        managedByRef.set(item._key, {
+          ...nameMatch,
+          reference: item._key,
+        })
         result.updated++
         console.log(
-          `[sync-settings] Merged existing sku_option "${nameMatch.name}" (${nameMatch.id}) → reference: ${item._key}`,
+          `[sync-settings] Merged existing sku_option "${nameMatch.name}" (${nameMatch.id}) → reference: ${item._key}`
         )
       } catch (e) {
         result.errors.push(
-          `Failed to merge sku_option ${nameMatch.id} (${
-            item.label
-          }): ${clErrorMessage(e)}`,
+          `Failed to merge sku_option ${nameMatch.id} (${item.label}): ${clErrorMessage(e)}`
         )
       }
       continue
@@ -143,7 +147,7 @@ async function syncMedia(
       result.created++
     } catch (e) {
       result.errors.push(
-        `Failed to create sku_option for "${item.label}": ${clErrorMessage(e)}`,
+        `Failed to create sku_option for "${item.label}": ${clErrorMessage(e)}`
       )
     }
   }
@@ -156,9 +160,7 @@ async function syncMedia(
         result.deleted++
       } catch (e) {
         result.errors.push(
-          `Failed to delete orphaned sku_option ${opt.id} (${
-            opt.name
-          }): ${clErrorMessage(e)}`,
+          `Failed to delete orphaned sku_option ${opt.id} (${opt.name}): ${clErrorMessage(e)}`
         )
       }
     }
@@ -175,7 +177,7 @@ type FieldSyncHandler = {
   key: keyof SettingsWebhookBody
   handler: (
     data: any,
-    cl: ReturnType<typeof CommerceLayer>,
+    cl: ReturnType<typeof CommerceLayer>
   ) => Promise<SyncResult>
 }
 
@@ -192,11 +194,13 @@ export async function POST(req: NextRequest) {
   try {
     const { body, isValidSignature } = await parseBody<SettingsWebhookBody>(
       req,
-      process.env.SANITY_WEBHOOK_SECRET,
+      process.env.SANITY_WEBHOOK_SECRET
     )
 
     if (!isValidSignature) {
-      return new Response('Invalid Signature', { status: 401 })
+      return new Response('Invalid Signature', {
+        status: 401,
+      })
     }
 
     if (!body || body._type !== 'settings') {
@@ -236,7 +240,8 @@ export async function POST(req: NextRequest) {
       status: 500,
       success: false,
       now: Date.now(),
-      message: error instanceof Error ? error.message : 'Internal server error',
+      message:
+        error instanceof Error ? error.message : 'Internal server error',
     })
   }
 }

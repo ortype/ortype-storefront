@@ -74,7 +74,7 @@ export async function findByUid(uid: string): Promise<{ font: Font }> {
 }
 
 export async function findByParentUid(
-  parentUid: string,
+  parentUid: string
 ): Promise<{ fontVariant: FontVariant }> {
   if (client) {
     return (
@@ -88,7 +88,7 @@ export async function findByParentUid(
 }
 
 export async function findVariantByUid(
-  uid: string,
+  uid: string
 ): Promise<{ fontVariant: FontVariant }> {
   if (client) {
     return (
@@ -103,7 +103,7 @@ export async function findVariantByUid(
 
 export async function findByUidAndVersion(
   uid: string,
-  version: string,
+  version: string
 ): Promise<{ font: Font }> {
   if (client) {
     return (
@@ -113,7 +113,7 @@ export async function findByUidAndVersion(
           type: 'font',
           uid,
           version,
-        },
+        }
       )) || ({} as any)
     )
   }
@@ -122,7 +122,7 @@ export async function findByUidAndVersion(
 
 export async function findByUidAndVersionWithVariants(
   uid: string,
-  version: string,
+  version: string
 ): Promise<{ font: Font }> {
   if (client) {
     return (
@@ -135,7 +135,7 @@ export async function findByUidAndVersionWithVariants(
           type: 'font',
           uid,
           version,
-        },
+        }
       )) || ({} as any)
     )
   }
@@ -144,7 +144,7 @@ export async function findByUidAndVersionWithVariants(
 
 export async function findFontVariantByUidAndVersion(
   uid: string,
-  version: string,
+  version: string
 ): Promise<{ fontVariant: FontVariant }> {
   if (client) {
     return (
@@ -154,7 +154,7 @@ export async function findFontVariantByUidAndVersion(
           type: 'fontVariant',
           uid,
           version,
-        },
+        }
       )) || ({} as any)
     )
   }
@@ -162,7 +162,7 @@ export async function findFontVariantByUidAndVersion(
 }
 
 export async function findFontVariantById(
-  id: string,
+  id: string
 ): Promise<{ fontVariant: FontVariant }> {
   if (client) {
     return (
@@ -222,7 +222,7 @@ export async function getLicenseMetrics(): Promise<{
 // We use this on the font detail page
 export async function getFontAndMoreFonts(
   slug: string,
-  token?: string | null,
+  token?: string | null
 ): Promise<{ font: Font; moreFonts: Font[] }> {
   if (projectId) {
     const client = createClient({
@@ -232,7 +232,9 @@ export async function getFontAndMoreFonts(
       useCdn: true,
       token: token || undefined,
     })
-    return await client.fetch(fontAndMoreFontsQuery, { slug })
+    return await client.fetch(fontAndMoreFontsQuery, {
+      slug,
+    })
   }
   return { font: null, moreFonts: [] }
 }

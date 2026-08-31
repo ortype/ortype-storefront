@@ -14,7 +14,11 @@ const authOptions: NextAuthConfig = {
     Credentials({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: '' },
+        username: {
+          label: 'Username',
+          type: 'text',
+          placeholder: '',
+        },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials): Promise<User | null> {
@@ -33,7 +37,13 @@ const authOptions: NextAuthConfig = {
             user.password === credentials.password
         )
 
-        return user ? { id: user.id, name: user.name, email: user.email } : null
+        return user
+          ? {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+            }
+          : null
       },
     }),
   ],

@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
           hasPassword: false,
           error: 'Email is required',
         } as CustomerExistsResponse,
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
         hasPassword: false,
         error: error instanceof Error ? error.message : 'Unknown error',
       } as CustomerExistsResponse,
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

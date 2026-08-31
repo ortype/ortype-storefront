@@ -113,7 +113,7 @@ const Spread: React.FC<{}> = ({}) => {
         ref={targetRef}
         // maxW={'calc(100vw - 30rem)'}
         flex={'0 0 50%'}
-        position="relative"
+        position='relative'
         // the before creates the height
         _before={{
           height: 0,
@@ -140,7 +140,7 @@ const Spread: React.FC<{}> = ({}) => {
       <Box
         // Recto page
         flex={'0 0 50%'}
-        position="relative"
+        position='relative'
         _before={{
           height: 0,
           content: `""`,

@@ -232,10 +232,18 @@ export function countryLockController({
     )
     if (!isEmpty(addressLocked)) return true
   }
-  if (countryCodeLock && !isEmpty(billing_address) && !shipToDifferentAddress) {
+  if (
+    countryCodeLock &&
+    !isEmpty(billing_address) &&
+    !shipToDifferentAddress
+  ) {
     return billing_address?.country_code !== countryCodeLock
   }
-  if (countryCodeLock && !isEmpty(shipping_address) && shipToDifferentAddress) {
+  if (
+    countryCodeLock &&
+    !isEmpty(shipping_address) &&
+    shipToDifferentAddress
+  ) {
     return shipping_address?.country_code !== countryCodeLock
   }
   if (
@@ -346,7 +354,9 @@ export async function invertedAddressesHandler({
   return orderAttributes
 }
 
-export function sanitizeMetadataFields(address: AddressCreate): AddressCreate {
+export function sanitizeMetadataFields(
+  address: AddressCreate
+): AddressCreate {
   const hasMetadata = Object.keys(address).filter((key) => {
     if (key.startsWith('metadata_')) {
       return true

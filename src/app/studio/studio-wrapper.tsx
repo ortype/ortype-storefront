@@ -4,7 +4,9 @@ import dynamic from 'next/dynamic'
 
 const Studio = dynamic(
   () => import('@/sanity/presentation/studio').then((mod) => mod.Studio),
-  { ssr: false },
+  {
+    ssr: false,
+  }
 )
 
 export function StudioWrapper() {

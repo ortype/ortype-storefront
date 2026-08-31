@@ -1,6 +1,6 @@
 /**
  * Custom Stripe Elements Payment Components
- * 
+ *
  * PCI-compliant custom Stripe Elements implementation with better UI control.
  */
 
@@ -8,4 +8,7 @@
 export { CustomStripePayment } from './custom-stripe-payment'
 
 // Types
-export type { CustomStripePaymentProps, StripePaymentMethodData } from './types'
+export type {
+  CustomStripePaymentProps,
+  StripePaymentMethodData,
+} from './types'

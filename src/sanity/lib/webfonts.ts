@@ -28,10 +28,10 @@ export interface Webfont {
 
 function getMetaValue(
   metafields: RawVariant['metafields'],
-  key: string,
+  key: string
 ): string | undefined {
   const value = compactArray<RawMetafield>(metafields).find(
-    (meta) => meta?.key === key,
+    (meta) => meta?.key === key
   )?.value
   if (!value) return undefined
   // Font files are stored as `public/...` paths served by the GraphQL API's
@@ -53,7 +53,7 @@ function cssSafeClassId(id: string) {
 }
 
 export function toWebfonts(
-  variants: WebfontsQueryResult | null | undefined,
+  variants: WebfontsQueryResult | null | undefined
 ): Webfont[] {
   return compactArray<RawVariant>(variants).map((variant) => {
     const { metafields } = variant
@@ -79,7 +79,9 @@ export function toWebfonts(
     return {
       classId: cssSafeClassId(variant._id),
       fontFamily: filenameWithoutExtension(otf),
-      fontFamilyVariable: isVariable ? filenameWithoutExtension(vf) : undefined,
+      fontFamilyVariable: isVariable
+        ? filenameWithoutExtension(vf)
+        : undefined,
       woff,
       woff2,
       vf,

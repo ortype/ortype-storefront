@@ -156,7 +156,7 @@ const ColumnPopover: React.FC<{
                 </Button>
               </ButtonGroup>
             </Box>
-            <ButtonGroup variant={'outline'} gap="2" width={'100%'}>
+            <ButtonGroup variant={'outline'} gap='2' width={'100%'}>
               <Button
                 width={'50%'}
                 fontSize={'2xl'}

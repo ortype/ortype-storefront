@@ -71,7 +71,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
           </DialogBody>
           <DialogFooter asChild>
             <Group gap={2} justifyContent={'center'}>
-              <Text textStyle={'xs'} textAlign="center">
+              <Text textStyle={'xs'} textAlign='center'>
                 Already have an account?{' '}
               </Text>
               <Button
@@ -151,7 +151,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
                       borderRadius={'full'}
                     >
                       <ChakraLink
-                        target="_blank"
+                        target='_blank'
                         as={Link}
                         href={`${resetPasswordUrl}`}
                       >

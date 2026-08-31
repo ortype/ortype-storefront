@@ -39,7 +39,11 @@ export default function CustomPortableText({
   const components: PortableTextComponents = {
     block: {
       h2: ({ children, value }) => (
-        <Heading id={value._key} variant="caps" size={{ base: 'md', lg: 'xl' }}>
+        <Heading
+          id={value._key}
+          variant='caps'
+          size={{ base: 'md', lg: 'xl' }}
+        >
           {children}
         </Heading>
       ),
@@ -62,12 +66,18 @@ export default function CustomPortableText({
           overflow={'hidden'}
           marginY={'auto'}
           css={{
-            '& > div > div > div': { position: 'inherit !important' },
+            '& > div > div > div': {
+              position: 'inherit !important',
+            },
           }}
         >
           <Video
             {...props}
-            style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+            style={{
+              width: '100%',
+              height: 'auto',
+              objectFit: 'contain',
+            }}
           />
         </Box>
       ),
@@ -78,7 +88,10 @@ export default function CustomPortableText({
         const horizontal = display === 'horizontal'
 
         const thumbW = 300 * conversion + 'px'
-        let style = { width: thumbnail ? thumbW : '100%', height: 'auto' }
+        let style = {
+          width: thumbnail ? thumbW : '100%',
+          height: 'auto',
+        }
         if (vertical) {
           style = { width: 'auto', height: '100%' }
         }
@@ -132,8 +145,8 @@ export default function CustomPortableText({
             color={'#0000FF'}
             textDecoration={'underline'}
             href={href}
-            target="_blank"
-            rel="noopener"
+            target='_blank'
+            rel='noopener'
           >
             {children}
           </Link>

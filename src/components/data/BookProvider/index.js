@@ -205,7 +205,10 @@ export const BookLayoutProvider = ({ data, children }) => {
           store.spread[page].splice(index + 1, 0, defaultColumn())
           break
         default:
-          store.spread[page].push({ width, blocks: [defaultBlock()] })
+          store.spread[page].push({
+            width,
+            blocks: [defaultBlock()],
+          })
       }
     }),
     duplicateColumn: action((page, width, blocks, index = 0) => {

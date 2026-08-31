@@ -70,7 +70,11 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = memo(
 
     // Load payment methods if not available
     useEffect(() => {
-      if (!effectivePaymentMethods.length && !isLoading && loadPaymentMethods) {
+      if (
+        !effectivePaymentMethods.length &&
+        !isLoading &&
+        loadPaymentMethods
+      ) {
         loadPaymentMethods().catch(console.error)
       }
     }, [effectivePaymentMethods.length, isLoading, loadPaymentMethods])
@@ -164,7 +168,9 @@ export const PaymentMethod: React.FC<PaymentMethodProps> = memo(
 PaymentMethod.displayName = 'PaymentMethod'
 
 // Context provider for payment method data
-const PaymentMethodContext = React.createContext<PaymentMethodType | null>(null)
+const PaymentMethodContext = React.createContext<PaymentMethodType | null>(
+  null
+)
 
 interface PaymentMethodProviderProps {
   value: PaymentMethodType

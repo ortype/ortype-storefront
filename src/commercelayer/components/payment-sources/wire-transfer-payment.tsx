@@ -36,7 +36,9 @@ export function WireTransferPayment({
   const paymentMethod = usePaymentMethodContext()
 
   if (!checkoutCtx) {
-    throw new Error('WireTransferPayment must be used within CheckoutProvider')
+    throw new Error(
+      'WireTransferPayment must be used within CheckoutProvider'
+    )
   }
 
   const { order, setPayment } = checkoutCtx
@@ -85,10 +87,10 @@ export function WireTransferPayment({
   return (
     <form ref={formRef}>
       <Box
-        bg="brand.50"
+        bg='brand.50'
         px={4}
         borderRadius={0}
-        minH="3rem"
+        minH='3rem'
         css={{
           display: 'flex',
           alignItems: 'center',
@@ -96,7 +98,7 @@ export function WireTransferPayment({
           paddingBottom: '3',
         }}
       >
-        <Text fontSize="md">
+        <Text fontSize='md'>
           You will receive detailed wire transfer instructions via email after
           completing your order.
         </Text>

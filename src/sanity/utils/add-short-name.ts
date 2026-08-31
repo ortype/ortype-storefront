@@ -59,12 +59,12 @@ export type HomeFontWithShortNames = Omit<HomeFont, 'styleGroups'> & {
  * @returns The processed array with shortName fields added to all variants
  */
 export default function addShortNameToVariants(
-  fonts: HomeFont[],
+  fonts: HomeFont[]
 ): HomeFontWithShortNames[] {
   return fonts.map((font) => {
     const addShortName = (
       variant: HomeFontVariant,
-      groupName: string | null,
+      groupName: string | null
     ): HomeFontVariantWithShortName => ({
       ...variant,
       shortName: removeGroupNameFromOption(variant.optionName, groupName),
@@ -73,10 +73,10 @@ export default function addShortNameToVariants(
     const styleGroups = font.styleGroups.map((group) => ({
       ...group,
       variants: group.variants.map((variant) =>
-        addShortName(variant, group.groupName),
+        addShortName(variant, group.groupName)
       ),
       italicVariants: group.italicVariants.map((variant) =>
-        addShortName(variant, group.groupName),
+        addShortName(variant, group.groupName)
       ),
     }))
 
@@ -94,7 +94,7 @@ export default function addShortNameToVariants(
  */
 function removeGroupNameFromOption(
   optionName: string | null,
-  groupName: string | null,
+  groupName: string | null
 ): string {
   if (!optionName) return ''
   if (!groupName) return optionName
@@ -119,7 +119,7 @@ function removeGroupNameFromOption(
  * @returns The processed font with shortName fields added to all variants
  */
 export function addShortNameToSingleFont(
-  font: HomeFont,
+  font: HomeFont
 ): HomeFontWithShortNames {
   return addShortNameToVariants([font])[0]
 }

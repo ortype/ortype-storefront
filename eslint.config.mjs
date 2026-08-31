@@ -78,5 +78,5 @@ export default tseslint.config(
   prettier,
 
   // TypeScript specific rules
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommended
 )

@@ -31,8 +31,9 @@ export const getSaveBillingAddressToAddressBook = (): boolean => {
 
 export const getSaveShippingAddressToAddressBook = (): boolean => {
   return (
-    localStorage.getItem('_save_shipping_address_to_customer_address_book') ===
-    'true'
+    localStorage.getItem(
+      '_save_shipping_address_to_customer_address_book'
+    ) === 'true'
   )
 }
 

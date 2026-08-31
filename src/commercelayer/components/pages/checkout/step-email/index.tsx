@@ -57,9 +57,9 @@ export const StepEmail: React.FC<Props> = () => {
 
   if (customer.isLoading) {
     return (
-      <Box pos="fixed" inset="0" bg="bg/80">
-        <Center h="full">
-          <Spinner color="black" size={'xl'} />
+      <Box pos='fixed' inset='0' bg='bg/80'>
+        <Center h='full'>
+          <Spinner color='black' size={'xl'} />
         </Center>
       </Box>
     )
@@ -78,8 +78,8 @@ export const StepEmail: React.FC<Props> = () => {
       {hasEmailAddress ? (
         <>
           {customer.isCheckingEmail ? (
-            <Center h="full">
-              <Spinner color="black" size={'xl'} />
+            <Center h='full'>
+              <Spinner color='black' size={'xl'} />
             </Center>
           ) : requiresLogin ? (
             <>
@@ -94,7 +94,7 @@ export const StepEmail: React.FC<Props> = () => {
                     borderRadius={'full'}
                   >
                     <ChakraLink
-                      target="_blank"
+                      target='_blank'
                       as={Link}
                       href={`${resetPasswordUrl}`}
                     >

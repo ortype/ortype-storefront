@@ -46,8 +46,7 @@ interface IdentityProviderProps {
    * ```
    */
   children:
-    | ((props: IdentityProviderValue) => ChildrenElement)
-    | ChildrenElement
+    ((props: IdentityProviderValue) => ChildrenElement) | ChildrenElement
   config: CommerceLayerAppConfig
 }
 
@@ -113,7 +112,10 @@ export function IdentityProvider({
       getSettings({ clientId, scope, config })
         .then((settings) => {
           if (settings.isValid) {
-            dispatch({ type: 'identity/loaded', payload: settings })
+            dispatch({
+              type: 'identity/loaded',
+              payload: settings,
+            })
           } else {
             dispatch({ type: 'identity/onError' })
           }
@@ -157,12 +159,17 @@ export function IdentityProvider({
 
   // fetch customer handle if custoemrId or accessToken changes
   useEffect(() => {
-    state.settings.accessToken && fetchCustomerHandle(state.settings.customerId)
+    state.settings.accessToken &&
+      fetchCustomerHandle(state.settings.customerId)
   }, [state.settings.customerId, state.settings.accessToken])
 
   // Reset customer loading state when provider finishes loading and there's no authenticated session
   useEffect(() => {
-    if (!state.isLoading && !state.settings.customerId && customer.isLoading) {
+    if (
+      !state.isLoading &&
+      !state.settings.customerId &&
+      customer.isLoading
+    ) {
       console.log(
         '🔍 [IdentityProvider] Resetting customer isLoading to false - no authenticated session'
       )

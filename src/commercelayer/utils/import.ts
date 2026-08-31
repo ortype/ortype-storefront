@@ -43,7 +43,9 @@ export async function lookupSkuId(code, fresh = false) {
     return skuLookup[code]
   }
   const cl = await getIntegrationCommerceLayer()
-  const skus = await cl.skus.list({ filters: { code_eq: code } })
+  const skus = await cl.skus.list({
+    filters: { code_eq: code },
+  })
   const id = skus.shift()?.id
   if (id) {
     skuLookup[code] = id
@@ -76,7 +78,7 @@ export async function getSkuObject(sanityVariant) {
         key === 'otf' ||
         key === 'woff' ||
         key === 'woff2' ||
-        key === 'familyFile',
+        key === 'familyFile'
     )
     .map((file) => ({ key: file.key, value: file.value }))
   return {
@@ -125,7 +127,10 @@ export async function getGroupSkuObjects(font: GroupSkuFontInput) {
   type ResolvedGroup = {
     groupName: string
     groupSlug: string
-    includedVariants: Array<{ _id: string; displayName: string }>
+    includedVariants: Array<{
+      _id: string
+      displayName: string
+    }>
   }
 
   const groups: ResolvedGroup[] = []
@@ -158,7 +163,11 @@ export async function getGroupSkuObjects(font: GroupSkuFontInput) {
         }
       }
 
-      groups.push({ groupName, groupSlug, includedVariants: merged })
+      groups.push({
+        groupName,
+        groupSlug,
+        includedVariants: merged,
+      })
     }
   } else if (font.variants?.length) {
     // Default Standard group containing all font variants

@@ -47,9 +47,9 @@ const PostCard = ({
   const [open, setOpen] = useState(false)
   return (
     <motion.div
-      className="masonry-item"
+      className='masonry-item'
       layoutId={`${post.slug}`}
-      layout="position"
+      layout='position'
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -65,8 +65,8 @@ const PostCard = ({
     >
       <Card.Root
         bg={'transparent'}
-        maxW="md"
-        overflow="hidden"
+        maxW='md'
+        overflow='hidden'
         borderRadius={0}
         border={'none'}
       >

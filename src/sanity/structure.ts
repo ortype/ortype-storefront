@@ -15,16 +15,20 @@ export const structure: StructureResolver = (S) => {
         S.editor()
           .id(typeDef.name)
           .schemaType(typeDef.name)
-          .documentId(typeDef.name),
+          .documentId(typeDef.name)
       )
   })
 
   const defaultListItems = S.documentTypeListItems().filter(
     (listItem) =>
-      !['font', 'fontVariant', 'media.tag', 'media.folder', 'author'].includes(
-        listItem.getId(),
-      ) &&
-      ![settingsType].find((singleton) => singleton.name === listItem.getId()),
+      ![
+        'font',
+        'fontVariant',
+        'media.tag',
+        'media.folder',
+        'author',
+      ].includes(listItem.getId()) &&
+      ![settingsType].find((singleton) => singleton.name === listItem.getId())
   )
 
   return S.list()

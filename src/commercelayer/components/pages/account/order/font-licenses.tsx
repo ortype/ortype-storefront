@@ -3,14 +3,7 @@ import {
   filterShoppableItems,
   type ExpandedStyle,
 } from '@/commercelayer/utils/expand-group-projections'
-import {
-  Box,
-  Flex,
-  SimpleGrid,
-  Stack,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+import { Box, Flex, SimpleGrid, Stack, Text, VStack } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 
 interface FontLicensesProps {

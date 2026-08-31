@@ -71,31 +71,31 @@ export const Email: React.FC<Props> = ({
 
   return (
     <FormProvider {...form}>
-      <form data-step="email" onSubmit={handleSubmit(onSubmit)}>
-        <Fieldset.Root size="lg" maxW="lg">
+      <form data-step='email' onSubmit={handleSubmit(onSubmit)}>
+        <Fieldset.Root size='lg' maxW='lg'>
           <Fieldset.Content asChild>
             <VStack gap={2}>
               <FloatingLabelInput
-                name="customer_email"
+                name='customer_email'
                 label={t('addressForm.customer_email')}
-                type="email"
-                data-testid="customer_email"
+                type='email'
+                data-testid='customer_email'
                 disabled={readonly || isLoading}
-                variant="subtle"
-                fontSize="lg"
+                variant='subtle'
+                fontSize='lg'
                 minW={'30rem'}
-                size="lg"
-                fontSize="lg"
+                size='lg'
+                fontSize='lg'
                 borderRadius={0}
               />
               {error && (
-                <Box color="red.500" fontSize="sm" mt={2}>
+                <Box color='red.500' fontSize='sm' mt={2}>
                   {error}
                 </Box>
               )}
               <Button
-                type="submit"
-                alignSelf="flex-start"
+                type='submit'
+                alignSelf='flex-start'
                 loading={isLoading}
                 disabled={readonly}
                 variant={'outline'}

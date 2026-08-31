@@ -256,8 +256,11 @@ export const Tester: React.FC<Props> = (props) => {
       >
         <HStack gap={6} pos={'relative'}>
           <Button variant={'block'} size={'xs'} asChild tabIndex={-1}>
-            <Link href={`/fonts/${slug}`} data-sanity={attr(`slug`).toString()}>
-              <Text as={'span'} fontSize="sm">
+            <Link
+              href={`/fonts/${slug}`}
+              data-sanity={attr(`slug`).toString()}
+            >
+              <Text as={'span'} fontSize='sm'>
                 {`${title}`}
               </Text>
               {showBadge && (

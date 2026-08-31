@@ -82,7 +82,10 @@ export default defineType({
           description: 'Important for SEO and accessiblity.',
           validation: (rule) => {
             return rule.custom((alt, context) => {
-              if ((context.document?.coverImage as any)?.asset?._ref && !alt) {
+              if (
+                (context.document?.coverImage as any)?.asset?._ref &&
+                !alt
+              ) {
                 return 'Required'
               }
               return true
@@ -108,7 +111,10 @@ export default defineType({
                 direction: 'horizontal',
                 list: [
                   { title: 'Vertical', value: 'vertical' },
-                  { title: 'Horizontal', value: 'horizontal' },
+                  {
+                    title: 'Horizontal',
+                    value: 'horizontal',
+                  },
                 ],
               },
             }),

@@ -81,7 +81,7 @@ export default function AddressFormDialog({
                 }
                 saveButton={
                   <SaveAddressesButton
-                    data-test-id="save-address"
+                    data-test-id='save-address'
                     label={t('addresses.addressForm.save')}
                     onClick={handleClose}
                     addressId={addressId}

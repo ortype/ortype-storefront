@@ -55,12 +55,18 @@ const buttonVariants: Variants = {
   hidden: {
     opacity: 0,
     y: -10,
-    transition: { duration: ANIMATION_DURATION, ease: 'easeInOut' },
+    transition: {
+      duration: ANIMATION_DURATION,
+      ease: 'easeInOut',
+    },
   },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: ANIMATION_DURATION, ease: 'easeInOut' },
+    transition: {
+      duration: ANIMATION_DURATION,
+      ease: 'easeInOut',
+    },
   },
 }
 
@@ -109,13 +115,22 @@ export const Buy = () => {
     total,
   } = summary
 
-  const summaryFontSize = { base: 'lg', lg: 'sm', xl: 'sm', '2xl': 'sm' }
+  const summaryFontSize = {
+    base: 'lg',
+    lg: 'sm',
+    xl: 'sm',
+    '2xl': 'sm',
+  }
 
   return (
     <Box pos={'relative'}>
       <Box
         maxW={['100%']}
-        ml={{ base: '1rem', '2xl': '19rem', '3xl': '21rem' }}
+        ml={{
+          base: '1rem',
+          '2xl': '19rem',
+          '3xl': '21rem',
+        }}
         mr={{
           base: '1rem',
           lg: '18rem',
@@ -190,19 +205,24 @@ export const Buy = () => {
           </Flex>
         )}
       </Box>
-            <Presence
+      <Presence
         present={!showSummaryPanel}
         animationName={{
           _open: 'slide-from-right, fade-in',
           _closed: 'slide-to-right, fade-out',
         }}
-        animationDuration="moderate"
+        animationDuration='moderate'
         pos={{ base: 'relative', lg: 'fixed' }}
         right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
         top={{ base: 'auto', lg: 5 }}
       >
         <Box
-          w={{ base: '100%', lg: '16rem', '2xl': '17rem', '3xl': '18rem' }}
+          w={{
+            base: '100%',
+            lg: '16rem',
+            '2xl': '17rem',
+            '3xl': '18rem',
+          }}
           bg={'#FFF8D3'}
           my={{ base: 4, xl: 0 }}
           borderRadius={20}
@@ -211,23 +231,29 @@ export const Buy = () => {
         >
           <VStack gap={2}>
             <Text textStyle={summaryFontSize} w={'full'}>
-              {'Complete selection'}
+              {'Select your fonts'}
             </Text>
           </VStack>
-        </Box></Presence>
+        </Box>
+      </Presence>
       <Presence
         present={showSummaryPanel}
         animationName={{
           _open: 'slide-from-right, fade-in',
           _closed: 'slide-to-right, fade-out',
         }}
-        animationDuration="moderate"
+        animationDuration='moderate'
         pos={{ base: 'relative', lg: 'fixed' }}
         right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
         top={{ base: 'auto', lg: 5 }}
       >
         <Box
-          w={{ base: '100%', lg: '16rem', '2xl': '17rem', '3xl': '18rem' }}
+          w={{
+            base: '100%',
+            lg: '16rem',
+            '2xl': '17rem',
+            '3xl': '18rem',
+          }}
           bg={'#FFF8D3'}
           my={{ base: 4, xl: 0 }}
           borderRadius={20}
@@ -244,7 +270,11 @@ export const Buy = () => {
               h={8}
             >
               <Text
-                textStyle={{ base: 'md', lg: 'xs', xl: 'md'}}
+                textStyle={{
+                  base: 'md',
+                  lg: 'xs',
+                  xl: 'md',
+                }}
                 w={'50%'}
                 textTransform={'uppercase'}
               >
@@ -261,7 +291,7 @@ export const Buy = () => {
                   _open: 'slide-from-top, fade-in',
                   _closed: 'slide-to-top, fade-out',
                 }}
-                animationDuration="moderate"
+                animationDuration='moderate'
               >
                 <Button
                   asChild
@@ -352,7 +382,7 @@ export const Buy = () => {
                 _open: 'slide-from-top, fade-in',
                 _closed: 'slide-to-top, fade-out',
               }}
-              animationDuration="faster"
+              animationDuration='faster'
               w={'full'}
             >
               <Flex
@@ -390,18 +420,21 @@ export const Buy = () => {
               >
                 {`TOTAL`}
               </Text>
-              <Text pl={1} textStyle={{ base: 'xl', lg: 'md'}}>{`${total} EUR`}</Text>
+              <Text
+                pl={1}
+                textStyle={{ base: 'xl', lg: 'md' }}
+              >{`${total} EUR`}</Text>
             </Flex>
           </VStack>
           {/* SAVE CONFIGURATION */}
           <AnimatePresence>
             {showAddUpdateButton && (
               <motion.div
-                key="button"
+                key='button'
                 variants={buttonContainerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
+                initial='hidden'
+                animate='visible'
+                exit='hidden'
                 style={{ overflow: 'hidden' }}
               >
                 <motion.div variants={buttonVariants}>

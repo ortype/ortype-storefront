@@ -7,7 +7,10 @@
  * @returns a string containing the calculated translation of shipment status, if set, or the
  * starting value to search a translation for if no corresponding translation is available.
  */
-export function getStatusTranslations(value: string, t: (a: string) => string) {
+export function getStatusTranslations(
+  value: string,
+  t: (a: string) => string
+) {
   switch (value) {
     case 'on_hold':
     case 'upcoming':

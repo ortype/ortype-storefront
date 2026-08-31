@@ -54,7 +54,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
   }, [order?.line_items])
 
   const placedAt =
-    (order?.placed_at && format(parseISO(order?.placed_at), 'yyyy-MM-dd')) || ''
+    (order?.placed_at && format(parseISO(order?.placed_at), 'yyyy-MM-dd')) ||
+    ''
 
   if (!order) {
     return null
@@ -118,14 +119,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
                 <EllipsisHorizontalIcon />
               </IconButton>*/}
               <Button
-                variant="text"
-                size="xs"
+                variant='text'
+                size='xs'
                 // onClick={() => {}}
-                fontSize="xs"
+                fontSize='xs'
                 px={2}
                 py={1}
-                h="auto"
-                minH="auto"
+                h='auto'
+                minH='auto'
               >
                 {'Download'}
               </Button>

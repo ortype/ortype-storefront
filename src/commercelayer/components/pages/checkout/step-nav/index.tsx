@@ -103,7 +103,7 @@ export const StepNav: React.FC<Props> = ({
                 css={isCurrentStep ? activeTriggerStyles : triggerStyles}
               >
                 <Steps.Title
-                  fontWeight="normal"
+                  fontWeight='normal'
                   color={isCurrentStep ? 'white' : undefined}
                 >
                   {t(`step${step.key}.label`) || step.label}

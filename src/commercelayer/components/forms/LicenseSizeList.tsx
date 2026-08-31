@@ -48,7 +48,9 @@ export const LicenseSizeList: React.FC<Props> = ({
 
   // Radio reflects the escape hatch when active, otherwise the tentative
   // (pending, while the confirm dialog is open) or committed license size.
-  const selectedValue = escapeHatch ? 'escapeHatch' : displayValue?.value || ''
+  const selectedValue = escapeHatch
+    ? 'escapeHatch'
+    : displayValue?.value || ''
 
   const handleSizeChange = useCallback(
     (value: string) => {
@@ -76,7 +78,7 @@ export const LicenseSizeList: React.FC<Props> = ({
       <RadioGroup.Root
         value={selectedValue}
         onValueChange={(e) => handleSizeChange(e.value)}
-        aria-label="License size options"
+        aria-label='License size options'
         variant={'outline'}
         size={'md'}
       >
@@ -96,7 +98,12 @@ export const LicenseSizeList: React.FC<Props> = ({
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
                 <RadioGroup.ItemText
-                  fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
+                  fontSize={{
+                    base: 'lg',
+                    xl: 'sm',
+                    '2xl': 'md',
+                    '3xl': 'lg',
+                  }}
                 >
                   {size.label}
                 </RadioGroup.ItemText>
@@ -114,7 +121,12 @@ export const LicenseSizeList: React.FC<Props> = ({
               <RadioGroup.ItemHiddenInput />
               <RadioGroup.ItemIndicator />
               <RadioGroup.ItemText
-                fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
+                fontSize={{
+                  base: 'lg',
+                  xl: 'sm',
+                  '2xl': 'md',
+                  '3xl': 'lg',
+                }}
               >
                 {'50+ employees'}
               </RadioGroup.ItemText>

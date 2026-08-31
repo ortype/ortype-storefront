@@ -31,8 +31,7 @@ type CustomerOrderProviderProps = {
   accessToken: string
   domain: string
   children:
-    | ((props: CustomerOrderProviderData) => React.ReactNode)
-    | React.ReactNode
+    ((props: CustomerOrderProviderData) => React.ReactNode) | React.ReactNode
 }
 
 export function CustomerOrderProvider({
@@ -44,7 +43,10 @@ export function CustomerOrderProvider({
 }: CustomerOrderProviderProps): JSX.Element {
   const [state, setState] = useState(initialState)
 
-  const fetchInitialOrder = async (orderId?: string, accessToken?: string) => {
+  const fetchInitialOrder = async (
+    orderId?: string,
+    accessToken?: string
+  ) => {
     if (!orderId || !accessToken) {
       return
     }
@@ -62,7 +64,10 @@ export function CustomerOrderProvider({
       domain,
     })
 
-    const orderResponse = await getOrder({ client: cl, orderId })
+    const orderResponse = await getOrder({
+      client: cl,
+      orderId,
+    })
     const order = orderResponse?.object
 
     setState({

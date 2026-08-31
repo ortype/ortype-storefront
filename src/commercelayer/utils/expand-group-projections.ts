@@ -6,7 +6,7 @@
  * orders) and downstream processing (fulfillment, license generation).
  */
 
-import { formatPrice } from "./prices"
+import { formatPrice } from './prices'
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -25,7 +25,11 @@ export interface LineItemLike {
   } | null
   line_item_options?: Array<{
     name?: string | null
-    sku_option?: { id?: string; name?: string | null; metadata?: any } | null
+    sku_option?: {
+      id?: string
+      name?: string | null
+      metadata?: any
+    } | null
     [key: string]: any
   }> | null
   unit_amount_float?: number | null
@@ -99,9 +103,7 @@ export function filterShoppableItems(
  *   `perStylePriceCents`, and `license.perStyleTypes`.
  * - Legacy line items without `projectionType` are treated as style projections.
  */
-export function expandLineItems(
-  lineItems: LineItemLike[]
-): ExpandedStyle[] {
+export function expandLineItems(lineItems: LineItemLike[]): ExpandedStyle[] {
   const result: ExpandedStyle[] = []
 
   for (const item of lineItems) {
@@ -113,8 +115,7 @@ export function expandLineItems(
       const styleNames: string[] = meta.includedStyleNames ?? []
       const perStyleTypes: Record<string, string[]> =
         meta.license?.perStyleTypes ?? {}
-      const labelMap: Record<string, string> =
-        meta.licenseTypeLabels ?? {}
+      const labelMap: Record<string, string> = meta.licenseTypeLabels ?? {}
       const priceCentsMap: Record<string, number> =
         meta.perStylePriceCents ?? {}
 
@@ -132,9 +133,7 @@ export function expandLineItems(
           parentUid: meta.parentUid ?? '',
           parentName: meta.parentName ?? '',
           defaultVariantId: meta.defaultVariantId ?? '',
-          licenseTypeLabels: typeRefs.map(
-            (ref) => labelMap[ref] || ref
-          ),
+          licenseTypeLabels: typeRefs.map((ref) => labelMap[ref] || ref),
           licenseTypeRefs: typeRefs,
           priceCents: priceCentsMap[code] ?? null,
           fullPriceCents: fullPriceCentsMap[code] ?? null,
@@ -146,8 +145,7 @@ export function expandLineItems(
     } else {
       // Style projection or legacy line item
       const typeRefs: string[] = meta.license?.types ?? []
-      const labelMap: Record<string, string> =
-        meta.licenseTypeLabels ?? {}
+      const labelMap: Record<string, string> = meta.licenseTypeLabels ?? {}
 
       // Prefer metadata labels (metadata-only projections), fall back to
       // line_item_options names (legacy style projections)
@@ -155,11 +153,9 @@ export function expandLineItems(
       if (Object.keys(labelMap).length > 0 && typeRefs.length > 0) {
         labels = typeRefs.map((ref) => labelMap[ref] || ref)
       } else {
-        labels = (
-          item.line_item_options
-            ?.map((o) => o.sku_option?.name ?? o.name)
-            .filter(Boolean) ?? []
-        ) as string[]
+        labels = (item.line_item_options
+          ?.map((o) => o.sku_option?.name ?? o.name)
+          .filter(Boolean) ?? []) as string[]
       }
 
       // Prefer metadata priceCents (metadata-only), fall back to CL unit_amount_float
@@ -178,8 +174,7 @@ export function expandLineItems(
         id: item.id,
         name: item.name || item.item?.name || item.sku_code || '',
         skuCode: item.sku_code ?? '',
-        parentUid:
-          item.item?.reference_origin ?? meta.parentUid ?? '',
+        parentUid: item.item?.reference_origin ?? meta.parentUid ?? '',
         parentName: meta.parentName ?? '',
         defaultVariantId: meta.defaultVariantId ?? '',
         licenseTypeLabels: labels,
@@ -242,9 +237,7 @@ function sortExpandedStyles(styles: ExpandedStyle[]): ExpandedStyle[] {
 /**
  * Group expanded styles by font family (parentUid).
  */
-export function groupByFont(
-  styles: ExpandedStyle[]
-): ExpandedFontGroup[] {
+export function groupByFont(styles: ExpandedStyle[]): ExpandedFontGroup[] {
   const map = new Map<string, ExpandedFontGroup>()
 
   for (const style of styles) {
@@ -296,9 +289,7 @@ export interface OrderTotals {
  * Compute subtotal, discounted total, and discount from expanded groups.
  * Reusable across checkout order summary, account order pages, etc.
  */
-export function computeOrderTotals(
-  groups: ExpandedFontGroup[]
-): OrderTotals {
+export function computeOrderTotals(groups: ExpandedFontGroup[]): OrderTotals {
   let subtotalCents = 0
   let discountedCents = 0
 
@@ -311,8 +302,7 @@ export function computeOrderTotals(
 
   const subtotalAmount = formatPrice(subtotalCents)
   const discountedTotal = formatPrice(discountedCents)
-  const totalDiscount =
-    formatPrice(subtotalCents - discountedCents)
+  const totalDiscount = formatPrice(subtotalCents - discountedCents)
 
   return { subtotalAmount, discountedTotal, totalDiscount }
 }

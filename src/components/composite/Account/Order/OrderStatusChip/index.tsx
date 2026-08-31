@@ -2,11 +2,7 @@ import { Box } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 export type OrderStatus =
-  | 'draft'
-  | 'pending'
-  | 'placed'
-  | 'approved'
-  | 'cancelled'
+  'draft' | 'pending' | 'placed' | 'approved' | 'cancelled'
 
 interface Props {
   status?: OrderStatus
@@ -30,7 +26,7 @@ function OrderStatusChip({ status }: Props): JSX.Element {
   return (
     <Box
       // color handlerStatusColor(status)
-      className="inline text-sm text-center capitalize text-sm w-auto uppercase font-bold py-[2px] px-[8px] leading-snug rounded-xl align-middle"
+      className='inline text-sm text-center capitalize text-sm w-auto uppercase font-bold py-[2px] px-[8px] leading-snug rounded-xl align-middle'
     >
       {t(`orderStatus.${status}`) as string}
     </Box>

@@ -76,8 +76,8 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
             <Checkbox
               name={name}
               id={name}
-              data-testid="save-to-wallet"
-              className="form-checkbox"
+              data-testid='save-to-wallet'
+              className='form-checkbox'
               defaultChecked={false}
               onClick={handleClick}
               onCheckedChange={handleChange}

@@ -51,7 +51,10 @@ export default function ForgotPassword() {
       const response = await fetch('/api/password-reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, locale }),
+        body: JSON.stringify({
+          email: formData.email,
+          locale,
+        }),
       })
 
       const data = await response.json()
@@ -108,7 +111,7 @@ export default function ForgotPassword() {
             variant={'subtle'}
             borderRadius={'full'}
           >
-            <ChakraLink as={Link} href="/">
+            <ChakraLink as={Link} href='/'>
               Return to homepage
             </ChakraLink>
           </Button>
@@ -165,11 +168,11 @@ export default function ForgotPassword() {
             <InputGroup
               attached
               w={'full'}
-              flex="1"
+              flex='1'
               endElement={
                 <Button
                   variant={'outline'}
-                  type="submit"
+                  type='submit'
                   bg={'white'}
                   borderRadius={'full'}
                   size={'xs'}
@@ -177,7 +180,7 @@ export default function ForgotPassword() {
                   fontSize={'xs'}
                   alignSelf={'center'}
                   loading={isSubmitting}
-                  loadingText="Sending..."
+                  loadingText='Sending...'
                   disabled={isSubmitting}
                 >
                   {'Send reset link'}
@@ -186,19 +189,19 @@ export default function ForgotPassword() {
             >
               <FloatingLabelInput
                 minW={'30rem'}
-                name="email"
-                label="Email address"
-                type="email"
-                variant="subtle"
-                size="lg"
-                fontSize="lg"
+                name='email'
+                label='Email address'
+                type='email'
+                variant='subtle'
+                size='lg'
+                fontSize='lg'
                 borderRadius={0}
               />
             </InputGroup>
 
-            {apiError && <Alert status="error">{apiError}</Alert>}
+            {apiError && <Alert status='error'>{apiError}</Alert>}
             <Group gap={2} justifyContent={'center'}>
-              <Text textStyle={'xs'} textAlign="center">
+              <Text textStyle={'xs'} textAlign='center'>
                 Remember your password?{' '}
               </Text>
               <Button
@@ -208,7 +211,7 @@ export default function ForgotPassword() {
                 variant={'subtle'}
                 borderRadius={'full'}
               >
-                <ChakraLink as={Link} href="/login">
+                <ChakraLink as={Link} href='/login'>
                   Login
                 </ChakraLink>
               </Button>

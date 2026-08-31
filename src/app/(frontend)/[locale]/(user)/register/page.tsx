@@ -37,9 +37,9 @@ export default function RegisterUser() {
         centerContent
         position={'relative'}
       >
-        <Box inset="0" minH={16}>
-          <Center h="full">
-            <Spinner color="black" size={'xl'} />
+        <Box inset='0' minH={16}>
+          <Center h='full'>
+            <Spinner color='black' size={'xl'} />
           </Center>
         </Box>
       </Container>
@@ -74,7 +74,7 @@ export default function RegisterUser() {
         </Heading>
         <SignUpForm emailAddress={customer.email} onSuccess={onSuccess} />
         <Group my={2} gap={2} justifyContent={'center'}>
-          <Text textStyle={'xs'} textAlign="center">
+          <Text textStyle={'xs'} textAlign='center'>
             Already registered?
           </Text>
           <Button

@@ -132,7 +132,11 @@ export const setStoredCustomerToken = ({
       owner_type: tokenData.ownerType,
       owner_id: tokenData.ownerId,
     }
-    const storageKey = getStoredTokenKey({ app, slug, scope })
+    const storageKey = getStoredTokenKey({
+      app,
+      slug,
+      scope,
+    })
     localStorage.setItem(storageKey, JSON.stringify(customerTokenData))
   }
   return null
@@ -167,7 +171,11 @@ export const getStoredSalesChannelToken = async ({
           token_type: auth.tokenType,
           expires: decodedJWT.payload.exp,
         }
-        const storageKey = getStoredTokenKey({ app, slug, scope })
+        const storageKey = getStoredTokenKey({
+          app,
+          slug,
+          scope,
+        })
         localStorage.setItem(storageKey, JSON.stringify(tokenData))
         return tokenData
       } else {

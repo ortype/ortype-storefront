@@ -17,7 +17,10 @@ interface CountrySelectProps {
  * CountrySelect - Synchronous country selector using predefined country list.
  * Component is fully synchronous with no loading states.
  */
-export const CountrySelect = forwardRef<HTMLSelectElement, CountrySelectProps>(
+export const CountrySelect = forwardRef<
+  HTMLSelectElement,
+  CountrySelectProps
+>(
   (
     {
       label = 'Country',
@@ -40,7 +43,13 @@ export const CountrySelect = forwardRef<HTMLSelectElement, CountrySelectProps>(
     // Build items array (prepend placeholder if provided)
     const items: CountryOption[] = [
       ...(placeholder
-        ? [{ value: '', label: placeholder, disabled: false }]
+        ? [
+            {
+              value: '',
+              label: placeholder,
+              disabled: false,
+            },
+          ]
         : []),
       ...availableCountries,
     ]

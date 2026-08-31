@@ -79,7 +79,9 @@ const CartContainer = ({
             <Circle
               fontSize={'sm'}
               // size={5}
-              width={itemsCount < 10 ? 'var(--or-sizes-5) !important' : 'auto'}
+              width={
+                itemsCount < 10 ? 'var(--or-sizes-5) !important' : 'auto'
+              }
               px={'0.3rem'}
               height={5}
               bg={'red'}

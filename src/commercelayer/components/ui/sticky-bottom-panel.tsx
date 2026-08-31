@@ -135,7 +135,7 @@ export function StickyBottomPanel({
 
   // Expand if: user manually opened OR sentinel is in view (no overlap)
   // Don't trust isInView until measurement is ready
-  const isExpanded = isMeasurementReady ? manualOverride ?? isInView : false
+  const isExpanded = isMeasurementReady ? (manualOverride ?? isInView) : false
 
   // Render props object
   const renderProps: RenderProps = { isExpanded, toggleBox }
@@ -148,17 +148,24 @@ export function StickyBottomPanel({
       {/* Invisible measurer - always expanded to get full height */}
       <Box
         ref={measurerRef}
-        position="absolute"
-        visibility="hidden"
-        pointerEvents="none"
-        aria-hidden="true"
-        w="full"
+        position='absolute'
+        visibility='hidden'
+        pointerEvents='none'
+        aria-hidden='true'
+        w='full'
         maxW={maxW}
         px={px}
       >
-        <VStack gap={gap} w="full">
-          {children({ isExpanded: true, toggleBox: () => {} })}
-          {showFooter && footer?.({ isExpanded: true, toggleBox: () => {} })}
+        <VStack gap={gap} w='full'>
+          {children({
+            isExpanded: true,
+            toggleBox: () => {},
+          })}
+          {showFooter &&
+            footer?.({
+              isExpanded: true,
+              toggleBox: () => {},
+            })}
         </VStack>
       </Box>
 
@@ -166,21 +173,24 @@ export function StickyBottomPanel({
       {footer && (
         <Box
           ref={footerMeasurerRef}
-          position="absolute"
-          visibility="hidden"
-          pointerEvents="none"
-          aria-hidden="true"
-          w="full"
+          position='absolute'
+          visibility='hidden'
+          pointerEvents='none'
+          aria-hidden='true'
+          w='full'
           maxW={maxW}
           px={px}
         >
-          {footer({ isExpanded: true, toggleBox: () => {} })}
+          {footer({
+            isExpanded: true,
+            toggleBox: () => {},
+          })}
           <Box h={gap} /> {/* Compensate for gap */}
         </Box>
       )}
 
       {/* Scroll sentinel - uses measured height to reserve space */}
-      <Box ref={sentinelRef} h={`${expandedHeight}px`} w="full" mb={pb} />
+      <Box ref={sentinelRef} h={`${expandedHeight}px`} w='full' mb={pb} />
 
       {/* Fixed bottom panel */}
       <MotionVStack
@@ -188,7 +198,7 @@ export function StickyBottomPanel({
         // bottom={0}
         // left={0}
         // right={0}
-        margin="0 auto"
+        margin='0 auto'
         px={px}
         pb={pb}
         maxW={maxW}

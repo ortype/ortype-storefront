@@ -28,7 +28,7 @@ export default function FontHeader({
       flex={'0 0 100%'} // responsive values
       // mb={marginBottom}
       mb={'10vh'}
-      position="relative"
+      position='relative'
       // the before creates the height
       // height={`${spreadAspectValue}vh`}
       overflow={'hidden'}
@@ -38,7 +38,7 @@ export default function FontHeader({
     >
       <AbsoluteCenter zIndex={1}>
         <Heading
-          transition="opacity 0.3s ease-in-out"
+          transition='opacity 0.3s ease-in-out'
           opacity={isLoading ? 0 : 1}
           className={variantId}
           pt={'0.5rem'}
@@ -56,13 +56,19 @@ export default function FontHeader({
       </AbsoluteCenter>
       <Box
         css={{
-          '& > div > div > div': { position: 'inherit !important' },
+          '& > div > div > div': {
+            position: 'inherit !important',
+          },
         }}
         overflow={'hidden'}
       >
         <Video
           value={video}
-          style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'contain',
+          }}
           constrainHeight={true}
         />
       </Box>

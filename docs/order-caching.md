@@ -30,7 +30,7 @@ This resulted in 4-6 API calls for the same order on initial load, leading to Co
 interface CheckoutProviderProps {
   config: CLayerClientConfig
   orderId: string
-  initialOrder?: Order  // NEW: Pre-fetched order data
+  initialOrder?: Order // NEW: Pre-fetched order data
   children?: JSX.Element[] | JSX.Element | null
 }
 ```
@@ -44,9 +44,9 @@ const fetchedOrder = await getOrder({ client: cl, orderId })
 setLocalOrder(fetchedOrder)
 
 // Provider level - use cached data
-<CheckoutProvider 
-  config={clientConfig} 
-  orderId={orderId} 
+<CheckoutProvider
+  config={clientConfig}
+  orderId={orderId}
   initialOrder={localOrder}  // Pass pre-fetched data
 >
   {children}
@@ -61,7 +61,7 @@ setLocalOrder(fetchedOrder)
 export async function checkIfShipmentRequired(
   cl: CommerceLayerClient,
   orderId: string,
-  cachedOrder?: Order  // NEW: Optional cached order
+  cachedOrder?: Order // NEW: Optional cached order
 ): Promise<boolean> {
   // Use cached order if available and includes line_items
   let order = cachedOrder
@@ -81,7 +81,7 @@ export async function checkIfShipmentRequired(
 const fetchInitialOrder = async ({
   orderId,
   accessToken,
-  preloadedOrder,  // NEW: Use pre-loaded data
+  preloadedOrder, // NEW: Use pre-loaded data
 }: {
   orderId?: string
   accessToken?: string
@@ -119,6 +119,7 @@ const fetchInitialOrder = async ({
 ### Backward Compatibility
 
 The optimization is fully backward compatible:
+
 - `initialOrder` prop is optional
 - Functions fall back to API calls if no cached data
 - Existing components work without modification
@@ -139,13 +140,16 @@ console.log('CheckoutProvider - fetchInitialOrder:', {
 ## isValidCheckout Optimization
 
 ### Purpose
+
 `isValidCheckout` is a critical function that prepares orders for checkout by:
+
 - **Refreshing order data**: Recalculates prices, taxes, inventory, discounts
 - **Clearing payment methods**: Ensures clean checkout start
 - **Validating line items**: Confirms order has purchasable items
 - **Enabling autorefresh**: Allows real-time updates during checkout
 
 ### Problem Before Optimization
+
 ```javascript
 // BEFORE: Called multiple times due to useEffect dependencies
 useEffect(() => {
@@ -154,6 +158,7 @@ useEffect(() => {
 ```
 
 ### Solution After Optimization
+
 ```javascript
 // AFTER: Prevented duplicate calls with ref tracking
 const validatedOrderRef = useRef<string | null>(null)
@@ -167,20 +172,24 @@ useEffect(() => {
 ```
 
 ### API Call Details
+
 When `isValidCheckout` runs, it makes this critical Commerce Layer API call:
+
 ```javascript
 await cl.orders.update({
   id: orderId,
-  _refresh: true,                    // Triggers recalculation
-  payment_method: null,              // Clears existing payment
-  autorefresh: true                  // Enables live updates
+  _refresh: true, // Triggers recalculation
+  payment_method: null, // Clears existing payment
+  autorefresh: true, // Enables live updates
 })
 ```
 
 ## Duplicate Order Fetch Optimization
 
 ### Problem
+
 CheckoutContainer was fetching the same order multiple times due to useEffect dependency changes:
+
 ```javascript
 // BEFORE: Fetched multiple times when clientConfig changes
 useEffect(() => {
@@ -191,10 +200,12 @@ useEffect(() => {
 ```
 
 ### Solution
+
 Added ref-based tracking to ensure each order is only fetched once:
+
 ```javascript
 // AFTER: Only fetch once per unique orderId
-const fetchedOrderRef = useRef<string | null>(null)
+const fetchedOrderRef = (useRef < string) | (null > null)
 
 useEffect(() => {
   if (orderId && clientConfig && fetchedOrderRef.current !== orderId) {
@@ -205,6 +216,7 @@ useEffect(() => {
 ```
 
 ### Result
+
 - ✅ "Order fetched successfully" appears only **once** per order
 - ✅ Eliminates redundant network requests
 - ✅ Prevents Commerce Layer rate limiting

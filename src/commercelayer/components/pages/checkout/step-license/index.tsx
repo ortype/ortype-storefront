@@ -132,7 +132,7 @@ export const StepLicense: React.FC<Props> = () => {
 
   // Show checkout summary and either license summary or form
   return (
-    <VStack gap={2} align="start" w="full">
+    <VStack gap={2} align='start' w='full'>
       <CheckoutSummary
         heading={String(t('stepLicense.summaryHeading', 'Your details'))}
       />

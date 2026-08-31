@@ -90,9 +90,9 @@ export function CustomerDetailsForm() {
           {'Your details'}
         </Flex>
       </Box>
-      <Stack direction="column" gap={2} mb={2} w={'full'}>
+      <Stack direction='column' gap={2} mb={2} w={'full'}>
         <Controller
-          name="full_name"
+          name='full_name'
           control={control}
           render={({ field }) => (
             <FloatingLabelInput
@@ -105,7 +105,7 @@ export function CustomerDetailsForm() {
           )}
         />
         <Controller
-          name="company_name"
+          name='company_name'
           control={control}
           render={({ field }) => (
             <FloatingLabelInput
@@ -118,7 +118,7 @@ export function CustomerDetailsForm() {
           )}
         />
         <Controller
-          name="email"
+          name='email'
           control={control}
           render={({ field }) => (
             <FloatingLabelInput
@@ -131,7 +131,12 @@ export function CustomerDetailsForm() {
           )}
         />
         {isDirty && (
-          <ButtonGroup gap={1} variant={'outline'} size={'sm'} fontSize={'md'}>
+          <ButtonGroup
+            gap={1}
+            variant={'outline'}
+            size={'sm'}
+            fontSize={'md'}
+          >
             <Button
               borderRadius={'5rem'}
               bg={'colorPalette.fg'}
@@ -141,7 +146,11 @@ export function CustomerDetailsForm() {
             >
               Save
             </Button>
-            <Button bg={'white'} borderRadius={'5rem'} onClick={() => reset()}>
+            <Button
+              bg={'white'}
+              borderRadius={'5rem'}
+              onClick={() => reset()}
+            >
               Cancel
             </Button>
           </ButtonGroup>

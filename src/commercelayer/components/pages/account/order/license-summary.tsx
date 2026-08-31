@@ -39,8 +39,8 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
           {'License Details'}
         </Flex>
       </Box>
-      <SimpleGrid columns={2} gap={2} w="full" bg={'brand.50'}>
-        <VStack p={4} align="start" gap={2}>
+      <SimpleGrid columns={2} gap={2} w='full' bg={'brand.50'}>
+        <VStack p={4} align='start' gap={2}>
           {owner.company && (
             <Text
               textDecoration={'underline'}

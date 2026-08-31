@@ -17,8 +17,13 @@ export const FontFull: React.FC<Props> = ({
   hasMultipleGroups = false,
 }) => {
   const className = font.defaultVariant?._id
-  const { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice } =
-    summary
+  const {
+    styleCount,
+    allSelected,
+    percentageDiscount,
+    fullPrice,
+    totalPrice,
+  } = summary
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -32,7 +37,9 @@ export const FontFull: React.FC<Props> = ({
     <Flex
       justifyContent={'space-between'}
       bg={allSelected ? 'colorPalette.bg' : 'brand.50'}
-      boxShadow={allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
+      boxShadow={
+        allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'
+      }
       // borderRadius={allSelected ? '0px' : '100px'}
       borderRadius={'full'}
       cursor={'pointer'}

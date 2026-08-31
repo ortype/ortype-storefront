@@ -15,6 +15,7 @@ This module provides a **custom-styled Stripe Elements** implementation that mai
 ## 📦 Dependencies
 
 All required dependencies are already included:
+
 - `@stripe/stripe-js` - Stripe JavaScript SDK
 - `@stripe/react-stripe-js` - React bindings for Stripe Elements
 - `@chakra-ui/react` - UI components (already in your project)
@@ -27,9 +28,9 @@ All required dependencies are already included:
 import { CustomStripePayment } from './custom-credit-card'
 
 // PCI-compliant custom Stripe Elements form
-<CustomStripePayment
-  publishableKey="pk_test_..."
-  clientSecret="pi_..."
+;<CustomStripePayment
+  publishableKey='pk_test_...'
+  clientSecret='pi_...'
   templateCustomerSaveToWallet={SaveToWalletCheckbox}
   onPaymentReady={handlePaymentReady}
   setPaymentRef={setFormRef}
@@ -41,9 +42,9 @@ import { CustomStripePayment } from './custom-credit-card'
 ```tsx
 import { CustomStripePayment } from './custom-credit-card'
 
-<CustomStripePayment
-  publishableKey="pk_test_..."
-  clientSecret="pi_..."
+;<CustomStripePayment
+  publishableKey='pk_test_...'
+  clientSecret='pi_...'
   templateCustomerSaveToWallet={SaveToWalletCheckbox}
 />
 ```
@@ -170,7 +171,7 @@ Enables console logging for payment processing steps and error details.
 // Before
 import { StripePayment } from '../stripe-payment'
 
-// After  
+// After
 import { CustomStripePayment } from './custom-credit-card'
 ```
 
@@ -181,6 +182,7 @@ The API is the same, so it's a drop-in replacement!
 ### Console Output
 
 In development mode, look for:
+
 - Card field completion status
 - Payment submission attempts
 - Error messages and validation feedback
@@ -194,18 +196,21 @@ In development mode, look for:
 ## 🎯 Benefits
 
 ### User Experience
+
 - **Better Control**: Individual fields instead of single iframe
 - **Custom Styling**: Style each field to match your design
 - **Consistent Layout**: Integrates seamlessly with your UI
 - **Better Accessibility**: More control over focus and labels
 
-### Developer Experience  
+### Developer Experience
+
 - **Type Safety**: Full TypeScript support throughout
 - **PCI Compliance**: No security concerns with card data
 - **Easy Integration**: Drop-in replacement for Stripe Elements
 - **Debugging**: Clear error messages and logging
 
 ### Security Benefits
+
 - **PCI Compliant**: Uses Stripe's secure Elements
 - **No Card Data**: Sensitive information never touches your code
 - **Automatic Updates**: Security updates handled by Stripe

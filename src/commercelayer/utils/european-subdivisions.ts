@@ -401,7 +401,10 @@ export const EUROPEAN_SUBDIVISIONS: States = {
   ],
   PL: [
     { value: '02', label: 'Lower Silesian Voivodeship' },
-    { value: '04', label: 'Kuyavian-Pomeranian Voivodeship' },
+    {
+      value: '04',
+      label: 'Kuyavian-Pomeranian Voivodeship',
+    },
     { value: '06', label: 'Lublin Voivodeship' },
     { value: '08', label: 'Lubusz Voivodeship' },
     { value: '10', label: 'Łódź Voivodeship' },
@@ -667,10 +670,19 @@ export const EUROPEAN_SUBDIVISIONS: States = {
     { value: '115', label: 'Starše' },
     { value: '203', label: 'Straža' },
     { value: '181', label: 'Sveta Ana' },
-    { value: '204', label: 'Sveta Trojica v Slovenskih Goricah' },
-    { value: '182', label: 'Sveti Andraž v Slovenskih Goricah' },
+    {
+      value: '204',
+      label: 'Sveta Trojica v Slovenskih Goricah',
+    },
+    {
+      value: '182',
+      label: 'Sveti Andraž v Slovenskih Goricah',
+    },
     { value: '116', label: 'Sveti Jurij' },
-    { value: '210', label: 'Sveti Jurij v Slovenskih Goricah' },
+    {
+      value: '210',
+      label: 'Sveti Jurij v Slovenskih Goricah',
+    },
     { value: '205', label: 'Sveti Tomaž' },
     { value: '033', label: 'Šalovci' },
     { value: '183', label: 'Šempeter–Vrtojba' },

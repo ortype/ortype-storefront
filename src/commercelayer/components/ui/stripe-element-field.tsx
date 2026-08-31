@@ -6,7 +6,10 @@ import {
   CardExpiryElement,
   CardNumberElement,
 } from '@stripe/react-stripe-js'
-import type { StripeElement, StripeElementChangeEvent } from '@stripe/stripe-js'
+import type {
+  StripeElement,
+  StripeElementChangeEvent,
+} from '@stripe/stripe-js'
 import { useEffect, useMemo, useState } from 'react'
 
 interface StripeElementFieldProps {
@@ -17,25 +20,25 @@ interface StripeElementFieldProps {
   onReady?: () => void
 }
 
-export const StripeElementSkelton: React.FC<{ label: string }> = ({
-  label,
-}) => {
+export const StripeElementSkelton: React.FC<{
+  label: string
+}> = ({ label }) => {
   return (
     <Field.Root>
-      <Box pos="relative" w="full">
+      <Box pos='relative' w='full'>
         {/* Container that mimics Chakra Input with variant="subtle", size="lg" */}
         <Box
-          borderWidth="0"
-          borderStyle="solid"
-          borderColor="transparent"
-          bg="brand.50"
+          borderWidth='0'
+          borderStyle='solid'
+          borderColor='transparent'
+          bg='brand.50'
           px={3}
           borderRadius={0}
           h={'var(--or-sizes-11)'}
           css={defaultContainerStyles}
         >
           <Box
-            w="full"
+            w='full'
             css={{
               '& .StripeElement': {
                 width: '100%',
@@ -68,9 +71,8 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
   const [hasValue, setHasValue] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
-  const [elementInstance, setElementInstance] = useState<StripeElement | null>(
-    null
-  )
+  const [elementInstance, setElementInstance] =
+    useState<StripeElement | null>(null)
 
   const ElementComponent = {
     cardNumber: CardNumberElement,
@@ -152,7 +154,10 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
             color: 'transparent', // Hide Stripe's placeholder to avoid overlap
           },
         },
-        invalid: { color: errorColor, iconColor: errorColor },
+        invalid: {
+          color: errorColor,
+          iconColor: errorColor,
+        },
         complete: { color: completeColor },
       },
     }
@@ -161,8 +166,8 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
   return (
     <Field.Root invalid={!!error}>
       <Box
-        pos="relative"
-        w="full"
+        pos='relative'
+        w='full'
         _before={{
           content: '""',
           position: 'absolute',
@@ -176,17 +181,17 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
       >
         {/* Container that mimics Chakra Input with variant="subtle", size="lg" */}
         <Box
-          borderWidth="0"
-          borderStyle="solid"
-          borderColor="transparent"
-          bg="brand.50"
+          borderWidth='0'
+          borderStyle='solid'
+          borderColor='transparent'
+          bg='brand.50'
           px={3}
           borderRadius={0}
           h={'var(--or-sizes-11)'}
           css={hasValue ? containerWithValueStyles : defaultContainerStyles}
         >
           <Box
-            w="full"
+            w='full'
             css={{
               '& .StripeElement': {
                 width: '100%',

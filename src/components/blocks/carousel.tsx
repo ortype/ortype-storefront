@@ -1,10 +1,16 @@
 import BlockImage from '@/components/blocks/image'
-import { Box, Flex, GridItem, Text, useBreakpointValue } from '@chakra-ui/react'
+import {
+  Box,
+  Flex,
+  GridItem,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react'
 import useEmblaCarousel from 'embla-carousel-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 const ScreenReaderText = ({ children }) => (
-  <Box as="span" position={'absolute'} left={'-999em'}>
+  <Box as='span' position={'absolute'} left={'-999em'}>
     {children}
   </Box>
 )
@@ -19,7 +25,7 @@ const Arrow = ({ onClick, direction, enabled, children }) => {
 
   return (
     <Box
-      className="arrow"
+      className='arrow'
       onClick={onClick}
       onKeyDown={handleKeyDown}
       role={'button'}
@@ -176,8 +182,8 @@ const Carousel = ({ value = {} }) => {
   return (
     <Box mx={'-1rem'} position={'relative'}>
       <ScreenReaderText>
-        Use arrow keys to navigate between slides. Press Home to go to the first
-        slide or End to go to the last slide.
+        Use arrow keys to navigate between slides. Press Home to go to the
+        first slide or End to go to the last slide.
       </ScreenReaderText>
       <Arrow enabled={prevBtnEnabled} onClick={scrollPrev} direction={'prev'}>
         <Text as={'span'} fontSize={'2xl'}>{`←`}</Text>
@@ -194,9 +200,9 @@ const Carousel = ({ value = {} }) => {
           emblaRef(node)
           carouselRef.current = node
         }}
-        role="region"
-        aria-label="Image carousel"
-        aria-roledescription="carousel"
+        role='region'
+        aria-label='Image carousel'
+        aria-roledescription='carousel'
       >
         <Flex>
           {(value.images || []).map((image, index) => {
@@ -204,16 +210,16 @@ const Carousel = ({ value = {} }) => {
             return (
               <Box
                 key={image._key}
-                position="relative"
+                position='relative'
                 pl={'1rem'}
-                role="group"
-                aria-roledescription="slide"
+                role='group'
+                aria-roledescription='slide'
                 aria-label={`Slide ${index + 1} of ${value.images.length}`}
                 aria-hidden={index !== selectedIndex}
               >
                 <BlockImage
                   value={image}
-                  position="relative"
+                  position='relative'
                   width={`${width}px`}
                   maxWidth={'100%'}
                   hideCaption={true}
@@ -229,9 +235,9 @@ const Carousel = ({ value = {} }) => {
         left={'30%'}
         justify={'space-between'}
       >
-        <Text as={'span'}>{`${selectedIndex + 1} / ${
-          scrollSnaps.length
-        }`}</Text>
+        <Text
+          as={'span'}
+        >{`${selectedIndex + 1} / ${scrollSnaps.length}`}</Text>
       </Flex>
     </Box>
   )

@@ -20,7 +20,7 @@ interface ExtendedNextApiRequest extends NextApiRequest {
 
 export default async function config(
   req: ExtendedNextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   try {
     const cl = await getIntegrationCommerceLayer()
@@ -88,7 +88,9 @@ export default async function config(
       },
     })
     if (!inventoryStockLocations.length) {
-      await cl.inventory_stock_locations.create(<InventoryStockLocationCreate>{
+      await cl.inventory_stock_locations.create(<
+        InventoryStockLocationCreate
+      >{
         priority: 1,
         on_hold: false,
         stock_location: stockLocation,

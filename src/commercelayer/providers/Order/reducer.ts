@@ -135,7 +135,10 @@ export type Action =
       type: ActionType.TOGGLE_GROUP
       payload: {
         parentUid: string
-        styles: { skuCode: string; styleMetadata: StyleEntry }[]
+        styles: {
+          skuCode: string
+          styleMetadata: StyleEntry
+        }[]
       }
     }
   | {
@@ -208,7 +211,10 @@ function countSelections(selections: SelectionBuffer): number {
   )
 }
 
-export function reducer(state: OrderStateData, action: Action): OrderStateData {
+export function reducer(
+  state: OrderStateData,
+  action: Action
+): OrderStateData {
   switch (action.type) {
     case ActionType.START_LOADING:
       return {
@@ -368,14 +374,20 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         updatedGroup = rest
       } else {
         // Add style
-        updatedGroup = { ...group, [skuCode]: styleMetadata }
+        updatedGroup = {
+          ...group,
+          [skuCode]: styleMetadata,
+        }
       }
 
       // Remove empty groups
       const updatedSelections =
         Object.keys(updatedGroup).length === 0
           ? (({ [parentUid]: _, ...rest }) => rest)(state.selections)
-          : { ...state.selections, [parentUid]: updatedGroup }
+          : {
+              ...state.selections,
+              [parentUid]: updatedGroup,
+            }
 
       return {
         ...state,
@@ -408,7 +420,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
           const { [parentUid]: _, ...rest } = state.selections
           updatedSelections = rest
         } else {
-          updatedSelections = { ...state.selections, [parentUid]: remaining }
+          updatedSelections = {
+            ...state.selections,
+            [parentUid]: remaining,
+          }
         }
       } else {
         // Add all styles to the group
@@ -416,7 +431,10 @@ export function reducer(state: OrderStateData, action: Action): OrderStateData {
         for (const { skuCode, styleMetadata } of styles) {
           updatedGroup[skuCode] = styleMetadata
         }
-        updatedSelections = { ...state.selections, [parentUid]: updatedGroup }
+        updatedSelections = {
+          ...state.selections,
+          [parentUid]: updatedGroup,
+        }
       }
 
       return {

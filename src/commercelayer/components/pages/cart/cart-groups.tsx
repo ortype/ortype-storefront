@@ -55,12 +55,12 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                 borderRadius={'full'}
               >
                 <ChakraIconButton
-                  variant="ghost"
+                  variant='ghost'
                   rounded={'full'}
                   px={0}
                   size={'sm'}
                   _hover={{ bg: 'white' }}
-                  aria-label="Remove group"
+                  aria-label='Remove group'
                   onClick={() =>
                     toggleGroup({
                       parentUid,
@@ -192,15 +192,18 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                           transform={'translateY(-2rem)'}
                           minW={'1.5rem'}
                           maxH={'1.5rem'}
-                          variant="ghost"
+                          variant='ghost'
                           rounded={'full'}
                           // border={'2px solid #D6D5D5'}
                           border={'none'}
                           px={0}
                           size={'sm'}
                           bg={'white'}
-                          _hover={{ bg: '#D6D5D5', borderColor: '#D6D5D5' }}
-                          aria-label="Remove group"
+                          _hover={{
+                            bg: '#D6D5D5',
+                            borderColor: '#D6D5D5',
+                          }}
+                          aria-label='Remove group'
                           onClick={() =>
                             toggleGroup({
                               parentUid,

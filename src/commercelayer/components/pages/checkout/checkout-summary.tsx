@@ -109,8 +109,8 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
   }
 
   return (
-    <VStack gap={2} align="start" w="full" pb={4} mb={mb}>
-      <VStack gap={1} align="start" w="full">
+    <VStack gap={2} align='start' w='full' pb={4} mb={mb}>
+      <VStack gap={1} align='start' w='full'>
         <Box
           px={3}
           mb={2}
@@ -123,8 +123,8 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
         {/* Email Address */}
         {showEmail && checkoutCtx?.emailAddress && (
           <HStack
-            justify="space-between"
-            w="full"
+            justify='space-between'
+            w='full'
             borderBottom={'1px solid #919191'}
             fontSize={'sm'}
             lineHeight={1}
@@ -155,8 +155,8 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
 
         {showEmail && checkoutCtx?.emailAddress && (
           <HStack
-            justify="space-between"
-            w="full"
+            justify='space-between'
+            w='full'
             borderBottom={'1px solid #919191'}
             fontSize={'sm'}
             lineHeight={1}
@@ -190,8 +190,8 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
         {/* Billing Address */}
         {showBillingAddress && checkoutCtx?.billingAddress && (
           <HStack
-            justify="space-between"
-            w="full"
+            justify='space-between'
+            w='full'
             borderBottom={'1px solid #919191'}
             fontSize={'sm'}
             lineHeight={1}
@@ -206,14 +206,14 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
               {renderBillingAddress()}
             </Box>
             <Button
-              variant="text"
-              size="xs"
+              variant='text'
+              size='xs'
               onClick={goToAddressStep}
-              fontSize="xs"
+              fontSize='xs'
               px={2}
               py={1}
-              h="auto"
-              minH="auto"
+              h='auto'
+              minH='auto'
             >
               {t('checkoutSummary.editButton', 'edit')}
             </Button>
@@ -223,8 +223,8 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
         {/* License Owner */}
         {showLicenseOwner && checkoutCtx?.hasLicenseOwner && (
           <HStack
-            justify="space-between"
-            w="full"
+            justify='space-between'
+            w='full'
             borderBottom={'1px solid #919191'}
             fontSize={'sm'}
             lineHeight={1}
@@ -239,14 +239,14 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
               {getLicenseOwnerDisplayValue()}
             </Box>
             <Button
-              variant="text"
-              size="xs"
+              variant='text'
+              size='xs'
               onClick={goToLicenseStep}
-              fontSize="xs"
+              fontSize='xs'
               px={2}
               py={1}
-              h="auto"
-              minH="auto"
+              h='auto'
+              minH='auto'
             >
               {t('checkoutSummary.editButton', 'edit')}
             </Button>

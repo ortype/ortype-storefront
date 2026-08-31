@@ -11,7 +11,7 @@ export const CloseButton = React.forwardRef<
 >(function CloseButton(props, ref) {
   return (
     <ChakraIconButton
-      variant="subtle"
+      variant='subtle'
       rounded={'full'}
       px={0}
       minWidth={'3rem'}
@@ -20,7 +20,7 @@ export const CloseButton = React.forwardRef<
       bg={'transparent'}
       _hover={{ bg: 'transparent' }}
       // _hover={{ bg: 'black', color: 'white' }}
-      aria-label="Close"
+      aria-label='Close'
       css={{
         '& svg': { width: '3rem', height: '3rem' },
       }}

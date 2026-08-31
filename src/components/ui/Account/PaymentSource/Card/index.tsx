@@ -15,7 +15,7 @@ export function PaymentSourceCard(): JSX.Element {
         <PaymentSourceBrandIcon width={50} />
       </Flex>
       <Box>
-        <PaymentSourceDetail type="last4">
+        <PaymentSourceDetail type='last4'>
           {(props) => {
             if (props.text === null || props.text.length === 0)
               return (
@@ -28,7 +28,7 @@ export function PaymentSourceCard(): JSX.Element {
                 <Text>
                   <PaymentSourceCreditCardNumber />
                 </Text>
-                <PaymentSourceCreditCardExpires variant="card" />
+                <PaymentSourceCreditCardExpires variant='card' />
               </>
             )
           }}

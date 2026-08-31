@@ -59,7 +59,11 @@ function fontFaceBlock(webfont: Webfont) {
   return ''
 }
 
-export async function PreloadResources({ webfonts }: { webfonts: Webfont[] }) {
+export async function PreloadResources({
+  webfonts,
+}: {
+  webfonts: Webfont[]
+}) {
   for (const webfont of webfonts) {
     const url = webfont.vf ?? webfont.woff2 ?? webfont.woff
     if (!url) continue

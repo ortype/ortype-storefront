@@ -15,7 +15,10 @@ export function FontPage({ data }: FontPageProps) {
   }
 
   // Derive metrics into a new object rather than mutating the `font` prop
-  const fontWithMetrics = { ...font, metrics: getMetrics(font.metafields) }
+  const fontWithMetrics = {
+    ...font,
+    metrics: getMetrics(font.metafields),
+  }
 
   return <FontWrapper font={fontWithMetrics} moreFonts={moreFonts ?? []} />
 }

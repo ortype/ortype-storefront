@@ -1208,7 +1208,10 @@ const STATE_DATA: States = {
     { value: 'ZAC', label: 'Zacatecas' },
   ],
   AR: [
-    { value: 'C', label: 'Ciudad Autónoma de Buenos Aires' },
+    {
+      value: 'C',
+      label: 'Ciudad Autónoma de Buenos Aires',
+    },
     { value: 'B', label: 'Buenos Aires' },
     { value: 'K', label: 'Catamarca' },
     { value: 'H', label: 'Chaco' },
@@ -1358,7 +1361,10 @@ const STATE_DATA: States = {
     { value: 'KEM', label: 'Kemerovo Oblast' },
     { value: 'KHA', label: 'Khabarovsk Krai' },
     { value: 'KK', label: 'Khakassia' },
-    { value: 'KHM', label: 'Khanty-Mansi Autonomous Okrug' },
+    {
+      value: 'KHM',
+      label: 'Khanty-Mansi Autonomous Okrug',
+    },
     { value: 'KIR', label: 'Kirov Oblast' },
     { value: 'KO', label: 'Komi Republic' },
     { value: 'KOS', label: 'Kostroma Oblast' },
@@ -1408,14 +1414,20 @@ const STATE_DATA: States = {
     { value: 'VGG', label: 'Volgograd Oblast' },
     { value: 'VLG', label: 'Vologda Oblast' },
     { value: 'VOR', label: 'Voronezh Oblast' },
-    { value: 'YAN', label: 'Yamalo-Nenets Autonomous Okrug' },
+    {
+      value: 'YAN',
+      label: 'Yamalo-Nenets Autonomous Okrug',
+    },
     { value: 'YAR', label: 'Yaroslavl Oblast' },
     { value: 'YEV', label: 'Jewish Autonomous Oblast' },
     { value: 'ZAB', label: 'Zabaykalsky Krai' },
   ],
   NG: [
     { value: 'AB', label: 'Abia' },
-    { value: 'FC', label: 'Abuja Federal Capital Territory' },
+    {
+      value: 'FC',
+      label: 'Abuja Federal Capital Territory',
+    },
     { value: 'AD', label: 'Adamawa' },
     { value: 'AK', label: 'Akwa Ibom' },
     { value: 'AN', label: 'Anambra' },
@@ -1529,7 +1541,10 @@ export function isValidState(params: {
     return false
   }
 
-  const availableStates = getStateOfCountry({ countryCode, states })
+  const availableStates = getStateOfCountry({
+    countryCode,
+    states,
+  })
   return availableStates.some((state) => state.value === stateCode)
 }
 

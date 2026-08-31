@@ -85,7 +85,11 @@ export const LicenseTypeList: React.FC<Props> = ({
       )
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log({ values, selectedTypeOptions, typeOptions })
+        console.log({
+          values,
+          selectedTypeOptions,
+          typeOptions,
+        })
       }
 
       setSelectedTypes(selectedTypeOptions)
@@ -128,7 +132,12 @@ export const LicenseTypeList: React.FC<Props> = ({
                 <Checkbox.HiddenInput />
                 <Checkbox.Control />
                 <Checkbox.Label
-                  fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
+                  fontSize={{
+                    base: 'lg',
+                    xl: 'sm',
+                    '2xl': 'md',
+                    '3xl': 'lg',
+                  }}
                 >
                   {option.label}
                 </Checkbox.Label>

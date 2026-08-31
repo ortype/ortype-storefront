@@ -400,7 +400,10 @@ export function transformAddressErrors(error: any): {
   fieldErrors: Array<{ field: string; message: string }>
   generalErrors: string[]
 } {
-  const fieldErrors: Array<{ field: string; message: string }> = []
+  const fieldErrors: Array<{
+    field: string
+    message: string
+  }> = []
   const generalErrors: string[] = []
 
   if (!isAddressApiError(error)) {

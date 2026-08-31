@@ -5,7 +5,15 @@ import {
   formatPrice,
 } from '@/commercelayer/utils/prices'
 import { Font } from '@/sanity/lib/queries'
-import { createContext, FC, useContext, useEffect, useMemo, useReducer, useRef } from 'react'
+import {
+  createContext,
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from 'react'
 import slugify from 'slugify'
 import { useOrderContext } from '../Order'
 import type {
@@ -204,16 +212,21 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const summary = useMemo<FontSelectionSummary>(() => {
     const styleCount = Object.keys(selectedSkus).length
 
-    if (!licenseSize?.modifier || !selectedSkuOptions?.length || styleCount === 0) {
+    if (
+      !licenseSize?.modifier ||
+      !selectedSkuOptions?.length ||
+      styleCount === 0
+    ) {
       // Still compute unitPrice/nextUnitPrice even with 0 selections
       // so the UI can show "what it would cost" for the first add
-      const baseUnit = (licenseSize?.modifier && selectedSkuOptions?.length)
-        ? calculateLineItemPrice({
-            skuOptions: selectedSkuOptions,
-            sizeModifier: licenseSize.modifier,
-            count: 1,
-          })
-        : 0
+      const baseUnit =
+        licenseSize?.modifier && selectedSkuOptions?.length
+          ? calculateLineItemPrice({
+              skuOptions: selectedSkuOptions,
+              sizeModifier: licenseSize.modifier,
+              count: 1,
+            })
+          : 0
 
       return {
         show: false,
@@ -234,14 +247,12 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       count: styleCount,
     })
 
-
     // Unit price if one more style were added
     const nextUnitPriceCents = calculateLineItemPrice({
       skuOptions: selectedSkuOptions,
       sizeModifier: licenseSize.modifier,
       count: styleCount + 1,
     })
-
 
     // Subtotal: full price as if each style had no discount (count=1)
     const fullPriceCents = calculateLineItemPrice({
@@ -256,7 +267,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     const totalCents = unitPriceCents * styleCount
 
     const discount = Math.round(calculateDiscount(styleCount) * 100)
-    
+
     return {
       show: true,
       fontStyleCount: styleCount,
@@ -290,9 +301,21 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const computeGroupPrices = (
     styleCount: number,
     otherSelectedCount = 0
-  ): { fullPrice: string; totalPrice: string; percentageDiscount: number } => {
-    if (!styleCount || !licenseSize?.modifier || !selectedSkuOptions?.length) {
-      return { fullPrice: '0.00', totalPrice: '0.00', percentageDiscount: 0 }
+  ): {
+    fullPrice: string
+    totalPrice: string
+    percentageDiscount: number
+  } => {
+    if (
+      !styleCount ||
+      !licenseSize?.modifier ||
+      !selectedSkuOptions?.length
+    ) {
+      return {
+        fullPrice: '0.00',
+        totalPrice: '0.00',
+        percentageDiscount: 0,
+      }
     }
 
     const projectedCount = styleCount + Math.max(0, otherSelectedCount)
@@ -328,47 +351,56 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     // nothing selected outside of it to combine with.
     const { fullPrice, totalPrice, percentageDiscount } =
       computeGroupPrices(styleCount)
-    return { styleCount, allSelected, percentageDiscount, fullPrice, totalPrice }
+    return {
+      styleCount,
+      allSelected,
+      percentageDiscount,
+      fullPrice,
+      totalPrice,
+    }
   }, [font.variants, selectedSkus, selectedSkuOptions, licenseSize])
 
   /** Pre-computed group summaries keyed by groupName */
-  const groupSummaries = useMemo<{ [groupName: string]: GroupPriceSummary }>(
-    () => {
-      if (!font.styleGroups) return {}
-      const result: { [groupName: string]: GroupPriceSummary } = {}
-      const totalSelectedInFont = Object.keys(selectedSkus).length
-      for (const group of font.styleGroups) {
-        const styleCount =
-          (group.variants?.length || 0) + (group.italicVariants?.length || 0)
-        const allVariantIds = [
-          ...(group.variants || []).map((v) => v._id),
-          ...(group.italicVariants || []).map((v) => v._id),
-        ]
-        const allSelected =
-          styleCount > 0 && allVariantIds.every((id) => id in selectedSkus)
-        const countSelected = allVariantIds.filter((id) => id in selectedSkus).length
+  const groupSummaries = useMemo<{
+    [groupName: string]: GroupPriceSummary
+  }>(() => {
+    if (!font.styleGroups) return {}
+    const result: {
+      [groupName: string]: GroupPriceSummary
+    } = {}
+    const totalSelectedInFont = Object.keys(selectedSkus).length
+    for (const group of font.styleGroups) {
+      const styleCount =
+        (group.variants?.length || 0) + (group.italicVariants?.length || 0)
+      const allVariantIds = [
+        ...(group.variants || []).map((v) => v._id),
+        ...(group.italicVariants || []).map((v) => v._id),
+      ]
+      const allSelected =
+        styleCount > 0 && allVariantIds.every((id) => id in selectedSkus)
+      const countSelected = allVariantIds.filter(
+        (id) => id in selectedSkus
+      ).length
 
-        // Styles already selected elsewhere in the font, excluding this
-        // group's own (already-counted) selections, so they aren't counted
-        // twice when projecting the combined discount.
-        const otherSelectedCount = totalSelectedInFont - countSelected
+      // Styles already selected elsewhere in the font, excluding this
+      // group's own (already-counted) selections, so they aren't counted
+      // twice when projecting the combined discount.
+      const otherSelectedCount = totalSelectedInFont - countSelected
 
-        const { fullPrice, totalPrice, percentageDiscount } =
-          computeGroupPrices(styleCount, otherSelectedCount)
+      const { fullPrice, totalPrice, percentageDiscount } =
+        computeGroupPrices(styleCount, otherSelectedCount)
 
-        result[group.groupName] = {
-          styleCount,
-          allSelected,
-          countSelected,
-          percentageDiscount,
-          fullPrice,
-          totalPrice,
-        }
+      result[group.groupName] = {
+        styleCount,
+        allSelected,
+        countSelected,
+        percentageDiscount,
+        fullPrice,
+        totalPrice,
       }
-      return result
-    },
-    [font.styleGroups, selectedSkus, selectedSkuOptions, licenseSize]
-  )
+    }
+    return result
+  }, [font.styleGroups, selectedSkus, selectedSkuOptions, licenseSize])
 
   return (
     <BuyContext.Provider

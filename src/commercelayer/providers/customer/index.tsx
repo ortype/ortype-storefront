@@ -125,7 +125,9 @@ export const CustomerContext = createContext<InitialCustomerContext>(
 export const useCustomerContext = () => {
   const context = React.useContext(CustomerContext)
   if (!context) {
-    throw new Error('useCustomerContext must be used within a CustomerProvider')
+    throw new Error(
+      'useCustomerContext must be used within a CustomerProvider'
+    )
   }
   return context
 }
@@ -196,9 +198,22 @@ export function CustomerProvider(props: Props): JSX.Element {
         console.log('state.addresses == null, ')
       }
       async function getCustomerData(): Promise<void> {
-        await getCustomerOrders({ customerId, cl, config, dispatch })
-        await getCustomerSubscriptions({ cl, customerId, dispatch })
-        await getCustomerPayments({ cl, customerId, dispatch })
+        await getCustomerOrders({
+          customerId,
+          cl,
+          config,
+          dispatch,
+        })
+        await getCustomerSubscriptions({
+          cl,
+          customerId,
+          dispatch,
+        })
+        await getCustomerPayments({
+          cl,
+          customerId,
+          dispatch,
+        })
       }
       getCustomerData()
     }
@@ -226,7 +241,12 @@ export function CustomerProvider(props: Props): JSX.Element {
         })
       },
       createCustomerAddress: async (address: TCustomerAddress) => {
-        await createCustomerAddress({ address, cl, dispatch, state })
+        await createCustomerAddress({
+          address,
+          cl,
+          dispatch,
+          state,
+        })
       },
       getCustomerOrders: async ({
         pageNumber,

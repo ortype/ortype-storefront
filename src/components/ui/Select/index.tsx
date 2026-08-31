@@ -2,19 +2,19 @@ import { Box, Spinner } from '@chakra-ui/react'
 import Select, { components, DropdownIndicatorProps } from 'react-select'
 
 const Arrow = (props) => (
-  <Box {...props} as={'svg'} width="32px" height="32px" viewBox="0 0 32 32">
+  <Box {...props} as={'svg'} width='32px' height='32px' viewBox='0 0 32 32'>
     <g
-      id="Elements"
-      stroke="none"
-      strokeWidth="1"
-      fill="none"
-      fillRule="evenodd"
+      id='Elements'
+      stroke='none'
+      strokeWidth='1'
+      fill='none'
+      fillRule='evenodd'
     >
-      <g id="Element-/-Arrow" fill="currentColor">
+      <g id='Element-/-Arrow' fill='currentColor'>
         <polygon
-          id="Triangle"
-          transform="translate(16.000000, 16.000000) rotate(-180.000000) translate(-16.000000, -16.000000) "
-          points="16 12 22 20 10 20"
+          id='Triangle'
+          transform='translate(16.000000, 16.000000) rotate(-180.000000) translate(-16.000000, -16.000000) '
+          points='16 12 22 20 10 20'
         ></polygon>
       </g>
     </g>
@@ -175,7 +175,9 @@ function getCustomStyles({ width, maxWidth }) {
         position: `absolute`,
         transition: `top 0.2s ease, font-size 0.2s ease`,
         fontSize:
-          state.hasValue || state.selectProps.inputValue ? `1rem` : `1.4375rem`,
+          state.hasValue || state.selectProps.inputValue
+            ? `1rem`
+            : `1.4375rem`,
         top,
       }
     },
@@ -244,7 +246,13 @@ function getCustomStyles({ width, maxWidth }) {
 }
 
 // const StyledSelect = ({ placeholder, options, value, name, onChange }) => {
-const StyledSelect = ({ width, maxWidth, isReadOnly, isLoading, ...props }) => {
+const StyledSelect = ({
+  width,
+  maxWidth,
+  isReadOnly,
+  isLoading,
+  ...props
+}) => {
   return (
     <Select
       components={{

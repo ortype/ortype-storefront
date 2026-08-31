@@ -94,7 +94,7 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
   }
 
   return (
-    <VStack my={8} gap={2} align="start" w="full">
+    <VStack my={8} gap={2} align='start' w='full'>
       {/*<Heading
         textAlign={'center'}
         fontSize={'2rem'}
@@ -116,7 +116,7 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
       </Heading>
 
       {/* Checkout Summary */}
-      <VStack gap={2} align="start" w="full">
+      <VStack gap={2} align='start' w='full'>
         <Box
           px={3}
           fontSize={'xs'}
@@ -129,8 +129,8 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
 
         {/* Email Address */}
         <HStack
-          justify="space-between"
-          w="full"
+          justify='space-between'
+          w='full'
           borderBottom={'1px solid #919191'}
           fontSize={'sm'}
           lineHeight={1}
@@ -148,15 +148,15 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
 
         {/* Billing Address */}
         <HStack
-          justify="space-between"
-          w="full"
+          justify='space-between'
+          w='full'
           borderBottom={'1px solid #919191'}
           fontSize={'sm'}
           lineHeight={1}
           py={0}
           px={3}
           h={6}
-          data-testid="billing-address-recap"
+          data-testid='billing-address-recap'
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
             {t('stepComplete.billed_to')}
@@ -168,8 +168,8 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
 
         {/* License Owner */}
         <HStack
-          justify="space-between"
-          w="full"
+          justify='space-between'
+          w='full'
           borderBottom={'1px solid #919191'}
           fontSize={'sm'}
           lineHeight={1}
@@ -187,15 +187,15 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
 
         {/* Order Number */}
         <HStack
-          justify="space-between"
-          w="full"
+          justify='space-between'
+          w='full'
           borderBottom={'1px solid #919191'}
           fontSize={'sm'}
           lineHeight={1}
           py={0}
           px={3}
           h={6}
-          data-testid="complete-checkout-summary"
+          data-testid='complete-checkout-summary'
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
             {t('stepComplete.description')}
@@ -207,15 +207,15 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
 
         {/* Payment recap */}
         <HStack
-          justify="space-between"
-          w="full"
+          justify='space-between'
+          w='full'
           borderBottom={'1px solid #919191'}
           fontSize={'sm'}
           lineHeight={1}
           py={0}
           px={3}
           h={6}
-          data-testid="complete-checkout-summary"
+          data-testid='complete-checkout-summary'
         >
           <Text minW={'8rem'} fontSize={'sm'} color={'brand.500'}>
             {t('stepComplete.payment')}
@@ -228,9 +228,9 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
                   {({ brand }) => {
                     if (ctx.isCreditCard) {
                       return (
-                        <Trans i18nKey="stepPayment.endingIn">
+                        <Trans i18nKey='stepPayment.endingIn'>
                           {brand}
-                          <PaymentSourceDetail type="last4" />
+                          <PaymentSourceDetail type='last4' />
                         </Trans>
                       )
                     }
@@ -246,7 +246,7 @@ export const StepComplete: React.FC<Props> = ({ orderNumber }) => {
 
         <Box mt={6}>
           <Button
-            data-testid="button-continue-to-shop"
+            data-testid='button-continue-to-shop'
             onClick={handleClick}
             variant={'outline'}
             bg={'white'}

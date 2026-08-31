@@ -73,7 +73,9 @@ export const FloatingLabelInput = forwardRef<
           // Merge refs: react-hook-form's ref + forwarded ref
           registration!.ref(node)
           if (typeof ref === 'function') ref(node)
-          else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+          else if (ref)
+            (ref as React.MutableRefObject<HTMLInputElement | null>).current =
+              node
         },
         placeholder: typeof label === 'string' ? label : String(label),
         onFocus: (e: React.FocusEvent<HTMLInputElement>) => {
@@ -111,11 +113,8 @@ export const FloatingLabelInput = forwardRef<
 
   return (
     <Field.Root invalid={!!error}>
-      <Box pos="relative" w="full">
-        <Input
-          {...inputProps}
-          css={hasValue ? inputStyles : undefined}
-        />
+      <Box pos='relative' w='full'>
+        <Input {...inputProps} css={hasValue ? inputStyles : undefined} />
         {hasValue && (
           <Field.Label
             css={floatingStyles}

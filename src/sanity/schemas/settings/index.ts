@@ -36,7 +36,11 @@ const labelWithInfo = (name: string, title: string) =>
     type: 'object',
     options: { collapsible: true, collapsed: false },
     fields: [
-      defineField({ name: 'label', title: 'Label', type: 'string' }),
+      defineField({
+        name: 'label',
+        title: 'Label',
+        type: 'string',
+      }),
       defineField({
         name: 'info',
         title: 'Info popup',
@@ -63,7 +67,9 @@ export default defineType({
   type: 'document',
   icon: CogIcon,
   groups: GROUPS,
-  preview: { select: { title: 'title', subtitle: 'description' } },
+  preview: {
+    select: { title: 'title', subtitle: 'description' },
+  },
   // Uncomment below to have edits publish automatically as you type
   // liveEdit: true,
   fields: [

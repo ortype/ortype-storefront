@@ -56,7 +56,9 @@ const StepAddressContainer: React.FC<{
 
         // Advance to next step using Chakra UI Steps context
         if (stepsContext && stepsContext.goToNextStep) {
-          console.log('🚀 Advancing to next step after successful address save')
+          console.log(
+            '🚀 Advancing to next step after successful address save'
+          )
           stepsContext.goToNextStep()
         } else {
           console.warn('⚠️ Steps context not available for step advancement')
@@ -92,7 +94,10 @@ const StepAddressContainer: React.FC<{
         billingAddress={billingAddress}
         openShippingAddress={openShippingAddress}
       />
-      <AddressFormBottom addressType={'billing'} hasCustomerAddresses={false} />
+      <AddressFormBottom
+        addressType={'billing'}
+        hasCustomerAddresses={false}
+      />
       {/* TODO: Replace with shipping address form when implementing shipping flow
        * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
        * Components needed:
@@ -101,11 +106,11 @@ const StepAddressContainer: React.FC<{
        * - Add shipping validation and save logic
        */}
       {isShipmentRequired && (
-        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-          <p className="text-yellow-800">
+        <div className='mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded'>
+          <p className='text-yellow-800'>
             Shipping address form - TODO: Implement
           </p>
-          <p className="text-sm text-yellow-600 mt-2">
+          <p className='text-sm text-yellow-600 mt-2'>
             See SHIPPING_MIGRATION_TODO.md for implementation details
           </p>
         </div>
@@ -114,7 +119,7 @@ const StepAddressContainer: React.FC<{
       {/* Proceed button within the address step */}
       <Box>
         {error && (
-          <Box color="red.500" fontSize="sm" mb={4}>
+          <Box color='red.500' fontSize='sm' mb={4}>
             {error}
           </Box>
         )}
@@ -131,8 +136,8 @@ const StepAddressContainer: React.FC<{
           {isLoading
             ? 'Saving Address...'
             : isShipmentRequired
-            ? t('stepAddress.continueToShipping', 'Proceed')
-            : t('stepAddress.continueToLicense', 'Proceed')}
+              ? t('stepAddress.continueToShipping', 'Proceed')
+              : t('stepAddress.continueToLicense', 'Proceed')}
         </Button>
       </Box>
     </VStack>
@@ -159,9 +164,8 @@ export const StepAddress: React.FC<Props> = () => {
     setCustomerEmail,
   } = checkoutCtx
 
-  const [shipToDifferentAddress, setShipToDifferentAddress] = useState(
-    !hasSameAddresses
-  )
+  const [shipToDifferentAddress, setShipToDifferentAddress] =
+    useState(!hasSameAddresses)
 
   useEffect(() => {
     setShipToDifferentAddress(!hasSameAddresses)
@@ -194,7 +198,7 @@ export const StepAddress: React.FC<Props> = () => {
   }
 
   return (
-    <VStack gap={2} align="start" w="full">
+    <VStack gap={2} align='start' w='full'>
       <CheckoutSummary
         showEmail={true}
         showBillingAddress={false}

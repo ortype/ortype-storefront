@@ -185,19 +185,19 @@ const CustomStripeElementsForm: React.FC<{
         }?accessToken=${url.searchParams.get('accessToken')}`
 
         // Confirm payment using Elements
-        const { error } = await stripe.confirmCardPayment(
-          clientSecret,
-          {
-            payment_method: {
-              card: cardElement,
-              billing_details: billingDetails,
-            },
-            return_url: returnUrl,
-            setup_future_usage: shouldSaveToWallet ? 'off_session' : undefined,
-          }
-        )
+        const { error } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: billingDetails,
+          },
+          return_url: returnUrl,
+          setup_future_usage: shouldSaveToWallet ? 'off_session' : undefined,
+        })
 
-        console.log('Payment attempt with save to wallet:', shouldSaveToWallet)
+        console.log(
+          'Payment attempt with save to wallet:',
+          shouldSaveToWallet
+        )
 
         if (error) {
           console.error('Payment error:', error)
@@ -251,27 +251,27 @@ const CustomStripeElementsForm: React.FC<{
   }, [allComplete, stripe, elements, onPaymentReady])
 
   return (
-    <Box position="relative">
+    <Box position='relative'>
       {/* Show spinner overlay while Elements are loading */}
       {!allElementsReady && (
         <Box
-          position="absolute"
+          position='absolute'
           top={0}
           left={0}
           right={0}
           bottom={0}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
+          display='flex'
+          justifyContent='center'
+          alignItems='center'
           zIndex={1}
           py={'3.5rem'}
         >
-          <Spinner size="lg" />
+          <Spinner size='lg' />
         </Box>
       )}
 
       {error && (
-        <Alert startElement={<></>} size={'sm'} status="error" my={1} mb={2}>
+        <Alert startElement={<></>} size={'sm'} status='error' my={1} mb={2}>
           {error}
         </Alert>
       )}
@@ -286,12 +286,15 @@ const CustomStripeElementsForm: React.FC<{
         <Stack gap={1} mb={2}>
           {/* Card Number */}
           <StripeElementField
-            label="Card Number"
-            element="cardNumber"
+            label='Card Number'
+            element='cardNumber'
             error={errors.cardNumber}
             onReady={() => {
               console.log('CardNumber onReady fired')
-              setElementsReady((prev) => ({ ...prev, cardNumber: true }))
+              setElementsReady((prev) => ({
+                ...prev,
+                cardNumber: true,
+              }))
             }}
             onChange={(e) => {
               setIsComplete((prev) => ({
@@ -307,15 +310,18 @@ const CustomStripeElementsForm: React.FC<{
           />
 
           {/* Expiry and CVC */}
-          <Stack direction="row" gap={1}>
+          <Stack direction='row' gap={1}>
             <Box flex={1}>
               <StripeElementField
-                label="Expiry Date"
-                element="cardExpiry"
+                label='Expiry Date'
+                element='cardExpiry'
                 error={errors.cardExpiry}
                 onReady={() => {
                   console.log('CardExpiry onReady fired')
-                  setElementsReady((prev) => ({ ...prev, cardExpiry: true }))
+                  setElementsReady((prev) => ({
+                    ...prev,
+                    cardExpiry: true,
+                  }))
                 }}
                 onChange={(e) => {
                   setIsComplete((prev) => ({
@@ -333,12 +339,15 @@ const CustomStripeElementsForm: React.FC<{
 
             <Box flex={1}>
               <StripeElementField
-                label="CVC"
-                element="cardCvc"
+                label='CVC'
+                element='cardCvc'
                 error={errors.cardCvc}
                 onReady={() => {
                   console.log('CardCvc onReady fired')
-                  setElementsReady((prev) => ({ ...prev, cardCvc: true }))
+                  setElementsReady((prev) => ({
+                    ...prev,
+                    cardCvc: true,
+                  }))
                 }}
                 onChange={(e) => {
                   setIsComplete((prev) => ({
@@ -357,12 +366,12 @@ const CustomStripeElementsForm: React.FC<{
 
           {/* Cardholder Name */}
           <FloatingLabelInput
-            label="Cardholder Name"
+            label='Cardholder Name'
             value={cardholderName}
             onChange={(e) => setCardholderName(e.target.value)}
-            variant="subtle"
-            size="lg"
-            fontSize="md"
+            variant='subtle'
+            size='lg'
+            fontSize='md'
             borderRadius={0}
           />
 
@@ -374,14 +383,14 @@ const CustomStripeElementsForm: React.FC<{
               })}
             </>
           ) : (
-            <Box display="flex" alignItems="center" gap={2} pl={3}>
+            <Box display='flex' alignItems='center' gap={2} pl={3}>
               <input
-                type="checkbox"
-                id="save_payment_source_to_customer_wallet"
-                name="save_payment_source_to_customer_wallet"
+                type='checkbox'
+                id='save_payment_source_to_customer_wallet'
+                name='save_payment_source_to_customer_wallet'
                 defaultChecked={false}
               />
-              <label htmlFor="save_payment_source_to_customer_wallet">
+              <label htmlFor='save_payment_source_to_customer_wallet'>
                 Save card for future purchases
               </label>
             </Box>
@@ -475,7 +484,9 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
           try {
             const options = {
               locale,
-              ...(connectedAccount ? { stripeAccount: connectedAccount } : {}),
+              ...(connectedAccount
+                ? { stripeAccount: connectedAccount }
+                : {}),
             } satisfies StripeConstructorOptions
 
             const res = await loadStripe(publishableKey, options)
@@ -507,7 +518,7 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
 
   if (error) {
     return (
-      <Alert status="error" size="sm">
+      <Alert status='error' size='sm'>
         {error}
       </Alert>
     )
@@ -519,38 +530,38 @@ export const CustomStripePayment: React.FC<CustomStripePaymentProps> = ({
     return (
       <Box position={'relative'}>
         <Stack gap={1} opacity={0.3}>
-          <StripeElementSkelton label="Card Number" />
-          <Stack direction="row" gap={1}>
+          <StripeElementSkelton label='Card Number' />
+          <Stack direction='row' gap={1}>
             <Box flex={1}>
-              <StripeElementSkelton label="Expiry Date" />
+              <StripeElementSkelton label='Expiry Date' />
             </Box>
 
             <Box flex={1}>
-              <StripeElementSkelton label="CVC" />
+              <StripeElementSkelton label='CVC' />
             </Box>
           </Stack>
           <FloatingLabelInput
-            label="Cardholder Name"
+            label='Cardholder Name'
             value={''}
-            variant="subtle"
-            size="lg"
-            fontSize="md"
+            variant='subtle'
+            size='lg'
+            fontSize='md'
             borderRadius={0}
           />
         </Stack>
         <Box
-          position="absolute"
+          position='absolute'
           top={0}
           left={0}
           right={0}
           bottom={0}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
+          display='flex'
+          justifyContent='center'
+          alignItems='center'
           zIndex={1}
           py={'3.5rem'}
         >
-          <Spinner size="lg" />
+          <Spinner size='lg' />
         </Box>
       </Box>
     )

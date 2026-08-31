@@ -7,10 +7,9 @@ interface PaymentSourceBrandNameProps {
   children?: (props: { brand: string }) => ReactNode
 }
 
-export const PaymentSourceBrandName: React.FC<PaymentSourceBrandNameProps> = ({
-  className,
-  children,
-}) => {
+export const PaymentSourceBrandName: React.FC<
+  PaymentSourceBrandNameProps
+> = ({ className, children }) => {
   const paymentSource = usePaymentSourceContext()
 
   if (!paymentSource) {
@@ -21,7 +20,9 @@ export const PaymentSourceBrandName: React.FC<PaymentSourceBrandNameProps> = ({
   const displayName = getBrandDisplayName(brand)
 
   if (children && typeof children === 'function') {
-    return <span className={className}>{children({ brand: displayName })}</span>
+    return (
+      <span className={className}>{children({ brand: displayName })}</span>
+    )
   }
 
   return <span className={className}>{displayName}</span>

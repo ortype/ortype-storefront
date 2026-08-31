@@ -41,7 +41,10 @@ export function AddressFormExample() {
     setFormData((prev) => ({ ...prev, [field]: value }))
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
+      setErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }))
     }
   }
 
@@ -56,7 +59,10 @@ export function AddressFormExample() {
     if (!formData.zipCode) newErrors.zipCode = 'ZIP/Postal code is required'
 
     // Email validation
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (
+      formData.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    ) {
       newErrors.email = 'Invalid email format'
     }
 
@@ -74,11 +80,11 @@ export function AddressFormExample() {
   }
 
   return (
-    <Box maxW="md" mx="auto" p={6}>
+    <Box maxW='md' mx='auto' p={6}>
       <form onSubmit={handleSubmit}>
-        <VStack spacing={4} align="stretch">
+        <VStack spacing={4} align='stretch'>
           <AddressField
-            label="First Name"
+            label='First Name'
             value={formData.firstName}
             onChange={updateField('firstName')}
             error={errors.firstName}
@@ -86,7 +92,7 @@ export function AddressFormExample() {
           />
 
           <AddressField
-            label="Last Name"
+            label='Last Name'
             value={formData.lastName}
             onChange={updateField('lastName')}
             error={errors.lastName}
@@ -94,24 +100,24 @@ export function AddressFormExample() {
           />
 
           <AddressField
-            label="Address Line 1"
+            label='Address Line 1'
             value={formData.line1}
             onChange={updateField('line1')}
             error={errors.line1}
-            placeholder="Street address"
+            placeholder='Street address'
             required
           />
 
           <AddressField
-            label="Address Line 2"
+            label='Address Line 2'
             value={formData.line2}
             onChange={updateField('line2')}
             error={errors.line2}
-            placeholder="Apartment, suite, etc. (optional)"
+            placeholder='Apartment, suite, etc. (optional)'
           />
 
           <AddressField
-            label="City"
+            label='City'
             value={formData.city}
             onChange={updateField('city')}
             error={errors.city}
@@ -119,24 +125,24 @@ export function AddressFormExample() {
           />
 
           <CountrySelect
-            label="Country"
+            label='Country'
             value={formData.countryCode}
             onChange={updateField('countryCode')}
             error={errors.countryCode}
-            placeholder="Select a country"
+            placeholder='Select a country'
           />
 
           <StateSelect
-            label="State/Province"
+            label='State/Province'
             value={formData.stateCode}
             onChange={updateField('stateCode')}
             countryCode={formData.countryCode}
             error={errors.stateCode}
-            placeholder="Select state/province"
+            placeholder='Select state/province'
           />
 
           <AddressField
-            label="ZIP/Postal Code"
+            label='ZIP/Postal Code'
             value={formData.zipCode}
             onChange={updateField('zipCode')}
             error={errors.zipCode}
@@ -144,24 +150,24 @@ export function AddressFormExample() {
           />
 
           <AddressField
-            label="Phone Number"
+            label='Phone Number'
             value={formData.phone}
             onChange={updateField('phone')}
             error={errors.phone}
-            type="tel"
-            placeholder="(optional)"
+            type='tel'
+            placeholder='(optional)'
           />
 
           <AddressField
-            label="Email Address"
+            label='Email Address'
             value={formData.email}
             onChange={updateField('email')}
             error={errors.email}
-            type="email"
-            placeholder="(optional)"
+            type='email'
+            placeholder='(optional)'
           />
 
-          <Button type="submit" colorScheme="blue" size="lg">
+          <Button type='submit' colorScheme='blue' size='lg'>
             Submit Address
           </Button>
         </VStack>

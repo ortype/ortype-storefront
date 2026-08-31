@@ -225,7 +225,9 @@ export async function addToCart(
       success: false,
       error: {
         message:
-          error instanceof Error ? error.message : 'Failed to add item to cart',
+          error instanceof Error
+            ? error.message
+            : 'Failed to add item to cart',
         originalError: error,
       },
     }
@@ -251,7 +253,10 @@ export async function createOrder(
       }
     }
 
-    const order = await cl.orders.create({ metadata, ...attributes })
+    const order = await cl.orders.create({
+      metadata,
+      ...attributes,
+    })
     return { success: true, order }
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
@@ -303,9 +308,11 @@ export async function createOrUpdateOrder({
   additionalMetadata = {},
 }: {
   order?: Order
-  createOrder: (
-    params: any
-  ) => Promise<{ success: boolean; order?: Order; orderId?: string }>
+  createOrder: (params: any) => Promise<{
+    success: boolean
+    order?: Order
+    orderId?: string
+  }>
   updateOrder: (params: any) => Promise<{ success: boolean; order?: Order }>
   licenseSize?: LicenseSize
   persistKey?: string

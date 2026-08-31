@@ -239,7 +239,8 @@ const OrderContext = createContext<OrderProviderData>(
   {} as OrderProviderData
 )
 
-export const useOrderContext = (): OrderProviderData => useContext(OrderContext)
+export const useOrderContext = (): OrderProviderData =>
+  useContext(OrderContext)
 
 type OrderProviderProps = {
   config: CLayerClientConfig
@@ -372,7 +373,9 @@ export function OrderProvider({
           success: false,
           error: {
             message:
-              error instanceof Error ? error.message : 'Failed to create order',
+              error instanceof Error
+                ? error.message
+                : 'Failed to create order',
             originalError: error,
           },
         }
@@ -399,7 +402,8 @@ export function OrderProvider({
       order?: Order // Assuming Order is your type for order object
     }> => {
       const orderId =
-        params?.orderId ?? (persistKey ? getLocalOrder(persistKey) : undefined)
+        params?.orderId ??
+        (persistKey ? getLocalOrder(persistKey) : undefined)
       const cl = config != null ? getCommerceLayer(config) : undefined
       try {
         if (!orderId || cl == null) {
@@ -408,7 +412,10 @@ export function OrderProvider({
         if (process.env.NODE_ENV !== 'production') {
           console.log('[OrderProvider] fetchOrder: ', orderId)
         }
-        const orderResponse = await getOrder({ client: cl, orderId })
+        const orderResponse = await getOrder({
+          client: cl,
+          orderId,
+        })
         const order = orderResponse?.object
 
         // If clearWhenPlaced is enabled and the order has been placed (not editable),
@@ -534,7 +541,9 @@ export function OrderProvider({
           success: false,
           error: {
             message:
-              error instanceof Error ? error.message : 'Failed to update order',
+              error instanceof Error
+                ? error.message
+                : 'Failed to update order',
             originalError: error,
           },
         }
@@ -801,13 +810,18 @@ export function OrderProvider({
                   orderLineItemIds.has(id)
                 )
                 if (validIds.length > 0) {
-                  validatedGroups[uid] = { ...group, lineItemIds: validIds }
+                  validatedGroups[uid] = {
+                    ...group,
+                    lineItemIds: validIds,
+                  }
                 }
               }
               if (Object.keys(validatedGroups).length > 0) {
                 dispatch({
                   type: ActionType.HYDRATE_COMMITTED_GROUPS,
-                  payload: { committedGroups: validatedGroups },
+                  payload: {
+                    committedGroups: validatedGroups,
+                  },
                 })
                 committedHydrated = true
                 if (process.env.NODE_ENV !== 'production') {
@@ -833,7 +847,8 @@ export function OrderProvider({
             const orderLineItemIds = new Set(
               (order.line_items ?? [])
                 .filter(
-                  (li) => li.item_type === 'skus' || li.item_type === 'bundles'
+                  (li) =>
+                    li.item_type === 'skus' || li.item_type === 'bundles'
                 )
                 .map((li) => li.id)
             )
@@ -843,13 +858,18 @@ export function OrderProvider({
                 orderLineItemIds.has(id)
               )
               if (validIds.length > 0) {
-                validatedGroups[uid] = { ...group, lineItemIds: validIds }
+                validatedGroups[uid] = {
+                  ...group,
+                  lineItemIds: validIds,
+                }
               }
             }
             if (Object.keys(validatedGroups).length > 0) {
               dispatch({
                 type: ActionType.HYDRATE_COMMITTED_GROUPS,
-                payload: { committedGroups: validatedGroups },
+                payload: {
+                  committedGroups: validatedGroups,
+                },
               })
               if (process.env.NODE_ENV !== 'production') {
                 console.log(
@@ -877,7 +897,9 @@ export function OrderProvider({
               if (process.env.NODE_ENV !== 'production') {
                 console.log(
                   '[OrderProvider] 🔄 Hydrated groupResolutions from localStorage',
-                  { fonts: Object.keys(parsed).length }
+                  {
+                    fonts: Object.keys(parsed).length,
+                  }
                 )
               }
             }
@@ -944,7 +966,11 @@ export function OrderProvider({
         if (process.env.NODE_ENV !== 'production') {
           console.log(
             '[Order Provider] 🔄 initializeProvider: No existing order found',
-            { success, hasOrder: !!order, existingTypes }
+            {
+              success,
+              hasOrder: !!order,
+              existingTypes,
+            }
           )
         }
       }
@@ -969,7 +995,10 @@ export function OrderProvider({
           if (process.env.NODE_ENV !== 'production') {
             console.log(
               '[OrderProvider] 🔄 initializeProvider: Reconciling stale licenseSize',
-              { stored: storedSize, sanity: sanitySize }
+              {
+                stored: storedSize,
+                sanity: sanitySize,
+              }
             )
           }
           setLicenseSize({
@@ -989,11 +1018,14 @@ export function OrderProvider({
       }
 
       if (process.env.NODE_ENV !== 'production') {
-        console.log('[OrderProvider] ✅ initializeProvider: Initialized with', {
-          skuOptions: skuResult.success,
-          companySizes: metrics.sizes.length,
-          mediaTypes: metrics.media.length,
-        })
+        console.log(
+          '[OrderProvider] ✅ initializeProvider: Initialized with',
+          {
+            skuOptions: skuResult.success,
+            companySizes: metrics.sizes.length,
+            mediaTypes: metrics.media.length,
+          }
+        )
       }
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
@@ -1221,7 +1253,10 @@ export function OrderProvider({
   const toggleGroup = useCallback(
     (params: {
       parentUid: string
-      styles: { skuCode: string; styleMetadata: StyleEntry }[]
+      styles: {
+        skuCode: string
+        styleMetadata: StyleEntry
+      }[]
     }) => {
       dispatch({
         type: ActionType.TOGGLE_GROUP,
@@ -1287,14 +1322,20 @@ export function OrderProvider({
       if (!created.success || !created.orderId) {
         throw new Error('Failed to create order before committing')
       }
-      const refetched = await fetchOrder({ orderId: created.orderId })
+      const refetched = await fetchOrder({
+        orderId: created.orderId,
+      })
       commitOrder = refetched.order ?? created.order
       commitOrderId = created.orderId
     }
     if (!commitOrderId || !commitOrder?.id) {
       throw new Error('Order must exist before committing')
     }
-    return { cl, orderId: commitOrderId, order: commitOrder }
+    return {
+      cl,
+      orderId: commitOrderId,
+      order: commitOrder,
+    }
   }, [
     config,
     state.order,
@@ -1314,7 +1355,10 @@ export function OrderProvider({
   const commitGroup = useCallback(
     async (
       parentUid: string
-    ): Promise<{ success: boolean; error?: AddToCartError }> => {
+    ): Promise<{
+      success: boolean
+      error?: AddToCartError
+    }> => {
       dispatch({ type: ActionType.START_LOADING })
 
       try {
@@ -1337,7 +1381,10 @@ export function OrderProvider({
         }
 
         // 1. Disable autorefresh
-        await cl.orders.update({ id: commitOrder.id, autorefresh: false })
+        await cl.orders.update({
+          id: commitOrder.id,
+          autorefresh: false,
+        })
 
         // 2. Delete existing line items for this group
         const committed = state.committedGroups[parentUid]
@@ -1382,7 +1429,10 @@ export function OrderProvider({
 
         // 3. Compile projections: decompose into group SKUs + leftover styles
         const orderRel = cl.orders.relationship(orderId)
-        const createdLineItems: { id: string; skuCode: string }[] = []
+        const createdLineItems: {
+          id: string
+          skuCode: string
+        }[] = []
         const selectedSkuCodes = new Set(Object.keys(groupStyles))
         const resolvedGroups = state.groupResolutions[parentUid] || []
 
@@ -1553,7 +1603,10 @@ export function OrderProvider({
                 })
               )
               if (result?.success && result.object) {
-                createdLineItems.push({ id: result.object.id, skuCode })
+                createdLineItems.push({
+                  id: result.object.id,
+                  skuCode,
+                })
               } else {
                 throw new Error(`Failed to create line item for ${skuCode}`)
               }
@@ -1563,7 +1616,9 @@ export function OrderProvider({
           if (process.env.NODE_ENV !== 'production') {
             console.log(
               `[OrderProvider] commitGroup: STYLE projections for ${parentUid}`,
-              { count: styleLineItemCreators.length }
+              {
+                count: styleLineItemCreators.length,
+              }
             )
           }
 
@@ -1633,7 +1688,10 @@ export function OrderProvider({
         try {
           const cl = config != null ? getCommerceLayer(config) : undefined
           if (cl && state.order?.id) {
-            await cl.orders.update({ id: state.order.id, autorefresh: true })
+            await cl.orders.update({
+              id: state.order.id,
+              autorefresh: true,
+            })
           }
         } catch {
           /* silent */
@@ -1643,7 +1701,9 @@ export function OrderProvider({
           success: false,
           error: {
             message:
-              error instanceof Error ? error.message : 'Failed to commit group',
+              error instanceof Error
+                ? error.message
+                : 'Failed to commit group',
             originalError: error,
           },
         }
@@ -1679,7 +1739,10 @@ export function OrderProvider({
     const committed = state.committedGroups
 
     if (Object.keys(selections).length === 0) {
-      return { success: false, error: { message: 'No selections to commit' } }
+      return {
+        success: false,
+        error: { message: 'No selections to commit' },
+      }
     }
 
     // Classify groups
@@ -1696,7 +1759,11 @@ export function OrderProvider({
         !!existing &&
         (existing.size?.value !== state.licenseSize?.value ||
           existing.size?.modifier !== state.licenseSize?.modifier)
-      if (!existing || existing.hash !== computeGroupHash(group) || sizeStale) {
+      if (
+        !existing ||
+        existing.hash !== computeGroupHash(group) ||
+        sizeStale
+      ) {
         dirtyOrNew.push(parentUid)
       }
     }
@@ -1807,7 +1874,10 @@ export function OrderProvider({
           })
         }
 
-        await cl.orders.update({ id: state.order.id, autorefresh: false })
+        await cl.orders.update({
+          id: state.order.id,
+          autorefresh: false,
+        })
 
         await runConcurrent(
           allLineItemIds.map((id) => async () => {
@@ -1842,7 +1912,10 @@ export function OrderProvider({
       try {
         const cl = config != null ? getCommerceLayer(config) : undefined
         if (cl && state.order?.id) {
-          await cl.orders.update({ id: state.order.id, autorefresh: true })
+          await cl.orders.update({
+            id: state.order.id,
+            autorefresh: true,
+          })
         }
       } catch {
         /* silent */

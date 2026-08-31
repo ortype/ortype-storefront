@@ -119,7 +119,10 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
   useEffect(() => {
     const fetchKey = `${orderId}-${accessToken}`
     if (orderId && accessToken && fetchKeyRef.current !== fetchKey) {
-      console.log('📦 [CheckoutContainer] Fetching order (new key):', fetchKey)
+      console.log(
+        '📦 [CheckoutContainer] Fetching order (new key):',
+        fetchKey
+      )
       fetchKeyRef.current = fetchKey
       fetchOrderById(orderId)
     }
@@ -163,7 +166,10 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
           )
         })
         .catch((error) => {
-          console.error('📦 [CheckoutContainer] isValidCheckout error:', error)
+          console.error(
+            '📦 [CheckoutContainer] isValidCheckout error:',
+            error
+          )
           setFetching(false)
           setValid(false)
           // Reset validation ref on error so we can retry if needed
@@ -188,9 +194,9 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
   // Show loading state while fetching order
   if (localLoading || fetching) {
     return (
-      <Box pos="absolute" inset="0" bg="bg/80">
-        <Center h="full">
-          <Spinner color="black" size={'xl'} />
+      <Box pos='absolute' inset='0' bg='bg/80'>
+        <Center h='full'>
+          <Spinner color='black' size={'xl'} />
         </Center>
       </Box>
     )

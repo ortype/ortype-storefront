@@ -22,8 +22,7 @@ try {
 }
 
 type AddressStateSelectName =
-  | 'billing_address_state_code'
-  | 'shipping_address_state_code'
+  'billing_address_state_code' | 'shipping_address_state_code'
 
 interface StateSelectProps {
   label?: string
@@ -150,7 +149,10 @@ export const StateSelect = forwardRef<
           states,
         })
       ) {
-        const availableStates = getStateOfCountry({ countryCode, states })
+        const availableStates = getStateOfCountry({
+          countryCode,
+          states,
+        })
         if (availableStates.length > 0) {
           setVal('')
           onChange?.('')
@@ -187,7 +189,9 @@ export const StateSelect = forwardRef<
 
       // Update address context if available
       if (name === 'billing_address_state_code' && updateBillingAddressData) {
-        updateBillingAddressData({ state_code: selectedValue })
+        updateBillingAddressData({
+          state_code: selectedValue,
+        })
       }
     }
 
@@ -217,10 +221,10 @@ export const StateSelect = forwardRef<
           }
           disabled={disabled}
           required={required}
-          type="text"
-          variant="subtle"
-          size="lg"
-          fontSize="md"
+          type='text'
+          variant='subtle'
+          size='lg'
+          fontSize='md'
           borderRadius={0}
           className={inputClassName}
         />
@@ -232,8 +236,14 @@ export const StateSelect = forwardRef<
       ...(selectPlaceholder
         ? [selectPlaceholder]
         : placeholder
-        ? [{ value: '', label: placeholder, disabled: false }]
-        : []),
+          ? [
+              {
+                value: '',
+                label: placeholder,
+                disabled: false,
+              },
+            ]
+          : []),
       ...stateOptions,
     ]
 

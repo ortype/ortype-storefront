@@ -20,7 +20,10 @@ export async function POST(req: NextRequest) {
 
     if (!email || typeof email !== 'string') {
       return NextResponse.json(
-        { success: false, error: 'Email is required' } as PasswordResetResponse,
+        {
+          success: false,
+          error: 'Email is required',
+        } as PasswordResetResponse,
         { status: 400 }
       )
     }
@@ -89,11 +92,15 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail(mailOptions)
     console.log(`[password-reset] Email sent to ${email}`)
 
-    return NextResponse.json({ success: true } as PasswordResetResponse)
+    return NextResponse.json({
+      success: true,
+    } as PasswordResetResponse)
   } catch (error) {
     console.error('[password-reset] Error:', error)
 
     // Always return success to the client to avoid revealing whether the email exists
-    return NextResponse.json({ success: true } as PasswordResetResponse)
+    return NextResponse.json({
+      success: true,
+    } as PasswordResetResponse)
   }
 }

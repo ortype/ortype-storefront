@@ -48,9 +48,9 @@ export const LicenseSizeNativeSelect: React.FC<Props> = ({
       items={sizeItems}
       value={selectedSize}
       onValueChange={handleSizeChange}
-      variant="subtle"
-      size="lg"
-      fontSize="md"
+      variant='subtle'
+      size='lg'
+      fontSize='md'
     />
   )
 }

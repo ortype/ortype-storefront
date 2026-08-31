@@ -18,7 +18,7 @@ const components = {
     h2: ({ children, value }) => (
       <Heading
         id={value._key}
-        textAlign="center"
+        textAlign='center'
         size={{ base: 'md', lg: 'xl' }}
         lineHeight={'short'}
       >
@@ -46,12 +46,18 @@ const components = {
         pos={'relative'}
         overflow={'hidden'}
         css={{
-          '& > div > div > div': { position: 'inherit !important' },
+          '& > div > div > div': {
+            position: 'inherit !important',
+          },
         }}
       >
         <Video
           {...props}
-          style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+          style={{
+            width: '100%',
+            height: 'auto',
+            objectFit: 'contain',
+          }}
         />
       </Box>
     ),

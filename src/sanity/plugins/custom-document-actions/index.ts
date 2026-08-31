@@ -7,12 +7,15 @@ import { VimeoMetadataAction } from './vimeo-metadata'
 
 // Document types that may contain video modules
 const VIDEO_DOCUMENT_TYPES = [
-  'font',      // Has headerVideo field and modules
-  'page',      // May have modules with videos
-  'post',      // May have content with videos
+  'font', // Has headerVideo field and modules
+  'page', // May have modules with videos
+  'post', // May have content with videos
 ]
 
-export const resolveDocumentActions: DocumentActionsResolver = (prev, { schemaType }) => {
+export const resolveDocumentActions: DocumentActionsResolver = (
+  prev,
+  { schemaType }
+) => {
   // Replace default publish action with VimeoMetadataAction for video-containing documents
   if (VIDEO_DOCUMENT_TYPES.includes(schemaType)) {
     return prev.map((originalAction) =>

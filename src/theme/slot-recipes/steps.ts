@@ -91,7 +91,8 @@ export const stepsSlotRecipe = defineSlotRecipe({
           position: 'absolute',
           width: 'var(--steps-thickness)',
           height: '100%',
-          maxHeight: 'calc(100% - var(--steps-size) - var(--steps-gutter) * 2)',
+          maxHeight:
+            'calc(100% - var(--steps-size) - var(--steps-gutter) * 2)',
           top: 'calc(var(--steps-size) + var(--steps-gutter))',
           insetStart: 'calc(var(--steps-size) / 2 - 1px)',
         },

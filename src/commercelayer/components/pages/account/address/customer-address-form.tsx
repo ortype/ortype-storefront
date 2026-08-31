@@ -64,7 +64,10 @@ function CustomerAddressForm({
   // previously entered fields (it replaces the whole object).
   const handleAddressInputChange = useCallback(
     (fieldName: string, value: string) => {
-      console.log('handleAddressInputChange: ', { fieldName, value })
+      console.log('handleAddressInputChange: ', {
+        fieldName,
+        value,
+      })
 
       const key = fieldName.replace('billing_address_', '')
       setAddress({
@@ -82,9 +85,9 @@ function CustomerAddressForm({
   // @TODO: on mount focus on the first input
 
   return address === undefined && addressId !== undefined ? (
-    <Box inset="0" minH={16}>
-      <Center h="full">
-        <Spinner color="black" size={'xl'} />
+    <Box inset='0' minH={16}>
+      <Center h='full'>
+        <Spinner color='black' size={'xl'} />
       </Center>
     </Box>
   ) : (
@@ -120,16 +123,16 @@ function CustomerAddressForm({
         <VStack gap={2} alignItems={'flex-start'}>
           <SimpleGrid w={'full'} columns={2} gap={2}>
             <AddressInputGroup
-              fieldName="billing_address_first_name"
-              type="text"
-              resource="billing_address"
+              fieldName='billing_address_first_name'
+              type='text'
+              resource='billing_address'
               value={address?.first_name || ''}
               onChange={handleAddressInputChange}
             />
             <AddressInputGroup
-              fieldName="billing_address_last_name"
-              type="text"
-              resource="billing_address"
+              fieldName='billing_address_last_name'
+              type='text'
+              resource='billing_address'
               value={address?.last_name || ''}
               onChange={handleAddressInputChange}
             />
@@ -144,57 +147,57 @@ function CustomerAddressForm({
           />
           */}
           <AddressInputGroup
-            fieldName="billing_address_line_1"
-            type="text"
-            resource="billing_address"
+            fieldName='billing_address_line_1'
+            type='text'
+            resource='billing_address'
             value={address?.line_1 || ''}
             onChange={handleAddressInputChange}
           />
           <AddressInputGroup
             required={false}
-            fieldName="billing_address_line_2"
-            type="text"
-            resource="billing_address"
+            fieldName='billing_address_line_2'
+            type='text'
+            resource='billing_address'
             value={address?.line_2 || ''}
             onChange={handleAddressInputChange}
           />
           <SimpleGrid w={'full'} columns={2} gap={2}>
             <AddressInputGroup
-              fieldName="billing_address_city"
-              type="text"
-              resource="billing_address"
+              fieldName='billing_address_city'
+              type='text'
+              resource='billing_address'
               value={address?.city || ''}
               onChange={handleAddressInputChange}
             />
             <AddressInputGroup
-              fieldName="billing_address_country_code"
-              type="text"
-              resource="billing_address"
+              fieldName='billing_address_country_code'
+              type='text'
+              resource='billing_address'
               value={address?.country_code || ''}
               onChange={handleAddressInputChange}
             />
           </SimpleGrid>
           <SimpleGrid w={'full'} columns={2} gap={2}>
             <AddressInputGroup
-              fieldName="billing_address_state_code"
-              type="text"
-              resource="billing_address"
+              fieldName='billing_address_state_code'
+              type='text'
+              resource='billing_address'
               value={address?.state_code || ''}
               onChange={handleAddressInputChange}
             />
             <AddressInputGroup
-              fieldName="billing_address_zip_code"
-              type="text"
-              resource="billing_address"
+              fieldName='billing_address_zip_code'
+              type='text'
+              resource='billing_address'
               value={address?.zip_code || ''}
               onChange={handleAddressInputChange}
             />
           </SimpleGrid>
           <AddressInputGroup
-            fieldName="billing_address_phone"
-            type="tel"
+            fieldName='billing_address_phone'
+            type='tel'
             // @TODO: allow only numeric input with javascript
-            resource="billing_address"
+            resource='billing_address'
             value={address?.phone || ''}
             onChange={handleAddressInputChange}
           />
@@ -207,9 +210,9 @@ function CustomerAddressForm({
             Customers from Germany do not need a VAT number (German local tax will be added).
             */
             required={false}
-            fieldName="billing_address_billing_info"
-            type="text"
-            resource="billing_address"
+            fieldName='billing_address_billing_info'
+            type='text'
+            resource='billing_address'
             value={address?.billing_info || ''}
             onChange={handleAddressInputChange}
           />
@@ -235,7 +238,7 @@ function CustomerAddressForm({
               saveButton
             ) : (
               <SaveAddressesButton
-                data-test-id="save-address"
+                data-test-id='save-address'
                 label={t('addresses.addressForm.save')}
                 onClick={() => {
                   router.push(`/account/addresses`)

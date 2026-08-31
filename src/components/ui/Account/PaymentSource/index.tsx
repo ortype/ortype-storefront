@@ -23,8 +23,8 @@ export function PaymentSourceName(): JSX.Element {
 export function PaymentSourceCreditCardEndingIn(): JSX.Element {
   return (
     <Text>
-      <Trans i18nKey="paymentSource.endingIn">
-        <PaymentSourceDetail type="last4" />
+      <Trans i18nKey='paymentSource.endingIn'>
+        <PaymentSourceDetail type='last4' />
       </Trans>
     </Text>
   )
@@ -32,7 +32,7 @@ export function PaymentSourceCreditCardEndingIn(): JSX.Element {
 
 function PaymentSourceCreditCardAsterisks(): JSX.Element {
   return (
-    <div className="flex items-center">
+    <div className='flex items-center'>
       <AsteriskSimple size={8} />
       <AsteriskSimple size={8} />
       <AsteriskSimple size={8} />
@@ -43,7 +43,7 @@ function PaymentSourceCreditCardAsterisks(): JSX.Element {
 
 function PaymentSourceCreditCardAsterisksGroup(): JSX.Element {
   return (
-    <div className="flex items-center py-1 gap-1">
+    <div className='flex items-center py-1 gap-1'>
       <PaymentSourceCreditCardAsterisks />
       <PaymentSourceCreditCardAsterisks />
       <PaymentSourceCreditCardAsterisks />
@@ -53,7 +53,7 @@ function PaymentSourceCreditCardAsterisksGroup(): JSX.Element {
 
 function PaymentSourceCreditCardExpiresAsterisks(): JSX.Element {
   return (
-    <div className="flex items-center">
+    <div className='flex items-center'>
       <AsteriskSimple size={8} />
       <AsteriskSimple size={8} />
     </div>
@@ -65,7 +65,7 @@ export function PaymentSourceCreditCardNumber(): JSX.Element {
     <Flex>
       <PaymentSourceCreditCardAsterisksGroup />
       <Text>
-        <PaymentSourceDetail type="last4">
+        <PaymentSourceDetail type='last4'>
           {({ text }) => {
             return text === '****' ? (
               <PaymentSourceCreditCardAsterisks />
@@ -86,7 +86,7 @@ export function PaymentSourceCreditCardExpires({
   variant,
 }: PaymentSourceCreditCardExpiresProps): JSX.Element {
   const expiry_month = (
-    <PaymentSourceDetail type="exp_month">
+    <PaymentSourceDetail type='exp_month'>
       {({ text }) =>
         text === '**' ? (
           <PaymentSourceCreditCardExpiresAsterisks />
@@ -98,7 +98,7 @@ export function PaymentSourceCreditCardExpires({
   )
 
   const exp_year = (
-    <PaymentSourceDetail type="exp_year">
+    <PaymentSourceDetail type='exp_year'>
       {({ text }) =>
         text === '**' ? (
           <PaymentSourceCreditCardExpiresAsterisks />
@@ -110,9 +110,9 @@ export function PaymentSourceCreditCardExpires({
   )
 
   const label = (
-    <div className="flex items-center gap-1">
-      <Trans i18nKey="paymentSource.expires" />
-      <div className="flex">
+    <div className='flex items-center gap-1'>
+      <Trans i18nKey='paymentSource.expires' />
+      <div className='flex'>
         {expiry_month}/{exp_year}
       </div>
     </div>

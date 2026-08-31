@@ -21,14 +21,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <ChakraButton disabled={loading || disabled} ref={ref} {...rest}>
         {loading && !loadingText ? (
           <>
-            <AbsoluteCenter display="inline-flex">
-              <Spinner size="inherit" color="inherit" />
+            <AbsoluteCenter display='inline-flex'>
+              <Spinner size='inherit' color='inherit' />
             </AbsoluteCenter>
             <Span opacity={0}>{children}</Span>
           </>
         ) : loading && loadingText ? (
           <>
-            <Spinner size="inherit" color="inherit" />
+            <Spinner size='inherit' color='inherit' />
             {loadingText}
           </>
         ) : (

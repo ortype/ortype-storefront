@@ -25,12 +25,14 @@ export interface PasswordVisibilityProps {
   defaultVisible?: boolean
   visible?: boolean
   onVisibleChange?: (visible: boolean) => void
-  visibilityIcon?: { on: React.ReactNode; off: React.ReactNode }
+  visibilityIcon?: {
+    on: React.ReactNode
+    off: React.ReactNode
+  }
 }
 
 export interface PasswordInputProps
-  extends Omit<InputProps, 'type'>,
-    PasswordVisibilityProps {
+  extends Omit<InputProps, 'type'>, PasswordVisibilityProps {
   rootProps?: GroupProps
   label?: string
   name?: string
@@ -82,9 +84,9 @@ export const PasswordInput = React.forwardRef<
 
   return (
     <Field.Root invalid={!!error}>
-      <Box pos="relative" w="full">
+      <Box pos='relative' w='full'>
         <InputGroup
-          w="full"
+          w='full'
           endElement={
             <VisibilityTrigger
               disabled={rest.disabled}
@@ -107,7 +109,10 @@ export const PasswordInput = React.forwardRef<
             ref={(node) => {
               registration?.ref(node)
               if (typeof ref === 'function') ref(node)
-              else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+              else if (ref)
+                (
+                  ref as React.MutableRefObject<HTMLInputElement | null>
+                ).current = node
             }}
             placeholder={label}
             variant={'subtle'}
@@ -152,11 +157,11 @@ const VisibilityTrigger = React.forwardRef<HTMLButtonElement, ButtonProps>(
         tabIndex={-1}
         ref={ref}
         // me="-2"
-        aspectRatio="square"
-        size="sm"
-        variant="plain"
-        height="calc(100% - {spacing.2})"
-        aria-label="Toggle password visibility"
+        aspectRatio='square'
+        size='sm'
+        variant='plain'
+        height='calc(100% - {spacing.2})'
+        aria-label='Toggle password visibility'
         {...props}
       />
     )
@@ -178,17 +183,17 @@ export const PasswordStrengthMeter = React.forwardRef<
   const { label, colorPalette } = getColorPalette(percent)
 
   return (
-    <Stack align="flex-end" gap="1" ref={ref} {...rest}>
-      <HStack width="full" ref={ref} {...rest}>
+    <Stack align='flex-end' gap='1' ref={ref} {...rest}>
+      <HStack width='full' ref={ref} {...rest}>
         {Array.from({ length: max }).map((_, index) => (
           <Box
             key={index}
-            height="1"
-            flex="1"
-            rounded="sm"
+            height='1'
+            flex='1'
+            rounded='sm'
             data-selected={index < value ? '' : undefined}
-            layerStyle="fill.subtle"
-            colorPalette="gray"
+            layerStyle='fill.subtle'
+            colorPalette='gray'
             _selected={{
               colorPalette,
               layerStyle: 'fill.solid',
@@ -196,7 +201,7 @@ export const PasswordStrengthMeter = React.forwardRef<
           />
         ))}
       </HStack>
-      {label && <HStack textStyle="xs">{label}</HStack>}
+      {label && <HStack textStyle='xs'>{label}</HStack>}
     </Stack>
   )
 })

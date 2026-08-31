@@ -1,22 +1,14 @@
 {
   "compilerOptions": {
     "paths": {
-      "*": [
-        "./*"
-      ],
-      "@/*": [
-        "./src/*"
-      ]
+      "*": ["./*"],
+      "@/*": ["./src/*"]
     },
     "target": "ES2017",
     "module": "esnext",
     "moduleResolution": "bundler",
     "skipLibCheck": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
@@ -43,8 +35,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "eslint.config.mjs"
-  ]
+  "exclude": ["node_modules", "eslint.config.mjs"]
 }

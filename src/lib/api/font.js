@@ -70,7 +70,10 @@ export async function getSanityFont(fontFile, fresh = false) {
   if (!variableCacheFont[fontFile.getUid()] || fresh) {
     console.log('\x1b[33mMiss', fontFile.getUid())
     variableCacheFont[fontFile.getUid()] =
-      await findByUidAndVersionWithVariants(fontFile.getUid(), fontFile.version)
+      await findByUidAndVersionWithVariants(
+        fontFile.getUid(),
+        fontFile.version
+      )
   } else {
     console.log('\x1b[32mHit', fontFile.getUid())
   }
@@ -196,10 +199,10 @@ export async function toSanityVariants(fontFile) {
       name: fontFile.getInfo().fullName[fontFile.lang],
       slug: {
         current: slugify(
-          `${fontFile.fileSlug()} ${
-            fontFile.getInfo().fullName[fontFile.lang]
-          }`,
-          { lower: true }
+          `${fontFile.fileSlug()} ${fontFile.getInfo().fullName[fontFile.lang]}`,
+          {
+            lower: true,
+          }
         ),
       },
       optionName: fontFile.getInfo().fontSubfamily[fontFile.lang],
@@ -219,7 +222,11 @@ export async function toSanityVariants(fontFile) {
     for (const [key, value] of Object.entries(
       await getMetaData(fontFile, variant)
     )) {
-      variant.metafields.push({ _key: nanoid(), key, value: value.toString() })
+      variant.metafields.push({
+        _key: nanoid(),
+        key,
+        value: value.toString(),
+      })
     }
     return [variant]
   }
@@ -243,7 +250,9 @@ export async function toSanityVariants(fontFile) {
         slug: {
           current: slugify(
             `${fontFile.fileSlug()} ${variation.name[fontFile.lang]}`,
-            { lower: true }
+            {
+              lower: true,
+            }
           ),
         },
         uid: fontFile.getUid(variation.name[fontFile.lang]),

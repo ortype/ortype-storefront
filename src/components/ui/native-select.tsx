@@ -94,7 +94,9 @@ export const NativeSelectField = React.forwardRef<
   // right one. Fields that don't opt into fitToContent render immediately.
   // Prefer the NativeSelectRoot's shared state (so its indicator hides in
   // lockstep) and fall back to local state if used without that context.
-  const [localMeasured, setLocalMeasured] = React.useState(() => !fitToContent)
+  const [localMeasured, setLocalMeasured] = React.useState(
+    () => !fitToContent
+  )
   const fitContext = React.useContext(NativeSelectFitContext)
   const isMeasured = fitContext ? fitContext.isMeasured : localMeasured
   const setIsMeasured = fitContext ? fitContext.setMeasured : setLocalMeasured
@@ -131,7 +133,8 @@ export const NativeSelectField = React.forwardRef<
   const applyMeasuredWidth = React.useCallback(() => {
     const select = selectRef.current
     const measureEl = measureRef.current
-    if (!fitToContent || !select || !measureEl || supportsFieldSizing()) return
+    if (!fitToContent || !select || !measureEl || supportsFieldSizing())
+      return
 
     const styles = window.getComputedStyle(select)
     const paddingStart = parseFloat(
@@ -145,9 +148,7 @@ export const NativeSelectField = React.forwardRef<
       parseFloat(styles.borderRightWidth || '0')
     const textWidth = measureEl.getBoundingClientRect().width
 
-    select.style.width = `${Math.ceil(
-      textWidth + paddingStart + paddingEnd + borderWidth
-    )}px`
+    select.style.width = `${Math.ceil(textWidth + paddingStart + paddingEnd + borderWidth)}px`
   }, [fitToContent])
 
   // Syncs the measurer's text + font to match the select's current
@@ -155,7 +156,8 @@ export const NativeSelectField = React.forwardRef<
   const measure = React.useCallback(() => {
     const select = selectRef.current
     const measureEl = measureRef.current
-    if (!fitToContent || !select || !measureEl || supportsFieldSizing()) return
+    if (!fitToContent || !select || !measureEl || supportsFieldSizing())
+      return
 
     const selectedOption = select.options[select.selectedIndex]
     const label = selectedOption?.text ?? ''
@@ -231,7 +233,11 @@ export const NativeSelectField = React.forwardRef<
   // late font swap the effects above raced with.
   React.useEffect(() => {
     const measureEl = measureRef.current
-    if (!fitToContent || !measureEl || typeof ResizeObserver === 'undefined') {
+    if (
+      !fitToContent ||
+      !measureEl ||
+      typeof ResizeObserver === 'undefined'
+    ) {
       return
     }
     const observer = new ResizeObserver(() => applyMeasuredWidth())
@@ -254,13 +260,18 @@ export const NativeSelectField = React.forwardRef<
         {...rest}
         style={{
           ...style,
-          visibility: fitToContent && !isMeasured ? 'hidden' : style?.visibility,
+          visibility:
+            fitToContent && !isMeasured ? 'hidden' : style?.visibility,
         }}
         onChange={handleChange}
       >
         {children}
         {items?.map((item) => (
-          <option key={item.value} value={item.value} disabled={item.disabled}>
+          <option
+            key={item.value}
+            value={item.value}
+            disabled={item.disabled}
+          >
             {item.label}
           </option>
         ))}

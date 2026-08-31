@@ -60,7 +60,7 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
     const sorted = [...fonts]
     if (currentFont) {
       const currentFontIndex = sorted.findIndex(
-        (font) => font.slug === currentFont.slug,
+        (font) => font.slug === currentFont.slug
       )
 
       if (currentFontIndex > -1) {
@@ -77,8 +77,8 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
         <Flex pos={'relative'}>
           <Button
             pos={'relative'}
-            variant="square"
-            size="md"
+            variant='square'
+            size='md'
             h={11}
             w={11}
             onMouseEnter={() => {
@@ -142,7 +142,10 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
         size={'custom'}
         open={openTypeMenu}
         onOpenChange={(e) => setTypeMenuOpen(e.open)}
-        positioning={{ getAnchorRect: getTypeAnchorRect, strategy: 'fixed' }}
+        positioning={{
+          getAnchorRect: getTypeAnchorRect,
+          strategy: 'fixed',
+        }}
       >
         <MenuContent
           maxW={'60vw'}
@@ -180,10 +183,10 @@ export const Nav: React.FC<Props> = ({ fonts }) => {
           fontSize={'1.5rem'}
           onMouseLeave={() => setMenuOpen(false)}
         >
-          <MenuItem asChild value="/archive">
+          <MenuItem asChild value='/archive'>
             <NextLink href={'/archive'}>{'Archive'}</NextLink>
           </MenuItem>
-          <MenuItem asChild value="/info">
+          <MenuItem asChild value='/info'>
             <NextLink href={'/info'}>{'Info'}</NextLink>
           </MenuItem>
         </MenuContent>

@@ -89,7 +89,9 @@ const Column = observer(
       hardCodedColumnWidth = hardCodedColumnWidth - marginW * 4
     }
 
-    const queryWidth = Math.floor(Number((width / 100) * hardCodedColumnWidth))
+    const queryWidth = Math.floor(
+      Number((width / 100) * hardCodedColumnWidth)
+    )
 
     // we store the difference of each block
     let difference = 0

@@ -28,7 +28,7 @@ async function getVimeoDataById(item: VideoInput): Promise<VideoOutput> {
 
   // Extract Vimeo ID from URL
   const videoData = getVideoId(url)
-  
+
   if (!videoData || videoData.service !== 'vimeo' || !videoData.id) {
     return {
       ...item,
@@ -94,7 +94,7 @@ export async function POST(request: Request) {
   // Use async/await with Promise.all to fetch data for each item in parallel
   try {
     const videos = await Promise.all(
-      body.data.map((item: VideoInput) => getVimeoDataById(item)),
+      body.data.map((item: VideoInput) => getVimeoDataById(item))
     )
 
     // Process the data received for each item

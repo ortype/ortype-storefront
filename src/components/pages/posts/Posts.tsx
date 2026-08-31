@@ -30,9 +30,9 @@ const ScrollToTop = () => {
 
   return isVisible ? (
     <Button
-      position="fixed"
-      bottom="20px"
-      right="20px"
+      position='fixed'
+      bottom='20px'
+      right='20px'
       zIndex={1000}
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
     >
@@ -103,8 +103,8 @@ export function Posts({ posts, categories }: PostsProps) {
   }
 
   const LoadingSpinner = () => (
-    <Box className="infinite-scroll-loader">
-      <Spinner size="lg" color="gray.500" />
+    <Box className='infinite-scroll-loader'>
+      <Spinner size='lg' color='gray.500' />
     </Box>
   )
 
@@ -133,7 +133,7 @@ export function Posts({ posts, categories }: PostsProps) {
   }*/
 
   return (
-    <Container maxW="8xl">
+    <Container maxW='8xl'>
       <CategoryFilter
         categories={categories}
         selectedCategory={selectedCategory}
@@ -146,7 +146,7 @@ export function Posts({ posts, categories }: PostsProps) {
         // loader={<LoadingSpinner />}
         loader={<div></div>}
         endMessage={
-          <Text textAlign="center" p={4} color="gray.500">
+          <Text textAlign='center' p={4} color='gray.500'>
             No more posts to load.
           </Text>
         }
@@ -165,8 +165,8 @@ export function Posts({ posts, categories }: PostsProps) {
         <div key={selectedCategory}>
           <Masonry
             breakpointCols={breakpointColumnsObj}
-            className="masonry-grid"
-            columnClassName="masonry-grid_column"
+            className='masonry-grid'
+            columnClassName='masonry-grid_column'
           >
             {displayedPosts.map((post, index) => (
               <PostCard

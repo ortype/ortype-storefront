@@ -52,8 +52,8 @@ const DimensionsContext = createContext<DimensionsContextValue | undefined>(
  * DimensionsProvider - Provides layout-related values and responsive calculations
  * Optimized with memoization to prevent unnecessary rerenders
  */
-export const DimensionsProvider: React.FC<DimensionsProviderProps> = React.memo(
-  ({ targetRef, children }) => {
+export const DimensionsProvider: React.FC<DimensionsProviderProps> =
+  React.memo(({ targetRef, children }) => {
     // Get container dimensions
     const size = useDimensionsHook(targetRef)
 
@@ -128,8 +128,7 @@ export const DimensionsProvider: React.FC<DimensionsProviderProps> = React.memo(
         {children}
       </DimensionsContext.Provider>
     )
-  }
-)
+  })
 
 DimensionsProvider.displayName = 'DimensionsProvider'
 

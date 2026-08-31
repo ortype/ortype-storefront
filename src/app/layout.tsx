@@ -19,11 +19,14 @@ export default async function RootLayout({
   // Font file paths aren't editable content, and stega-encoding them
   // (as happens automatically in draft mode / Presentation) corrupts the
   // URLs used for @font-face/preload, breaking font loading. Disable it.
-  const { data } = await sanityFetch({ query: webfontsQuery, stega: false })
+  const { data } = await sanityFetch({
+    query: webfontsQuery,
+    stega: false,
+  })
   const webfonts = toWebfonts(data)
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
       <head>
         <PreloadResources webfonts={webfonts} />
       </head>

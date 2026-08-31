@@ -21,14 +21,14 @@ export const PaymentSourceEditButton: React.FC<
   return (
     <Button
       className={className}
-      variant="text"
-      size="xs"
+      variant='text'
+      size='xs'
       onClick={handleClick}
-      fontSize="xs"
+      fontSize='xs'
       px={2}
       py={1}
-      h="auto"
-      minH="auto"
+      h='auto'
+      minH='auto'
     >
       {label}
     </Button>

@@ -67,13 +67,13 @@ const PostCardTitle = ({ title, fonts }: FontsListProps): ReactNode => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode='wait'>
         {showTitle ? (
           <motion.div
-            key="title"
-            initial="enter"
-            animate="center"
-            exit="exit"
+            key='title'
+            initial='enter'
+            animate='center'
+            exit='exit'
             variants={variants}
             transition={{ duration: 0.25 }}
             style={{ position: 'absolute', left: 0 }}
@@ -84,10 +84,10 @@ const PostCardTitle = ({ title, fonts }: FontsListProps): ReactNode => {
           </motion.div>
         ) : (
           <motion.div
-            key="fonts"
-            initial="enter"
-            animate="center"
-            exit="exit"
+            key='fonts'
+            initial='enter'
+            animate='center'
+            exit='exit'
             variants={variants}
             transition={{ duration: 0.25 }}
             style={{ position: 'absolute', left: 0 }}

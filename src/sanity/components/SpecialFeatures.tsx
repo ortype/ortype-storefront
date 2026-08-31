@@ -36,7 +36,10 @@ function SpecialFeatures(props) {
   const listItems = format(features)
   return renderDefault({
     ...props,
-    schemaType: { ...schemaType, options: { ...options, list: listItems } },
+    schemaType: {
+      ...schemaType,
+      options: { ...options, list: listItems },
+    },
   })
 }
 

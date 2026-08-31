@@ -137,7 +137,11 @@ export default function PageModal({
             animate: 'animate',
             exit: 'exit',
             variants: {
-              initial: { x: coords.x, y: coords.y, opacity: 0 },
+              initial: {
+                x: coords.x,
+                y: coords.y,
+                opacity: 0,
+              },
               animate: {
                 x: 0,
                 y: 0,
@@ -145,17 +149,24 @@ export default function PageModal({
                 transition: {
                   duration: 0.5,
                   type: 'spring',
-                  opacity: { ease: 'easeInOut', duration: 0.5 },
+                  opacity: {
+                    ease: 'easeInOut',
+                    duration: 0.5,
+                  },
                 },
               },
-              exit: { x: coords.x, y: coords.y, opacity: 0 },
+              exit: {
+                x: coords.x,
+                y: coords.y,
+                opacity: 0,
+              },
             },
           }}
         >
           <Box
             flex={'1'}
             mb={padding}
-            position="relative"
+            position='relative'
             style={{
               padding,
             }}

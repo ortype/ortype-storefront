@@ -91,20 +91,20 @@ export const BillingAddressForm: React.FC<Props> = ({
   return (
     <>
       <Stack gap={1} w={'full'}>
-        <Grid templateColumns="repeat(2, 1fr)" gap={1}>
+        <Grid templateColumns='repeat(2, 1fr)' gap={1}>
           <AddressInputGroup
-            fieldName="billing_address_first_name"
-            resource="billing_address"
-            type="text"
+            fieldName='billing_address_first_name'
+            resource='billing_address'
+            type='text'
             value={billing.first_name || billingAddress?.first_name || ''}
             onChange={handleAddressInputChange}
             required
           />
 
           <AddressInputGroup
-            fieldName="billing_address_last_name"
-            resource="billing_address"
-            type="text"
+            fieldName='billing_address_last_name'
+            resource='billing_address'
+            type='text'
             value={billing.last_name || billingAddress?.last_name || ''}
             onChange={handleAddressInputChange}
             required
@@ -112,27 +112,27 @@ export const BillingAddressForm: React.FC<Props> = ({
         </Grid>
 
         <AddressInputGroup
-          fieldName="billing_address_line_1"
-          resource="billing_address"
-          type="text"
+          fieldName='billing_address_line_1'
+          resource='billing_address'
+          type='text'
           value={billing.line_1 || billingAddress?.line_1 || ''}
           onChange={handleAddressInputChange}
           required
         />
 
         <AddressInputGroup
-          fieldName="billing_address_line_2"
-          resource="billing_address"
-          type="text"
+          fieldName='billing_address_line_2'
+          resource='billing_address'
+          type='text'
           value={billing.line_2 || billingAddress?.line_2 || ''}
           onChange={handleAddressInputChange}
         />
 
-        <Grid templateColumns="repeat(2, 1fr)" gap={1}>
+        <Grid templateColumns='repeat(2, 1fr)' gap={1}>
           <AddressInputGroup
-            fieldName="billing_address_country_code"
-            resource="billing_address"
-            type="text"
+            fieldName='billing_address_country_code'
+            resource='billing_address'
+            type='text'
             value={billing.country_code || billingAddress?.country_code || ''}
             onChange={handleAddressInputChange}
             openShippingAddress={openShippingAddress}
@@ -140,9 +140,9 @@ export const BillingAddressForm: React.FC<Props> = ({
           />
 
           <AddressInputGroup
-            fieldName="billing_address_state_code"
-            resource="billing_address"
-            type="text"
+            fieldName='billing_address_state_code'
+            resource='billing_address'
+            type='text'
             value={billing.state_code || billingAddress?.state_code || ''}
             onChange={handleAddressInputChange}
             countryCode={
@@ -152,20 +152,20 @@ export const BillingAddressForm: React.FC<Props> = ({
           />
         </Grid>
 
-        <Grid templateColumns="repeat(2, 1fr)" gap={1}>
+        <Grid templateColumns='repeat(2, 1fr)' gap={1}>
           <AddressInputGroup
-            fieldName="billing_address_city"
-            resource="billing_address"
-            type="text"
+            fieldName='billing_address_city'
+            resource='billing_address'
+            type='text'
             value={billing.city || billingAddress?.city || ''}
             onChange={handleAddressInputChange}
             required
           />
 
           <AddressInputGroup
-            fieldName="billing_address_zip_code"
-            resource="billing_address"
-            type="text"
+            fieldName='billing_address_zip_code'
+            resource='billing_address'
+            type='text'
             value={billing.zip_code || billingAddress?.zip_code || ''}
             onChange={handleAddressInputChange}
             required
@@ -173,18 +173,18 @@ export const BillingAddressForm: React.FC<Props> = ({
         </Grid>
 
         <AddressInputGroup
-          fieldName="billing_address_phone"
-          resource="billing_address"
-          type="tel"
+          fieldName='billing_address_phone'
+          resource='billing_address'
+          type='tel'
           value={billing.phone || billingAddress?.phone || ''}
           onChange={handleAddressInputChange}
         />
 
         {requiresBillingInfo && (
           <AddressInputGroup
-            fieldName="billing_address_billing_info"
-            resource="billing_address"
-            type="text"
+            fieldName='billing_address_billing_info'
+            resource='billing_address'
+            type='text'
             value={billing.billing_info || billingAddress?.billing_info || ''}
             onChange={handleAddressInputChange}
           />

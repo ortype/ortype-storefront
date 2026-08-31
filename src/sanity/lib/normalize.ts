@@ -21,7 +21,9 @@ export function isDefined<T>(value: T | null | undefined): value is T {
   return value != null
 }
 
-export function compactArrayAlt<T>(arr: (T | null)[] | null | undefined): T[] {
+export function compactArrayAlt<T>(
+  arr: (T | null)[] | null | undefined
+): T[] {
   return (arr ?? []).filter(isDefined)
 }
 
@@ -69,7 +71,9 @@ export function toHomeFont(raw: RawHomeFont): HomeFont {
   }
 }
 
-export function toHomeFonts(raw: RawHomeFont[] | null | undefined): HomeFont[] {
+export function toHomeFonts(
+  raw: RawHomeFont[] | null | undefined
+): HomeFont[] {
   return (raw ?? []).map(toHomeFont)
 }
 
@@ -81,17 +85,23 @@ export function toHomeFonts(raw: RawHomeFont[] | null | undefined): HomeFont[] {
  * @TODO: can we make this helper more readable??
  */
 export function normalizeLicenseMetrics(
-  data: LicenseMetricsQueryResult,
+  data: LicenseMetricsQueryResult
 ): LicenseMetrics {
   const sizes = (data?.sizes ?? []).flatMap((s) =>
     s.value != null && s.label != null && s.modifier != null
-      ? [{ value: s.value, label: s.label, modifier: s.modifier }]
-      : [],
+      ? [
+          {
+            value: s.value,
+            label: s.label,
+            modifier: s.modifier,
+          },
+        ]
+      : []
   )
   const media = (data?.media ?? []).flatMap((m) =>
     m.value != null && m.label != null
       ? [{ _key: m._key, value: m.value, label: m.label }]
-      : [],
+      : []
   )
   return { sizes, media }
 }

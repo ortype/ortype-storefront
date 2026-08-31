@@ -26,12 +26,12 @@ import {
 
 function ParcelTrackingNumber(): JSX.Element {
   return (
-    <Box className="relative pl-10 mr-10 hidden md:block">
-      <Box className="absolute right-0 font-bold text-right text-gray-300 uppercase -top-5 text-[12px]">
-        <Trans i18nKey="order.shipments.trackingCode" />
+    <Box className='relative pl-10 mr-10 hidden md:block'>
+      <Box className='absolute right-0 font-bold text-right text-gray-300 uppercase -top-5 text-[12px]'>
+        <Trans i18nKey='order.shipments.trackingCode' />
       </Box>
       <Text>
-        <ParcelField attribute="tracking_number" tagElement="span" />
+        <ParcelField attribute='tracking_number' tagElement='span' />
       </Text>
     </Box>
   )
@@ -49,14 +49,16 @@ function ParcelLink(): JSX.Element {
   const orderCtx = useContext(CustomerOrderContext)
   const orderId = orderCtx?.order?.id
   return (
-    <ParcelField attribute="id" tagElement="span">
+    <ParcelField attribute='id' tagElement='span'>
       {(props: any) => {
         return (
           <Button
-            className="uppercase"
+            className='uppercase'
             size={'sm'}
             onClick={() =>
-              router.push(`/orders/${orderId}/parcels/${props?.attributeValue}`)
+              router.push(
+                `/orders/${orderId}/parcels/${props?.attributeValue}`
+              )
             }
           >
             {t('order.shipments.trackParcel')}
@@ -69,11 +71,11 @@ function ParcelLink(): JSX.Element {
 
 function Parcel(): JSX.Element {
   return (
-    <Box py="2" pl="7">
+    <Box py='2' pl='7'>
       <Flex justifyContent={'space-between'}>
         <Heading className='relative pr-4 text-sm font-bold before:(bg-[#e6e7e7] content-[""] h-[1px] w-[20px] absolute top-[50%] left-[-28px]) max-w-max md:max-w-full break-all'>
-          <Trans i18nKey="order.shipments.parcel">
-            <ParcelField attribute="number" tagElement="span" />
+          <Trans i18nKey='order.shipments.parcel'>
+            <ParcelField attribute='number' tagElement='span' />
           </Trans>
         </Heading>
         <Flex>
@@ -102,22 +104,22 @@ function Parcel(): JSX.Element {
                       <Flex direction={'row'} py={4}>
                         <Box>
                           <ParcelLineItemField
-                            tagElement="img"
-                            attribute="image_url"
+                            tagElement='img'
+                            attribute='image_url'
                           />
                         </Box>
-                        <Flex direction="column">
+                        <Flex direction='column'>
                           <Text>
                             <ParcelLineItemField
-                              tagElement="span"
-                              attribute="name"
+                              tagElement='span'
+                              attribute='name'
                             />
                           </Text>
                           <Text>
-                            <Trans i18nKey="order.shipments.parcelLineItemQuantity">
+                            <Trans i18nKey='order.shipments.parcelLineItemQuantity'>
                               <ParcelLineItemField
-                                tagElement="span"
-                                attribute="quantity"
+                                tagElement='span'
+                                attribute='quantity'
                               />
                             </Trans>
                           </Text>
@@ -139,16 +141,17 @@ function ShipmentTop(): JSX.Element {
   return (
     <Flex>
       <Heading>
-        <ShipmentField name="key_number" />/<ShipmentsCount />
+        <ShipmentField name='key_number' />/
+        <ShipmentsCount />
       </Heading>
       <Box pos={'relative'} ml={3}>
         <Flex alignItems={'center'}>
           <Text>
-            <Trans i18nKey="order.shipments.shipment">
-              <ShipmentField name="number" />
+            <Trans i18nKey='order.shipments.shipment'>
+              <ShipmentField name='number' />
             </Trans>
           </Text>
-          <ShipmentField name="number">
+          <ShipmentField name='number'>
             {(props) => {
               return (
                 <ShipmentStatusChip
@@ -158,10 +161,10 @@ function ShipmentTop(): JSX.Element {
             }}
           </ShipmentField>
         </Flex>
-        <ShipmentField name="number">
+        <ShipmentField name='number'>
           {(props) => {
             return (
-              <Box className="absolute left-0 text-sm text-gray-500 -bottom-5">
+              <Box className='absolute left-0 text-sm text-gray-500 -bottom-5'>
                 {props?.shipment?.shipping_method?.name}
               </Box>
             )

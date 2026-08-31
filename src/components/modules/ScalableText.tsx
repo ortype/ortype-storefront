@@ -38,9 +38,7 @@ const ScalableText: React.FC<OverflowDetectorProps> = ({
       const calculateOverflow = (size: number) => {
         // Apply the font size
         innerContainer.style.fontSize = `${size * conversion}px`
-        innerContainer.style.lineHeight = `${
-          size * lineHeightConversion * conversion
-        }px`
+        innerContainer.style.lineHeight = `${size * lineHeightConversion * conversion}px`
 
         const containerHeight = container.clientHeight
         // const containerWidth = container.clientWidth

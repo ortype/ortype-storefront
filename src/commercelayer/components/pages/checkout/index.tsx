@@ -187,7 +187,7 @@ const Checkout: React.FC<Props> = ({
   }*/
 
   return (
-    <Container mt={6} mb={0} maxW="50rem" centerContent position={'relative'}>
+    <Container mt={6} mb={0} maxW='50rem' centerContent position={'relative'}>
       <Steps.RootProvider value={stepperHook} size={'sm'}>
         <MainHeader orderNumber={orderNumber} steps={steps} />
         <StepNav steps={steps} />
@@ -202,7 +202,10 @@ const Checkout: React.FC<Props> = ({
               {step.key === 'Payment' && (
                 <>
                   <StepPayment />
-                  <StepPlaceOrder termsUrl={termsUrl} privacyUrl={privacyUrl} />
+                  <StepPlaceOrder
+                    termsUrl={termsUrl}
+                    privacyUrl={privacyUrl}
+                  />
                 </>
               )}
             </Steps.Content>

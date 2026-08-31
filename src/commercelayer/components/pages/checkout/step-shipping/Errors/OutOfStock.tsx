@@ -15,7 +15,7 @@ export const OutOfStock = ({
 }: Props) => {
   const { t } = useTranslation()
   return (
-    <Errors resource="line_items" messages={messages}>
+    <Errors resource='line_items' messages={messages}>
       {({ errors }) => {
         useEffect(() => {
           setOutOfStockError(errors.length > 0 && errors[0] !== undefined)
@@ -34,11 +34,11 @@ export const OutOfStock = ({
                     }}
                     components={{
                       WrapperStyle: (
-                        <strong className="text-black border-b border-gray-300 cursor-pointer" />
+                        <strong className='text-black border-b border-gray-300 cursor-pointer' />
                       ),
                       Link: (
                         <a
-                          data-testid="out-of-stock-cart-link"
+                          data-testid='out-of-stock-cart-link'
                           href={`${cartUrl}`}
                         />
                       ),

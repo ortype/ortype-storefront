@@ -83,19 +83,24 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
               },
             })}
             onBlur={handleBlur}
-            aria-label="License owner or company name"
-            variant="subtle"
-            size="lg"
-            fontSize={{ base: 'lg', xl: 'sm', '2xl': 'md', '3xl': 'lg' }}
+            aria-label='License owner or company name'
+            variant='subtle'
+            size='lg'
+            fontSize={{
+              base: 'lg',
+              xl: 'sm',
+              '2xl': 'md',
+              '3xl': 'lg',
+            }}
             mt={1}
             _hover={{
               bg: '#e3e3e3',
             }}
             borderRadius={0}
-            placeholder="Enter License Owner / Company Name*"
+            placeholder='Enter License Owner / Company Name*'
           />
         </Fieldset.Content>
-        <Fieldset.ErrorText className="sr-only" fontSize={'xs'}>
+        <Fieldset.ErrorText className='sr-only' fontSize={'xs'}>
           {errors.company?.message}
         </Fieldset.ErrorText>
       </Fieldset.Root>

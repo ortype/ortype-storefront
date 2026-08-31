@@ -25,8 +25,7 @@ interface OverflowDetectorProps {
   index: number
   overflowCol: boolean
   children:
-    | ((props: OverflowDetectorValue) => ChildrenElement)
-    | ChildrenElement
+    ((props: OverflowDetectorValue) => ChildrenElement) | ChildrenElement
 }
 
 /*
@@ -133,7 +132,7 @@ const OverflowDetector: React.FC<OverflowDetectorProps> = ({
     <>
       <Box
         className={'overflow-detector'}
-        aria-hidden="true"
+        aria-hidden='true'
         css={{
           position: 'absolute',
           visibility: 'hidden',

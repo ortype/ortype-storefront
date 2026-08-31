@@ -24,7 +24,7 @@ const RETRIES = 3
  * @returns the `FetchResource<T>` object containing the resolved data and the status of requests.
  */
 export const retryCall = async <T>(
-  f: () => Promise<T>,
+  f: () => Promise<T>
 ): Promise<FetchResource<T> | undefined> => {
   return await retry(
     async (_, attempt) => {
@@ -51,7 +51,7 @@ export const retryCall = async <T>(
 
           // Wait before next attempt
           await new Promise((resolve) =>
-            setTimeout(resolve, parseInt(retryAfter) * 1000 || 2000),
+            setTimeout(resolve, parseInt(retryAfter) * 1000 || 2000)
           )
 
           throw error // Retry with delay
@@ -80,6 +80,6 @@ export const retryCall = async <T>(
       minTimeout: 1000,
       maxTimeout: 5000,
       factor: 2, // Exponential backoff
-    },
+    }
   )
 }

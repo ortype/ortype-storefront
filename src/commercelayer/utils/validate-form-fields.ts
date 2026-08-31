@@ -32,7 +32,7 @@ export type ValidateValue = <
   V extends string | boolean,
   N extends string,
   T extends string,
-  B extends TResourceError
+  B extends TResourceError,
 >(
   val: V,
   name: N,
@@ -83,7 +83,10 @@ const validateFormFields: ValidateFormFields = (
       values = isMetadata
         ? {
             ...values,
-            metadata: { ...values.metadata, [`${v.name}`]: val },
+            metadata: {
+              ...values.metadata,
+              [`${v.name}`]: val,
+            },
           }
         : { ...values, [`${v.name}`]: val }
     }

@@ -35,7 +35,11 @@ const Image: React.FC<ImageProps> = ({ url }) => {
   } else if (url.match(/vimeo\.com/)) {
     src = `https://vumbnail.com/${videoId}.jpg`
   }
-  return src ? <img src={src} alt="" /> : <div>Video preview not available</div>
+  return src ? (
+    <img src={src} alt='' />
+  ) : (
+    <div>Video preview not available</div>
+  )
 }
 
 export default defineType({
@@ -111,7 +115,8 @@ export default defineType({
       return {
         title: `Video (${url})`,
         // subtitle: captionText,
-        media: typeof window === 'undefined' ? null : <Image url={url || ''} />,
+        media:
+          typeof window === 'undefined' ? null : <Image url={url || ''} />,
       }
     },
   },

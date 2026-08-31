@@ -98,7 +98,9 @@ export const GTMProvider: React.FC<GTMProviderProps> = ({
         },
       })
     ).line_items?.filter((line_item) => {
-      return LINE_ITEMS_SHOPPABLE.includes(line_item.item_type as TypeAccepted)
+      return LINE_ITEMS_SHOPPABLE.includes(
+        line_item.item_type as TypeAccepted
+      )
     })
 
     return pushDataLayer({
@@ -161,7 +163,9 @@ export const GTMProvider: React.FC<GTMProviderProps> = ({
   const fireAddPaymentInfo = async () => {
     const order = await getOrderFromRef()
     const lineItems = order.line_items?.filter((line_item) => {
-      return LINE_ITEMS_SHOPPABLE.includes(line_item.item_type as TypeAccepted)
+      return LINE_ITEMS_SHOPPABLE.includes(
+        line_item.item_type as TypeAccepted
+      )
     })
 
     const paymentMethod = order.payment_method
@@ -182,7 +186,9 @@ export const GTMProvider: React.FC<GTMProviderProps> = ({
     const order = await getOrderFromRef()
 
     const lineItems = order.line_items?.filter((line_item) => {
-      return LINE_ITEMS_SHOPPABLE.includes(line_item.item_type as TypeAccepted)
+      return LINE_ITEMS_SHOPPABLE.includes(
+        line_item.item_type as TypeAccepted
+      )
     })
 
     return pushDataLayer({

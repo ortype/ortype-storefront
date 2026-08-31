@@ -1,8 +1,18 @@
 // src/components/composite/Tester/tester-sizing.ts
 export const TESTER_SIZES = {
   table: {
-    fontSize: { base: '2rem', sm: '3rem', '2xl': '3.25rem', '3xl': '4rem' },
-    lineHeight: { base: '3rem', sm: '4rem', '2xl': '4.25rem', '3xl': '5rem' },
+    fontSize: {
+      base: '2rem',
+      sm: '3rem',
+      '2xl': '3.25rem',
+      '3xl': '4rem',
+    },
+    lineHeight: {
+      base: '3rem',
+      sm: '4rem',
+      '2xl': '4.25rem',
+      '3xl': '5rem',
+    },
     paddingTop: '3rem',
   },
   default: {

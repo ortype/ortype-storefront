@@ -21,7 +21,7 @@ type Props = {
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const [{ settings }, { homePage }] = await Promise.all([
     // sanityFetch<SettingsQueryResult>({
@@ -55,7 +55,9 @@ export const viewport: Viewport = {
 }
 
 export function generateStaticParams() {
-  return i18nConfig.locales.map((locale: string) => ({ locale }))
+  return i18nConfig.locales.map((locale: string) => ({
+    locale,
+  }))
 }
 
 export default async function LocaleRoute({
@@ -68,7 +70,9 @@ export default async function LocaleRoute({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const { data } = await sanityFetch({ query: visibleFontsQuery })
+  const { data } = await sanityFetch({
+    query: visibleFontsQuery,
+  })
   const fonts = stegaClean(data ?? [])
   const { t, resources } = await initTranslations(locale, i18nNamespaces)
   return (

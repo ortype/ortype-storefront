@@ -61,8 +61,8 @@ const LicenseOwnerRadio: React.FC<Props> = ({
             <Group
               gap={1}
               orientation={'horizontal'}
-              alignItems="stretch"
-              display="flex"
+              alignItems='stretch'
+              display='flex'
             >
               {projectTypes.map((type) => (
                 <RadioCardItem
@@ -71,9 +71,9 @@ const LicenseOwnerRadio: React.FC<Props> = ({
                   isSelected={selectedValue === type.value}
                   label={type.title}
                   description={type.description}
-                  flex="1"
-                  alignSelf="stretch"
-                  indicatorPlacement="start"
+                  flex='1'
+                  alignSelf='stretch'
+                  indicatorPlacement='start'
                   _hover={{
                     bg: '#e3e3e3',
                   }}

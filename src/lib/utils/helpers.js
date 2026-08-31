@@ -32,7 +32,9 @@ export function getPathInfo(source) {
 export function getFontDirectories(fontName) {
   return (
     fs
-      .readdirSync(getFontDirectory(), { withFileTypes: true })
+      .readdirSync(getFontDirectory(), {
+        withFileTypes: true,
+      })
       .filter((dirent) => dirent && dirent.isDirectory())
       // .filter(dirent => typeof(fontName) !== undefined ? fontName === dirent.name : true)
       .map((dirent) => dirent.name)
@@ -41,7 +43,9 @@ export function getFontDirectories(fontName) {
 
 export function getFontFiles(fontName) {
   return fs
-    .readdirSync(getFontDirectory(fontName), { withFileTypes: true })
+    .readdirSync(getFontDirectory(fontName), {
+      withFileTypes: true,
+    })
     .filter(
       (dirent) =>
         dirent &&
@@ -99,7 +103,12 @@ export const maybeInitiateOrType = async (results) => {
 
         // Initialize OrType with fileUrl
         if (exists(fileUrl)) {
-          console.log('We have a file URL for: ', item._id, item.name, fileUrl)
+          console.log(
+            'We have a file URL for: ',
+            item._id,
+            item.name,
+            fileUrl
+          )
           item.orType = await cache(path.basename(fileUrl), () => {
             return OrType.getInstance(fileUrl)
           })

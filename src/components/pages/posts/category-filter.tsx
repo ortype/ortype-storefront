@@ -19,7 +19,13 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   onCategoryChange,
 }) => {
   return (
-    <Stack py={4} direction="row" gap={1} wrap="wrap" justifyContent={'center'}>
+    <Stack
+      py={4}
+      direction='row'
+      gap={1}
+      wrap='wrap'
+      justifyContent={'center'}
+    >
       {categories.map((category) => (
         <FilterItem
           key={category.slug}

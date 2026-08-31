@@ -9,7 +9,11 @@ export function ErrorContainer({
     <Box>
       <Container>
         <Flex>
-          <Flex justify={'center'} alignItems={'center'} justifySelf={'center'}>
+          <Flex
+            justify={'center'}
+            alignItems={'center'}
+            justifySelf={'center'}
+          >
             <Text>{children}</Text>
           </Flex>
         </Flex>

@@ -61,13 +61,13 @@ export default function ClearSelectionDialog({
         <DialogFooter gap={2} p={0} pt={2}>
           <Button
             onClick={onCancel}
-            variant="text"
-            size="xs"
-            fontSize="xs"
+            variant='text'
+            size='xs'
+            fontSize='xs'
             px={2}
             py={1}
-            h="auto"
-            minH="auto"
+            h='auto'
+            minH='auto'
           >
             {'Cancel'}
           </Button>
@@ -80,7 +80,10 @@ export default function ClearSelectionDialog({
             border={'2px solid #000'}
             size={'sm'}
             fontSize={'md'}
-            _hover={{ bg: 'transparent', color: 'colorPalette.fg' }}
+            _hover={{
+              bg: 'transparent',
+              color: 'colorPalette.fg',
+            }}
           >
             {'Ok'}
           </Button>

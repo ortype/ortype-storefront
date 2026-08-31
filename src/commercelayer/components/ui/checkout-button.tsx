@@ -34,7 +34,10 @@ export const CheckoutButton: React.FC<Props> = ({
       if (result.success) {
         router.push(href || `/checkout/${orderId}`)
       } else {
-        console.error('[CheckoutButton] commitSelections failed:', result.error)
+        console.error(
+          '[CheckoutButton] commitSelections failed:',
+          result.error
+        )
         setIsCommitting(false)
       }
     } catch (error) {

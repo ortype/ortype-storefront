@@ -74,7 +74,12 @@ export const SingleStyles: React.FC<Props> = ({
           disabled={isLoading}
           transition={'border-width 200ms ease-in-out'}
         />
-        <Text fontSize={'xl'} lineHeight={1} as={'span'} className={className}>
+        <Text
+          fontSize={'xl'}
+          lineHeight={1}
+          as={'span'}
+          className={className}
+        >
           {name}
         </Text>
       </Stack>

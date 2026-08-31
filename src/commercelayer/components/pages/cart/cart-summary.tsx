@@ -18,7 +18,11 @@ const Summary = () => {
       !licenseSize?.modifier ||
       !skuOptions?.length
     ) {
-      return { subtotal: null, totalDiscount: null, total: null }
+      return {
+        subtotal: null,
+        totalDiscount: null,
+        total: null,
+      }
     }
 
     let subTotalCents = 0

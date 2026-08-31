@@ -21,7 +21,10 @@ export default function useWindowSizeDetect() {
 
   return {
     isDesktop: screenWidth >= 1280,
-    viewport: { width: viewportWidth, height: viewportHeight },
+    viewport: {
+      width: viewportWidth,
+      height: viewportHeight,
+    },
     screen: { width: screenWidth, height: screenHeight },
   }
 }

@@ -55,9 +55,9 @@ const CartComponent = () => {
 
   if (isLoading && !hasInitializedRef.current) {
     return (
-      <Box pos="fixed" inset="0" bg="bg/80">
-        <Center h="full">
-          <Spinner color="black" size={'xl'} />
+      <Box pos='fixed' inset='0' bg='bg/80'>
+        <Center h='full'>
+          <Spinner color='black' size={'xl'} />
         </Center>
       </Box>
     )
@@ -66,8 +66,8 @@ const CartComponent = () => {
   // Show error if orderId is missing
   if (!orderId || groupedLineItems.length === 0) {
     return (
-      <Box pos="fixed" inset="0" bg="bg/80">
-        <Center h="full">
+      <Box pos='fixed' inset='0' bg='bg/80'>
+        <Center h='full'>
           <VStack gap={6}>
             <Text fontSize={'2xl'}>{'No items in your cart 😢'}</Text>
 
@@ -110,8 +110,8 @@ const CartComponent = () => {
           borderBottom={'1px solid #919191'}
         >
           <HStack
-            justify="space-between"
-            w="full"
+            justify='space-between'
+            w='full'
             fontSize={'sm'}
             lineHeight={1}
             h={6}
@@ -146,8 +146,8 @@ const CartComponent = () => {
           </HStack>
 
           <HStack
-            justify="space-between"
-            w="full"
+            justify='space-between'
+            w='full'
             fontSize={'sm'}
             lineHeight={1}
             pl={2}

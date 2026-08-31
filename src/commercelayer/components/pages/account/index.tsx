@@ -17,9 +17,9 @@ function OrdersPage(): JSX.Element {
   const { isLoading, settings } = useIdentityContext()
   if (isLoading || !settings)
     return (
-      <Box pos="fixed" inset="0" bg="bg/80">
-        <Center h="full">
-          <Spinner color="black" size={'xl'} />
+      <Box pos='fixed' inset='0' bg='bg/80'>
+        <Center h='full'>
+          <Spinner color='black' size={'xl'} />
         </Center>
       </Box>
     )

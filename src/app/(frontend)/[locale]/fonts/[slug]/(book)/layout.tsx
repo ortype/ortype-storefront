@@ -43,7 +43,7 @@ const getData = cache(async ({ slug }) => {
     }
 
     const validVariants = font.variants.filter(
-      (variant): variant is NonNullable<typeof variant> => variant !== null,
+      (variant): variant is NonNullable<typeof variant> => variant !== null
     )
 
     return {
@@ -94,9 +94,7 @@ export default async function Layout({
   const session = await auth()
   if (!session) {
     const pathname = `${process.env.NEXT_PUBIC_STOREFRONT_URL}/fonts/${slug}/book`
-    const url = `${BASE_PATH}/signin?callbackUrl=${encodeURIComponent(
-      pathname,
-    )}`
+    const url = `${BASE_PATH}/signin?callbackUrl=${encodeURIComponent(pathname)}`
     redirect(url)
   }
 

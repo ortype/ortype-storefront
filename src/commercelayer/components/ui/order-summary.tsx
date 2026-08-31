@@ -22,7 +22,9 @@ import { formatPrice } from 'src/commercelayer/utils/prices'
 const MotionBox = motion(Box)
 
 /** Collapsible font family group within the order summary */
-const SummaryGroup: React.FC<{ group: ExpandedFontGroup }> = ({ group }) => {
+const SummaryGroup: React.FC<{
+  group: ExpandedFontGroup
+}> = ({ group }) => {
   return (
     <Collapsible.Root>
       <Collapsible.Trigger asChild>
@@ -63,9 +65,7 @@ const SummaryGroup: React.FC<{ group: ExpandedFontGroup }> = ({ group }) => {
               color={'#737373'}
               pl={3}
             >
-              {`${group.styleCount} ${
-                group.styleCount === 1 ? 'style' : 'styles'
-              }`}
+              {`${group.styleCount} ${group.styleCount === 1 ? 'style' : 'styles'}`}
             </Flex>
             <Flex
               alignItems={'center'}
@@ -162,7 +162,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
     }
   }, [order?.line_items])
 
-  console.log({order})
+  console.log({ order })
 
   return (
     <Show

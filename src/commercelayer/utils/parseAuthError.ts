@@ -63,9 +63,7 @@ export function parseAuthError(error: any): ParsedAuthError {
   if (!error.response && !error.errors && !error.response?.data?.errors) {
     return {
       userMessage: userMessageMap.NETWORK,
-      developerMessage: `Network error: ${
-        error.message || 'Unknown network error'
-      }`,
+      developerMessage: `Network error: ${error.message || 'Unknown network error'}`,
       type: 'NETWORK',
       status: error.status,
     }
@@ -99,9 +97,7 @@ export function parseAuthError(error: any): ParsedAuthError {
   ) {
     return {
       userMessage: userMessageMap.INVALID_CREDENTIALS,
-      developerMessage: `Authentication failed: ${
-        detail || title || 'Invalid credentials'
-      }`,
+      developerMessage: `Authentication failed: ${detail || title || 'Invalid credentials'}`,
       type: 'INVALID_CREDENTIALS',
       status,
       code,
@@ -111,9 +107,7 @@ export function parseAuthError(error: any): ParsedAuthError {
   if (code === 'LOCKED' || detail?.toLowerCase().includes('locked')) {
     return {
       userMessage: userMessageMap.ACCOUNT_LOCKED,
-      developerMessage: `Account locked: ${
-        detail || title || 'Account is locked'
-      }`,
+      developerMessage: `Account locked: ${detail || title || 'Account is locked'}`,
       type: 'ACCOUNT_LOCKED',
       status,
       code,
@@ -129,9 +123,7 @@ export function parseAuthError(error: any): ParsedAuthError {
 
     return {
       userMessage: userMessageMap.RATE_LIMIT,
-      developerMessage: `Rate limit exceeded: ${
-        detail || title || 'Too many requests'
-      }`,
+      developerMessage: `Rate limit exceeded: ${detail || title || 'Too many requests'}`,
       type: 'RATE_LIMIT',
       status,
       code,
@@ -147,9 +139,7 @@ export function parseAuthError(error: any): ParsedAuthError {
     ) {
       return {
         userMessage: userMessageMap.INVALID_CREDENTIALS,
-        developerMessage: `Authentication failed: ${
-          detail || title || 'Invalid credentials'
-        }`,
+        developerMessage: `Authentication failed: ${detail || title || 'Invalid credentials'}`,
         type: 'INVALID_CREDENTIALS',
         status,
         code,
@@ -166,9 +156,7 @@ export function parseAuthError(error: any): ParsedAuthError {
     if (isConfigError) {
       return {
         userMessage: userMessageMap.CONFIG,
-        developerMessage: `Configuration error: ${
-          detail || title || 'Invalid request parameters'
-        }`,
+        developerMessage: `Configuration error: ${detail || title || 'Invalid request parameters'}`,
         type: 'CONFIG',
         status,
         code,

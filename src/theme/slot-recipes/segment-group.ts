@@ -40,11 +40,12 @@ export const segmentGroupSlotRecipe = defineSlotRecipe({
         width: '2px',
         transition: 'opacity 0.2s',
       },
-      '& + &[data-state=checked], &[data-state=checked] + &, &:first-of-type': {
-        _before: {
-          opacity: '0',
+      '& + &[data-state=checked], &[data-state=checked] + &, &:first-of-type':
+        {
+          _before: {
+            opacity: '0',
+          },
         },
-      },
       '&[data-state=checked]': {
         color: 'white',
       },

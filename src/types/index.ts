@@ -88,7 +88,10 @@ export type Language = NonNullable<RawFont['languages']>[number]
 // dereferenced array below, so those fields are re-declared here as plain,
 // item-safe arrays rather than typegen's `Array<T | null> | null`. Every
 // other field keeps whatever nullability `FontQueryResult` actually reports.
-export type StyleGroup = Omit<RawStyleGroup, 'variants' | 'italicVariants'> & {
+export type StyleGroup = Omit<
+  RawStyleGroup,
+  'variants' | 'italicVariants'
+> & {
   variants: RawStyleGroupVariant[]
   italicVariants: RawStyleGroupVariant[]
 }

@@ -114,11 +114,17 @@ const VimeoPlayerNative: React.FC<VimeoPlayerNativeProps> = ({
         if (data.event === 'ready' && iframeRef.current?.contentWindow) {
           const player = iframeRef.current.contentWindow
           player.postMessage(
-            JSON.stringify({ method: 'addEventListener', value: 'play' }),
+            JSON.stringify({
+              method: 'addEventListener',
+              value: 'play',
+            }),
             '*'
           )
           player.postMessage(
-            JSON.stringify({ method: 'addEventListener', value: 'timeupdate' }),
+            JSON.stringify({
+              method: 'addEventListener',
+              value: 'timeupdate',
+            }),
             '*'
           )
         }
@@ -183,14 +189,14 @@ const VimeoPlayerNative: React.FC<VimeoPlayerNativeProps> = ({
             opacity: isPlaying ? 1 : 0,
             transition: 'opacity 0.1s ease-in',
           }}
-          allow="autoplay; fullscreen; picture-in-picture"
+          allow='autoplay; fullscreen; picture-in-picture'
           allowFullScreen
           title={`Vimeo video ${videoId}`}
         />
         {poster && (
           <img
             src={poster}
-            alt=""
+            alt=''
             style={{
               position: 'absolute',
               top: 0,
@@ -217,7 +223,7 @@ const VimeoPlayerNative: React.FC<VimeoPlayerNativeProps> = ({
       muted={muted}
       playsInline
       controls={controls}
-      preload="metadata"
+      preload='metadata'
       onLoadedMetadata={onLoadedMetadata}
       style={{
         position: 'absolute',

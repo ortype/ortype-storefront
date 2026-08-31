@@ -50,7 +50,9 @@ export function BuyDialog({ data }: BuyDialogProps) {
     if (isCartContext) {
       router.push(`${prefix}/cart`, { scroll: false })
     } else {
-      router.push(`${prefix}/fonts/${slug}`, { scroll: false })
+      router.push(`${prefix}/fonts/${slug}`, {
+        scroll: false,
+      })
     }
   }
 
@@ -77,7 +79,11 @@ export function BuyDialog({ data }: BuyDialogProps) {
             fontSize={'2rem'}
             fontWeight={'normal'}
             textTransform={'uppercase'}
-            ml={{ base: '1rem', xl: '15rem', '3xl': '21rem' }}
+            ml={{
+              base: '1rem',
+              xl: '15rem',
+              '3xl': '21rem',
+            }}
             mr={{
               base: '1rem',
               lg: '15rem',

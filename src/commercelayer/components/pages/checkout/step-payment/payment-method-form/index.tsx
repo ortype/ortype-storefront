@@ -21,12 +21,12 @@ export const PaymentMethodForm = memo<PaymentMethodFormProps>(
       return (
         <Box
           p={4}
-          bg="brand.50"
-          border="1px solid"
-          borderColor="blue.200"
-          borderRadius="md"
+          bg='brand.50'
+          border='1px solid'
+          borderColor='blue.200'
+          borderRadius='md'
         >
-          <Text fontSize="sm" color="blue.800">
+          <Text fontSize='sm' color='blue.800'>
             Loading payment method...
           </Text>
         </Box>
@@ -37,12 +37,12 @@ export const PaymentMethodForm = memo<PaymentMethodFormProps>(
       return (
         <Box
           p={4}
-          bg="orange.50"
-          border="1px solid"
-          borderColor="orange.200"
-          borderRadius="md"
+          bg='orange.50'
+          border='1px solid'
+          borderColor='orange.200'
+          borderRadius='md'
         >
-          <Text fontSize="sm" color="orange.800">
+          <Text fontSize='sm' color='orange.800'>
             Order not available
           </Text>
         </Box>
@@ -72,15 +72,15 @@ export const PaymentMethodForm = memo<PaymentMethodFormProps>(
         return (
           <Box
             p={4}
-            bg="gray.50"
-            border="1px solid"
-            borderColor="gray.200"
-            borderRadius="md"
+            bg='gray.50'
+            border='1px solid'
+            borderColor='gray.200'
+            borderRadius='md'
           >
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize='sm' color='gray.600'>
               Payment method: {paymentSourceType || 'Unknown'}
             </Text>
-            <Text fontSize="sm" color="gray.500" mt={1}>
+            <Text fontSize='sm' color='gray.500' mt={1}>
               This payment method is not yet supported in the UI.
             </Text>
           </Box>

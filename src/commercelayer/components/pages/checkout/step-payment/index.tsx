@@ -48,7 +48,10 @@ export const StepPayment: React.FC = () => {
   }, [autoSelected, hasMultiplePaymentMethods])
 
   const selectPayment: THandleClick = async ({ payment, paymentSource }) => {
-    console.log('selectPayment called with:', { payment, paymentSource })
+    console.log('selectPayment called with:', {
+      payment,
+      paymentSource,
+    })
     if (paymentSource?.payment_methods?.paymentMethods?.length > 1) {
       setHasMultiplePaymentMethods(true)
     }
@@ -69,14 +72,14 @@ export const StepPayment: React.FC = () => {
   }
 
   return (
-    <VStack gap={4} align="start" w="full">
+    <VStack gap={4} align='start' w='full'>
       <CheckoutSummary
         showEmail={true}
         showBillingAddress={true}
         showLicenseOwner={true}
         heading={t('stepPayment.summaryHeading', 'Your Details')}
       />
-      <Box w="full">
+      <Box w='full'>
         <Box
           px={3}
           fontSize={'xs'}
@@ -95,12 +98,14 @@ export const StepPayment: React.FC = () => {
             autoSelectCallback={autoSelectCallback}
           />
         ) : (
-          <p className="text-sm text-gray-400">{t('stepPayment.amountZero')}</p>
+          <p className='text-sm text-gray-400'>
+            {t('stepPayment.amountZero')}
+          </p>
         )}
       </Box>
-      <Box data-testid="errors-container">
+      <Box data-testid='errors-container'>
         <Errors
-          resource="orders"
+          resource='orders'
           messages={
             messages &&
             messages.map((msg) => {

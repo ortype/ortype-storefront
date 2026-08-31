@@ -57,7 +57,8 @@ export type AddressInputName =
 // TODO: Move in the future
 export type CustomFieldMessageError = (props: {
   field: Extract<AddressValuesKeys, AddressInputName> | string
-  code?: Extract<CodeErrorType, 'EMPTY_ERROR' | 'VALIDATION_ERROR'> | undefined
+  code?:
+    Extract<CodeErrorType, 'EMPTY_ERROR' | 'VALIDATION_ERROR'> | undefined
   message?: string | undefined
   value: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -245,8 +246,8 @@ function normalizeErrors(error: unknown): BaseError[] {
     error instanceof Error
       ? error.message
       : typeof error === 'string'
-      ? error
-      : 'Unknown error'
+        ? error
+        : 'Unknown error'
 
   return [
     {
@@ -320,7 +321,10 @@ export const setCloneAddress: SetCloneAddress = (id, resource, dispatch) => {
     type: ActionType.SET_CLONE_ADDRESS,
     payload: {
       [`${camelCase(resource)}Id`]: id,
-    } as { billingAddressId?: string; shippingAddressId?: string },
+    } as {
+      billingAddressId?: string
+      shippingAddressId?: string
+    },
   })
 }
 
@@ -370,7 +374,10 @@ export async function saveAddresses({
 
   if (!cl) {
     dispatch({ type: ActionType.STOP_LOADING })
-    return { success: false, error: 'Commerce Layer client not available' }
+    return {
+      success: false,
+      error: 'Commerce Layer client not available',
+    }
   }
 
   try {
@@ -417,7 +424,8 @@ export async function saveAddresses({
         }
 
         if (currentBillingAddressRef === billingAddressCloneId) {
-          orderAttributes._billing_address_clone_id = order?.billing_address?.id
+          orderAttributes._billing_address_clone_id =
+            order?.billing_address?.id
           orderAttributes._shipping_address_clone_id =
             order?.shipping_address?.id
         }
@@ -434,7 +442,8 @@ export async function saveAddresses({
             orderAttributes._shipping_address_same_as_billing = true
           }
 
-          const billingAddressWithMeta = sanitizeMetadataFields(billingAddress)
+          const billingAddressWithMeta =
+            sanitizeMetadataFields(billingAddress)
           const address = await cl.addresses.create(billingAddressWithMeta)
           orderAttributes.billing_address = cl.addresses.relationship(
             address.id
@@ -445,7 +454,8 @@ export async function saveAddresses({
           delete orderAttributes._shipping_address_same_as_billing
 
           if (shippingAddressCloneId)
-            orderAttributes._shipping_address_clone_id = shippingAddressCloneId
+            orderAttributes._shipping_address_clone_id =
+              shippingAddressCloneId
 
           if (
             shippingAddress != null &&

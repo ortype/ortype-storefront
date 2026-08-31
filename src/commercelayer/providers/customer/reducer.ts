@@ -167,13 +167,13 @@ export type SetSaveOnBlur = (args: {
 
 export type SetCustomerErrors = <V extends BaseError[]>(
   errors: V,
-  dispatch?: Dispatch<Action>,
+  dispatch?: Dispatch<Action>
 ) => void
 
 function normalizeErrors(error: unknown): BaseError[] {
   if (Array.isArray(error)) {
     const looksLikeBaseErrorArray = error.every(
-      (e) => e && typeof e === 'object' && 'code' in e && 'message' in e,
+      (e) => e && typeof e === 'object' && 'code' in e && 'message' in e
     )
 
     if (looksLikeBaseErrorArray) {
@@ -198,7 +198,7 @@ function normalizeErrors(error: unknown): BaseError[] {
 
 export function setCustomerErrors(
   errors: BaseError[],
-  dispatch?: Dispatch<Action>,
+  dispatch?: Dispatch<Action>
 ): void {
   dispatch?.({
     type: ActionType.SET_ERRORS,
@@ -208,7 +208,7 @@ export function setCustomerErrors(
 
 export function setCustomerEmail(
   customerEmail: string,
-  dispatch?: Dispatch<Action>,
+  dispatch?: Dispatch<Action>
 ): void {
   dispatch?.({
     type: ActionType.SET_CUSTOMER_EMAIL,
@@ -253,7 +253,10 @@ export async function getCustomerAddresses({
       pageSize,
     })
 
-    console.log('[CustomerProvider] getCustomerAddresses: ', customerAddresses)
+    console.log(
+      '[CustomerProvider] getCustomerAddresses: ',
+      customerAddresses
+    )
 
     customerAddresses.forEach((customerAddress) => {
       if (customerAddress.address) {
@@ -315,7 +318,7 @@ export async function deleteCustomerAddress({
       await cl.customer_addresses.delete(customerAddressId)
 
       const newAddresses = addresses.filter(
-        ({ reference }) => reference !== customerAddressId,
+        ({ reference }) => reference !== customerAddressId
       )
 
       dispatch({
@@ -415,10 +418,13 @@ export async function getCustomerSubscriptions({
         payload: { subscriptions },
       })
     } else {
-      const subscriptions = await cl.customers.order_subscriptions(customerId, {
-        pageSize,
-        pageNumber,
-      })
+      const subscriptions = await cl.customers.order_subscriptions(
+        customerId,
+        {
+          pageSize,
+          pageNumber,
+        }
+      )
 
       dispatch({
         type: ActionType.SET_SUBSCRIPTIONS,
@@ -505,7 +511,9 @@ export async function createCustomerAddress({
 
         dispatch({
           type: ActionType.SET_ADDRESSES,
-          payload: { addresses: [...state.addresses, newAddress] },
+          payload: {
+            addresses: [...state.addresses, newAddress],
+          },
         })
       }
     }

@@ -1,4 +1,8 @@
-import { State, UpdateItemPayload, UpdateItemsPayload } from '../contexts/types'
+import {
+  State,
+  UpdateItemPayload,
+  UpdateItemsPayload,
+} from '../contexts/types'
 import {
   SpreadAction,
   UPDATE_ITEM,
@@ -11,7 +15,10 @@ import {
  * Update a single item's properties in state
  * Optimized to return original state if no change is needed
  */
-export const updateItem = (state: State, payload: UpdateItemPayload): State => {
+export const updateItem = (
+  state: State,
+  payload: UpdateItemPayload
+): State => {
   const { _key, isOverflowing, index } = payload
 
   // Return early if item doesn't exist

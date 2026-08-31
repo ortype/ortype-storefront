@@ -8,7 +8,11 @@ interface Props {
   px?: number
 }
 
-export const FieldsetLegend: React.FC<Props> = ({ children, info, px = 3 }) => {
+export const FieldsetLegend: React.FC<Props> = ({
+  children,
+  info,
+  px = 3,
+}) => {
   return (
     <Fieldset.Legend
       px={px}

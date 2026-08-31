@@ -29,7 +29,14 @@ async function init(): Promise<SatoriOptions['fonts']> {
     new URL('public/Inter-Bold.woff', import.meta.url)
   ).then((res) => res.arrayBuffer())
 
-  return [{ name: 'Inter', data: fontData, style: 'normal', weight: 700 }]
+  return [
+    {
+      name: 'Inter',
+      data: fontData,
+      style: 'normal',
+      weight: 700,
+    },
+  ]
 }
 
 // preload fonts and polyfill
@@ -56,9 +63,13 @@ const OpenGraphSvg = styled(Card).attrs({
 
 export default function OpenGraphPreview(props: Settings['ogImage']) {
   // we wrap the segmenter setup and font loading in SWR to enable caching
-  const { data: fonts } = useSWR('OpenGraphPreview.init', () => fontsPromise, {
-    suspense: true,
-  })
+  const { data: fonts } = useSWR(
+    'OpenGraphPreview.init',
+    () => fontsPromise,
+    {
+      suspense: true,
+    }
+  )
 
   // Also handle the satori render call in SWR to enable caching and only re-render when the title changes or fonts hot reload
   const { data: __html } = useSWR(

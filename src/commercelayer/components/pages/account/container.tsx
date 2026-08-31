@@ -29,8 +29,14 @@ function MyAccountContainer({
   children,
 }: Props): JSX.Element {
   const { t } = useTranslation()
-  const { isLoading, settings, handleLogout, clientConfig, config, customer } =
-    useIdentityContext()
+  const {
+    isLoading,
+    settings,
+    handleLogout,
+    clientConfig,
+    config,
+    customer,
+  } = useIdentityContext()
 
   const router = useRouter()
   /*
@@ -50,9 +56,9 @@ function MyAccountContainer({
   const email = customer?.email as string
   if (isLoading || !settings)
     return (
-      <Box pos="fixed" inset="0" bg="bg/80">
-        <Center h="full">
-          <Spinner color="black" size={'xl'} />
+      <Box pos='fixed' inset='0' bg='bg/80'>
+        <Center h='full'>
+          <Spinner color='black' size={'xl'} />
         </Center>
       </Box>
     )
@@ -87,8 +93,11 @@ function MyAccountContainer({
 
   return (
     <>
-      <CustomerProvider customerId={settings.customerId} config={clientConfig}>
-        <Container my={6} maxW="50rem" centerContent position={'relative'}>
+      <CustomerProvider
+        customerId={settings.customerId}
+        config={clientConfig}
+      >
+        <Container my={6} maxW='50rem' centerContent position={'relative'}>
           <Heading
             textAlign={'center'}
             fontSize={'2.5rem'}
@@ -104,8 +113,8 @@ function MyAccountContainer({
             {children}
             <HStack
               mt={4}
-              justify="space-between"
-              w="full"
+              justify='space-between'
+              w='full'
               bg={'brand.50'}
               py={2}
               px={3}
@@ -118,14 +127,14 @@ function MyAccountContainer({
                 {email}
               </Box>
               <Button
-                variant="text"
-                size="xs"
+                variant='text'
+                size='xs'
                 onClick={logoutHandler}
-                fontSize="xs"
+                fontSize='xs'
                 px={2}
                 py={1}
-                h="auto"
-                minH="auto"
+                h='auto'
+                minH='auto'
               >
                 {'Logout'}
               </Button>

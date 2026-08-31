@@ -62,7 +62,11 @@ const Content: React.FC<{
                 />
               </>
             ) : (
-              <Header value={value} conversion={conversion} padding={padding} />
+              <Header
+                value={value}
+                conversion={conversion}
+                padding={padding}
+              />
             )}
             <PortableText value={value.body} index={index} />
           </>

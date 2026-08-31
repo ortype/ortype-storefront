@@ -94,7 +94,7 @@ const BlockPopover: React.FC<{
         <PopoverBody>
           <Text fontSize={'xs'}>{bookLayoutStore.fontFamily?.label}</Text>
           <StyledSelect
-            placeholder="Select style"
+            placeholder='Select style'
             options={
               bookLayoutStore.variantOptions &&
               bookLayoutStore.variantOptions.constructor === Array
@@ -105,7 +105,7 @@ const BlockPopover: React.FC<{
             value={bookLayoutStore.variantOptions.find(
               ({ value }) => line.variantId === value
             )}
-            name="variant"
+            name='variant'
             onChange={(option) =>
               handleChange('variantId', option?.value || null)
             }
@@ -183,7 +183,7 @@ const BlockPopover: React.FC<{
           <Stack
             mt={2}
             direction={'column'}
-            gap="2"
+            gap='2'
             // divideY={'1px'}
           >
             <Box>
@@ -193,7 +193,7 @@ const BlockPopover: React.FC<{
               <StyledSelect
                 width={'16rem'}
                 options={regexOptions}
-                name="regex"
+                name='regex'
                 value={regexOptions.find(
                   (option) => option.value === line.regex
                 )}
@@ -233,7 +233,7 @@ const BlockPopover: React.FC<{
                 mt={2}
                 attached
                 variant={'outline'}
-                gap="2"
+                gap='2'
                 width={'100%'}
               >
                 <Button
@@ -259,7 +259,7 @@ const BlockPopover: React.FC<{
                 </Button>
               </ButtonGroup>
             </Box>
-            <ButtonGroup variant={'outline'} gap="2" width={'100%'}>
+            <ButtonGroup variant={'outline'} gap='2' width={'100%'}>
               <Button width={'50%'} size={'sm'} onClick={() => refetch()}>
                 <RefreshIcon width={'1.5rem'} height={'1.5rem'} />{' '}
                 <Text fontSize={'xs'}>Refresh</Text>

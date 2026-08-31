@@ -3,7 +3,9 @@ import type { TCustomerAddress } from '@/commercelayer/providers/customer/reduce
 
 type CombinedAddressType = TCustomerAddress | undefined
 
-export function formCleaner(address: CombinedAddressType): CombinedAddressType {
+export function formCleaner(
+  address: CombinedAddressType
+): CombinedAddressType {
   if (!address) {
     return address
   }
@@ -12,7 +14,8 @@ export function formCleaner(address: CombinedAddressType): CombinedAddressType {
       .replace('shipping_address_', '')
       .replace('billing_address_', '')
     const isNotCleaned =
-      key.startsWith('shipping_address_') || key.startsWith('billing_address_')
+      key.startsWith('shipping_address_') ||
+      key.startsWith('billing_address_')
     if (isNotCleaned) {
       address[keyCleaned] = address[key]
       delete address[key]

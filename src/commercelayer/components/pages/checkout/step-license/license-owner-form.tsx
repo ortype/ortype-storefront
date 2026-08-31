@@ -105,8 +105,8 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
           <Group
             gap={1}
             orientation={'horizontal'}
-            alignItems="stretch"
-            display="flex"
+            alignItems='stretch'
+            display='flex'
           >
             {projectTypes.map((type) => (
               <RadioCardItem
@@ -115,9 +115,9 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 isSelected={projectType === type.value}
                 label={type.title}
                 description={type.description}
-                flex="1"
-                alignSelf="stretch"
-                indicatorPlacement="start"
+                flex='1'
+                alignSelf='stretch'
+                indicatorPlacement='start'
               />
             ))}
           </Group>
@@ -125,7 +125,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
       )}
 
       <FormProvider {...form}>
-        <Box as="form" w="full" onSubmit={handleSubmit(onSubmit)}>
+        <Box as='form' w='full' onSubmit={handleSubmit(onSubmit)}>
           <VStack gap={1} alignItems={'flex-start'} w={'full'}>
             {projectType === 'client' || isDialog ? (
               <>
@@ -140,13 +140,16 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   </Text>
                 )}
                 <Controller
-                  name="company"
+                  name='company'
                   render={({ field, fieldState: { error } }) => (
                     <AddressField
                       label={String(
-                        t('stepLicense.companyLabel', 'License Owner/Company*')
+                        t(
+                          'stepLicense.companyLabel',
+                          'License Owner/Company*'
+                        )
                       )}
-                      type="text"
+                      type='text'
                       value={field.value}
                       onChange={field.onChange}
                       error={error?.message}
@@ -155,13 +158,13 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 />
 
                 <Controller
-                  name="full_name"
+                  name='full_name'
                   render={({ field, fieldState: { error } }) => (
                     <AddressField
                       label={String(
                         t('stepLicense.fullNameLabel', 'Full Name*')
                       )}
-                      type="text"
+                      type='text'
                       value={field.value}
                       onChange={field.onChange}
                       error={error?.message}
@@ -170,11 +173,13 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 />
 
                 <Controller
-                  name="line_1"
+                  name='line_1'
                   render={({ field, fieldState: { error } }) => (
                     <AddressField
-                      label={String(t('stepLicense.addressLabel', 'Address*'))}
-                      type="text"
+                      label={String(
+                        t('stepLicense.addressLabel', 'Address*')
+                      )}
+                      type='text'
                       value={field.value}
                       onChange={field.onChange}
                       error={error?.message}
@@ -183,7 +188,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 />
 
                 <Controller
-                  name="line_2"
+                  name='line_2'
                   render={({ field, fieldState: { error } }) => (
                     <AddressField
                       label={String(
@@ -192,7 +197,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                           'Apartment, suite, etc.'
                         )
                       )}
-                      type="text"
+                      type='text'
                       value={field.value || ''}
                       onChange={field.onChange}
                       error={error?.message}
@@ -200,13 +205,13 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   )}
                 />
 
-                <Grid templateColumns="repeat(2, 1fr)" gap={1} w={'full'}>
+                <Grid templateColumns='repeat(2, 1fr)' gap={1} w={'full'}>
                   <Controller
-                    name="city"
+                    name='city'
                     render={({ field, fieldState: { error } }) => (
                       <AddressField
                         label={String(t('stepLicense.cityLabel', 'City*'))}
-                        type="text"
+                        type='text'
                         value={field.value}
                         onChange={field.onChange}
                         error={error?.message}
@@ -215,13 +220,13 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   />
 
                   <Controller
-                    name="zip_code"
+                    name='zip_code'
                     render={({ field, fieldState: { error } }) => (
                       <AddressField
                         label={String(
                           t('stepLicense.zipCodeLabel', 'Zip Code*')
                         )}
-                        type="text"
+                        type='text'
                         value={field.value}
                         onChange={field.onChange}
                         error={error?.message}
@@ -230,13 +235,13 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   />
 
                   <Controller
-                    name="state_code"
+                    name='state_code'
                     render={({ field, fieldState: { error } }) => (
                       <AddressField
                         label={String(
                           t('stepLicense.stateLabel', 'State/Province')
                         )}
-                        type="text"
+                        type='text'
                         value={field.value || ''}
                         onChange={field.onChange}
                         error={error?.message}
@@ -245,7 +250,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   />
 
                   <Controller
-                    name="country_code"
+                    name='country_code'
                     render={({ field, fieldState: { error } }) => (
                       <CountrySelect
                         label={String(
@@ -264,7 +269,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                     2. Update licenseSize on the order
                     3. Call commitSelections() to recreate with new pricing
                     Until then, show the current size as read-only. */}
-                <Box bg={'brand.50'} p={4} w="full" px={3}>
+                <Box bg={'brand.50'} p={4} w='full' px={3}>
                   <Text
                     fontSize={'xs'}
                     textTransform={'uppercase'}
@@ -277,7 +282,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
               </>
             ) : (
               <>
-                <Box bg={'brand.50'} p={4} w="full" px={3}>
+                <Box bg={'brand.50'} p={4} w='full' px={3}>
                   <Text>
                     {t(
                       'stepLicense.billingAddressUsed',
@@ -292,7 +297,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   label={'Your company size'}
                 />
                 */}
-                <Box bg={'brand.50'} p={4} w="full" px={3}>
+                <Box bg={'brand.50'} p={4} w='full' px={3}>
                   <Text
                     fontSize={'xs'}
                     lineHeight={1}
@@ -310,14 +315,14 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
 
             {/* Display save errors */}
             {error && (
-              <Box color="red.500" fontSize="sm" w="full" textAlign="left">
+              <Box color='red.500' fontSize='sm' w='full' textAlign='left'>
                 {error}
               </Box>
             )}
 
             {/* Display form errors */}
             {Object.keys(errors).length > 0 && (
-              <Box color="red.500" fontSize="sm" w="full" textAlign="left">
+              <Box color='red.500' fontSize='sm' w='full' textAlign='left'>
                 {t(
                   'stepLicense.formErrors',
                   'Please correct the errors above.'
@@ -329,7 +334,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
               <HStack
                 mt={2}
                 gap={2}
-                w="full"
+                w='full'
                 justify={onCancel ? 'flex-end' : 'flex-start'}
               >
                 {onCancel && (

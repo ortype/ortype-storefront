@@ -92,7 +92,10 @@ export const AddressInputGroup: React.FC<Props> = ({
       }
 
       // 3. Additional logic for billing_address_country_code
-      if (fieldName === 'billing_address_country_code' && openShippingAddress) {
+      if (
+        fieldName === 'billing_address_country_code' &&
+        openShippingAddress
+      ) {
         openShippingAddress(
           evaluateShippingToggle({
             countryCode: newValue,
@@ -147,7 +150,7 @@ export const AddressInputGroup: React.FC<Props> = ({
             }
             disabled={Boolean(
               shippingCountryCodeLock &&
-                fieldName === 'shipping_address_country_code'
+              fieldName === 'shipping_address_country_code'
             )}
           />
         )
@@ -158,11 +161,10 @@ export const AddressInputGroup: React.FC<Props> = ({
             {...commonProps}
             value={valueStatus}
             onChange={handleStateChange}
-            placeholder="Select State/Province"
+            placeholder='Select State/Province'
             name={
               fieldName as
-                | 'billing_address_state_code'
-                | 'shipping_address_state_code'
+                'billing_address_state_code' | 'shipping_address_state_code'
             }
             countryCode={countryCode || ''}
           />

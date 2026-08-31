@@ -73,7 +73,10 @@ export default function CustomLicenseMetricDialog({
             border={'2px solid #000'}
             size={'sm'}
             fontSize={'md'}
-            _hover={{ bg: 'transparent', color: 'colorPalette.fg' }}
+            _hover={{
+              bg: 'transparent',
+              color: 'colorPalette.fg',
+            }}
           >
             {'Ok'}
           </Button>

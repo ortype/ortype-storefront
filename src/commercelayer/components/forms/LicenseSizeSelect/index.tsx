@@ -65,7 +65,7 @@ export const LicenseSizeSelect: React.FC<Props> = ({ label, info }) => {
           positioning={{ sameWidth: true }}
         >
           <SelectTrigger width={'100%'}>
-            <SelectValueText placeholder="Select a size" />
+            <SelectValueText placeholder='Select a size' />
           </SelectTrigger>
           <SelectContent portalled={false} mt={-1}>
             {sizes.map((option) => (

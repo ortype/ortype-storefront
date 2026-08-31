@@ -39,7 +39,7 @@ const AddressCard = ({
 
   return (
     <GridItem key={address.id} bg={'brand.50'} p={4} pos={'relative'}>
-      <VStack align="start" gap={2}>
+      <VStack align='start' gap={2}>
         {address?.company && <Text>{address.company}</Text>}
 
         <Text>{address.full_name}</Text>
@@ -76,13 +76,13 @@ const AddressCard = ({
         <Menu.Trigger asChild pos={'absolute'} right={2} top={2}>
           <IconButton
             borderRadius={'full'}
-            variant="ghost"
+            variant='ghost'
             bg={'white'}
             _hover={{
               bg: 'black',
               color: 'white',
             }}
-            size="sm"
+            size='sm'
           >
             <EllipsisHorizontalIcon />
           </IconButton>
@@ -159,7 +159,7 @@ function AddressesPage(): JSX.Element {
             <Grid
               templateColumns={'1fr 1fr'}
               gridGap={2}
-              data-test-id="addresses-wrapper"
+              data-test-id='addresses-wrapper'
               w={'full'}
               mb={2}
             >
@@ -194,7 +194,7 @@ function AddressesPage(): JSX.Element {
                   // action={() => {
                   //   router.push(`/account/addresses/new`)
                   // }}
-                  testId="show-new-address"
+                  testId='show-new-address'
                 />
               </GridItem>
             </Grid>

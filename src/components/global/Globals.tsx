@@ -4,7 +4,7 @@ import React from 'react'
 
 export const breakpoints = [35, 70, 120]
 export const MQ = breakpoints.map(
-  (bp) => `@media screen and (min-width: ${bp}rem)`,
+  (bp) => `@media screen and (min-width: ${bp}rem)`
 )
 export const FontScale = {
   S_MULTIPLIER: 1,

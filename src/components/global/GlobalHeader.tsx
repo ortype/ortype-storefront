@@ -25,7 +25,7 @@ const DynamicCartContainer: any = dynamic(
     loading: function LoadingSkeleton() {
       return <div />
     },
-  },
+  }
 )
 const DynamicCart: any = dynamic(
   () => import('@/commercelayer/components/pages/cart/dialog'),
@@ -33,7 +33,7 @@ const DynamicCart: any = dynamic(
     loading: function LoadingSkeleton() {
       return <div />
     },
-  },
+  }
 )
 
 interface Props {

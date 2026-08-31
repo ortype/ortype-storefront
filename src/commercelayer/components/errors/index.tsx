@@ -40,9 +40,9 @@ export const Errors: React.FC<ErrorsProps> = ({
   }
 
   return (
-    <div className="errors">
+    <div className='errors'>
       {errors.map((error, index) => (
-        <div key={index} className="error">
+        <div key={index} className='error'>
           {error}
         </div>
       ))}

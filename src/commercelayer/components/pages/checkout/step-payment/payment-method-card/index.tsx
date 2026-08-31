@@ -1,5 +1,13 @@
 import { usePaymentMethodContext } from '@/commercelayer/components/payment/payment-method'
-import { Box, Button, Flex, Show, Stack, Text, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Flex,
+  Show,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import { memo } from 'react'
 
 interface PaymentMethodCardProps {
@@ -47,7 +55,7 @@ export const PaymentMethodCard: React.FC<PaymentMethodCardProps> = memo(
     }
 
     return (
-      <VStack align="stretch" w={'full'} gap={0}>
+      <VStack align='stretch' w={'full'} gap={0}>
         {!isSinglePaymentMethod && (
           <Flex
             p={4}
@@ -77,7 +85,7 @@ export const PaymentMethodCard: React.FC<PaymentMethodCardProps> = memo(
                 minW={6}
                 p={0}
                 bg={isSelected ? 'black' : 'white'}
-                pointerEvents="none"
+                pointerEvents='none'
               />
 
               <Text fontSize={'2xl'} as={'span'}>

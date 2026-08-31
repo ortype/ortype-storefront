@@ -15,7 +15,7 @@ export default function PostPageHead({ settings, post }: PostPageHeadProps) {
       <BlogMeta />
       {post.coverImage?.asset?._ref && (
         <meta
-          property="og:image"
+          property='og:image'
           content={resolveOpenGraphImage(post.coverImage)
             .width(1200)
             .height(627)

@@ -46,9 +46,9 @@ export default function LoginUser() {
         centerContent
         position={'relative'}
       >
-        <Box inset="0" minH={16}>
-          <Center h="full">
-            <Spinner color="black" size={'xl'} />
+        <Box inset='0' minH={16}>
+          <Center h='full'>
+            <Spinner color='black' size={'xl'} />
           </Center>
         </Box>
       </Container>
@@ -117,7 +117,7 @@ export default function LoginUser() {
               borderRadius={'full'}
             >
               <ChakraLink
-                target="_blank"
+                target='_blank'
                 as={Link}
                 href={`${resetPasswordUrl}`}
               >

@@ -12,7 +12,7 @@ export const NoShippingMethods = ({
   setShippingMethodError,
 }: Props) => {
   return (
-    <Errors resource="shipments" messages={messages}>
+    <Errors resource='shipments' messages={messages}>
       {({ errors }) => {
         useEffect(() => {
           setShippingMethodError(errors.length > 0 && errors[0] !== undefined)

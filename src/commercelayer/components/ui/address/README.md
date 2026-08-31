@@ -22,7 +22,7 @@ A thin wrapper around the `<Input>` component with consistent error display.
 import { AddressField } from '@/commercelayer/components/ui/address'
 
 ;<AddressField
-  label="First Name"
+  label='First Name'
   value={firstName}
   onChange={setFirstName}
   error={errors.firstName}
@@ -57,11 +57,11 @@ Synchronous country selector using predefined country list.
 import { CountrySelect } from '@/commercelayer/components/ui/address'
 
 ;<CountrySelect
-  label="Country"
+  label='Country'
   value={countryCode}
   onChange={setCountryCode}
   error={errors.countryCode}
-  placeholder="Select a country"
+  placeholder='Select a country'
 />
 ```
 
@@ -92,7 +92,7 @@ State/province selector that adapts based on the selected country.
 import { StateSelect } from '@/commercelayer/components/ui/address'
 
 ;<StateSelect
-  label="State"
+  label='State'
   value={stateCode}
   onChange={setStateCode}
   countryCode={countryCode}
@@ -130,20 +130,24 @@ function AddressForm() {
   return (
     <form>
       <AddressField
-        {...register('firstName', { required: 'First name is required' })}
-        label="First Name"
+        {...register('firstName', {
+          required: 'First name is required',
+        })}
+        label='First Name'
         error={errors.firstName?.message}
       />
 
       <CountrySelect
-        {...register('countryCode', { required: 'Country is required' })}
-        label="Country"
+        {...register('countryCode', {
+          required: 'Country is required',
+        })}
+        label='Country'
         error={errors.countryCode?.message}
       />
 
       <StateSelect
         {...register('stateCode')}
-        label="State/Province"
+        label='State/Province'
         countryCode={countryCode}
         error={errors.stateCode?.message}
       />

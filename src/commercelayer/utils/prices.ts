@@ -27,7 +27,7 @@ export function calculateDiscount(n: number): number {
   const percentage = Math.min(
     MAX_DISCOUNT,
     MAX_DISCOUNT -
-      (MAX_DISCOUNT - START_DISCOUNT) * Math.exp(-K * Math.pow(n - 2, P)),
+      (MAX_DISCOUNT - START_DISCOUNT) * Math.exp(-K * Math.pow(n - 2, P))
   )
   return (percentage * 100) / 100
 }
@@ -177,7 +177,10 @@ export async function recalculateSiblingPrices({
   }
 
   // 1. Disable auto-refresh (prevents 140 recalculations)
-  await cl.orders.update({ id: order.id, autorefresh: false })
+  await cl.orders.update({
+    id: order.id,
+    autorefresh: false,
+  })
 
   // 2. Build batch tasks
   const tasks: Task[] = siblings.map((sibling) => ({

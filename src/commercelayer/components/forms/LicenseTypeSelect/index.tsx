@@ -87,7 +87,7 @@ export const LicenseTypeSelect: React.FC<Props> = ({
         multiple
       >
         <SelectTrigger>
-          <SelectValueText placeholder="Select a type" />
+          <SelectValueText placeholder='Select a type' />
         </SelectTrigger>
         <SelectContent portalled={false}>
           {typeOptions.map((option) => (

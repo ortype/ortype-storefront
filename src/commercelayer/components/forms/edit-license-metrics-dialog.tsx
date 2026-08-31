@@ -10,7 +10,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Box, Button, Center, Container, Text, VStack } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import { useState } from 'react'
 import LicenseOwnerRadio from './license-owner-radio'
 import LicenseOwnerInput from './LicenseOwnerInput'
@@ -43,13 +50,13 @@ export default function EditLicenseMetricsDialog({
     >
       <DialogTrigger asChild>
         <Button
-          variant="text"
-          size="xs"
-          fontSize="xs"
+          variant='text'
+          size='xs'
+          fontSize='xs'
           px={2}
           py={1}
-          h="auto"
-          minH="auto"
+          h='auto'
+          minH='auto'
         >
           {'Edit'}
         </Button>
@@ -61,7 +68,11 @@ export default function EditLicenseMetricsDialog({
             fontSize={'2rem'}
             fontWeight={'normal'}
             textTransform={'uppercase'}
-            ml={{ base: '1rem', xl: '15rem', '3xl': '21rem' }}
+            ml={{
+              base: '1rem',
+              xl: '15rem',
+              '3xl': '21rem',
+            }}
             mr={{
               base: '1rem',
               lg: '15rem',

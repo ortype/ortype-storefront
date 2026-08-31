@@ -8,7 +8,7 @@ const BlockImage = React.memo(
       return null
     }
     return (
-      <Box as="figure" width={width} maxWidth={maxWidth}>
+      <Box as='figure' width={width} maxWidth={maxWidth}>
         <ImageSanityNext image={value} alt={value.altText || ''} />
       </Box>
     )

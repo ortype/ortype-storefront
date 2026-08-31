@@ -1,4 +1,8 @@
-import { Popover as ChakraPopover, IconButton, Portal } from '@chakra-ui/react'
+import {
+  Popover as ChakraPopover,
+  IconButton,
+  Portal,
+} from '@chakra-ui/react'
 import { InfoOutlineIcon } from '@sanity/icons'
 import * as React from 'react'
 
@@ -29,12 +33,12 @@ export const ToggleTip = React.forwardRef<HTMLDivElement, ToggleTipProps>(
         <Portal disabled={!portalled} container={portalRef}>
           <ChakraPopover.Positioner>
             <ChakraPopover.Content
-              width="auto"
+              width='auto'
               maxW={'20rem'}
-              px="2"
-              py="1"
-              textStyle="xs"
-              rounded="sm"
+              px='2'
+              py='1'
+              textStyle='xs'
+              rounded='sm'
               bg={'#FFF8D3'}
               ref={ref}
             >
@@ -64,7 +68,7 @@ export const InfoTip = React.forwardRef<
         bg={'#D9D9D9'}
         rounded={'full'}
         variant={'solid'}
-        aria-label="info"
+        aria-label='info'
         fontSize={'xs'}
         minW={'auto'}
         w={3.5}

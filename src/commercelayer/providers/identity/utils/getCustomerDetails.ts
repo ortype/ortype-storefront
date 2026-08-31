@@ -14,14 +14,16 @@ type GetCustomerDetailsConfig = Pick<Settings, 'customerId'> & {
  *
  * @returns an object containing the resolved `Customer` and the status of async operation.
  */
-export const getCustomerDetails = async (config: GetCustomerDetailsConfig) => {
+export const getCustomerDetails = async (
+  config: GetCustomerDetailsConfig
+) => {
   const { client, customerId } = config
   return retryCall(() => getAsyncCustomer(client, customerId))
 }
 
 const getAsyncCustomer = async (
   client: CommerceLayerClient,
-  customerId: string,
+  customerId: string
 ) => {
   return await client.customers.retrieve(customerId, {
     fields: {

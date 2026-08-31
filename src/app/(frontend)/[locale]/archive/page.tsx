@@ -33,7 +33,10 @@ const hashString = (str: string): number => {
 }
 
 // Fisher-Yates (Knuth) shuffle algorithm with seed support
-const shuffleArrayWithSeed = (array: Post[], seed: string | number): Post[] => {
+const shuffleArrayWithSeed = (
+  array: Post[],
+  seed: string | number
+): Post[] => {
   // Create a copy of the array to avoid modifying the original
   const shuffledArray = [...array]
 
@@ -48,7 +51,10 @@ const shuffleArrayWithSeed = (array: Post[], seed: string | number): Post[] => {
     // Generate random index between 0 and i (inclusive) using seeded generator
     const j = Math.floor(random() * (i + 1))
     // Swap elements at i and j
-    ;[shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]
+    ;[shuffledArray[i], shuffledArray[j]] = [
+      shuffledArray[j],
+      shuffledArray[i],
+    ]
   }
 
   return shuffledArray
@@ -74,8 +80,8 @@ export default async function Page() {
   return (
     <Suspense
       fallback={
-        <Box display="flex" justifyContent="center" p={8}>
-          <Spinner size="xl" />
+        <Box display='flex' justifyContent='center' p={8}>
+          <Spinner size='xl' />
         </Box>
       }
     >

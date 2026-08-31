@@ -195,12 +195,13 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(addressReducer, initialState)
   const { clientConfig } = useIdentityContext()
 
-  const getCommerceLayerClient = useCallback((): CommerceLayerClient | null => {
-    if (!clientConfig) {
-      return null
-    }
-    return getCommerceLayer(clientConfig)
-  }, [clientConfig])
+  const getCommerceLayerClient =
+    useCallback((): CommerceLayerClient | null => {
+      if (!clientConfig) {
+        return null
+      }
+      return getCommerceLayer(clientConfig)
+    }, [clientConfig])
 
   const updateBillingAddressData = useCallback(
     (data: Partial<AddressInput>) => {
@@ -238,7 +239,10 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
     }): Promise<AddressOperationResult & { order?: any }> => {
       const { addressData, orderId, useAsShipping = false } = params
 
-      dispatch({ type: ActionType.SET_LOADING, payload: true })
+      dispatch({
+        type: ActionType.SET_LOADING,
+        payload: true,
+      })
       dispatch({ type: ActionType.CLEAR_ERRORS })
 
       try {
@@ -265,15 +269,22 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
             }
             errorsObject[field].push(message)
           })
-          dispatch({ type: ActionType.SET_ERRORS, payload: errorsObject })
+          dispatch({
+            type: ActionType.SET_ERRORS,
+            payload: errorsObject,
+          })
 
           return error
         }
 
         // First validate the address data locally
-        const validationResult = validateAddress({ addressData })
+        const validationResult = validateAddress({
+          addressData,
+        })
         if (!validationResult.success) {
-          const { fieldErrors } = transformAddressErrors(validationResult.error)
+          const { fieldErrors } = transformAddressErrors(
+            validationResult.error
+          )
           const errorsObject: AddressErrors = {}
           fieldErrors.forEach(({ field, message }) => {
             if (!errorsObject[field]) {
@@ -281,7 +292,10 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
             }
             errorsObject[field].push(message)
           })
-          dispatch({ type: ActionType.SET_ERRORS, payload: errorsObject })
+          dispatch({
+            type: ActionType.SET_ERRORS,
+            payload: errorsObject,
+          })
           return validationResult
         }
 
@@ -300,7 +314,10 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
             }
             errorsObject[field].push(message)
           })
-          dispatch({ type: ActionType.SET_ERRORS, payload: errorsObject })
+          dispatch({
+            type: ActionType.SET_ERRORS,
+            payload: errorsObject,
+          })
           return createResult
         }
 
@@ -336,7 +353,10 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
             if (generalErrors.length > 0) {
               errorsObject._general = generalErrors
             }
-            dispatch({ type: ActionType.SET_ERRORS, payload: errorsObject })
+            dispatch({
+              type: ActionType.SET_ERRORS,
+              payload: errorsObject,
+            })
             return setOrderResult
           }
 
@@ -365,11 +385,17 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
         if (generalErrors.length > 0) {
           errorsObject._general = generalErrors
         }
-        dispatch({ type: ActionType.SET_ERRORS, payload: errorsObject })
+        dispatch({
+          type: ActionType.SET_ERRORS,
+          payload: errorsObject,
+        })
 
         return errorResult
       } finally {
-        dispatch({ type: ActionType.SET_LOADING, payload: false })
+        dispatch({
+          type: ActionType.SET_LOADING,
+          payload: false,
+        })
       }
     },
     [getCommerceLayerClient]
@@ -389,6 +415,8 @@ export const AddressProvider: FC<AddressProviderProps> = ({ children }) => {
   }
 
   return (
-    <AddressContext.Provider value={value}>{children}</AddressContext.Provider>
+    <AddressContext.Provider value={value}>
+      {children}
+    </AddressContext.Provider>
   )
 }

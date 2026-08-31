@@ -34,7 +34,7 @@ export function AddressesEmpty(props: Props): JSX.Element | null {
   return children !== undefined ? (
     <Parent {...parentProps}>{children}</Parent>
   ) : (
-    <span data-testid="addresses-empty" {...p}>
+    <span data-testid='addresses-empty' {...p}>
       {emptyText}
     </span>
   )

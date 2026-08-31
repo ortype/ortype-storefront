@@ -23,9 +23,9 @@ const BuyContainer = ({ font, children }: Props): JSX.Element => {
 
   if (!hasInitializedRef.current && !isReady) {
     return (
-      <Box pos="fixed" inset="0" bg="bg/80">
-        <Center h="full">
-          <Spinner color="black" size={'xl'} />
+      <Box pos='fixed' inset='0' bg='bg/80'>
+        <Center h='full'>
+          <Spinner color='black' size={'xl'} />
         </Center>
       </Box>
     )

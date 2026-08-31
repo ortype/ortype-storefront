@@ -12,9 +12,9 @@ const Logout: React.FC<{}> = ({}) => {
     <Box>
       <Tooltip
         showArrow
-        content="Logout"
+        content='Logout'
         contentProps={{ css: { '--tooltip-bg': 'black' } }}
-        color="white"
+        color='white'
       >
         <IconButton
           onClick={handleLogout}

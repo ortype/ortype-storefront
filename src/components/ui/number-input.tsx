@@ -1,4 +1,7 @@
-import { NumberInput as ChakraNumberInput, InputGroup } from '@chakra-ui/react'
+import {
+  NumberInput as ChakraNumberInput,
+  InputGroup,
+} from '@chakra-ui/react'
 import * as React from 'react'
 import { LuArrowRightLeft } from 'react-icons/lu'
 
@@ -10,7 +13,7 @@ export const NumberInputRoot = React.forwardRef<
 >(function NumberInput(props, ref) {
   const { children, withScrubber = false, ...rest } = props
   return (
-    <ChakraNumberInput.Root ref={ref} variant="outline" {...rest}>
+    <ChakraNumberInput.Root ref={ref} variant='outline' {...rest}>
       <ChakraNumberInput.Control />
       {withScrubber ? (
         <InputGroup

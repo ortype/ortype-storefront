@@ -25,23 +25,25 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     } = props
     return (
       <ChakraAlert.Root ref={ref} {...rest}>
-        {startElement || <ChakraAlert.Indicator>{icon}</ChakraAlert.Indicator>}
+        {startElement || (
+          <ChakraAlert.Indicator>{icon}</ChakraAlert.Indicator>
+        )}
         {children ? (
           <ChakraAlert.Content>
             {title && <ChakraAlert.Title>{title}</ChakraAlert.Title>}
             <ChakraAlert.Description>{children}</ChakraAlert.Description>
           </ChakraAlert.Content>
         ) : (
-          <ChakraAlert.Title flex="1">{title}</ChakraAlert.Title>
+          <ChakraAlert.Title flex='1'>{title}</ChakraAlert.Title>
         )}
         {endElement}
         {closable && (
           <CloseButton
-            size="sm"
-            pos="relative"
-            top="-2"
-            insetEnd="-2"
-            alignSelf="flex-start"
+            size='sm'
+            pos='relative'
+            top='-2'
+            insetEnd='-2'
+            alignSelf='flex-start'
             onClick={onClose}
           />
         )}

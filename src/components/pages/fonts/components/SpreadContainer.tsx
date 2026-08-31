@@ -20,15 +20,21 @@ const DoublePage: React.FC<DoublePageProps> = ({ ...props }) => {
   return (
     <Box
       className={'spread-page'}
-      flex={{ base: '0 0 100%', lg: isSpread ? '0 0 100%' : '0 0 50%' }} // responsive values
+      flex={{
+        base: '0 0 100%',
+        lg: isSpread ? '0 0 100%' : '0 0 50%',
+      }} // responsive values
       mb={marginBottom}
-      position="relative"
+      position='relative'
       // the before creates the height
       _before={{
         height: 0,
         content: `""`,
         display: 'block',
-        paddingBottom: { base: 0, lg: isSpread ? spreadAspect : pageAspect },
+        paddingBottom: {
+          base: 0,
+          lg: isSpread ? spreadAspect : pageAspect,
+        },
       }}
       {...props}
     >
