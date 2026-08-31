@@ -101,87 +101,104 @@ const CartComponent = () => {
       </Heading>
 
       <Stack direction={'column'} gap={6}>
-        <SimpleGrid
-          columns={2}
-          gap={3}
-          mb={1}
-          px={4}
-          w={'full'}
-          borderBottom={'1px solid #919191'}
-        >
-          <HStack
-            justify='space-between'
-            w='full'
-            fontSize={'sm'}
-            lineHeight={1}
-            h={6}
-          >
-            <Text
-              minW={'8rem'}
-              fontSize={'xs'}
-              textTransform={'uppercase'}
-              fontVariantNumeric={'tabular-nums'}
-              color={'#737373'}
-              asChild
+        <Box>
+          <SimpleGrid columns={2} gap={3} px={4} w={'full'}>
+            <HStack
+              justify='space-between'
+              w='full'
+              fontSize={'sm'}
+              lineHeight={1}
+              h={6}
             >
-              <Flex gap={1} alignItems={'center'}>
-                <span>
-                  {cartLabels?.licenseHolder?.label || 'License holder'}
-                </span>
-                {cartLabels?.licenseHolder?.info && (
+              <Text
+                minW={'8rem'}
+                fontSize={'xs'}
+                textTransform={'uppercase'}
+                fontVariantNumeric={'tabular-nums'}
+                color={'#737373'}
+                asChild
+              >
+                <Flex gap={1} alignItems={'center'}>
+                  <span>
+                    {cartLabels?.licenseHolder?.label || 'License holder'}
+                  </span>
+                  {cartLabels?.licenseHolder?.info && (
+                    <InfoTip
+                      content={
+                        cartLabels?.licenseHolder?.info ||
+                        'This is additional information about this fieldset'
+                      }
+                    />
+                  )}
+                </Flex>
+              </Text>
+            </HStack>
+
+            <HStack
+              justify='space-between'
+              w='full'
+              fontSize={'sm'}
+              lineHeight={1}
+              pl={7}
+              h={6}
+            >
+              <Text
+                minW={'8rem'}
+                fontSize={'xs'}
+                textTransform={'uppercase'}
+                fontVariantNumeric={'tabular-nums'}
+                color={'#737373'}
+                asChild
+              >
+                <Flex gap={1} alignItems={'center'}>
+                  <span>{cartLabels?.companySize?.label}</span>
                   <InfoTip
                     content={
-                      cartLabels?.licenseHolder?.info ||
+                      cartLabels?.companySize?.info ||
                       'This is additional information about this fieldset'
                     }
                   />
-                )}
-              </Flex>
-            </Text>
-            <Box flexGrow={1} pl={4}>
+                </Flex>
+              </Text>
+            </HStack>
+          </SimpleGrid>
+          <SimpleGrid
+            columns={2}
+            gap={10}
+            mb={1}
+            pl={2}
+            pr={4}
+            w={'full'}
+            alignItems={'center'}
+            bg={'#FEF8D7'}
+            borderRadius={'full'}
+            minH={12}
+          >
+            <Box flexGrow={1} pl={4} fontSize={'md'} lineHeight={1}>
               {isLicenseForClient
                 ? order?.metadata?.license?.owner?.company
                 : 'Yourself'}
             </Box>
-          </HStack>
 
-          <HStack
-            justify='space-between'
-            w='full'
-            fontSize={'sm'}
-            lineHeight={1}
-            pl={2}
-            h={6}
-          >
-            <Text
-              minW={'8rem'}
-              fontSize={'xs'}
-              textTransform={'uppercase'}
-              fontVariantNumeric={'tabular-nums'}
-              color={'#737373'}
-              asChild
+            <HStack
+              justify='space-between'
+              w='full'
+              fontSize={'md'}
+              lineHeight={1}
+              h={6}
             >
-              <Flex gap={1} alignItems={'center'}>
-                <span>{cartLabels?.companySize?.label}</span>
-                <InfoTip
-                  content={
-                    cartLabels?.companySize?.info ||
-                    'This is additional information about this fieldset'
-                  }
-                />
-              </Flex>
-            </Text>
-            <Box flexGrow={1} pl={4}>
-              {licenseSize?.label}
-            </Box>
-            <EditLicenseMetricsDialog
-              label={cartLabels?.companySize?.label}
-              info={cartLabels?.companySize?.info}
-              setLicenseSize={setLicenseSize}
-              isLicenseForClient={isLicenseForClient}
-            />
-          </HStack>
-        </SimpleGrid>
+              <Box flexGrow={1} pl={4}>
+                {licenseSize?.label}
+              </Box>
+              <EditLicenseMetricsDialog
+                label={cartLabels?.companySize?.label}
+                info={cartLabels?.companySize?.info}
+                setLicenseSize={setLicenseSize}
+                isLicenseForClient={isLicenseForClient}
+              />
+            </HStack>
+          </SimpleGrid>
+        </Box>
         <Box>
           <Fieldset.Root>
             <Box display={['none', null, 'flex']} w={'full'}>
@@ -189,7 +206,7 @@ const CartComponent = () => {
                 <FieldsetLegend px={0} info={cartLabels?.fonts?.info}>
                   {cartLabels?.fonts?.label || 'Fonts'}
                 </FieldsetLegend>
-                <Flex justifyContent={'space-between'}>
+                <Flex justifyContent={'space-between'} pl={5}>
                   <FieldsetLegend px={0} info={cartLabels?.licenseType?.info}>
                     {cartLabels?.licenseType?.label || 'License Type'}
                   </FieldsetLegend>

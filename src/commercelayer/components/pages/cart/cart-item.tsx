@@ -26,9 +26,13 @@ import React, { useMemo } from 'react'
 
 interface CartItemProps {
   item: CartBufferItem
+  allSelected?: boolean
 }
 
-export const CartItem: React.FC<CartItemProps> = ({ item }) => {
+export const CartItem: React.FC<CartItemProps> = ({
+  item,
+  allSelected = false,
+}) => {
   const {
     skuOptions,
     mediaTypes,
@@ -180,7 +184,12 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
             {entry.name}
           </Text>
         </Stack>
-        <Flex direction={'row'} alignItems={'center'} alignContent={'center'}>
+        <Flex
+          ml={!allSelected ? 5 : 0}
+          direction={'row'}
+          alignItems={'center'}
+          alignContent={'center'}
+        >
           <Box flexGrow={1}>
             <HStack gap={1} flexWrap={'wrap'} alignItems={'center'}>
               <AnimatePresence mode={'sync'} initial={false}>

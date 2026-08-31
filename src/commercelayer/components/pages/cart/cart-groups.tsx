@@ -223,7 +223,11 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                         </ChakraIconButton>
                       )}
                       {sg.items.map((item) => (
-                        <CartItem key={item.skuCode} item={item} />
+                        <CartItem
+                          key={item.skuCode}
+                          item={item}
+                          allSelected={sg.allSelected}
+                        />
                       ))}
                     </Box>
                   </React.Fragment>
