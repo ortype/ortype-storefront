@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react'
 import { useState } from 'react'
-import { getTesterSizes } from '../tester-sizing'
+import { TESTER_LINE_HEIGHT_VAR } from '../tester-sizing'
 import BlinkingCursor from './blinking-cursor'
 import TypewriterAnimation from './typewriter-animation'
 
@@ -106,7 +106,7 @@ const Editable = ({
                   outline: `none`,
                 },
               }}
-              h={getTesterSizes(table).lineHeight}
+              h={TESTER_LINE_HEIGHT_VAR}
               className={variantId}
               tabIndex={index} // Sequential tabIndex for navigating between inputs
               spellCheck={false}
@@ -132,7 +132,7 @@ const Editable = ({
           display='flex'
           justifyContent='center'
           alignItems='center'
-          height={getTesterSizes(table).lineHeight}
+          height={TESTER_LINE_HEIGHT_VAR}
           pos={'relative'}
         >
           <BlinkingCursor

@@ -252,7 +252,7 @@ export const Tester: React.FC<Props> = (props) => {
         align={'center'}
         justify={'center'}
         h={'2rem'}
-        visibility={loading ? 'hidden' : 'visible'}
+        style={{ visibility: loading ? 'hidden' : 'visible' }}
       >
         <HStack gap={6} pos={'relative'}>
           <Button variant={'block'} size={'sm'} asChild tabIndex={-1}>

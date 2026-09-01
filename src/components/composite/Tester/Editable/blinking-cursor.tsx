@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react'
-import { getTesterSizes } from '../tester-sizing'
+import { TESTER_LINE_HEIGHT_VAR } from '../tester-sizing'
 
 // Reusable BlinkingCursor component
 const BlinkingCursor = ({
@@ -18,7 +18,7 @@ const BlinkingCursor = ({
       userSelect='none'
       bg='black'
       w='1px'
-      h={getTesterSizes(table).lineHeight}
+      h={TESTER_LINE_HEIGHT_VAR}
       mb={table ? 0 : '1.5rem'}
       mt={table ? 0 : '1rem'}
       mx='2px'
