@@ -18,6 +18,7 @@ import {
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Editable from './Editable'
+import { TESTER_SCALE_WRAPPER_CSS } from './tester-sizing'
 // import { TieredSelect } from './TieredSelect'
 import { dataset, projectId, studioUrl } from '@/sanity/env'
 import { DataAttribute } from '@/types'
@@ -233,21 +234,28 @@ export const Tester: React.FC<Props> = (props) => {
   // console.log('GET_FONT_TESTER_BY_ID: ', fontId, title, data?.fontTesterById)
   return (
     <>
-      <Editable
-        table={table}
-        handleUpdateFontTester={handleUpdateFontTester}
-        handleChange={handleChange}
-        entry={entry}
-        placeholder={placeholder}
-        fontId={fontId}
-        variantId={currentVariantId}
-        index={index}
-        isDisabled={disabled}
-        loading={loading}
-        limiter={limiter}
-        focused={focused}
-        setFocused={setFocused}
-      />
+      {/* Scoped to just the specimen text so the table/list resize
+          animation (see use-tester-scale-transition) doesn't visually
+          scale the title/variant-selector/buy-button row below, and so
+          any transient over/under-size is clipped to this box instead
+          of bleeding into that row or neighboring grid cells. */}
+      <Box css={TESTER_SCALE_WRAPPER_CSS}>
+        <Editable
+          table={table}
+          handleUpdateFontTester={handleUpdateFontTester}
+          handleChange={handleChange}
+          entry={entry}
+          placeholder={placeholder}
+          fontId={fontId}
+          variantId={currentVariantId}
+          index={index}
+          isDisabled={disabled}
+          loading={loading}
+          limiter={limiter}
+          focused={focused}
+          setFocused={setFocused}
+        />
+      </Box>
       <Flex
         align={'center'}
         justify={'center'}

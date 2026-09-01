@@ -101,7 +101,6 @@ const Editable = ({
                 border: `none`,
                 width: `100%`,
                 display: `block`,
-                transition: 'all 0.2s linear',
                 [`&:focus`]: {
                   outline: `none`,
                 },
@@ -132,7 +131,7 @@ const Editable = ({
           display='flex'
           justifyContent='center'
           alignItems='center'
-          height={TESTER_LINE_HEIGHT_VAR}
+          h={TESTER_LINE_HEIGHT_VAR}
           pos={'relative'}
         >
           <BlinkingCursor

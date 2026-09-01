@@ -3,7 +3,9 @@ import { Tester } from '@/components/composite/Tester'
 import {
   getTesterCssVars,
   TESTER_ITEM_CSS,
+  TESTER_SCALE_STATIC_VARS,
 } from '@/components/composite/Tester/tester-sizing'
+import { useTesterScaleTransition } from '@/components/composite/Tester/use-tester-scale-transition'
 import { resolveHref } from '@/sanity/lib/utils'
 import type { HomeFont } from '@/types'
 import {
@@ -25,6 +27,16 @@ export interface FontIndexProps {
 export default function FontIndex({ fonts }: FontIndexProps) {
   const [value, setValue] = useState('list')
   const table = value === 'table'
+  const { ref: gridRef, triggerModeChange } =
+    useTesterScaleTransition<HTMLDivElement>()
+
+  // Call this before `setValue` so the inverted scale is already on
+  // the DOM node by the time React re-renders with the new font-size
+  // - see use-tester-scale-transition.
+  const handleValueChange = (nextValue: string) => {
+    triggerModeChange(nextValue === 'table')
+    setValue(nextValue)
+  }
 
   // Derive per-font render data once from `fonts`. This does NOT depend
   // on `table`, so toggling table/list no longer re-runs `resolveHref`
@@ -72,6 +84,7 @@ export default function FontIndex({ fonts }: FontIndexProps) {
   return (
     <>
       <SimpleGrid
+        ref={gridRef}
         pb={10}
         px={10}
         align={'center'}
@@ -86,7 +99,7 @@ export default function FontIndex({ fonts }: FontIndexProps) {
               }
             : 1
         }
-        css={getTesterCssVars(table)}
+        css={{ ...getTesterCssVars(table), ...TESTER_SCALE_STATIC_VARS }}
       >
         {items.map(({ key, font, href, validVariants, styleGroups }) => (
           <GridItem
@@ -123,9 +136,9 @@ export default function FontIndex({ fonts }: FontIndexProps) {
         <Tabs.Root
           size={'sm'}
           value={value}
-          defaultValue={'List'}
+          defaultValue={'list'}
           variant={'enclosed'}
-          onValueChange={(e) => setValue(e.value)}
+          onValueChange={(e) => handleValueChange(e.value)}
         >
           <Tabs.List>
             <Tabs.Trigger value='list'>List</Tabs.Trigger>
