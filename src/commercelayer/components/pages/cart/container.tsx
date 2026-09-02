@@ -15,47 +15,6 @@ const CartContainer = ({
   setMenuOpen,
 }: Props): JSX.Element => {
   const { orderId, itemsCount } = useOrderContext()
-  const pathname = usePathname()
-
-  // Hide on checkout routes
-  if (pathname?.startsWith('/checkout') || pathname?.startsWith('/cart'))
-    return null
-
-  if (!orderId || itemsCount === 0) {
-    return null
-    // @TODO: if orderId does not exist, show an empty cart instead of an error
-    /*return (
-    
-      <Button
-        variant={'block'}
-        borderWidth={'4px'}
-        fontSize={'2xl'}
-        px={2}
-        // borderRadius={'full'}
-        bg={'white'}
-        _hover={{ color: 'white', bg: 'black' }}
-        fontVariantNumeric={'tabular-nums'}
-        // onClick={() => setCartOpen(true)}
-        asChild
-      >
-        <Link href={'/cart'}>{`Cart`}</Link>
-      </Button>)*/
-    /*
-    return (
-      <Button
-        size={'md'}
-        _hover={{
-          bg: 'black',
-          color: 'white',
-        }}
-        variant={'circle'}
-        bg={'white'}
-        data-active={openMenu ? 'true' : undefined}
-        onMouseEnter={() => setMenuOpen(true)}
-      >{`0`}</Button>
-    )
-    */
-  }
 
   return (
     children || (

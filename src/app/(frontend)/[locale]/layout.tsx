@@ -9,6 +9,7 @@ import {
   visibleFontsQuery,
 } from '@/sanity/lib/queries'
 import { resolveOpenGraphImage } from '@/sanity/lib/utils'
+import { Box, Spinner } from '@chakra-ui/react'
 import { Metadata, ResolvingMetadata, Viewport } from 'next'
 import { stegaClean, toPlainText, type PortableTextBlock } from 'next-sanity'
 import { Suspense } from 'react'
@@ -23,7 +24,7 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const [{ settings }, { homePage }] = await Promise.all([
+  const [{ data: settings }, { data: homePage }] = await Promise.all([
     // sanityFetch<SettingsQueryResult>({
     sanityFetch({
       query: settingsQuery,
@@ -83,7 +84,15 @@ export default async function LocaleRoute({
         resources={resources}
       >
         <GlobalHeader fonts={fonts} />
-        <Suspense>{children}</Suspense>
+        <Suspense
+          fallback={
+            <Box display='flex' justifyContent='center' p={8}>
+              <Spinner size='xl' />
+            </Box>
+          }
+        >
+          {children}
+        </Suspense>
         {buy}
         <Toaster />
       </TranslationsProvider>

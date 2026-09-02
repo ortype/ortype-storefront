@@ -8,17 +8,13 @@ import {
 import { useTesterScaleTransition } from '@/components/composite/Tester/use-tester-scale-transition'
 import { resolveHref } from '@/sanity/lib/utils'
 import type { HomeFont } from '@/types'
-import {
-  Box,
-  Tabs,
-  Flex,
-  SegmentGroup,
-  Wrap,
-  SimpleGrid,
-  GridItem,
-} from '@chakra-ui/react'
-import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { GridItem, SimpleGrid } from '@chakra-ui/react'
+import { useCallback, useMemo, useState } from 'react'
+import ListTableToggle from 'src/components/composite/Tester/list-table-toggle'
+
+interface ChildLoadingStates {
+  [childId: string]: boolean
+}
 
 export interface FontIndexProps {
   fonts: HomeFont[]
@@ -81,13 +77,37 @@ export default function FontIndex({ fonts }: FontIndexProps) {
     [fonts]
   )
 
+  // Initialize loading states based on memoized items
+  const [childLoadingStates, setChildLoadingStates] =
+    useState<ChildLoadingStates>(() => {
+      return items.reduce((acc, item) => {
+        acc[item.font._id] = true
+        return acc
+      }, {} as ChildLoadingStates)
+    })
+
+  const handleChildLoadingChange = useCallback(
+    (childId: string, isLoading: boolean) => {
+      setChildLoadingStates((prevStates) => ({
+        ...prevStates,
+        [childId]: isLoading,
+      }))
+    },
+    []
+  )
+
+  const allChildrenLoaded = useMemo(
+    () => Object.values(childLoadingStates).every((state) => state === false),
+    [childLoadingStates]
+  )
+
   return (
     <>
       <SimpleGrid
         ref={gridRef}
         pb={10}
         px={10}
-        align={'center'}
+        alignItems={'center'}
         justifyContent={'center'}
         gap={2}
         columns={
@@ -128,34 +148,16 @@ export default function FontIndex({ fonts }: FontIndexProps) {
               slug={font.slug ?? ''}
               badge={font.badge ?? {}}
               href={href}
+              onLoadingChange={handleChildLoadingChange}
             />
           </GridItem>
         ))}
       </SimpleGrid>
-      <Box pos={'fixed'} bottom={4} right={4}>
-        <Tabs.Root
-          size={'sm'}
-          value={value}
-          defaultValue={'list'}
-          variant={'enclosed'}
-          onValueChange={(e) => handleValueChange(e.value)}
-        >
-          <Tabs.List>
-            <Tabs.Trigger value='list'>List</Tabs.Trigger>
-            <Tabs.Trigger value='table'>Table</Tabs.Trigger>
-            <Tabs.Indicator />
-          </Tabs.List>
-        </Tabs.Root>
-
-        {/*<SegmentGroup.Root
-          value={value}
-          size={'sm'}
-          onValueChange={(e) => setValue(e.value)}
-        >
-          <SegmentGroup.Indicator />
-          <SegmentGroup.Items items={['List', 'Table']} />
-        </SegmentGroup.Root>*/}
-      </Box>
+      <ListTableToggle
+        allChildrenLoaded={allChildrenLoaded}
+        value={value}
+        handleValueChange={handleValueChange}
+      />
     </>
   )
 }

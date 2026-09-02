@@ -18,7 +18,6 @@ import {
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Editable from './Editable'
-import { TESTER_SCALE_WRAPPER_CSS } from './tester-sizing'
 // import { TieredSelect } from './TieredSelect'
 import { dataset, projectId, studioUrl } from '@/sanity/env'
 import { DataAttribute } from '@/types'
@@ -40,10 +39,11 @@ interface Props {
   }[]
   defaultVariantId: string
   table: boolean
-  badge: {
-    label: string
-    endDate: string
+  badge?: {
+    label?: string
+    endDate?: string
   }
+  onLoadingChange: (childId: string, isLoading: boolean) => void
 }
 
 // export default function Tester({ _id, name, slug }: Omit<Font, '_type'>) {
@@ -58,6 +58,7 @@ export const Tester: React.FC<Props> = (props) => {
     defaultVariantId,
     badge,
     table,
+    onLoadingChange,
   } = props
 
   // Memoize Sanity data attribute creation
@@ -123,6 +124,7 @@ export const Tester: React.FC<Props> = (props) => {
         sessionId,
         isEditing,
       } = data.fontTesterById
+
       if (!variantId) return
       // @NOTE: decodedVariantId is null
       const decodedVariantId = decodeOpaqueId(variantId)
@@ -131,6 +133,9 @@ export const Tester: React.FC<Props> = (props) => {
         setEntry(latestEntry)
         setPlaceholder(latestEntry)
         setVariantId(variantId)
+        console.log('Set state when query loads or changes', fontId, loading)
+        // @NOTE: call FontList callback to pass loading `false` up
+        onLoadingChange(fontId, loading)
       }
     }
   }, [loading, data]) // run on first render and re-render if data has changed
@@ -239,23 +244,21 @@ export const Tester: React.FC<Props> = (props) => {
           scale the title/variant-selector/buy-button row below, and so
           any transient over/under-size is clipped to this box instead
           of bleeding into that row or neighboring grid cells. */}
-      <Box css={TESTER_SCALE_WRAPPER_CSS}>
-        <Editable
-          table={table}
-          handleUpdateFontTester={handleUpdateFontTester}
-          handleChange={handleChange}
-          entry={entry}
-          placeholder={placeholder}
-          fontId={fontId}
-          variantId={currentVariantId}
-          index={index}
-          isDisabled={disabled}
-          loading={loading}
-          limiter={limiter}
-          focused={focused}
-          setFocused={setFocused}
-        />
-      </Box>
+      <Editable
+        table={table}
+        handleUpdateFontTester={handleUpdateFontTester}
+        handleChange={handleChange}
+        entry={entry}
+        placeholder={placeholder}
+        fontId={fontId}
+        variantId={currentVariantId}
+        index={index}
+        isDisabled={disabled}
+        loading={loading}
+        limiter={limiter}
+        focused={focused}
+        setFocused={setFocused}
+      />
       <Flex
         align={'center'}
         justify={'center'}

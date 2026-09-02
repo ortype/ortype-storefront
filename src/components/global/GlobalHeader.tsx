@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 
 import type { VisibleFont } from '@/types'
 import { Box, Button, Flex, Group } from '@chakra-ui/react'
+import { AnimatePresence, motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Nav } from './Nav'
@@ -18,6 +19,7 @@ import {
   MenuTriggerItem,
 } from '@/components/ui/menu'
 import { useContext, useRef, useState } from 'react'
+import { useOrderContext } from 'src/commercelayer/providers/Order'
 
 const DynamicCartContainer: any = dynamic(
   () => import('@/commercelayer/components/pages/cart/container'),
@@ -45,8 +47,14 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
   const [openMenu, setMenuOpen] = useState(false)
   const [openCart, setCartOpen] = useState(false)
   const [openLogin, setLoginOpen] = useState(false)
-
+  const { orderId, itemsCount } = useOrderContext()
   const pathname = usePathname()
+
+  const hideCart =
+    pathname?.startsWith('/checkout') ||
+    pathname?.startsWith('/cart') ||
+    !orderId ||
+    itemsCount === 0
 
   // Hide on checkout routes
   const hideLogin = pathname?.startsWith('/checkout')
@@ -62,55 +70,95 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
     <>
       <SessionId />
       <Nav fonts={fonts} />
-      <Group gap={0} p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
-        {settings.customerId ? (
-          // CUSTOMER
-          <Button
-            bg={'white'}
-            color={'black'}
-            size={'sm'}
-            w={8}
-            h={8}
-            minW={'auto'}
-            border={'2px solid black'}
-            // borderRadius={'full'}
-            _hover={{
-              bg: 'black',
-              color: 'white',
-            }}
-            variant={'circle'}
-            mr={1}
-            fontSize={'3xl'}
-            className={'fontVariant-Ejdp7jjphH9hhnST6'}
-            textTransform={'uppercase'}
-            asChild
-          >
-            <Link href={'/account'}>{firstLetter}</Link>
-          </Button>
-        ) : (
-          !hideLogin && (
-            // LOGIN
-            <Button
-              mr={1}
-              bg={'white'}
-              color={'black'}
-              size={'sm'}
-              fontSize={'md'}
-              px={2}
-              minW={'auto'}
-              borderRadius={'full'}
-              border={'2px solid black'}
-              _hover={{
-                bg: 'black',
-                color: 'white',
+      <Group gap={1} p={4} pos={'fixed'} right={0} top={0} zIndex={'docked'}>
+        <AnimatePresence mode={'sync'} initial={true}>
+          {settings.customerId ? (
+            // CUSTOMER
+            <motion.div
+              key={'customer'}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{
+                duration: 0.2,
+                ease: 'easeOut',
               }}
-              onClick={() => setLoginOpen(true)}
             >
-              {'Login'}
-            </Button>
-          )
-        )}
-        <DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu} />
+              <Button
+                bg={'white'}
+                color={'black'}
+                size={'sm'}
+                w={8}
+                h={8}
+                minW={'auto'}
+                border={'2px solid black'}
+                // borderRadius={'full'}
+                _hover={{
+                  bg: 'black',
+                  color: 'white',
+                }}
+                variant={'circle'}
+                fontSize={'3xl'}
+                className={'fontVariant-Ejdp7jjphH9hhnST6'}
+                textTransform={'uppercase'}
+                asChild
+              >
+                <Link href={'/account'}>{firstLetter}</Link>
+              </Button>
+            </motion.div>
+          ) : (
+            !hideLogin && (
+              // LOGIN
+              <motion.div
+                key={'login'}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{
+                  duration: 0.2,
+                  ease: 'easeOut',
+                }}
+              >
+                <Button
+                  bg={'white'}
+                  color={'black'}
+                  size={'sm'}
+                  fontSize={'md'}
+                  px={2}
+                  minW={'auto'}
+                  borderRadius={'full'}
+                  border={'2px solid black'}
+                  _hover={{
+                    bg: 'black',
+                    color: 'white',
+                  }}
+                  onClick={() => setLoginOpen(true)}
+                >
+                  {'Login'}
+                </Button>
+              </motion.div>
+            )
+          )}
+
+          {!hideCart && (
+            <motion.div
+              key={'cart'}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{
+                duration: 0.2,
+                ease: 'easeOut',
+              }}
+            >
+              <DynamicCartContainer
+                setMenuOpen={setMenuOpen}
+                openMenu={openMenu}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/*<DynamicCartContainer setMenuOpen={setMenuOpen} openMenu={openMenu}>
         <DynamicCart
             openCart={openCart}

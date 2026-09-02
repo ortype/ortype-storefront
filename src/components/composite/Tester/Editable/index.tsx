@@ -1,6 +1,9 @@
 import { Box } from '@chakra-ui/react'
 import { useState } from 'react'
-import { TESTER_LINE_HEIGHT_VAR } from '../tester-sizing'
+import {
+  TESTER_LINE_HEIGHT_VAR,
+  TESTER_SCALE_WRAPPER_CSS,
+} from '../tester-sizing'
 import BlinkingCursor from './blinking-cursor'
 import TypewriterAnimation from './typewriter-animation'
 
@@ -72,7 +75,13 @@ const Editable = ({
   }
 
   return (
-    <Box {...props} textAlign={'center'} mt={1} position='relative'>
+    <Box
+      {...props}
+      textAlign={'center'}
+      mt={1}
+      position='relative'
+      css={TESTER_SCALE_WRAPPER_CSS}
+    >
       {!loading ? (
         <>
           {!hasInitialized && shouldAnimate ? (

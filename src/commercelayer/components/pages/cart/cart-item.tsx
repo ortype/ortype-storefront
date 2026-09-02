@@ -153,7 +153,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         p={3}
         ml={isInFullGroup ? 10 : 0}
       >
-        <Stack direction={'row'} gap={2} bg={'#F8F8F8'} alignItems={'center'}>
+        <Stack direction={'row'} gap={3} bg={'#F8F8F8'} alignItems={'center'}>
           {!isInFullGroup && (
             <Link onClick={handleRemove} cursor={'pointer'} ml={-1}>
               <ChakraIconButton
