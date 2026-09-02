@@ -110,6 +110,7 @@ const Editable = ({
                 border: `none`,
                 width: `100%`,
                 display: `block`,
+                transition: 'font-variation-settings 0.2s ease-in-out',
                 [`&:focus`]: {
                   outline: `none`,
                 },
