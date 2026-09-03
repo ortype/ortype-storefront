@@ -91,7 +91,7 @@ export const Buy = () => {
     commitGroup,
     committedGroups,
   } = useOrderContext()
-  const { font, summary } = useBuyContext()
+  const { font, summary, baseUnit } = useBuyContext()
 
   // Add to cart / Go to cart button state
   const [isCommitting, setIsCommitting] = useState(false)
@@ -348,23 +348,39 @@ export const Buy = () => {
               w={'full'}
               justifyContent={'space-between'}
               borderBottom={'1px solid #CEC9AB'}
-              alignItems={'center'}
+              alignItems={'flex-start'}
               pb={2}
             >
               <Text textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Unit Price`}
               </Text>
-              <Text
-                pl={1}
-                textStyle={summaryFontSize}
-              >{`${unitPrice} EUR`}</Text>
+              <Box>
+                <Text
+                  pl={1}
+                  textStyle={summaryFontSize}
+                >{`${baseUnit}`}</Text>
+                {/*<Text
+                  pl={1}
+                  textStyle={summaryFontSize}
+                  textDecoration={'line-through'}
+                  color={'brand.400'}
+                >{`${baseUnit}`}</Text>
+                <Text
+                  pl={1}
+                  textStyle={summaryFontSize}
+                >{`${unitPrice}`}</Text>*/}
+              </Box>
             </Flex>
             <Flex
               w={'full'}
+              // pt={2}
+              // borderTop={'1px solid #CEC9AB'}
+              // mt={-1}
+
               justifyContent={'space-between'}
               borderBottom={'1px solid #CEC9AB'}
-              alignItems={'center'}
+              alignItems={'flex-start'}
               pb={2}
             >
               <Text textStyle={summaryFontSize} w={'50%'}>
@@ -374,7 +390,9 @@ export const Buy = () => {
               <Text
                 pl={1}
                 textStyle={summaryFontSize}
-              >{`${subtotal} EUR`}</Text>
+                // color={'brand.400'}
+                // textDecoration={'line-through'}
+              >{`${subtotal}`}</Text>
             </Flex>
             <Presence
               present={totalDiscount > 0}
@@ -389,7 +407,7 @@ export const Buy = () => {
                 w={'full'}
                 justifyContent={'space-between'}
                 borderBottom={'1px solid #CEC9AB'}
-                alignItems={'center'}
+                alignItems={'flex-start'}
                 pb={2}
               >
                 <Text
@@ -397,12 +415,18 @@ export const Buy = () => {
                   w={'50%'}
                   whiteSpace={'nowrap'}
                 >
-                  {`Discount (${percentageDiscount}%)`}
+                  {`Discounts (${percentageDiscount}%)`}
                 </Text>
-                <Text
-                  pl={1}
-                  textStyle={summaryFontSize}
-                >{`-${totalDiscount} EUR`}</Text>
+                <Box>
+                  {/*<Text
+                    pl={1}
+                    textStyle={summaryFontSize}
+                  >{`${percentageDiscount}% OFF`}</Text>*/}
+                  <Text
+                    pl={1}
+                    textStyle={summaryFontSize}
+                  >{`-${totalDiscount}`}</Text>
+                </Box>
               </Flex>
             </Presence>
             <Flex
@@ -418,12 +442,12 @@ export const Buy = () => {
                 w={'50%'}
                 textTransform={'uppercase'}
               >
-                {`TOTAL`}
+                {`TOTAL EUR`}
               </Text>
               <Text
                 pl={1}
                 textStyle={{ base: 'xl', lg: 'md' }}
-              >{`${total} EUR`}</Text>
+              >{`${total}`}</Text>
             </Flex>
           </VStack>
           {/* SAVE CONFIGURATION */}

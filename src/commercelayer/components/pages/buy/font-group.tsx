@@ -1,5 +1,5 @@
 import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
-import { Button, Flex, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import type { FontGroup as FontGroupType } from './typefaces'
 
@@ -130,16 +130,26 @@ export const FontGroup: React.FC<Props> = ({
                 {`${totalPrice} EUR`}
               </Text>
             </Stack>
-            <Text
-              className={'discount'}
-              textAlign={'right'}
-              as={'span'}
-              fontSize={'xs'}
-              opacity={0.6}
-              textDecorationLine={'line-through'}
-            >
-              {`${fullPrice} EUR`}
-            </Text>
+            <Box textAlign={'right'}>
+              <Text
+                className={'discount'}
+                textAlign={'right'}
+                as={'span'}
+                fontSize={'xs'}
+                opacity={0.6}
+                textDecorationLine={'line-through'}
+              >
+                {`${fullPrice}`}
+              </Text>
+              <Text
+                as={'span'}
+                textDecorationLine={'none'}
+                opacity={0.6}
+                fontSize={'xs'}
+              >
+                {' EUR'}
+              </Text>
+            </Box>
           </Stack>
         )}
       </Flex>

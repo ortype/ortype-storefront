@@ -32,6 +32,7 @@ export interface ToggleStyleParams {
 
 export interface BuyProviderData {
   font: Font
+  baseUnit: string
   isLoading: boolean
   /** Selected styles for this font, keyed by skuCode */
   selectedSkus: { [skuCode: string]: StyleEntry }
@@ -208,6 +209,18 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     })
   }
 
+  // Still compute unitPrice/nextUnitPrice even with 0 selections
+  // so the UI can show "what it would cost" for the first add
+  const baseUnit = useMemo(() => {
+    return licenseSize?.modifier && selectedSkuOptions?.length
+      ? calculateLineItemPrice({
+          skuOptions: selectedSkuOptions,
+          sizeModifier: licenseSize.modifier,
+          count: 1,
+        })
+      : 0
+  }, [licenseSize, selectedSkuOptions])
+
   /** Derived price/count summary computed from the selection buffer */
   const summary = useMemo<FontSelectionSummary>(() => {
     const styleCount = Object.keys(selectedSkus).length
@@ -217,17 +230,6 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       !selectedSkuOptions?.length ||
       styleCount === 0
     ) {
-      // Still compute unitPrice/nextUnitPrice even with 0 selections
-      // so the UI can show "what it would cost" for the first add
-      const baseUnit =
-        licenseSize?.modifier && selectedSkuOptions?.length
-          ? calculateLineItemPrice({
-              skuOptions: selectedSkuOptions,
-              sizeModifier: licenseSize.modifier,
-              count: 1,
-            })
-          : 0
-
       return {
         show: false,
         fontStyleCount: 0,
@@ -273,6 +275,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
       fontStyleCount: styleCount,
       unitPrice: formatPrice(unitPriceCents),
       nextUnitPrice: formatPrice(nextUnitPriceCents),
+      fullPrice: formatPrice(fullPriceCents),
       subtotal: formatPrice(subtotalCents),
       percentageDiscount: discount,
       totalDiscount: formatPrice(subtotalCents - totalCents),
@@ -351,6 +354,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     // nothing selected outside of it to combine with.
     const { fullPrice, totalPrice, percentageDiscount } =
       computeGroupPrices(styleCount)
+    console.log({ fullPrice })
     return {
       styleCount,
       allSelected,
@@ -408,6 +412,7 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         ...state,
         font,
         selectedSkus,
+        baseUnit: formatPrice(baseUnit),
         summary,
         toggleStyle,
         toggleGroup,

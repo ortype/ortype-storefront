@@ -97,7 +97,7 @@ export const SingleStyles: React.FC<Props> = ({
             opacity={0.6}
             textDecorationLine={'line-through'}
           >
-            {`${unitPrice} EUR`}
+            {`${unitPrice}`}
           </Text>
         )}
         {isSelected ? (
