@@ -1,3 +1,4 @@
+import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
 
@@ -8,8 +9,8 @@ interface Props {
   isSelected: boolean
   /** When true, the style belongs to a fully selected group and cannot be toggled individually */
   allSelected?: boolean
-  unitPrice: number
-  nextUnitPrice: number
+  unitPriceCents: number
+  nextUnitPriceCents: number
   onToggle: () => void
 }
 
@@ -19,8 +20,8 @@ export const SingleStyles: React.FC<Props> = ({
   className,
   isSelected,
   allSelected = false,
-  unitPrice,
-  nextUnitPrice,
+  unitPriceCents,
+  nextUnitPriceCents,
   onToggle,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -89,7 +90,7 @@ export const SingleStyles: React.FC<Props> = ({
         justifyContent={'flex-end'}
         minW={'7rem'}
       >
-        {!isSelected && nextUnitPrice < unitPrice && (
+        {!isSelected && nextUnitPriceCents < unitPriceCents && (
           <Text
             className={'discount'}
             as={'span'}
@@ -97,16 +98,16 @@ export const SingleStyles: React.FC<Props> = ({
             opacity={0.6}
             textDecorationLine={'line-through'}
           >
-            {`${unitPrice}`}
+            {formatPrice(unitPriceCents)}
           </Text>
         )}
         {isSelected ? (
           <Text as={'span'} fontSize={'xs'} opacity={0.6}>
-            {`${unitPrice} EUR`}
+            {`${formatPrice(unitPriceCents)} EUR`}
           </Text>
         ) : (
           <Text as={'span'} fontSize={'xs'}>
-            {`${nextUnitPrice} EUR`}
+            {`${formatPrice(nextUnitPriceCents)} EUR`}
           </Text>
         )}
       </Flex>

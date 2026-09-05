@@ -147,8 +147,8 @@ export const FontItem: React.FC<Props> = ({
                     name={`${font.shortName} ${variant.optionName}`}
                     isSelected={!!selectedSkus[variant._id]}
                     allSelected={groupFullySelected}
-                    unitPrice={summary.unitPrice}
-                    nextUnitPrice={summary.nextUnitPrice}
+                    unitPriceCents={summary.unitPriceCents}
+                    nextUnitPriceCents={summary.nextUnitPriceCents}
                     onToggle={() => toggleStyle(variantToggleParams(variant))}
                   />
                 )

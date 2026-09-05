@@ -30,7 +30,7 @@ export interface CartBufferGroup {
   hasSubGroups: boolean
   /** True when all of the font's variants are present in the selection buffer */
   allSelected: boolean
-  discountedPriceTotal: number
-  fullUnitPriceTotal: number
+  discountedPriceTotalCents: number
+  fullUnitPriceTotalCents: number
   percentageDiscount: number
 }

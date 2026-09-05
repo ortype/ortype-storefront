@@ -103,8 +103,8 @@ export const Typefaces = () => {
             className={variant._id}
             name={`${font.shortName} ${variant.optionName}`}
             isSelected={!!selectedSkus[variant._id]}
-            unitPrice={summary.unitPrice}
-            nextUnitPrice={summary.nextUnitPrice}
+            unitPriceCents={summary.unitPriceCents}
+            nextUnitPriceCents={summary.nextUnitPriceCents}
             onToggle={() => toggleStyle(variantToggleParams(variant))}
           />
         )

@@ -92,28 +92,24 @@ export const CartItem: React.FC<CartItemProps> = ({
     )
   }, [formattedTypeOptions, entry.licenseTypes])
 
-  // Optimistic price from buffer
-  const displayPrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0) return '0.00'
-    return formatPrice(
-      calculateLineItemPrice({
-        skuOptions: selectedSkuOptions,
-        sizeModifier: licenseSize.modifier,
-        count: groupCount,
-      })
-    )
+  // Optimistic price from buffer, in cents
+  const displayPriceCents = useMemo(() => {
+    if (!licenseSize || selectedSkuOptions.length === 0) return 0
+    return calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: groupCount,
+    })
   }, [selectedSkuOptions, licenseSize, groupCount])
 
-  // Full price (no discount) for strike-through
-  const fullPrice = useMemo(() => {
-    if (!licenseSize || selectedSkuOptions.length === 0) return '0.00'
-    return formatPrice(
-      calculateLineItemPrice({
-        skuOptions: selectedSkuOptions,
-        sizeModifier: licenseSize.modifier,
-        count: 1,
-      })
-    )
+  // Full price (no discount) for strike-through, in cents
+  const fullPriceCents = useMemo(() => {
+    if (!licenseSize || selectedSkuOptions.length === 0) return 0
+    return calculateLineItemPrice({
+      skuOptions: selectedSkuOptions,
+      sizeModifier: licenseSize.modifier,
+      count: 1,
+    })
   }, [selectedSkuOptions, licenseSize])
 
   const handleAddType = (value: string) => {
@@ -268,12 +264,12 @@ export const CartItem: React.FC<CartItemProps> = ({
           <VStack minW={28} gap={1} alignItems={'flex-end'} pr={3}>
             <HStack gap={4}>
               <Text as={'span'} fontSize={'xs'} lineHeight={0.8}>
-                {parseFloat(displayPrice) === 0
+                {displayPriceCents === 0
                   ? `–– EUR`
-                  : `${displayPrice} EUR`}
+                  : `${formatPrice(displayPriceCents)} EUR`}
               </Text>
             </HStack>
-            {displayPrice !== fullPrice && (
+            {displayPriceCents !== fullPriceCents && (
               <Text
                 as={'span'}
                 textDecoration={'line-through'}
@@ -281,7 +277,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                 lineHeight={1}
                 color={'brand.400'}
               >
-                {fullPrice} {'EUR'}
+                {formatPrice(fullPriceCents)} {'EUR'}
               </Text>
             )}
           </VStack>

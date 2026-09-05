@@ -10,8 +10,8 @@ import { useMemo } from 'react'
 const Summary = () => {
   const { selections, licenseSize, skuOptions } = useOrderContext()
 
-  // Compute summary totals from the selection buffer (per-style license types)
-  const { subtotal, totalDiscount, total } = useMemo(() => {
+  // Compute summary totals from the selection buffer (per-style license types), in cents
+  const { subtotalCents, totalDiscountCents, totalCents } = useMemo(() => {
     const parentUids = Object.keys(selections)
     if (
       parentUids.length === 0 ||
@@ -19,9 +19,9 @@ const Summary = () => {
       !skuOptions?.length
     ) {
       return {
-        subtotal: null,
-        totalDiscount: null,
-        total: null,
+        subtotalCents: null,
+        totalDiscountCents: null,
+        totalCents: null,
       }
     }
 
@@ -55,12 +55,11 @@ const Summary = () => {
     }
 
     return {
-      subtotal: formatPrice(subTotalCents),
-      totalDiscount: formatPrice(subTotalCents - totalCents),
-      total: formatPrice(totalCents),
+      subtotalCents: subTotalCents,
+      totalDiscountCents: subTotalCents - totalCents,
+      totalCents,
     }
   }, [selections, licenseSize, skuOptions])
-  const displayTotal = total
 
   return (
     <Flex justifyContent={'flex-end'} w={'full'}>
@@ -92,16 +91,18 @@ const Summary = () => {
             {'Subtotal (excl. discounts)'}
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
-            {subtotal === null ? `–– EUR` : `${subtotal} EUR`}
+            {subtotalCents === null
+              ? `–– EUR`
+              : `${formatPrice(subtotalCents)} EUR`}
           </Box>
         </SimpleGrid>
-        {totalDiscount && totalDiscount > 0 && (
+        {totalDiscountCents != null && totalDiscountCents > 0 && (
           <SimpleGrid columns={2} py={3} borderBottom={'1px solid #CEC9AB'}>
             <Box fontSize={'lg'} fontWeight={'normal'}>
               {'Discounts'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`-${totalDiscount} EUR`}
+              {`-${formatPrice(totalDiscountCents)} EUR`}
             </Box>
           </SimpleGrid>
         )}
@@ -120,7 +121,9 @@ const Summary = () => {
             {'Total'}
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
-            {displayTotal === null ? `–– EUR` : `${displayTotal} EUR`}
+            {totalCents === null
+              ? `–– EUR`
+              : `${formatPrice(totalCents)} EUR`}
           </Box>
         </SimpleGrid>
         <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>

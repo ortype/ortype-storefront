@@ -31,18 +31,20 @@ export type FontSelectionSummary = {
   show: boolean
   /** Number of selected styles for this font */
   fontStyleCount: number
-  /** Unit price at current selection count */
-  unitPrice: string
-  /** Unit price if one more style were added */
-  nextUnitPrice: number
-  /** Full price before discount (all styles priced at count=1) */
-  subtotal: string
+  /** Unit price at current selection count, in cents */
+  unitPriceCents: number
+  /** Unit price if one more style were added, in cents */
+  nextUnitPriceCents: number
+  /** Per-style undiscounted price (count=1), in cents */
+  fullPriceCents?: number
+  /** Full price before discount (all styles priced at count=1), in cents */
+  subtotalCents: number
   /** Discount percentage (0–1) at current count */
   percentageDiscount: number
-  /** Total discount amount in display units (EUR, not cents) */
-  totalDiscount: string
-  /** Final total after discount in display units */
-  total: string
+  /** Total discount amount, in cents */
+  totalDiscountCents: number
+  /** Final total after discount, in cents */
+  totalCents: number
 }
 
 /** Pre-computed price summary for a font group (full family or subfamily) */
@@ -51,8 +53,8 @@ export type GroupPriceSummary = {
   allSelected: boolean
   countSelected: number
   percentageDiscount: number
-  fullPrice: string
-  totalPrice: string
+  fullPriceCents: number
+  totalPriceCents: number
 }
 /** Tracks a single committed parentUid group on the CL order */
 export type CommittedGroup = {

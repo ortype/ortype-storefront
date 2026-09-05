@@ -84,11 +84,83 @@ export function calculateLineItemPrice({
   return Math.round(unit) // 2 decimal places
 }
 
+/* ------------------------------------------------------------------ */
+/*  Display formatting                                                 */
+/*                                                                      */
+/*  Everything above this line operates exclusively on cents (number). */
+/*  Everything below converts cents to a display string/JSX and should */
+/*  only ever be called at render time — never fed back into           */
+/*  calculations or used for numeric/truthiness checks.                */
+/* ------------------------------------------------------------------ */
+
+export type PriceLocale = 'de-DE' | 'en-US'
+
+/** Shared formatter: always 2 decimal places, locale-aware grouping. */
+function getPriceFormatter(locale: PriceLocale): Intl.NumberFormat {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
 /**
- * Convert cents to a display-friendly string with 2 decimal places (e.g. 15000 → "150.00").
+ * Convert cents to a display-friendly, locale-formatted string always
+ * showing 2 decimal places and grouped thousands (e.g. 1250050 → "12.500,50"
+ * for de-DE, or "12,500.50" for en-US).
  */
-export function formatPrice(cents: number): string {
-  return (cents / 100).toFixed(2)
+export function formatPrice(
+  cents: number,
+  locale: PriceLocale = 'de-DE'
+): string {
+  return getPriceFormatter(locale).format(cents / 100)
+}
+
+/**
+ * Formats a price (in cents) for display with locale-aware number
+ * formatting (e.g. 1250050 → 12.500,50 for de-DE). Always shows 2 decimal
+ * places. The decimal part is displayed as superscript.
+ */
+export function formatPriceWithSuperscript(
+  cents: number,
+  locale: PriceLocale = 'de-DE'
+): JSX.Element {
+  const formatter = getPriceFormatter(locale)
+  const parts = formatter.formatToParts(cents / 100)
+
+  let integerPart = ''
+  let decimalPart = ''
+  let decimalSeparator = '.'
+
+  for (const part of parts) {
+    if (part.type === 'integer') {
+      integerPart += part.value
+    } else if (part.type === 'group') {
+      integerPart += part.value
+    } else if (part.type === 'decimal') {
+      decimalSeparator = part.value
+    } else if (part.type === 'fraction') {
+      decimalPart = part.value
+    }
+  }
+
+  if (!decimalPart) {
+    return <>{integerPart}</>
+  }
+
+  return (
+    <>
+      {integerPart}
+      {decimalSeparator}
+      <span
+        style={{
+          fontVariantNumeric: 'tabular-nums',
+          fontFeatureSettings: '"sups"',
+        }}
+      >
+        {decimalPart}
+      </span>
+    </>
+  )
 }
 
 /**

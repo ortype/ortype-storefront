@@ -6,8 +6,6 @@
  * orders) and downstream processing (fulfillment, license generation).
  */
 
-import { formatPrice } from './prices'
-
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
@@ -74,8 +72,8 @@ export interface ExpandedFontGroup {
   defaultVariantId: string
   /** Total number of individual styles (group projections are expanded) */
   styleCount: number
-  /** Sum of all style prices (float, e.g. 490.00) */
-  groupTotal: number
+  /** Sum of all style prices, in cents */
+  groupTotalCents: number
   styles: ExpandedStyle[]
 }
 
@@ -249,7 +247,7 @@ export function groupByFont(styles: ExpandedStyle[]): ExpandedFontGroup[] {
       existing.styles.push(style)
       existing.styleCount += 1
       if (style.priceCents != null) {
-        existing.groupTotal += style.priceCents / 100
+        existing.groupTotalCents += style.priceCents
       }
     } else {
       map.set(uid, {
@@ -257,7 +255,7 @@ export function groupByFont(styles: ExpandedStyle[]): ExpandedFontGroup[] {
         parentName: style.parentName,
         defaultVariantId: style.defaultVariantId,
         styleCount: 1,
-        groupTotal: style.priceCents != null ? style.priceCents / 100 : 0,
+        groupTotalCents: style.priceCents ?? 0,
         styles: [style],
       })
     }
@@ -265,7 +263,6 @@ export function groupByFont(styles: ExpandedStyle[]): ExpandedFontGroup[] {
 
   const groups = Array.from(map.values())
   for (const g of groups) {
-    g.groupTotal = Math.round(g.groupTotal * 100) / 100
     g.styles = sortExpandedStyles(g.styles)
   }
   return groups
@@ -275,14 +272,14 @@ export function groupByFont(styles: ExpandedStyle[]): ExpandedFontGroup[] {
 /*  Totals                                                             */
 /* ------------------------------------------------------------------ */
 
-/** Computed order-level totals from expanded font groups. */
+/** Computed order-level totals from expanded font groups, in cents. */
 export interface OrderTotals {
-  /** Sum of undiscounted per-style prices (string, e.g. 490.00) */
-  subtotalAmount: string
-  /** Sum of discounted per-style prices (string) */
-  discountedTotal: string
-  /** subtotalAmount - discountedTotal */
-  totalDiscount: string
+  /** Sum of undiscounted per-style prices, in cents */
+  subtotalCents: number
+  /** Sum of discounted per-style prices, in cents */
+  discountedTotalCents: number
+  /** subtotalCents - discountedTotalCents */
+  totalDiscountCents: number
 }
 
 /**
@@ -300,11 +297,11 @@ export function computeOrderTotals(groups: ExpandedFontGroup[]): OrderTotals {
     }
   }
 
-  const subtotalAmount = formatPrice(subtotalCents)
-  const discountedTotal = formatPrice(discountedCents)
-  const totalDiscount = formatPrice(subtotalCents - discountedCents)
-
-  return { subtotalAmount, discountedTotal, totalDiscount }
+  return {
+    subtotalCents,
+    discountedTotalCents: discountedCents,
+    totalDiscountCents: subtotalCents - discountedCents,
+  }
 }
 
 /* ------------------------------------------------------------------ */

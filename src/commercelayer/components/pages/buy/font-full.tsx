@@ -1,4 +1,5 @@
 import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import { Font } from '@/types'
 import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
@@ -21,8 +22,8 @@ export const FontFull: React.FC<Props> = ({
     styleCount,
     allSelected,
     percentageDiscount,
-    fullPrice,
-    totalPrice,
+    fullPriceCents,
+    totalPriceCents,
   } = summary
 
   const [isLoading, setIsLoading] = useState(false)
@@ -102,7 +103,7 @@ export const FontFull: React.FC<Props> = ({
                 fontSize={'xs'}
               >{`${percentageDiscount}%`}</Text>
               <Text className={'discount'} as={'span'} fontSize={'xs'}>
-                {`${totalPrice} EUR`}
+                {`${formatPrice(totalPriceCents)} EUR`}
               </Text>
             </Stack>
             <Box textAlign={'right'}>
@@ -114,7 +115,7 @@ export const FontFull: React.FC<Props> = ({
                 opacity={0.6}
                 textDecorationLine={'line-through'}
               >
-                {`${fullPrice}`}
+                {`${formatPrice(fullPriceCents)}`}
               </Text>
               <Text
                 as={'span'}

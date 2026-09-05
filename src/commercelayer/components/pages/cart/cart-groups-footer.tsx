@@ -1,18 +1,19 @@
+import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
 import Link from 'next/link'
 import React from 'react'
 
 interface CartGroupsFooterProps {
   parentUid: string
-  discountedPriceTotal: number
-  fullUnitPriceTotal: number
+  discountedPriceTotalCents: number
+  fullUnitPriceTotalCents: number
   percentageDiscount: number
 }
 
 const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
   parentUid,
-  discountedPriceTotal,
-  fullUnitPriceTotal,
+  discountedPriceTotalCents,
+  fullUnitPriceTotalCents,
   percentageDiscount,
 }) => {
   return (
@@ -52,7 +53,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
           py={4}
           px={6}
           fontSize={'xl'}
-        >{`${fullUnitPriceTotal} EUR`}</Box>
+        >{`${formatPrice(fullUnitPriceTotalCents)} EUR`}</Box>
       ) : (
         // DISCOUNT
         <HStack gap={0.5} alignItems={'stretch'}>
@@ -85,19 +86,19 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
             >
               <HStack gap={4}>
                 <Text as={'span'} fontSize={'lg'}>
-                  {discountedPriceTotal === 0
+                  {discountedPriceTotalCents === 0
                     ? `–– EUR`
-                    : `${discountedPriceTotal} EUR`}
+                    : `${formatPrice(discountedPriceTotalCents)} EUR`}
                 </Text>
               </HStack>
-              {discountedPriceTotal !== fullUnitPriceTotal && (
+              {discountedPriceTotalCents !== fullUnitPriceTotalCents && (
                 <Text
                   as={'span'}
                   textDecoration={'line-through'}
                   fontSize={'lg'}
                   color={'brand.400'}
                 >
-                  {fullUnitPriceTotal} {'EUR'}
+                  {formatPrice(fullUnitPriceTotalCents)} {'EUR'}
                 </Text>
               )}
             </VStack>

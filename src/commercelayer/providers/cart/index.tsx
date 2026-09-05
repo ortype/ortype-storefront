@@ -2,7 +2,6 @@
 import {
   calculateDiscount,
   calculateLineItemPrice,
-  formatPrice,
 } from '@/commercelayer/utils/prices'
 import type { BuyLabels, CartLabels, MediaType } from '@/sanity/lib/queries'
 import type { Order, SkuOption } from '@commercelayer/sdk'
@@ -189,11 +188,11 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         subGroups: hasSubGroups ? subGroupsRaw : [],
         hasSubGroups,
         allSelected,
-        fullUnitPriceTotal: formatPrice(fullTotalCents),
+        fullUnitPriceTotalCents: fullTotalCents,
         percentageDiscount: count
           ? Math.round(calculateDiscount(count) * 100)
           : 0,
-        discountedPriceTotal: formatPrice(discountedTotalCents),
+        discountedPriceTotalCents: discountedTotalCents,
       }
     })
   }, [selections, groupResolutions, licenseSize?.modifier, skuOptions])

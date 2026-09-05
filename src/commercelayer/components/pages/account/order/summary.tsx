@@ -5,6 +5,7 @@ import {
   expandLineItems,
   filterShoppableItems,
 } from '@/commercelayer/utils/expand-group-projections'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import {
   Box,
   Button,
@@ -31,25 +32,25 @@ interface OrderSummaryProps {
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
   // Expanded style count (group projections count as N styles, not 1 line item)
-  const { fontCount, subtotalAmount, totalDiscount } = useMemo(() => {
+  const { fontCount, subtotalCents, totalDiscountCents } = useMemo(() => {
     if (!order?.line_items) {
       return {
         fontCount: 0,
-        subtotalAmount: 0,
-        totalDiscount: 0,
+        subtotalCents: 0,
+        totalDiscountCents: 0,
       }
     }
 
     const groups = expandAndGroupLineItems(order.line_items)
-    const { subtotalAmount, totalDiscount } = computeOrderTotals(groups)
+    const { subtotalCents, totalDiscountCents } = computeOrderTotals(groups)
 
     const shoppable = filterShoppableItems(order.line_items)
     const expanded = expandLineItems(shoppable)
 
     return {
       fontCount: expanded.length,
-      subtotalAmount: Math.round(subtotalAmount * 100) / 100,
-      totalDiscount,
+      subtotalCents,
+      totalDiscountCents,
     }
   }, [order?.line_items])
 
@@ -207,10 +208,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             {'Subtotal (excl. discounts)'}
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
-            {`${subtotalAmount} EUR`}
+            {`${formatPrice(subtotalCents)} EUR`}
           </Box>
         </SimpleGrid>
-        {totalDiscount > 0 && (
+        {totalDiscountCents > 0 && (
           <SimpleGrid
             columns={2}
             pb={2}
@@ -222,7 +223,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
               {'Discounts'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`-${totalDiscount} EUR`}
+              {`-${formatPrice(totalDiscountCents)} EUR`}
             </Box>
           </SimpleGrid>
         )}

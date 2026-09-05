@@ -17,7 +17,7 @@ import {
 import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
-import { formatPrice } from 'src/commercelayer/utils/prices'
+import { formatPrice } from '@/commercelayer/utils/prices'
 
 const MotionBox = motion(Box)
 
@@ -71,35 +71,30 @@ const SummaryGroup: React.FC<{
               alignItems={'center'}
               fontSize={'sm'}
               justifyContent={'flex-end'}
-            >{`${group.groupTotal} EUR`}</Flex>
+            >{`${formatPrice(group.groupTotalCents)} EUR`}</Flex>
           </SimpleGrid>
         </HStack>
       </Collapsible.Trigger>
       <Collapsible.Content>
-        {group.styles.map((style) => {
-          const priceFloat =
-            style.priceCents != null
-              ? Math.round(style.priceCents) / 100
-              : undefined
-
-          return (
-            <SimpleGrid
-              key={style.id}
-              columns={3}
-              py={1}
-              pl={5}
-              fontSize={'sm'}
-              lineHeight={1.1}
-              gap={2}
-            >
-              <Box>{style.name}</Box>
-              <Box fontSize={'xs'}>{style.licenseTypeLabels.join(', ')}</Box>
-              <Box textAlign={'right'}>
-                {priceFloat != null ? `${priceFloat} EUR` : ''}
-              </Box>
-            </SimpleGrid>
-          )
-        })}
+        {group.styles.map((style) => (
+          <SimpleGrid
+            key={style.id}
+            columns={3}
+            py={1}
+            pl={5}
+            fontSize={'sm'}
+            lineHeight={1.1}
+            gap={2}
+          >
+            <Box>{style.name}</Box>
+            <Box fontSize={'xs'}>{style.licenseTypeLabels.join(', ')}</Box>
+            <Box textAlign={'right'}>
+              {style.priceCents != null
+                ? `${formatPrice(style.priceCents)} EUR`
+                : ''}
+            </Box>
+          </SimpleGrid>
+        ))}
       </Collapsible.Content>
     </Collapsible.Root>
   )
@@ -135,21 +130,21 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
     groups,
     parentFontCount,
     allStylesCount,
-    subtotalAmount,
-    totalDiscount,
+    subtotalCents,
+    totalDiscountCents,
   } = useMemo(() => {
     if (!order?.line_items) {
       return {
         groups: [] as ExpandedFontGroup[],
         parentFontCount: '0 fonts',
         allStylesCount: '0 styles',
-        subtotalAmount: '0.00',
-        totalDiscount: '0.00',
+        subtotalCents: 0,
+        totalDiscountCents: 0,
       }
     }
 
     const groups = expandAndGroupLineItems(order.line_items)
-    const { subtotalAmount, totalDiscount } = computeOrderTotals(groups)
+    const { subtotalCents, totalDiscountCents } = computeOrderTotals(groups)
 
     const fontCount = groups.length
     const styleCount = groups.reduce((sum, g) => sum + g.styleCount, 0)
@@ -157,12 +152,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       groups,
       parentFontCount: fontCount + ' ' + (fontCount === 1 ? 'font' : 'fonts'),
       allStylesCount: styleCount + ' styles',
-      subtotalAmount,
-      totalDiscount,
+      subtotalCents,
+      totalDiscountCents,
     }
   }, [order?.line_items])
-
-  console.log({ order })
 
   return (
     <Show
@@ -228,10 +221,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               {'Subtotal (excl. discounts)'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`${subtotalAmount} EUR`}
+              {`${formatPrice(subtotalCents)} EUR`}
             </Box>
           </SimpleGrid>
-          {parseFloat(totalDiscount) > 0 && (
+          {totalDiscountCents > 0 && (
             <SimpleGrid
               columns={2}
               pb={2}
@@ -243,7 +236,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                 {'Discounts'}
               </Box>
               <Box fontSize={'lg'} textAlign={'right'}>
-                {`-${totalDiscount} EUR`}
+                {`-${formatPrice(totalDiscountCents)} EUR`}
               </Box>
             </SimpleGrid>
           )}

@@ -34,8 +34,8 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
           subGroups,
           allSelected,
           hasSubGroups,
-          discountedPriceTotal,
-          fullUnitPriceTotal,
+          discountedPriceTotalCents,
+          fullUnitPriceTotalCents,
           percentageDiscount,
         }) => (
           <>
@@ -259,8 +259,8 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
             </VStack>
             <CartGroupsFooter
               parentUid={parentUid}
-              discountedPriceTotal={discountedPriceTotal}
-              fullUnitPriceTotal={fullUnitPriceTotal}
+              discountedPriceTotalCents={discountedPriceTotalCents}
+              fullUnitPriceTotalCents={fullUnitPriceTotalCents}
               percentageDiscount={percentageDiscount}
             />
           </>
