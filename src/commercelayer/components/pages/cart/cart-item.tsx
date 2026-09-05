@@ -265,13 +265,7 @@ export const CartItem: React.FC<CartItemProps> = ({
               )}
             </HStack>
           </Box>
-          <VStack
-            minW={28}
-            gap={1}
-            alignItems={'flex-end'}
-            fontVariantNumeric={'tabular-nums'}
-            pr={3}
-          >
+          <VStack minW={28} gap={1} alignItems={'flex-end'} pr={3}>
             <HStack gap={4}>
               <Text as={'span'} fontSize={'xs'} lineHeight={0.8}>
                 {parseFloat(displayPrice) === 0

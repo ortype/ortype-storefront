@@ -8,7 +8,6 @@ export const badgeRecipe = defineRecipe({
     borderRadius: 'full',
     gap: '1',
     fontWeight: 'normal',
-    fontVariantNumeric: 'tabular-nums',
     whiteSpace: 'nowrap',
     userSelect: 'none',
   },

@@ -96,7 +96,6 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
             fontSize={'xs'}
             lineHeight={1.2}
             textTransform={'uppercase'}
-            fontVariantNumeric={'tabular-nums'}
             color={'#737373'}
           >
             The Typeface is being used in a project for
@@ -133,7 +132,6 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   <Text
                     fontSize={'xs'}
                     textTransform={'uppercase'}
-                    fontVariantNumeric={'tabular-nums'}
                     color={'#737373'}
                   >
                     {'Your client'}

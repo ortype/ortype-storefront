@@ -91,11 +91,7 @@ const Summary = () => {
           <Box fontSize={'lg'} fontWeight={'normal'}>
             {'Subtotal (excl. discounts)'}
           </Box>
-          <Box
-            fontSize={'lg'}
-            textAlign={'right'}
-            fontVariantNumeric={'tabular-nums'}
-          >
+          <Box fontSize={'lg'} textAlign={'right'}>
             {subtotal === null ? `–– EUR` : `${subtotal} EUR`}
           </Box>
         </SimpleGrid>
@@ -104,11 +100,7 @@ const Summary = () => {
             <Box fontSize={'lg'} fontWeight={'normal'}>
               {'Discounts'}
             </Box>
-            <Box
-              fontSize={'lg'}
-              textAlign={'right'}
-              fontVariantNumeric={'tabular-nums'}
-            >
+            <Box fontSize={'lg'} textAlign={'right'}>
               {`-${totalDiscount} EUR`}
             </Box>
           </SimpleGrid>
@@ -127,11 +119,7 @@ const Summary = () => {
           >
             {'Total'}
           </Box>
-          <Box
-            fontSize={'lg'}
-            textAlign={'right'}
-            fontVariantNumeric={'tabular-nums'}
-          >
+          <Box fontSize={'lg'} textAlign={'right'}>
             {displayTotal === null ? `–– EUR` : `${displayTotal} EUR`}
           </Box>
         </SimpleGrid>

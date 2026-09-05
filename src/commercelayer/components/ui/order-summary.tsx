@@ -94,7 +94,7 @@ const SummaryGroup: React.FC<{
             >
               <Box>{style.name}</Box>
               <Box fontSize={'xs'}>{style.licenseTypeLabels.join(', ')}</Box>
-              <Box textAlign={'right'} fontVariantNumeric={'tabular-nums'}>
+              <Box textAlign={'right'}>
                 {priceFloat != null ? `${priceFloat} EUR` : ''}
               </Box>
             </SimpleGrid>
@@ -227,11 +227,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <Box fontSize={'lg'} fontWeight={'normal'}>
               {'Subtotal (excl. discounts)'}
             </Box>
-            <Box
-              fontSize={'lg'}
-              textAlign={'right'}
-              fontVariantNumeric={'tabular-nums'}
-            >
+            <Box fontSize={'lg'} textAlign={'right'}>
               {`${subtotalAmount} EUR`}
             </Box>
           </SimpleGrid>
@@ -246,11 +242,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               <Box fontSize={'lg'} fontWeight={'normal'}>
                 {'Discounts'}
               </Box>
-              <Box
-                fontSize={'lg'}
-                textAlign={'right'}
-                fontVariantNumeric={'tabular-nums'}
-              >
+              <Box fontSize={'lg'} textAlign={'right'}>
                 {`-${totalDiscount} EUR`}
               </Box>
             </SimpleGrid>
@@ -263,11 +255,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             >
               {'Total'}
             </Box>
-            <Box
-              fontSize={'xl'}
-              textAlign={'right'}
-              fontVariantNumeric={'tabular-nums'}
-            >
+            <Box fontSize={'xl'} textAlign={'right'}>
               {`${order && formatPrice(order.subtotal_taxable_amount_cents)} EUR`}
             </Box>
           </SimpleGrid>

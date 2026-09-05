@@ -79,7 +79,6 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
             <VStack
               gap={1.5}
               alignItems={'flex-end'}
-              fontVariantNumeric={'tabular-nums'}
               pr={2}
               whiteSpace={'nowrap'}
               flex={'1 0 0'}

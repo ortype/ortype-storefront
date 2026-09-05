@@ -114,7 +114,6 @@ const CartComponent = () => {
                 minW={'8rem'}
                 fontSize={'xs'}
                 textTransform={'uppercase'}
-                fontVariantNumeric={'tabular-nums'}
                 color={'#737373'}
                 asChild
               >
@@ -146,7 +145,6 @@ const CartComponent = () => {
                 minW={'8rem'}
                 fontSize={'xs'}
                 textTransform={'uppercase'}
-                fontVariantNumeric={'tabular-nums'}
                 color={'#737373'}
                 asChild
               >

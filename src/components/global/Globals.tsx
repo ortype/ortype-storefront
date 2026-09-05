@@ -66,10 +66,11 @@ const Globals = () => {
       <Global
         styles={{
           html: {
-            fontFamily: `Alltaf-Regular`,
+            fontFamily: `Alltaf-Var`,
             fontSize: `${MIN_FONT}rem`,
             fontVariantNumeric: 'tabular-nums',
             lineHeight: `${BASELINE / 2}rem`,
+            fontWeight: 400,
             [MQ[0]]: {
               fontSize: `calc(${MIN_FONT * M_MULTIPLIER}rem + (${
                 MAX_FONT * M_MULTIPLIER

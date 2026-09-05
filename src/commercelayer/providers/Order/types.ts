@@ -32,17 +32,17 @@ export type FontSelectionSummary = {
   /** Number of selected styles for this font */
   fontStyleCount: number
   /** Unit price at current selection count */
-  unitPrice: number
+  unitPrice: string
   /** Unit price if one more style were added */
   nextUnitPrice: number
   /** Full price before discount (all styles priced at count=1) */
-  subtotal: number
+  subtotal: string
   /** Discount percentage (0–1) at current count */
   percentageDiscount: number
   /** Total discount amount in display units (EUR, not cents) */
-  totalDiscount: number
+  totalDiscount: string
   /** Final total after discount in display units */
-  total: number
+  total: string
 }
 
 /** Pre-computed price summary for a font group (full family or subfamily) */

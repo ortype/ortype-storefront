@@ -18,7 +18,6 @@ export const FieldsetLegend: React.FC<Props> = ({
       px={px}
       fontSize={'xs'}
       textTransform={'uppercase'}
-      fontVariantNumeric={'tabular-nums'}
       color={'#737373'}
       asChild
     >

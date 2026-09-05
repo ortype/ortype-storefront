@@ -7,6 +7,69 @@ import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { AnimatePresence, motion, type Variants } from 'framer-motion'
 
+/**
+ * Formats a price for display with European-style number formatting (e.g., 12.500,50 EUR).
+ * Accepts a string parameter, parses it to a number, and returns a JSX.Element.
+ * The decimal part is displayed as superscript.
+ * Handles edge cases like invalid numbers or integers with no decimal places.
+ */
+
+export function formatPriceWithSuperscript(
+  price: string,
+  locale: 'de-DE' | 'en-US' = 'de-DE'
+): JSX.Element {
+  const numPrice = parseFloat(price.replace(',', '.'))
+
+  if (isNaN(numPrice)) {
+    return <>{price}</>
+  }
+
+  const formatter = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })
+
+  const parts = formatter.formatToParts(numPrice)
+
+  let integerPart = ''
+  let decimalPart = ''
+
+  for (const part of parts) {
+    if (part.type === 'integer') {
+      integerPart = part.value
+    } else if (part.type === 'decimal') {
+      // Skip the decimal separator itself
+      continue
+    } else if (part.type === 'fraction') {
+      decimalPart = part.value
+    }
+  }
+
+  if (!decimalPart) {
+    return <>{integerPart}</>
+  }
+
+  // Get the decimal separator for the locale
+  const decimalSeparator =
+    formatter.formatToParts(1.1).find((p) => p.type === 'decimal')?.value ||
+    '.'
+
+  return (
+    <>
+      {integerPart}
+      {decimalSeparator}
+      <span
+        style={{
+          fontVariantNumeric: 'tabular-nums',
+          fontFeatureSettings: '"sups"',
+        }}
+      >
+        {decimalPart}
+      </span>
+    </>
+  )
+}
+
 import {
   Box,
   Button,
@@ -319,11 +382,12 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text textStyle={summaryFontSize} w={'50%'}>
+              <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Licenses`}
               </Text>
               <Text
+                as={'span'}
                 pl={1}
                 textStyle={summaryFontSize}
               >{`${licensesCount}`}</Text>
@@ -335,11 +399,12 @@ export const Buy = () => {
               alignItems={'center'}
               pb={2}
             >
-              <Text textStyle={summaryFontSize} w={'50%'}>
+              <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Styles`}
               </Text>
               <Text
+                as={'span'}
                 pl={1}
                 textStyle={summaryFontSize}
               >{`${fontLineItemCount}`}</Text>
@@ -351,26 +416,13 @@ export const Buy = () => {
               alignItems={'flex-start'}
               pb={2}
             >
-              <Text textStyle={summaryFontSize} w={'50%'}>
+              <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Unit Price`}
               </Text>
-              <Box>
-                <Text
-                  pl={1}
-                  textStyle={summaryFontSize}
-                >{`${baseUnit}`}</Text>
-                {/*<Text
-                  pl={1}
-                  textStyle={summaryFontSize}
-                  textDecoration={'line-through'}
-                  color={'brand.400'}
-                >{`${baseUnit}`}</Text>
-                <Text
-                  pl={1}
-                  textStyle={summaryFontSize}
-                >{`${unitPrice}`}</Text>*/}
-              </Box>
+              <Text as={'span'} pl={1} textStyle={summaryFontSize}>
+                {formatPriceWithSuperscript(unitPrice)}
+              </Text>
             </Flex>
             <Flex
               w={'full'}
@@ -383,19 +435,16 @@ export const Buy = () => {
               alignItems={'flex-start'}
               pb={2}
             >
-              <Text textStyle={summaryFontSize} w={'50%'}>
+              <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
                 {' '}
                 {`Subtotal`}
               </Text>
-              <Text
-                pl={1}
-                textStyle={summaryFontSize}
-                // color={'brand.400'}
-                // textDecoration={'line-through'}
-              >{`${subtotal}`}</Text>
+              <Text as={'span'} pl={1} textStyle={summaryFontSize}>
+                {formatPriceWithSuperscript(subtotal)}
+              </Text>
             </Flex>
             <Presence
-              present={totalDiscount > 0}
+              present={parseInt(totalDiscount) > 0}
               animationName={{
                 _open: 'slide-from-top, fade-in',
                 _closed: 'slide-to-top, fade-out',
@@ -417,16 +466,10 @@ export const Buy = () => {
                 >
                   {`Discounts (${percentageDiscount}%)`}
                 </Text>
-                <Box>
-                  {/*<Text
-                    pl={1}
-                    textStyle={summaryFontSize}
-                  >{`${percentageDiscount}% OFF`}</Text>*/}
-                  <Text
-                    pl={1}
-                    textStyle={summaryFontSize}
-                  >{`-${totalDiscount}`}</Text>
-                </Box>
+                <Text pl={1} textStyle={summaryFontSize}>
+                  {`-`}
+                  {formatPriceWithSuperscript(totalDiscount)}
+                </Text>
               </Flex>
             </Presence>
             <Flex
@@ -444,10 +487,9 @@ export const Buy = () => {
               >
                 {`TOTAL EUR`}
               </Text>
-              <Text
-                pl={1}
-                textStyle={{ base: 'xl', lg: 'md' }}
-              >{`${total}`}</Text>
+              <Text as={'span'} pl={1} textStyle={{ base: 'xl', lg: 'md' }}>
+                {formatPriceWithSuperscript(total)}
+              </Text>
             </Flex>
           </VStack>
           {/* SAVE CONFIGURATION */}
