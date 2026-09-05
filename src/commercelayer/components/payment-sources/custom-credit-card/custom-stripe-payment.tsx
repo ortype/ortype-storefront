@@ -22,6 +22,7 @@ import type {
 } from '@stripe/stripe-js'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { CustomStripePaymentProps } from './types'
+import { ALLTAF_VF_BASE } from 'src/components/global/Globals'
 
 interface CustomStripePaymentFormProps {
   stripe: Stripe | null
@@ -418,7 +419,8 @@ const CustomStripePaymentForm: React.FC<CustomStripePaymentFormProps> = ({
     fonts: [
       {
         family: 'Alltaf-Regular',
-        src: 'url(https://assets.ortype.is/v3/alltaf-regular-webfont.woff) format(woff2)',
+        // src: 'url(https://assets.ortype.is/v3/alltaf-regular-webfont.woff) format(woff2)',
+        src: `url("${ALLTAF_VF_BASE}.woff2") format("woff2")`,
         weight: '400',
       },
     ],
@@ -429,7 +431,7 @@ const CustomStripePaymentForm: React.FC<CustomStripePaymentFormProps> = ({
         colorPrimary: 'black',
         colorBackground: '#EEE',
         fontSizeBase: '20px',
-        fontFamily: 'Alltaf-Regular, sans',
+        fontFamily: 'Alltaf-Var, sans',
       },
       theme: 'flat',
       labels: 'floating',

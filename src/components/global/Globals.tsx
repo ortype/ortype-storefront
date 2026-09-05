@@ -33,15 +33,22 @@ const {
   BREAKPOINTS,
 } = FontScale
 
+// `OrAlltafWebVF` is a variable font (wght axis 400-700) served statically
+// from ortype-graphql-api's /public folder. Both faces below load the same
+// file, pinned to the `wght` coordinate matching their named instance
+// (Regular=400, Bold=700), so existing `fontFamily: 'Alltaf-Regular'` /
+// `'Alltaf-Bold'` usages keep working unchanged.
+export const ALLTAF_VF_BASE = `${process.env.NEXT_PUBLIC_API_URL}/OrAlltafWebVF`
+
 const Globals = () => {
   return (
     <>
       <Global
         styles={{
           '@font-face': {
-            fontFamily: 'Alltaf-Regular',
-            src: 'url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff2") format("woff2"), url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff") format("woff")',
-            fontWeight: 'normal',
+            fontFamily: 'Alltaf-Var',
+            src: `url("${ALLTAF_VF_BASE}.woff2") format("woff2"), url("${ALLTAF_VF_BASE}.woff") format("woff")`,
+            fontWeight: '400 700',
             fontStyle: 'normal',
           },
         }}
@@ -49,9 +56,9 @@ const Globals = () => {
       <Global
         styles={{
           '@font-face': {
-            fontFamily: 'Alltaf-Bold',
-            src: 'url("https://assets.ortype.is/v3/OrAlltafOTF-Bold.woff2") format("woff2"), url("https://assets.ortype.is/v3/OrAlltafOTF-Bold.woff") format("woff")',
-            fontWeight: 'normal',
+            fontFamily: 'Alltaf-Regular',
+            src: `url("${ALLTAF_VF_BASE}.woff2") format("woff2"), url("${ALLTAF_VF_BASE}.woff") format("woff")`,
+            fontWeight: 400,
             fontStyle: 'normal',
           },
         }}

@@ -56,7 +56,8 @@ export const VerticalText: FC<VerticalTextProps> = ({
             fontSize={fontSize}
             textAlign='center'
             textTransform={'uppercase'}
-            fontFamily={'Alltaf-Bold'}
+            fontFamily={'Alltaf-Var'}
+            fontWeight={700}
           >
             {char}
           </Span>

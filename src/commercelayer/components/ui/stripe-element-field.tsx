@@ -147,7 +147,7 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
           fontSize: '20px', // these get reset by element updater
           lineHeight: '1.5rem',
           color: 'black',
-          fontFamily: 'Alltaf-Regular, sans',
+          fontFamily: 'Alltaf-Var, sans',
           fontWeight: '400',
           // '-webkit-font-smoothing': 'antialiased', // @TODO: how to implement this prop in the iframe?
           '::placeholder': {

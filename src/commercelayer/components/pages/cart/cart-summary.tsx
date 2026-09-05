@@ -117,7 +117,8 @@ const Summary = () => {
           columns={2}
           py={3}
           borderBottom={'1px solid #CEC9AB'}
-          fontFamily={'Alltaf-Bold'}
+          fontFamily={'Alltaf-Var'}
+          fontWeight={500}
         >
           <Box
             fontSize={'lg'}

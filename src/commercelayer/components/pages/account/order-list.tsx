@@ -99,7 +99,8 @@ function OrderList({ id, type = 'orders' }: Props): JSX.Element {
                 <Badge
                   variant={'outline'}
                   size={'sm'}
-                  fontFamily={'Alltaf-Bold'}
+                  fontFamily={'Alltaf-Var'}
+                  fontWeight={500}
                   colorPalette={
                     order.payment_status === 'paid' ? 'green' : 'gray'
                   }
