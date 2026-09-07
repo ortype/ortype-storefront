@@ -1,9 +1,11 @@
 'use client'
+import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   computeOrderTotals,
   expandAndGroupLineItems,
   type ExpandedFontGroup,
 } from '@/commercelayer/utils/expand-group-projections'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import {
   Box,
   Collapsible,
@@ -17,8 +19,6 @@ import {
 import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
-import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
-import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
 
 const MotionBox = motion(Box)
 
@@ -74,8 +74,7 @@ const SummaryGroup: React.FC<{
               fontSize={'sm'}
               justifyContent={'flex-end'}
             >
-              {formatPriceWithSuperscript(group.groupTotalCents, priceLocale)}{' '}
-              EUR
+              {formatPrice(group.groupTotalCents, priceLocale)} EUR
             </Flex>
           </SimpleGrid>
         </HStack>
@@ -95,10 +94,7 @@ const SummaryGroup: React.FC<{
             <Box fontSize={'xs'}>{style.licenseTypeLabels.join(', ')}</Box>
             <Box textAlign={'right'}>
               {style.priceCents != null ? (
-                <>
-                  {formatPriceWithSuperscript(style.priceCents, priceLocale)}{' '}
-                  EUR
-                </>
+                <>{formatPrice(style.priceCents, priceLocale)} EUR</>
               ) : (
                 ''
               )}
@@ -232,7 +228,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               {'Subtotal (excl. discounts)'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {formatPriceWithSuperscript(subtotalCents, priceLocale)} EUR
+              {formatPrice(subtotalCents, priceLocale)} EUR
             </Box>
           </SimpleGrid>
           {totalDiscountCents > 0 && (
@@ -248,8 +244,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               </Box>
               <Box fontSize={'lg'} textAlign={'right'}>
                 {'-'}
-                {formatPriceWithSuperscript(totalDiscountCents, priceLocale)}{' '}
-                EUR
+                {formatPrice(totalDiscountCents, priceLocale)} EUR
               </Box>
             </SimpleGrid>
           )}
@@ -264,7 +259,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <Box fontSize={'xl'} textAlign={'right'}>
               {order && (
                 <>
-                  {formatPriceWithSuperscript(
+                  {formatPrice(
                     order.subtotal_taxable_amount_cents,
                     priceLocale
                   )}{' '}

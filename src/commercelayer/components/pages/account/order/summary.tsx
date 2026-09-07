@@ -6,7 +6,7 @@ import {
   expandLineItems,
   filterShoppableItems,
 } from '@/commercelayer/utils/expand-group-projections'
-import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import {
   Box,
   Button,
@@ -210,7 +210,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             {'Subtotal (excl. discounts)'}
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
-            {formatPriceWithSuperscript(subtotalCents, priceLocale)} EUR
+            {formatPrice(subtotalCents, priceLocale)} EUR
           </Box>
         </SimpleGrid>
         {totalDiscountCents > 0 && (
@@ -226,8 +226,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
               {'-'}
-              {formatPriceWithSuperscript(totalDiscountCents, priceLocale)}{' '}
-              EUR
+              {formatPrice(totalDiscountCents, priceLocale)} EUR
             </Box>
           </SimpleGrid>
         )}

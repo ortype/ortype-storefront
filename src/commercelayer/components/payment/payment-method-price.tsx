@@ -25,9 +25,7 @@ export const PaymentMethodPrice: React.FC<PaymentMethodPriceProps> = ({
 
   return (
     <span className={className}>
-      {price === 0
-        ? labelFree
-        : formatPriceWithSuperscript(price, order?.currency_code)}
+      {price === 0 ? labelFree : formatPrice(price, order?.currency_code)}
     </span>
   )
 }
@@ -44,10 +42,7 @@ function getPaymentMethodPrice(paymentMethod: any, order: any): number {
 }
 
 // Helper function to format price
-function formatPriceWithSuperscript(
-  price: number,
-  currency: string = 'USD'
-): string {
+function formatPrice(price: number, currency: string = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency,

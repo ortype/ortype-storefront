@@ -1,5 +1,5 @@
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
-import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
 import Link from 'next/link'
 import React from 'react'
@@ -49,15 +49,8 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
       </HStack>
 
       {percentageDiscount === 0 ? (
-        <Box
-          bg={'#FFF8D3'}
-          borderRadius={30}
-          py={4}
-          px={6}
-          fontSize={'xl'}
-        >
-          {formatPriceWithSuperscript(fullUnitPriceTotalCents, priceLocale)}{' '}
-          EUR
+        <Box bg={'#FFF8D3'} borderRadius={30} py={4} px={6} fontSize={'xl'}>
+          {formatPrice(fullUnitPriceTotalCents, priceLocale)} EUR
         </Box>
       ) : (
         // DISCOUNT
@@ -95,10 +88,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
                     '–– EUR'
                   ) : (
                     <>
-                      {formatPriceWithSuperscript(
-                        discountedPriceTotalCents,
-                        priceLocale
-                      )}{' '}
+                      {formatPrice(discountedPriceTotalCents, priceLocale)}{' '}
                       EUR
                     </>
                   )}
@@ -111,11 +101,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
                   fontSize={'lg'}
                   color={'brand.400'}
                 >
-                  {formatPriceWithSuperscript(
-                    fullUnitPriceTotalCents,
-                    priceLocale
-                  )}{' '}
-                  {'EUR'}
+                  {formatPrice(fullUnitPriceTotalCents, priceLocale)} {'EUR'}
                 </Text>
               )}
             </VStack>

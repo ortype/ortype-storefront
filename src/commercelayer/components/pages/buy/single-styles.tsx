@@ -1,5 +1,5 @@
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
-import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
 
@@ -100,16 +100,16 @@ export const SingleStyles: React.FC<Props> = ({
             opacity={0.6}
             textDecorationLine={'line-through'}
           >
-            {formatPriceWithSuperscript(unitPriceCents, priceLocale)}
+            {formatPrice(unitPriceCents, priceLocale)}
           </Text>
         )}
         {isSelected ? (
           <Text as={'span'} fontSize={'xs'} opacity={0.6}>
-            {formatPriceWithSuperscript(unitPriceCents, priceLocale)} EUR
+            {formatPrice(unitPriceCents, priceLocale)} EUR
           </Text>
         ) : (
           <Text as={'span'} fontSize={'xs'}>
-            {formatPriceWithSuperscript(nextUnitPriceCents, priceLocale)} EUR
+            {formatPrice(nextUnitPriceCents, priceLocale)} EUR
           </Text>
         )}
       </Flex>

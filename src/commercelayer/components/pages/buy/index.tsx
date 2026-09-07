@@ -6,7 +6,7 @@ import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
-import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import {
   Box,
   Button,
@@ -360,7 +360,7 @@ export const Buy = () => {
                 {`Unit Price`}
               </Text>
               <Text as={'span'} pl={1} textStyle={summaryFontSize}>
-                {formatPriceWithSuperscript(unitPriceCents, priceLocale)}
+                {formatPrice(unitPriceCents, priceLocale)}
               </Text>
             </Flex>
             <Flex
@@ -379,7 +379,7 @@ export const Buy = () => {
                 {`Subtotal`}
               </Text>
               <Text as={'span'} pl={1} textStyle={summaryFontSize}>
-                {formatPriceWithSuperscript(subtotalCents, priceLocale)}
+                {formatPrice(subtotalCents, priceLocale)}
               </Text>
             </Flex>
             <Presence
@@ -407,10 +407,7 @@ export const Buy = () => {
                 </Text>
                 <Text pl={1} textStyle={summaryFontSize}>
                   {`-`}
-                  {formatPriceWithSuperscript(
-                    totalDiscountCents,
-                    priceLocale
-                  )}
+                  {formatPrice(totalDiscountCents, priceLocale)}
                 </Text>
               </Flex>
             </Presence>
@@ -435,7 +432,7 @@ export const Buy = () => {
                 pl={1}
                 textStyle={summaryFontSize}
               >
-                {formatPriceWithSuperscript(totalCents, priceLocale)}
+                {formatPrice(totalCents, priceLocale)}
               </Text>
             </Flex>
           </VStack>
