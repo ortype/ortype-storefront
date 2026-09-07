@@ -1,6 +1,6 @@
 import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
-import { formatPrice } from '@/commercelayer/utils/prices'
+import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import type { FontGroup as FontGroupType } from './typefaces'
@@ -130,7 +130,7 @@ export const FontGroup: React.FC<Props> = ({
                 fontSize={'xs'}
               >{`${percentageDiscount}%`}</Text>
               <Text className={'discount'} as={'span'} fontSize={'xs'}>
-                {`${formatPrice(totalPriceCents, priceLocale)} EUR`}
+                {formatPriceWithSuperscript(totalPriceCents, priceLocale)} EUR
               </Text>
             </Stack>
             <Box textAlign={'right'}>
@@ -142,7 +142,7 @@ export const FontGroup: React.FC<Props> = ({
                 opacity={0.6}
                 textDecorationLine={'line-through'}
               >
-                {`${formatPrice(fullPriceCents, priceLocale)}`}
+                {formatPriceWithSuperscript(fullPriceCents, priceLocale)}
               </Text>
               <Text
                 as={'span'}

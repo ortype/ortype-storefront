@@ -3,7 +3,7 @@ import { useCartContext } from '@/commercelayer/providers/cart'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   calculateLineItemPrice,
-  formatPrice,
+  formatPriceWithSuperscript,
 } from '@/commercelayer/utils/prices'
 import { Tag } from '@/components/ui/tag'
 import {
@@ -266,9 +266,17 @@ export const CartItem: React.FC<CartItemProps> = ({
           <VStack minW={28} gap={1} alignItems={'flex-end'} pr={3}>
             <HStack gap={4}>
               <Text as={'span'} fontSize={'xs'} lineHeight={0.8}>
-                {displayPriceCents === 0
-                  ? `–– EUR`
-                  : `${formatPrice(displayPriceCents, priceLocale)} EUR`}
+                {displayPriceCents === 0 ? (
+                  '–– EUR'
+                ) : (
+                  <>
+                    {formatPriceWithSuperscript(
+                      displayPriceCents,
+                      priceLocale
+                    )}{' '}
+                    EUR
+                  </>
+                )}
               </Text>
             </HStack>
             {displayPriceCents !== fullPriceCents && (
@@ -279,7 +287,8 @@ export const CartItem: React.FC<CartItemProps> = ({
                 lineHeight={1}
                 color={'brand.400'}
               >
-                {formatPrice(fullPriceCents, priceLocale)} {'EUR'}
+                {formatPriceWithSuperscript(fullPriceCents, priceLocale)}{' '}
+                {'EUR'}
               </Text>
             )}
           </VStack>

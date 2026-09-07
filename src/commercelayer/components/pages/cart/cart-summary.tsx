@@ -2,7 +2,7 @@ import { useOrderContext } from '@/commercelayer/providers/Order'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   calculateLineItemPrice,
-  formatPrice,
+  formatPriceWithSuperscript,
 } from '@/commercelayer/utils/prices'
 import { Box, Flex, Heading, SimpleGrid } from '@chakra-ui/react'
 import type { SkuOption } from '@commercelayer/sdk'
@@ -94,8 +94,8 @@ const Summary = () => {
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
             {subtotalCents === null
-              ? `––`
-              : `${formatPrice(subtotalCents, priceLocale)}`}
+              ? '––'
+              : formatPriceWithSuperscript(subtotalCents, priceLocale)}
           </Box>
         </SimpleGrid>
         {totalDiscountCents != null && totalDiscountCents > 0 && (
@@ -104,7 +104,8 @@ const Summary = () => {
               {'Discounts'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`-${formatPrice(totalDiscountCents, priceLocale)}`}
+              {'-'}
+              {formatPriceWithSuperscript(totalDiscountCents, priceLocale)}
             </Box>
           </SimpleGrid>
         )}
@@ -124,8 +125,8 @@ const Summary = () => {
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
             {totalCents === null
-              ? `––`
-              : `${formatPrice(totalCents, priceLocale)}`}
+              ? '––'
+              : formatPriceWithSuperscript(totalCents, priceLocale)}
           </Box>
         </SimpleGrid>
         <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>

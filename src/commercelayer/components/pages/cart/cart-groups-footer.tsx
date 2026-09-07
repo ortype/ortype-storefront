@@ -1,5 +1,5 @@
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
-import { formatPrice } from '@/commercelayer/utils/prices'
+import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
 import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
 import Link from 'next/link'
 import React from 'react'
@@ -55,7 +55,10 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
           py={4}
           px={6}
           fontSize={'xl'}
-        >{`${formatPrice(fullUnitPriceTotalCents, priceLocale)} EUR`}</Box>
+        >
+          {formatPriceWithSuperscript(fullUnitPriceTotalCents, priceLocale)}{' '}
+          EUR
+        </Box>
       ) : (
         // DISCOUNT
         <HStack gap={0.5} alignItems={'stretch'}>
@@ -88,9 +91,17 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
             >
               <HStack gap={4}>
                 <Text as={'span'} fontSize={'lg'}>
-                  {discountedPriceTotalCents === 0
-                    ? `–– EUR`
-                    : `${formatPrice(discountedPriceTotalCents, priceLocale)} EUR`}
+                  {discountedPriceTotalCents === 0 ? (
+                    '–– EUR'
+                  ) : (
+                    <>
+                      {formatPriceWithSuperscript(
+                        discountedPriceTotalCents,
+                        priceLocale
+                      )}{' '}
+                      EUR
+                    </>
+                  )}
                 </Text>
               </HStack>
               {discountedPriceTotalCents !== fullUnitPriceTotalCents && (
@@ -100,7 +111,11 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
                   fontSize={'lg'}
                   color={'brand.400'}
                 >
-                  {formatPrice(fullUnitPriceTotalCents, priceLocale)} {'EUR'}
+                  {formatPriceWithSuperscript(
+                    fullUnitPriceTotalCents,
+                    priceLocale
+                  )}{' '}
+                  {'EUR'}
                 </Text>
               )}
             </VStack>

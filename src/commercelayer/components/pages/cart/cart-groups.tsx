@@ -38,11 +38,11 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
           fullUnitPriceTotalCents,
           percentageDiscount,
         }) => (
-          <>
+          <div key={parentUid}>
             <VStack
               gap={0.5}
               mb={1}
-              key={parentUid}
+
               alignItems={'stretch'}
               pos={'relative'}
             >
@@ -263,7 +263,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
               fullUnitPriceTotalCents={fullUnitPriceTotalCents}
               percentageDiscount={percentageDiscount}
             />
-          </>
+          </div>
         )
       )}
     </>
