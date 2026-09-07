@@ -13,7 +13,6 @@
 */
 
 // eslint.config.mjs
-import js from '@eslint/js'
 import pluginNext from '@next/eslint-plugin-next'
 import prettier from 'eslint-config-prettier'
 import pluginPrettier from 'eslint-plugin-prettier'
@@ -34,6 +33,11 @@ export default tseslint.config(
       'next-env.d.ts',
       'sanity.types.ts',
       'schema.json',
+      'coverage/',
+      'sanity.types.ts',
+      '.sanity/',
+      '.vercel/',
+      'src/theme-ref/',
     ],
   },
 

@@ -7,7 +7,7 @@
     "build": "next build --webpack",
     "start": "next start --port 8000",
     "format": "npx prettier --write . --ignore-path .gitignore",
-    "lint": "next lint -- --ignore-path .gitignore",
+    "lint": "eslint .",
     "lint:fix": "npm run format && npm run lint -- --fix",
     "type-check": "tsc --noEmit",
     "typegen": "sanity schema extract --force && sanity typegen generate"
@@ -117,7 +117,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.9.6",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0"
   },
   "engines": {
