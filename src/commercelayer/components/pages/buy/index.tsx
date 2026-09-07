@@ -6,8 +6,7 @@ import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
-import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
-import { AnimatePresence, motion, type Variants } from 'framer-motion'
+import { formatPrice } from '@/commercelayer/utils/prices'
 import {
   Box,
   Button,
@@ -20,6 +19,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import { AnimatePresence, motion, type Variants } from 'framer-motion'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import Typefaces from './typefaces'
@@ -92,7 +92,7 @@ export const Buy = () => {
     commitGroup,
     committedGroups,
   } = useOrderContext()
-  const { font, summary, baseUnitCents } = useBuyContext()
+  const { font, summary } = useBuyContext()
   const priceLocale = usePriceLocaleContext()
 
   // Add to cart / Go to cart button state
@@ -360,7 +360,7 @@ export const Buy = () => {
                 {`Unit Price`}
               </Text>
               <Text as={'span'} pl={1} textStyle={summaryFontSize}>
-                {formatPriceWithSuperscript(unitPriceCents, priceLocale)}
+                {formatPrice(unitPriceCents, priceLocale)}
               </Text>
             </Flex>
             <Flex
@@ -379,7 +379,7 @@ export const Buy = () => {
                 {`Subtotal`}
               </Text>
               <Text as={'span'} pl={1} textStyle={summaryFontSize}>
-                {formatPriceWithSuperscript(subtotalCents, priceLocale)}
+                {formatPrice(subtotalCents, priceLocale)}
               </Text>
             </Flex>
             <Presence
@@ -407,7 +407,7 @@ export const Buy = () => {
                 </Text>
                 <Text pl={1} textStyle={summaryFontSize}>
                   {`-`}
-                  {formatPriceWithSuperscript(totalDiscountCents, priceLocale)}
+                  {formatPrice(totalDiscountCents, priceLocale)}
                 </Text>
               </Flex>
             </Presence>
@@ -426,8 +426,13 @@ export const Buy = () => {
               >
                 {`TOTAL EUR`}
               </Text>
-              <Text as={'span'} pl={1} textStyle={{ base: 'xl', lg: 'md' }}>
-                {formatPriceWithSuperscript(totalCents, priceLocale)}
+              <Text
+                fontWeight={500}
+                as={'span'}
+                pl={1}
+                textStyle={summaryFontSize}
+              >
+                {formatPrice(totalCents, priceLocale)}
               </Text>
             </Flex>
           </VStack>

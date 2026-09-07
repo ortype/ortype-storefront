@@ -94,8 +94,8 @@ const Summary = () => {
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
             {subtotalCents === null
-              ? `–– EUR`
-              : `${formatPrice(subtotalCents, priceLocale)} EUR`}
+              ? `––`
+              : `${formatPrice(subtotalCents, priceLocale)}`}
           </Box>
         </SimpleGrid>
         {totalDiscountCents != null && totalDiscountCents > 0 && (
@@ -104,7 +104,7 @@ const Summary = () => {
               {'Discounts'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`-${formatPrice(totalDiscountCents, priceLocale)} EUR`}
+              {`-${formatPrice(totalDiscountCents, priceLocale)}`}
             </Box>
           </SimpleGrid>
         )}
@@ -120,12 +120,12 @@ const Summary = () => {
             textTransform={'uppercase'}
             fontWeight={'normal'}
           >
-            {'Total'}
+            {'Total EUR'}
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
             {totalCents === null
-              ? `–– EUR`
-              : `${formatPrice(totalCents, priceLocale)} EUR`}
+              ? `––`
+              : `${formatPrice(totalCents, priceLocale)}`}
           </Box>
         </SimpleGrid>
         <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>
