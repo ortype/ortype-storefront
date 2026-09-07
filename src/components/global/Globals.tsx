@@ -33,16 +33,25 @@ const {
   BREAKPOINTS,
 } = FontScale
 
-// `OrAlltafWebVF` is a variable font (wght axis 400-700) served statically
+// `OrAlltaf-WebVF` is a variable font (wght axis 400-700) served statically
 // from ortype-graphql-api's /public folder. Both faces below load the same
 // file, pinned to the `wght` coordinate matching their named instance
 // (Regular=400, Bold=700), so existing `fontFamily: 'Alltaf-Regular'` /
 // `'Alltaf-Bold'` usages keep working unchanged.
-export const ALLTAF_VF_BASE = `${process.env.NEXT_PUBLIC_API_URL}/OrAlltafWebVF`
+export const ALLTAF_VF_BASE = `${process.env.NEXT_PUBLIC_API_URL}/OrAlltaf-WebVF`
 
 const Globals = () => {
   return (
     <>
+      <Global
+        styles={{
+          '@font-face': {
+            fontFamily: 'Alltaf-Regular-OTF',
+            src: 'url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff2") format("woff2"), url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff") format("woff")',
+            fontWeight: 'normal',
+          },
+        }}
+      />
       <Global
         styles={{
           '@font-face': {

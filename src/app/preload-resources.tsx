@@ -2,8 +2,9 @@ import type { Webfont } from '@/sanity/lib/webfonts'
 import ReactDOM from 'react-dom'
 
 function resourceType(webfont: Webfont) {
+  if (webfont.vfWoff2 || webfont.woff2) return 'font/woff2'
+  if (webfont.vfWoff || webfont.woff) return 'font/woff'
   if (webfont.vf) return 'font/truetype-variations'
-  if (webfont.woff2) return 'font/woff2'
   return 'font/woff'
 }
 
@@ -15,15 +16,25 @@ function fontFaceBlock(webfont: Webfont) {
     woff,
     woff2,
     vf,
+    vfWoff,
+    vfWoff2,
     fontVariationSettings,
   } = webfont
 
-  if (fontVariationSettings && vf) {
+  if (fontVariationSettings && (vfWoff2 || vfWoff || vf)) {
+    const src = [
+      vfWoff2 && `url("${vfWoff2}") format("woff2-variations")`,
+      vfWoff && `url("${vfWoff}") format("woff-variations")`,
+      vf && `url("${vf}") format("truetype-variations")`,
+    ]
+      .filter(Boolean)
+      .join(', ')
+
     return `
       @font-face {
         font-display: block;
         font-family: "${fontFamilyVariable}";
-        src: url("${vf}") format("truetype-variations");
+        src: ${src};
         font-weight: normal;
         font-style: normal;
       }
@@ -65,7 +76,12 @@ export async function PreloadResources({
   webfonts: Webfont[]
 }) {
   for (const webfont of webfonts) {
-    const url = webfont.vf ?? webfont.woff2 ?? webfont.woff
+    const url =
+      webfont.vfWoff2 ??
+      webfont.vfWoff ??
+      webfont.vf ??
+      webfont.woff2 ??
+      webfont.woff
     if (!url) continue
     ReactDOM.preload(url, {
       as: 'font',

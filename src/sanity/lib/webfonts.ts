@@ -23,6 +23,8 @@ export interface Webfont {
   woff?: string
   woff2?: string
   vf?: string
+  vfWoff?: string
+  vfWoff2?: string
   fontVariationSettings?: string
 }
 
@@ -61,6 +63,8 @@ export function toWebfonts(
     const woff2 = getMetaValue(metafields, 'woff2')
     const otf = getMetaValue(metafields, 'otf')
     const vf = getMetaValue(metafields, 'familyFile')
+    const vfWoff = getMetaValue(metafields, 'familyFileWoff')
+    const vfWoff2 = getMetaValue(metafields, 'familyFileWoff2')
     const axesCount = Number(getMetaValue(metafields, 'axesCount'))
     const isVariable = Number.isFinite(axesCount) && axesCount > 0
 
@@ -85,6 +89,8 @@ export function toWebfonts(
       woff,
       woff2,
       vf,
+      vfWoff,
+      vfWoff2,
       fontVariationSettings,
     }
   })
