@@ -8,6 +8,9 @@ import {
 import type { Batch, Task } from '@commercelayer/sdk-utils'
 import { executeBatch } from '@commercelayer/sdk-utils'
 import { forceOrderAutorefresh } from './forceOrderAutorefresh'
+import type { PriceLocale } from './price-locale'
+
+export type { PriceLocale } from './price-locale'
 
 // Continuous exponential discount curve constants
 const START_DISCOUNT = 0.35 // 35% discount starting at 2 styles
@@ -93,8 +96,6 @@ export function calculateLineItemPrice({
 /*  calculations or used for numeric/truthiness checks.                */
 /* ------------------------------------------------------------------ */
 
-export type PriceLocale = 'de-DE' | 'en-US'
-
 /** Shared formatter: always 2 decimal places, locale-aware grouping. */
 function getPriceFormatter(locale: PriceLocale): Intl.NumberFormat {
   return new Intl.NumberFormat(locale, {
@@ -108,10 +109,7 @@ function getPriceFormatter(locale: PriceLocale): Intl.NumberFormat {
  * showing 2 decimal places and grouped thousands (e.g. 1250050 → "12.500,50"
  * for de-DE, or "12,500.50" for en-US).
  */
-export function formatPrice(
-  cents: number,
-  locale: PriceLocale = 'de-DE'
-): string {
+export function formatPrice(cents: number, locale: PriceLocale): string {
   return getPriceFormatter(locale).format(cents / 100)
 }
 
@@ -122,7 +120,7 @@ export function formatPrice(
  */
 export function formatPriceWithSuperscript(
   cents: number,
-  locale: PriceLocale = 'de-DE'
+  locale: PriceLocale
 ): JSX.Element {
   const formatter = getPriceFormatter(locale)
   const parts = formatter.formatToParts(cents / 100)

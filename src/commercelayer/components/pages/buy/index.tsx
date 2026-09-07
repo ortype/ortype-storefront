@@ -5,6 +5,7 @@ import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeLis
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPriceWithSuperscript } from '@/commercelayer/utils/prices'
 import { AnimatePresence, motion, type Variants } from 'framer-motion'
 import {
@@ -92,6 +93,7 @@ export const Buy = () => {
     committedGroups,
   } = useOrderContext()
   const { font, summary, baseUnitCents } = useBuyContext()
+  const priceLocale = usePriceLocaleContext()
 
   // Add to cart / Go to cart button state
   const [isCommitting, setIsCommitting] = useState(false)
@@ -358,7 +360,7 @@ export const Buy = () => {
                 {`Unit Price`}
               </Text>
               <Text as={'span'} pl={1} textStyle={summaryFontSize}>
-                {formatPriceWithSuperscript(unitPriceCents)}
+                {formatPriceWithSuperscript(unitPriceCents, priceLocale)}
               </Text>
             </Flex>
             <Flex
@@ -377,7 +379,7 @@ export const Buy = () => {
                 {`Subtotal`}
               </Text>
               <Text as={'span'} pl={1} textStyle={summaryFontSize}>
-                {formatPriceWithSuperscript(subtotalCents)}
+                {formatPriceWithSuperscript(subtotalCents, priceLocale)}
               </Text>
             </Flex>
             <Presence
@@ -405,7 +407,7 @@ export const Buy = () => {
                 </Text>
                 <Text pl={1} textStyle={summaryFontSize}>
                   {`-`}
-                  {formatPriceWithSuperscript(totalDiscountCents)}
+                  {formatPriceWithSuperscript(totalDiscountCents, priceLocale)}
                 </Text>
               </Flex>
             </Presence>
@@ -425,7 +427,7 @@ export const Buy = () => {
                 {`TOTAL EUR`}
               </Text>
               <Text as={'span'} pl={1} textStyle={{ base: 'xl', lg: 'md' }}>
-                {formatPriceWithSuperscript(totalCents)}
+                {formatPriceWithSuperscript(totalCents, priceLocale)}
               </Text>
             </Flex>
           </VStack>

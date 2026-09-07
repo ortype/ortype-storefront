@@ -1,4 +1,5 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   calculateLineItemPrice,
   formatPrice,
@@ -9,6 +10,7 @@ import { useMemo } from 'react'
 
 const Summary = () => {
   const { selections, licenseSize, skuOptions } = useOrderContext()
+  const priceLocale = usePriceLocaleContext()
 
   // Compute summary totals from the selection buffer (per-style license types), in cents
   const { subtotalCents, totalDiscountCents, totalCents } = useMemo(() => {
@@ -93,7 +95,7 @@ const Summary = () => {
           <Box fontSize={'lg'} textAlign={'right'}>
             {subtotalCents === null
               ? `–– EUR`
-              : `${formatPrice(subtotalCents)} EUR`}
+              : `${formatPrice(subtotalCents, priceLocale)} EUR`}
           </Box>
         </SimpleGrid>
         {totalDiscountCents != null && totalDiscountCents > 0 && (
@@ -102,7 +104,7 @@ const Summary = () => {
               {'Discounts'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`-${formatPrice(totalDiscountCents)} EUR`}
+              {`-${formatPrice(totalDiscountCents, priceLocale)} EUR`}
             </Box>
           </SimpleGrid>
         )}
@@ -123,7 +125,7 @@ const Summary = () => {
           <Box fontSize={'lg'} textAlign={'right'}>
             {totalCents === null
               ? `–– EUR`
-              : `${formatPrice(totalCents)} EUR`}
+              : `${formatPrice(totalCents, priceLocale)} EUR`}
           </Box>
         </SimpleGrid>
         <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>

@@ -17,6 +17,7 @@ import {
 import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
+import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 
 const MotionBox = motion(Box)
@@ -25,6 +26,7 @@ const MotionBox = motion(Box)
 const SummaryGroup: React.FC<{
   group: ExpandedFontGroup
 }> = ({ group }) => {
+  const priceLocale = usePriceLocaleContext()
   return (
     <Collapsible.Root>
       <Collapsible.Trigger asChild>
@@ -71,7 +73,7 @@ const SummaryGroup: React.FC<{
               alignItems={'center'}
               fontSize={'sm'}
               justifyContent={'flex-end'}
-            >{`${formatPrice(group.groupTotalCents)} EUR`}</Flex>
+            >{`${formatPrice(group.groupTotalCents, priceLocale)} EUR`}</Flex>
           </SimpleGrid>
         </HStack>
       </Collapsible.Trigger>
@@ -90,7 +92,7 @@ const SummaryGroup: React.FC<{
             <Box fontSize={'xs'}>{style.licenseTypeLabels.join(', ')}</Box>
             <Box textAlign={'right'}>
               {style.priceCents != null
-                ? `${formatPrice(style.priceCents)} EUR`
+                ? `${formatPrice(style.priceCents, priceLocale)} EUR`
                 : ''}
             </Box>
           </SimpleGrid>
@@ -126,6 +128,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   emptyText = 'Your cart is empty',
   readonly,
 }) => {
+  const priceLocale = usePriceLocaleContext()
   const {
     groups,
     parentFontCount,
@@ -221,7 +224,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               {'Subtotal (excl. discounts)'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`${formatPrice(subtotalCents)} EUR`}
+              {`${formatPrice(subtotalCents, priceLocale)} EUR`}
             </Box>
           </SimpleGrid>
           {totalDiscountCents > 0 && (
@@ -236,7 +239,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                 {'Discounts'}
               </Box>
               <Box fontSize={'lg'} textAlign={'right'}>
-                {`-${formatPrice(totalDiscountCents)} EUR`}
+                {`-${formatPrice(totalDiscountCents, priceLocale)} EUR`}
               </Box>
             </SimpleGrid>
           )}
@@ -249,7 +252,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               {'Total'}
             </Box>
             <Box fontSize={'xl'} textAlign={'right'}>
-              {`${order && formatPrice(order.subtotal_taxable_amount_cents)} EUR`}
+              {`${order && formatPrice(order.subtotal_taxable_amount_cents, priceLocale)} EUR`}
             </Box>
           </SimpleGrid>
         </MotionBox>

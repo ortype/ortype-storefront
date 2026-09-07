@@ -1,3 +1,4 @@
+import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
 import Link from 'next/link'
@@ -16,6 +17,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
   fullUnitPriceTotalCents,
   percentageDiscount,
 }) => {
+  const priceLocale = usePriceLocaleContext()
   return (
     <HStack
       justifyContent={'space-between'}
@@ -53,7 +55,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
           py={4}
           px={6}
           fontSize={'xl'}
-        >{`${formatPrice(fullUnitPriceTotalCents)} EUR`}</Box>
+        >{`${formatPrice(fullUnitPriceTotalCents, priceLocale)} EUR`}</Box>
       ) : (
         // DISCOUNT
         <HStack gap={0.5} alignItems={'stretch'}>
@@ -88,7 +90,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
                 <Text as={'span'} fontSize={'lg'}>
                   {discountedPriceTotalCents === 0
                     ? `–– EUR`
-                    : `${formatPrice(discountedPriceTotalCents)} EUR`}
+                    : `${formatPrice(discountedPriceTotalCents, priceLocale)} EUR`}
                 </Text>
               </HStack>
               {discountedPriceTotalCents !== fullUnitPriceTotalCents && (
@@ -98,7 +100,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
                   fontSize={'lg'}
                   color={'brand.400'}
                 >
-                  {formatPrice(fullUnitPriceTotalCents)} {'EUR'}
+                  {formatPrice(fullUnitPriceTotalCents, priceLocale)} {'EUR'}
                 </Text>
               )}
             </VStack>

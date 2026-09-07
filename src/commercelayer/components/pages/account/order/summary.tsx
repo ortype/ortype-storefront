@@ -1,4 +1,5 @@
 'use client'
+import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   computeOrderTotals,
   expandAndGroupLineItems,
@@ -31,6 +32,7 @@ interface OrderSummaryProps {
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
+  const priceLocale = usePriceLocaleContext()
   // Expanded style count (group projections count as N styles, not 1 line item)
   const { fontCount, subtotalCents, totalDiscountCents } = useMemo(() => {
     if (!order?.line_items) {
@@ -208,7 +210,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             {'Subtotal (excl. discounts)'}
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
-            {`${formatPrice(subtotalCents)} EUR`}
+            {`${formatPrice(subtotalCents, priceLocale)} EUR`}
           </Box>
         </SimpleGrid>
         {totalDiscountCents > 0 && (
@@ -223,7 +225,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
               {'Discounts'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {`-${formatPrice(totalDiscountCents)} EUR`}
+              {`-${formatPrice(totalDiscountCents, priceLocale)} EUR`}
             </Box>
           </SimpleGrid>
         )}

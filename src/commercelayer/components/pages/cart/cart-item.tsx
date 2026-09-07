@@ -1,5 +1,6 @@
 import type { CartBufferItem } from '@/commercelayer/providers/cart'
 import { useCartContext } from '@/commercelayer/providers/cart'
+import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   calculateLineItemPrice,
   formatPrice,
@@ -40,6 +41,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     toggleStyle,
     setStyleLicenseTypes,
   } = useCartContext()
+  const priceLocale = usePriceLocaleContext()
 
   const { skuCode, parentUid, entry, groupCount, isInFullGroup } = item
   const canRemove = !isInFullGroup
@@ -266,7 +268,7 @@ export const CartItem: React.FC<CartItemProps> = ({
               <Text as={'span'} fontSize={'xs'} lineHeight={0.8}>
                 {displayPriceCents === 0
                   ? `–– EUR`
-                  : `${formatPrice(displayPriceCents)} EUR`}
+                  : `${formatPrice(displayPriceCents, priceLocale)} EUR`}
               </Text>
             </HStack>
             {displayPriceCents !== fullPriceCents && (
@@ -277,7 +279,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                 lineHeight={1}
                 color={'brand.400'}
               >
-                {formatPrice(fullPriceCents)} {'EUR'}
+                {formatPrice(fullPriceCents, priceLocale)} {'EUR'}
               </Text>
             )}
           </VStack>

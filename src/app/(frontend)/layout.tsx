@@ -1,3 +1,8 @@
+import {
+  PRICE_LOCALE_COOKIE,
+  PRICE_LOCALE_HEADER,
+  type PriceLocale,
+} from '@/commercelayer/utils/price-locale'
 import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integration-commerce-layer'
 import Providers from '@/components/global/Providers'
 import { DisableDraftMode } from '@/sanity/components/DisableDraftMode'
@@ -6,7 +11,7 @@ import { normalizeLicenseMetrics } from '@/sanity/lib/normalize'
 import { licenseMetricsQuery, uiLabelsQuery } from '@/sanity/lib/queries'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
-import { draftMode } from 'next/headers'
+import { cookies, draftMode, headers } from 'next/headers'
 import Globals from 'src/components/global/Globals'
 import './storefront.css'
 
@@ -57,10 +62,23 @@ export default async function FrontendLayout({
     )
   }
 
+  // Resolved in src/proxy.ts from the visitor's Accept-Language header.
+  // Fall back to the cookie (e.g. static/edge caching edge cases), then to
+  // 'en-US' if neither is present.
+  const priceLocale =
+    ((await headers()).get(PRICE_LOCALE_HEADER) as PriceLocale | null) ??
+    ((await cookies()).get(PRICE_LOCALE_COOKIE)?.value as PriceLocale | null) ??
+    'en-US'
+
   return (
     <>
       <Globals />
-      <Providers marketId={marketId} labels={labels} metrics={metrics}>
+      <Providers
+        marketId={marketId}
+        labels={labels}
+        metrics={metrics}
+        priceLocale={priceLocale}
+      >
         {children}
       </Providers>
       {(await draftMode()).isEnabled && (

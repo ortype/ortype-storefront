@@ -1,5 +1,10 @@
 import { i18nRouter } from 'next-i18n-router'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  parseAcceptLanguage,
+  PRICE_LOCALE_COOKIE,
+  PRICE_LOCALE_HEADER,
+} from './commercelayer/utils/price-locale'
 import i18nConfig from '../i18nConfig'
 
 // Cookie Next.js sets when draft mode is enabled. `draftMode()` from
@@ -75,8 +80,31 @@ export async function proxy(request: NextRequest) {
     return applyNoIndexHeaders(request, authResponse)
   }
 
-  // If auth passed, continue with i18n routing
-  return applyNoIndexHeaders(request, i18nRouter(request, i18nConfig))
+  // Resolve the EU-vs-US display locale for price formatting from the
+  // visitor's Accept-Language header. This is independent of i18n routing
+  // (the app is English-only) and works identically in dev and prod.
+  const priceLocale = parseAcceptLanguage(request.headers.get('accept-language'))
+
+  // `i18nRouter` internally does `new Headers(request.headers)` to build the
+  // request-header override on the response it returns, so we must add our
+  // header to the *input* request before calling it — setting it only on the
+  // returned response would not propagate to `headers()` in server components.
+  const headersWithPriceLocale = new Headers(request.headers)
+  headersWithPriceLocale.set(PRICE_LOCALE_HEADER, priceLocale)
+  const requestWithPriceLocale = new NextRequest(request, {
+    headers: headersWithPriceLocale,
+  })
+
+  // Continue with i18n routing using the augmented request
+  const response = i18nRouter(requestWithPriceLocale, i18nConfig)
+
+  // Persist the resolved price locale across requests
+  response.cookies.set(PRICE_LOCALE_COOKIE, priceLocale, {
+    maxAge: 60 * 60 * 24 * 365, // one year
+    sameSite: 'lax',
+  })
+
+  return applyNoIndexHeaders(request, response)
 }
 
 // applies this middleware only to files in the app directory
