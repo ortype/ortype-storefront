@@ -166,9 +166,11 @@ export const OnAir: FC<OnAirProps> = ({ ...props }) => {
     <Box pos={'fixed'} bottom={4} left={4}>
       <IconButton
         rounded={'full'}
-        bg={'red'}
+        bg={isHovered ? 'red' : 'white'}
+        // overflow={'hidden'}
+        // boxShadow={'inset 0 0 0 4px red'}
         size={'sm'}
-        transition={'all 0.3s ease'}
+        transition={'scale 0.3s ease, height 0.3s ease, background 0.3s ease'}
         h={isHovered ? '8rem' : 'var(--or-sizes-8)'}
         transform={isHovered ? 'scale(0.95)' : 'none'}
         onMouseEnter={() => setIsHovered(true)}
@@ -176,6 +178,41 @@ export const OnAir: FC<OnAirProps> = ({ ...props }) => {
         asChild
       >
         <Link href={'/poem'}>
+          {!isHovered && (
+            <>
+              <Box
+                as={'span'}
+                pos={'absolute'}
+                w={'full'}
+                h={'full'}
+                // bg={'inherit'}
+                bg={'red'}
+                borderRadius={'inherit'}
+                opacity={0.8}
+                animation={'ping'}
+                animationDuration={'4s'}
+                animationTimingFunction={'ease-out'}
+                animationIterationCount={'infinite'}
+              />
+              <Box
+                as={'span'}
+                pos={'absolute'}
+                borderRadius={'inherit'}
+                left={'50%'}
+                top={'50%'}
+                transform={'translateX(-50%) translateY(-50%)'}
+                w={2}
+                h={2}
+                animation={'pulse'}
+                animationDuration={'4s'}
+                animationDelay={'1s'}
+                animationTimingFunction={'ease-out'}
+                animationIterationCount={'infinite'}
+                // bg={'inherit'}
+                bg={'red'}
+              />
+            </>
+          )}
           <AbsoluteCenter
             display='inline-flex'
             axis={'horizontal'}

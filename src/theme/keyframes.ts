@@ -14,6 +14,9 @@ export const keyframes = {
     '30%': { opacity: `100%` },
     '100%': { opacity: `50%` },
   },
+  onair: {
+    '100%': { opacity: 0, transform: 'scale(2)' },
+  },
   spin: {
     '0%': {
       transform: 'rotate(0deg)',
@@ -24,7 +27,7 @@ export const keyframes = {
   },
   ping: {
     '75%, 100%': {
-      transform: 'scale(2)',
+      transform: 'scale(1.25)',
       opacity: '0',
     },
   },
