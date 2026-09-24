@@ -1,8 +1,8 @@
 import { BodyClassname } from '@/components/global/body-classname'
+import { sanityFetch } from '@/sanity/lib/live'
+import { webfontsQuery } from '@/sanity/lib/queries'
+import { toWebfonts } from '@/sanity/lib/webfonts'
 import type { Metadata } from 'next'
-import { sanityFetch } from 'src/sanity/lib/live'
-import { webfontsQuery } from 'src/sanity/lib/queries'
-import { toWebfonts } from 'src/sanity/lib/webfonts'
 import './globals.css'
 import { PreloadResources } from './preload-resources'
 

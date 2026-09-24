@@ -1,5 +1,6 @@
 'use client'
 import { Tester } from '@/components/composite/Tester'
+import ListTableToggle from '@/components/composite/Tester/list-table-toggle'
 import {
   getTesterCssVars,
   TESTER_ITEM_CSS,
@@ -10,7 +11,6 @@ import { resolveHref } from '@/sanity/lib/utils'
 import type { HomeFont } from '@/types'
 import { GridItem, SimpleGrid } from '@chakra-ui/react'
 import { useCallback, useMemo, useState } from 'react'
-import ListTableToggle from 'src/components/composite/Tester/list-table-toggle'
 
 interface ChildLoadingStates {
   [childId: string]: boolean
