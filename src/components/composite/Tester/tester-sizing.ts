@@ -4,11 +4,31 @@
 // the transition between them (see TESTER_SCALE_STATIC_VARS and
 // use-tester-scale-transition.ts). Keeping the raw numbers here means
 // the two derivations can't drift out of sync.
+//
+// `fontSize`/`lineHeight`/`paddingTop` are CSS `clamp()` strings rather
+// than plain rem numbers: the list-mode specimen is the one place on the
+// page where fluid (as opposed to Globals.tsx's stepped) scaling matters
+// most, so it keeps its own independent fluid formula. Each is expressed
+// in `px`/`vw` (not `rem`) so it does NOT compound with Globals.tsx's
+// now-stepped root font-size - otherwise it would inherit an extra jump
+// at every root breakpoint on top of its own smoothing. `paddingTop`
+// keeps the same 0.5/6 ratio to `fontSize` that the old flat rem values
+// had, so it still scales in lockstep with the specimen text.
 const DEFAULT = {
-  fontSize: 6,
-  lineHeight: 8,
-  paddingTop: 0.5,
+  fontSize: 'clamp(86px, calc(3.24vw + 67.88px), 130px)',
+  lineHeight: 'clamp(115px, calc(4.32vw + 90.48px), 173px)',
+  paddingTop: 'clamp(7.17px, calc(0.27vw + 5.66px), 10.83px)',
 } as const
+
+// `DEFAULT.fontSize` is now a `clamp()` string, so it can no longer be
+// divided against `TABLE.fontSize[bp]` in JS (see TESTER_SCALE_STATIC_VARS
+// below). This is a plain-number stand-in - the clamp's upper bound,
+// expressed in the same rem magnitude the old flat value used - for that
+// ratio math only. The scale-flip it drives is a sub-300ms transitional
+// illusion (see use-tester-scale-transition.ts), so an approximation that
+// won't be pixel-perfect at every viewport width is an acceptable
+// trade-off for keeping the trick working.
+const DEFAULT_SCALE_REFERENCE_REM = 8.125
 
 const TABLE = {
   fontSize: { base: 2, sm: 3, '2xl': 3.25, '3xl': 4 },
@@ -50,9 +70,13 @@ export const TESTER_CSS_VARS = {
     '--tester-padding-top': `${TABLE.paddingTop}rem`,
   },
   default: {
-    '--tester-font-size': `${DEFAULT.fontSize}rem`,
-    '--tester-line-height': `${DEFAULT.lineHeight}rem`,
-    '--tester-padding-top': `${DEFAULT.paddingTop}rem`,
+    // `DEFAULT.fontSize`/`DEFAULT.lineHeight`/`DEFAULT.paddingTop` are
+    // already complete `clamp()` expressions (see the constant above) -
+    // unlike the plain numeric TABLE values above, they must NOT get a
+    // `rem` suffix appended.
+    '--tester-font-size': DEFAULT.fontSize,
+    '--tester-line-height': DEFAULT.lineHeight,
+    '--tester-padding-top': DEFAULT.paddingTop,
   },
 } as const
 
@@ -80,16 +104,16 @@ export const TESTER_PADDING_TOP_VAR = 'var(--tester-padding-top)'
 // state), so no responsive math has to happen in JS/at runtime.
 export const TESTER_SCALE_STATIC_VARS = {
   '--tester-scale-to-table': {
-    base: DEFAULT.fontSize / TABLE.fontSize.base,
-    sm: DEFAULT.fontSize / TABLE.fontSize.sm,
-    '2xl': DEFAULT.fontSize / TABLE.fontSize['2xl'],
-    '3xl': DEFAULT.fontSize / TABLE.fontSize['3xl'],
+    base: DEFAULT_SCALE_REFERENCE_REM / TABLE.fontSize.base,
+    sm: DEFAULT_SCALE_REFERENCE_REM / TABLE.fontSize.sm,
+    '2xl': DEFAULT_SCALE_REFERENCE_REM / TABLE.fontSize['2xl'],
+    '3xl': DEFAULT_SCALE_REFERENCE_REM / TABLE.fontSize['3xl'],
   },
   '--tester-scale-to-list': {
-    base: TABLE.fontSize.base / DEFAULT.fontSize,
-    sm: TABLE.fontSize.sm / DEFAULT.fontSize,
-    '2xl': TABLE.fontSize['2xl'] / DEFAULT.fontSize,
-    '3xl': TABLE.fontSize['3xl'] / DEFAULT.fontSize,
+    base: TABLE.fontSize.base / DEFAULT_SCALE_REFERENCE_REM,
+    sm: TABLE.fontSize.sm / DEFAULT_SCALE_REFERENCE_REM,
+    '2xl': TABLE.fontSize['2xl'] / DEFAULT_SCALE_REFERENCE_REM,
+    '3xl': TABLE.fontSize['3xl'] / DEFAULT_SCALE_REFERENCE_REM,
   },
 } as const
 
