@@ -119,40 +119,65 @@ export const FontItem: React.FC<Props> = ({
               pos={'relative'}
               onClick={handleClick}
             >
-              {groupFullySelected && (
-                <Box
-                  _before={{
-                    content: '""',
-                    pos: 'absolute',
-                    left: hasMultipleGroups ? 14 : 6,
-                    top: 5,
-                    bottom: 5,
-                    w: 3,
-                    borderLeft: '2px solid #000',
-                    borderRadius: '0',
-                    borderTop: '2px solid #000',
-                    borderBottom: '2px solid #000',
-                    borderRight: '2px solid transparent',
-                    zIndex: 0,
-                  }}
-                />
-              )}
-              {group.allVariants?.map((variant) => {
-                if (!variant) return null
-                return (
-                  <SingleStyles
-                    key={variant._id}
-                    skuCode={variant._id}
-                    className={variant._id}
-                    name={`${font.shortName} ${variant.optionName}`}
-                    isSelected={!!selectedSkus[variant._id]}
-                    allSelected={groupFullySelected}
-                    unitPriceCents={summary.unitPriceCents}
-                    nextUnitPriceCents={summary.nextUnitPriceCents}
-                    onToggle={() => toggleStyle(variantToggleParams(variant))}
-                  />
-                )
-              })}
+              {/* Groups default to closed when there are multiple of them
+                  (see `defaultOpen` above), but this content was always
+                  rendered regardless of open state - `Collapsible.Content`
+                  only toggles the `hidden` attribute/animation, not
+                  whether children exist. With up to 9 groups and 100+
+                  styles total, that meant every style row across every
+                  collapsed group stayed in the DOM/CSSOM at all times,
+                  multiplying the style-recalculation cost of any
+                  page-wide change (e.g. crossing a breakpoint on resize)
+                  by the full style count instead of just the open
+                  group's. `visible` (open OR mid-close-animation, same
+                  condition the collapsible itself uses for its `hidden`
+                  attribute) lets us skip mounting these rows entirely
+                  while closed, without cutting the collapse-closing
+                  animation short. */}
+              <Collapsible.Context>
+                {({ visible }) =>
+                  visible && (
+                    <>
+                      {groupFullySelected && (
+                        <Box
+                          _before={{
+                            content: '""',
+                            pos: 'absolute',
+                            left: hasMultipleGroups ? 14 : 6,
+                            top: 5,
+                            bottom: 5,
+                            w: 3,
+                            borderLeft: '2px solid #000',
+                            borderRadius: '0',
+                            borderTop: '2px solid #000',
+                            borderBottom: '2px solid #000',
+                            borderRight: '2px solid transparent',
+                            zIndex: 0,
+                          }}
+                        />
+                      )}
+                      {group.allVariants?.map((variant) => {
+                        if (!variant) return null
+                        return (
+                          <SingleStyles
+                            key={variant._id}
+                            skuCode={variant._id}
+                            className={variant._id}
+                            name={`${font.shortName} ${variant.optionName}`}
+                            isSelected={!!selectedSkus[variant._id]}
+                            allSelected={groupFullySelected}
+                            unitPriceCents={summary.unitPriceCents}
+                            nextUnitPriceCents={summary.nextUnitPriceCents}
+                            onToggle={() =>
+                              toggleStyle(variantToggleParams(variant))
+                            }
+                          />
+                        )
+                      })}
+                    </>
+                  )
+                }
+              </Collapsible.Context>
             </VStack>
           </Collapsible.Content>
         </Collapsible.Root>

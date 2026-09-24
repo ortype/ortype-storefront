@@ -1,6 +1,7 @@
 import initTranslations from '@/app/i18n'
 import TranslationsProvider from '@/components/data/TranslationsProvider'
 import { GlobalHeader } from '@/components/global/GlobalHeader'
+import { PageContent } from '@/components/global/page-content'
 import { Toaster } from '@/components/ui/toaster'
 import { sanityFetch } from '@/sanity/lib/live'
 import {
@@ -84,15 +85,17 @@ export default async function LocaleRoute({
         resources={resources}
       >
         <GlobalHeader fonts={fonts} />
-        <Suspense
-          fallback={
-            <Box display='flex' justifyContent='center' p={8}>
-              <Spinner size='xl' />
-            </Box>
-          }
-        >
-          {children}
-        </Suspense>
+        <PageContent>
+          <Suspense
+            fallback={
+              <Box display='flex' justifyContent='center' p={8}>
+                <Spinner size='xl' />
+              </Box>
+            }
+          >
+            {children}
+          </Suspense>
+        </PageContent>
         {buy}
         <Toaster />
       </TranslationsProvider>
