@@ -179,7 +179,7 @@ export const tabsSlotRecipe = defineSlotRecipe({
       // @NOTE: used on homepage for list | table toggle
       enclosed: {
         indicator: {
-          shadow: '0 0 0 0.15rem #000',
+          shadow: '0 0 0 0.2rem #000',
           // shadow: 'none',
           bg: 'colorPalette.bg',
           borderRadius: 'full',
@@ -189,7 +189,7 @@ export const tabsSlotRecipe = defineSlotRecipe({
           padding: 0,
           // border: '2px solid black',
           border: 'none',
-          shadow: '0 0 0 0.15rem #000',
+          shadow: '0 0 0 0.2rem #000',
           borderRadius: 'full',
           // minH: 'calc(var(--tabs-height) - 4px)',
           minH: 'var(--tabs-height)',

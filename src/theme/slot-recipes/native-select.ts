@@ -94,6 +94,10 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
           _focus: {
             borderBottomColor: 'black',
           },
+          _hover: {
+            borderBottomColor: 'transparent',
+            cursor: 'pointer',
+          },
           // Size the field to the selected value instead of the widest
           // option. Scoped behind `@supports` so browsers without native
           // `field-sizing` support (Safari/Firefox) keep `minWidth: 0` from

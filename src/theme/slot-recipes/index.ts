@@ -16,7 +16,7 @@ import { dialogSlotRecipe } from './dialog'
 // import { fieldSlotRecipe } from "./field"
 // import { fieldsetSlotRecipe } from "./fieldset"
 // import { fileUploadSlotRecipe } from "./file-upload"
-// import { hoverCardSlotRecipe } from "./hover-card"
+import { hoverCardSlotRecipe } from './hover-card'
 // import { listSlotRecipe } from "./list"
 import { menuSlotRecipe } from './menu'
 import { nativeSelectSlotRecipe } from './native-select'
@@ -63,7 +63,7 @@ export const slotRecipes = {
   // field: fieldSlotRecipe,
   // fieldset: fieldsetSlotRecipe,
   // fileUpload: fileUploadSlotRecipe,
-  // hoverCard: hoverCardSlotRecipe,
+  hoverCard: hoverCardSlotRecipe,
   // list: listSlotRecipe,
   menu: menuSlotRecipe,
   nativeSelect: nativeSelectSlotRecipe,
