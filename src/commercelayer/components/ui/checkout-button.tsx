@@ -54,65 +54,32 @@ export const CheckoutButton: React.FC<Props> = ({
   }
 
   return (
-    <Stack
-      justifyContent={'flex-end'}
-      gap={2}
-      direction={{ base: 'row', sm: 'column' }}
-      w={'full'}
+    <Button
+      variant={'outline'}
+      bg={'colorPalette.fg'}
+      color={'colorPalette.bg'}
+      borderRadius={'5rem'}
+      size={'xs'}
+      fontSize={'md'}
+      css={{
+        _hover: {
+          bg: 'transparent',
+          color: 'colorPalette.fg',
+        },
+      }}
+      gap={1}
+      disabled={isDisabled || isCommitting}
+      onClick={handleCheckout}
     >
-      <Button
-        variant={'outline'}
-        bg={'white'}
-        borderRadius={'5rem'}
-        size={'sm'}
-        fontSize={'md'}
-        w={'full'}
-        _hover={{
-          bg: 'black',
-          color: 'white',
-        }}
-      >
-        {'Share cart'}
-      </Button>
-      <Button
-        variant={'outline'}
-        bg={'white'}
-        borderRadius={'5rem'}
-        size={'sm'}
-        fontSize={'md'}
-        w={'full'}
-        _hover={{
-          bg: 'black',
-          color: 'white',
-        }}
-      >
-        {'Save as PDF'}
-      </Button>
-      <Button
-        variant={'outline'}
-        bg={'black'}
-        borderRadius={'5rem'}
-        size={'sm'}
-        fontSize={'md'}
-        color={'white'}
-        _hover={{
-          bg: 'white',
-          color: 'black',
-        }}
-        disabled={isDisabled || isCommitting}
-        gap={1}
-        onClick={handleCheckout}
-      >
-        {isCommitting ? (
-          <>
-            <Spinner size={'xs'} /> {'Preparing order...'}
-          </>
-        ) : (
-          <>
-            <LockIcon /> {label || 'Proceed to Checkout'}
-          </>
-        )}
-      </Button>
-    </Stack>
+      {isCommitting ? (
+        <>
+          <Spinner size={'xs'} /> {'Preparing order...'}
+        </>
+      ) : (
+        <>
+          <LockIcon /> {label || 'Checkout  →'}
+        </>
+      )}
+    </Button>
   )
 }

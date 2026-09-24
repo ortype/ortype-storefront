@@ -256,7 +256,7 @@ export const Buy = () => {
             '3xl': '18rem',
           }}
           bg={'#FFF8D3'}
-          my={{ base: 4, xl: 0 }}
+          my={{ base: 4, lg: 0 }}
           borderRadius={20}
           px={4}
           py={5}
@@ -273,7 +273,7 @@ export const Buy = () => {
               <Text
                 textStyle={{
                   base: 'md',
-                  lg: 'xs',
+                  lg: 'sm',
                   xl: 'md',
                 }}
                 w={'50%'}

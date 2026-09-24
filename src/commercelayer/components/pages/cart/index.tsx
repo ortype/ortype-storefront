@@ -93,17 +93,18 @@ const CartComponent = () => {
         maxW={['100%']}
         ml={{
           base: '1rem',
-          '2xl': '19rem',
+          '2xl': '20rem',
           '3xl': '23rem',
         }}
         mr={{
           base: '1rem',
           lg: '18rem',
-          '2xl': '19rem',
+          '2xl': '20rem',
           '3xl': '23rem',
         }}
         position={'relative'}
         my={6}
+        px={6}
       >
         <Heading
           textAlign={'center'}
@@ -250,16 +251,52 @@ const CartComponent = () => {
       </Box>
       <VStack
         pos={{ base: 'relative', lg: 'fixed' }}
-        right={{ base: 'auto', lg: '2rem' }}
+        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
         px={{ base: '1rem', lg: 0 }}
         pb={{ base: '1rem', lg: 0 }}
         top={{ base: 'auto', lg: 5 }}
       >
         <CartSummary />
-        <CheckoutButton
+        {/*        <CheckoutButton
           orderId={orderId || ''}
           isDisabled={!allLicenseInfoSet}
-        />
+        />*/}
+        <Stack
+          justifyContent={'flex-end'}
+          gap={2}
+          // direction={{ base: 'row', sm: 'column' }}
+          direction={'row'}
+          w={'full'}
+        >
+          <Button
+            variant={'outline'}
+            bg={'white'}
+            borderRadius={'5rem'}
+            size={'xs'}
+            fontSize={'md'}
+            _hover={{
+              bg: 'black',
+              color: 'white',
+            }}
+            flexGrow={1}
+          >
+            {'Share cart'}
+          </Button>
+          <Button
+            variant={'outline'}
+            bg={'white'}
+            borderRadius={'5rem'}
+            size={'xs'}
+            fontSize={'md'}
+            _hover={{
+              bg: 'black',
+              color: 'white',
+            }}
+            flexGrow={1}
+          >
+            {'Save as PDF'}
+          </Button>
+        </Stack>
       </VStack>
     </Box>
   )

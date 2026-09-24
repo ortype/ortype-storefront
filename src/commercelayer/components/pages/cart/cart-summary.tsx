@@ -1,12 +1,13 @@
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useCartContext } from '@/commercelayer/providers/cart'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   calculateLineItemPrice,
   formatPrice,
 } from '@/commercelayer/utils/prices'
-import { Box, Flex, Heading, SimpleGrid } from '@chakra-ui/react'
+import { Box, Flex, Text, VStack } from '@chakra-ui/react'
 import type { SkuOption } from '@commercelayer/sdk'
 import { useMemo } from 'react'
+import { CheckoutButton } from '../../ui/checkout-button'
 
 const summaryFontSize = {
   base: 'lg',
@@ -16,7 +17,8 @@ const summaryFontSize = {
 }
 
 const Summary = () => {
-  const { selections, licenseSize, skuOptions } = useOrderContext()
+  const { orderId, allLicenseInfoSet, selections, licenseSize, skuOptions } =
+    useCartContext()
   const priceLocale = usePriceLocaleContext()
 
   // Compute summary totals from the selection buffer (per-style license types), in cents
@@ -83,61 +85,88 @@ const Summary = () => {
       py={5}
       borderRadius={20}
     >
-      <Heading
-        as={'h5'}
-        fontSize={'md'}
-        textTransform={'uppercase'}
-        fontWeight={'normal'}
-        pb={2}
-      >
-        {'Summary'}
-      </Heading>
-      <Box mb={1} borderBottom={'1px solid #CEC9AB'}></Box>
-      <SimpleGrid
-        columns={2}
-        py={2}
-        // borderTop={'1px solid #CEC9AB'}
-        borderBottom={'1px solid #CEC9AB'}
-      >
-        <Box textStyle={summaryFontSize} fontWeight={'normal'}>
-          {'Subtotal'}
-        </Box>
-        <Box textStyle={summaryFontSize} textAlign={'right'}>
-          {subtotalCents === null
-            ? '––'
-            : formatPrice(subtotalCents, priceLocale)}
-        </Box>
-      </SimpleGrid>
-      {totalDiscountCents != null && totalDiscountCents > 0 && (
-        <SimpleGrid columns={2} py={2} borderBottom={'1px solid #CEC9AB'}>
-          <Box textStyle={summaryFontSize} fontWeight={'normal'}>
-            {'Discounts'}
-          </Box>
-          <Box textStyle={summaryFontSize} textAlign={'right'}>
-            {'-'}
-            {formatPrice(totalDiscountCents, priceLocale)}
-          </Box>
-        </SimpleGrid>
-      )}
-      <SimpleGrid
-        columns={2}
-        py={2}
-        borderBottom={'1px solid #CEC9AB'}
-        fontFamily={'Alltaf-Var'}
-        fontWeight={500}
-      >
-        <Box
-          textStyle={summaryFontSize}
-          textTransform={'uppercase'}
-          fontWeight={'normal'}
+      <VStack gap={2} w={'full'}>
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pb={2}
+          h={8}
         >
-          {'Total EUR'}
-        </Box>
-        <Box textStyle={summaryFontSize} textAlign={'right'}>
-          {totalCents === null ? '––' : formatPrice(totalCents, priceLocale)}
-        </Box>
-      </SimpleGrid>
-      <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>
+          <Text
+            textStyle={{
+              base: 'md',
+              lg: 'sm',
+              xl: 'md',
+            }}
+            w={'50%'}
+            textTransform={'uppercase'}
+          >
+            {'Summary'}
+          </Text>
+          <CheckoutButton
+            orderId={orderId || ''}
+            isDisabled={!allLicenseInfoSet}
+          />
+        </Flex>
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          borderBottom={'1px solid #CEC9AB'}
+          alignItems={'center'}
+          pb={2}
+        >
+          <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
+            {'Subtotal'}
+          </Text>
+          <Text as={'span'} pl={1} textStyle={summaryFontSize}>
+            {subtotalCents === null
+              ? '––'
+              : formatPrice(subtotalCents, priceLocale)}
+          </Text>
+        </Flex>
+        {totalDiscountCents != null && totalDiscountCents > 0 && (
+          <Flex
+            w={'full'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #CEC9AB'}
+            alignItems={'center'}
+            pb={2}
+          >
+            <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
+              {'Discounts'}
+            </Text>
+            <Text as={'span'} pl={1} textStyle={summaryFontSize}>
+              {'-'}
+              {formatPrice(totalDiscountCents, priceLocale)}
+            </Text>
+          </Flex>
+        )}
+        <Flex
+          w={'full'}
+          justifyContent={'space-between'}
+          mt={-1}
+          pt={2}
+          borderTop={'1px solid #CEC9AB'}
+          alignItems={'center'}
+        >
+          <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
+            {'Total EUR'}
+          </Text>
+          <Text
+            as={'span'}
+            pl={1}
+            fontFamily={'Alltaf-Var'}
+            fontWeight={500}
+            textStyle={summaryFontSize}
+          >
+            {totalCents === null
+              ? '––'
+              : formatPrice(totalCents, priceLocale)}
+          </Text>
+        </Flex>
+      </VStack>
     </Box>
   )
 }
