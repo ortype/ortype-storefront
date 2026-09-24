@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
-      "*": ["./*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "sanity.types": ["./sanity.types"],
+      "sanity.config": ["./sanity.config"]
     },
     "target": "ES2017",
     "module": "esnext",

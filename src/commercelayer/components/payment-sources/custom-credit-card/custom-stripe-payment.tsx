@@ -22,7 +22,7 @@ import type {
 } from '@stripe/stripe-js'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { CustomStripePaymentProps } from './types'
-import { ALLTAF_VF_BASE } from 'src/components/global/Globals'
+import { ALLTAF_VF_BASE } from '@/components/global/Globals'
 
 interface CustomStripePaymentFormProps {
   stripe: Stripe | null

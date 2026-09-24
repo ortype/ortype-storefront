@@ -12,7 +12,7 @@ import { licenseMetricsQuery, uiLabelsQuery } from '@/sanity/lib/queries'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
 import { cookies, draftMode, headers } from 'next/headers'
-import Globals from 'src/components/global/Globals'
+import Globals from '@/components/global/Globals'
 import './storefront.css'
 
 // https://github.com/vercel/next.js/discussions/54075
@@ -67,7 +67,8 @@ export default async function FrontendLayout({
   // 'en-US' if neither is present.
   const priceLocale =
     ((await headers()).get(PRICE_LOCALE_HEADER) as PriceLocale | null) ??
-    ((await cookies()).get(PRICE_LOCALE_COOKIE)?.value as PriceLocale | null) ??
+    ((await cookies()).get(PRICE_LOCALE_COOKIE)
+      ?.value as PriceLocale | null) ??
     'en-US'
 
   return (
