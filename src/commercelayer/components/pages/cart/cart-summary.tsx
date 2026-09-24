@@ -8,6 +8,13 @@ import { Box, Flex, Heading, SimpleGrid } from '@chakra-ui/react'
 import type { SkuOption } from '@commercelayer/sdk'
 import { useMemo } from 'react'
 
+const summaryFontSize = {
+  base: 'lg',
+  lg: 'md',
+  xl: 'md',
+  '2xl': 'md',
+}
+
 const Summary = () => {
   const { selections, licenseSize, skuOptions } = useOrderContext()
   const priceLocale = usePriceLocaleContext()
@@ -64,74 +71,74 @@ const Summary = () => {
   }, [selections, licenseSize, skuOptions])
 
   return (
-    <Flex justifyContent={'flex-end'} w={'full'}>
-      <Box
-        bg={'#FFF8D3'}
-        px={4}
-        pt={5}
-        pb={6}
-        borderRadius={30}
-        w={{ base: 'full', md: '50%' }}
+    <Box
+      w={{
+        base: '100%',
+        lg: '16rem',
+        '2xl': '17rem',
+        '3xl': '18rem',
+      }}
+      bg={'#FFF8D3'}
+      px={4}
+      py={5}
+      borderRadius={20}
+    >
+      <Heading
+        as={'h5'}
+        fontSize={'md'}
+        textTransform={'uppercase'}
+        fontWeight={'normal'}
+        pb={2}
       >
-        <Heading
-          as={'h5'}
-          fontSize={'xl'}
+        {'Summary'}
+      </Heading>
+      <Box mb={1} borderBottom={'1px solid #CEC9AB'}></Box>
+      <SimpleGrid
+        columns={2}
+        py={2}
+        // borderTop={'1px solid #CEC9AB'}
+        borderBottom={'1px solid #CEC9AB'}
+      >
+        <Box textStyle={summaryFontSize} fontWeight={'normal'}>
+          {'Subtotal'}
+        </Box>
+        <Box textStyle={summaryFontSize} textAlign={'right'}>
+          {subtotalCents === null
+            ? '––'
+            : formatPrice(subtotalCents, priceLocale)}
+        </Box>
+      </SimpleGrid>
+      {totalDiscountCents != null && totalDiscountCents > 0 && (
+        <SimpleGrid columns={2} py={2} borderBottom={'1px solid #CEC9AB'}>
+          <Box textStyle={summaryFontSize} fontWeight={'normal'}>
+            {'Discounts'}
+          </Box>
+          <Box textStyle={summaryFontSize} textAlign={'right'}>
+            {'-'}
+            {formatPrice(totalDiscountCents, priceLocale)}
+          </Box>
+        </SimpleGrid>
+      )}
+      <SimpleGrid
+        columns={2}
+        py={2}
+        borderBottom={'1px solid #CEC9AB'}
+        fontFamily={'Alltaf-Var'}
+        fontWeight={500}
+      >
+        <Box
+          textStyle={summaryFontSize}
           textTransform={'uppercase'}
           fontWeight={'normal'}
-          pb={2}
         >
-          {'Cart Summary'}
-        </Heading>
-        <Box mb={1} borderBottom={'1px solid #CEC9AB'}></Box>
-        <SimpleGrid
-          columns={2}
-          py={3}
-          borderTop={'1px solid #CEC9AB'}
-          borderBottom={'1px solid #CEC9AB'}
-        >
-          <Box fontSize={'lg'} fontWeight={'normal'}>
-            {'Subtotal (excl. discounts)'}
-          </Box>
-          <Box fontSize={'lg'} textAlign={'right'}>
-            {subtotalCents === null
-              ? '––'
-              : formatPrice(subtotalCents, priceLocale)}
-          </Box>
-        </SimpleGrid>
-        {totalDiscountCents != null && totalDiscountCents > 0 && (
-          <SimpleGrid columns={2} py={3} borderBottom={'1px solid #CEC9AB'}>
-            <Box fontSize={'lg'} fontWeight={'normal'}>
-              {'Discounts'}
-            </Box>
-            <Box fontSize={'lg'} textAlign={'right'}>
-              {'-'}
-              {formatPrice(totalDiscountCents, priceLocale)}
-            </Box>
-          </SimpleGrid>
-        )}
-        <SimpleGrid
-          columns={2}
-          py={3}
-          borderBottom={'1px solid #CEC9AB'}
-          fontFamily={'Alltaf-Var'}
-          fontWeight={500}
-        >
-          <Box
-            fontSize={'lg'}
-            textTransform={'uppercase'}
-            fontWeight={'normal'}
-          >
-            {'Total EUR'}
-          </Box>
-          <Box fontSize={'lg'} textAlign={'right'}>
-            {totalCents === null
-              ? '––'
-              : formatPrice(totalCents, priceLocale)}
-          </Box>
-        </SimpleGrid>
-        <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>
-      </Box>
-    </Flex>
+          {'Total EUR'}
+        </Box>
+        <Box textStyle={summaryFontSize} textAlign={'right'}>
+          {totalCents === null ? '––' : formatPrice(totalCents, priceLocale)}
+        </Box>
+      </SimpleGrid>
+      <Box pt={1} borderBottom={'1px solid #CEC9AB'}></Box>
+    </Box>
   )
 }
 

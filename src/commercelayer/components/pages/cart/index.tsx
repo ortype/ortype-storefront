@@ -24,7 +24,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import CartGroups from './cart-groups'
-import Summary from './cart-summary'
+import CartSummary from './cart-summary'
 
 const CartComponent = () => {
   const {
@@ -88,147 +88,180 @@ const CartComponent = () => {
   }
 
   return (
-    <Container my={6} maxW={'60rem'}>
-      <Heading
-        textAlign={'center'}
-        fontSize={'2rem'}
-        fontWeight={'normal'}
-        textTransform={'uppercase'}
-        mx={'auto'}
-        pb={8}
+    <Box pos={'relative'}>
+      <Box
+        maxW={['100%']}
+        ml={{
+          base: '1rem',
+          '2xl': '19rem',
+          '3xl': '23rem',
+        }}
+        mr={{
+          base: '1rem',
+          lg: '18rem',
+          '2xl': '19rem',
+          '3xl': '23rem',
+        }}
+        position={'relative'}
+        my={6}
       >
-        Cart or Bag Or Basket
-      </Heading>
+        <Heading
+          textAlign={'center'}
+          fontSize={'2rem'}
+          fontWeight={'normal'}
+          textTransform={'uppercase'}
+          mx={'auto'}
+          pb={8}
+        >
+          Cart or Bag Or Basket
+        </Heading>
 
-      <Stack direction={'column'} gap={6}>
-        <Box>
-          <SimpleGrid columns={2} gap={3} px={4} w={'full'}>
-            <HStack
-              justify='space-between'
-              w='full'
-              fontSize={'sm'}
-              lineHeight={1}
-              h={6}
-            >
-              <Text
-                minW={'8rem'}
-                fontSize={'xs'}
-                textTransform={'uppercase'}
-                color={'#737373'}
-                asChild
+        <Stack direction={'column'} gap={6}>
+          <Box>
+            <SimpleGrid columns={2} gap={3} px={4} w={'full'}>
+              <HStack
+                justify='space-between'
+                w='full'
+                fontSize={'sm'}
+                lineHeight={1}
+                h={6}
               >
-                <Flex gap={1} alignItems={'center'}>
-                  <span>
-                    {cartLabels?.licenseHolder?.label || 'License holder'}
-                  </span>
-                  {cartLabels?.licenseHolder?.info && (
+                <Text
+                  minW={'8rem'}
+                  fontSize={'xs'}
+                  textTransform={'uppercase'}
+                  color={'#737373'}
+                  asChild
+                >
+                  <Flex gap={1} alignItems={'center'}>
+                    <span>
+                      {cartLabels?.licenseHolder?.label || 'License holder'}
+                    </span>
+                    {cartLabels?.licenseHolder?.info && (
+                      <InfoTip
+                        content={
+                          cartLabels?.licenseHolder?.info ||
+                          'This is additional information about this fieldset'
+                        }
+                      />
+                    )}
+                  </Flex>
+                </Text>
+              </HStack>
+
+              <HStack
+                justify='space-between'
+                w='full'
+                fontSize={'sm'}
+                lineHeight={1}
+                pl={7}
+                h={6}
+              >
+                <Text
+                  minW={'8rem'}
+                  fontSize={'xs'}
+                  textTransform={'uppercase'}
+                  color={'#737373'}
+                  asChild
+                >
+                  <Flex gap={1} alignItems={'center'}>
+                    <span>{cartLabels?.companySize?.label}</span>
                     <InfoTip
                       content={
-                        cartLabels?.licenseHolder?.info ||
+                        cartLabels?.companySize?.info ||
                         'This is additional information about this fieldset'
                       }
                     />
-                  )}
-                </Flex>
-              </Text>
-            </HStack>
-
-            <HStack
-              justify='space-between'
-              w='full'
-              fontSize={'sm'}
-              lineHeight={1}
-              pl={7}
-              h={6}
+                  </Flex>
+                </Text>
+              </HStack>
+            </SimpleGrid>
+            <SimpleGrid
+              columns={2}
+              gap={10}
+              mb={1}
+              pl={2}
+              pr={4}
+              w={'full'}
+              alignItems={'center'}
+              bg={'#FEF8D7'}
+              borderRadius={'full'}
+              minH={12}
             >
-              <Text
-                minW={'8rem'}
-                fontSize={'xs'}
-                textTransform={'uppercase'}
-                color={'#737373'}
-                asChild
-              >
-                <Flex gap={1} alignItems={'center'}>
-                  <span>{cartLabels?.companySize?.label}</span>
-                  <InfoTip
-                    content={
-                      cartLabels?.companySize?.info ||
-                      'This is additional information about this fieldset'
-                    }
-                  />
-                </Flex>
-              </Text>
-            </HStack>
-          </SimpleGrid>
-          <SimpleGrid
-            columns={2}
-            gap={10}
-            mb={1}
-            pl={2}
-            pr={4}
-            w={'full'}
-            alignItems={'center'}
-            bg={'#FEF8D7'}
-            borderRadius={'full'}
-            minH={12}
-          >
-            <Box flexGrow={1} pl={4} fontSize={'md'} lineHeight={1}>
-              {isLicenseForClient
-                ? order?.metadata?.license?.owner?.company
-                : 'Yourself'}
-            </Box>
-
-            <HStack
-              justify='space-between'
-              w='full'
-              fontSize={'md'}
-              lineHeight={1}
-              h={6}
-            >
-              <Box flexGrow={1} pl={4}>
-                {licenseSize?.label}
+              <Box flexGrow={1} pl={4} fontSize={'md'} lineHeight={1}>
+                {isLicenseForClient
+                  ? order?.metadata?.license?.owner?.company
+                  : 'Yourself'}
               </Box>
-              <EditLicenseMetricsDialog
-                label={cartLabels?.companySize?.label}
-                info={cartLabels?.companySize?.info}
-                setLicenseSize={setLicenseSize}
-                isLicenseForClient={isLicenseForClient}
-              />
-            </HStack>
-          </SimpleGrid>
-        </Box>
-        <Box>
-          <Fieldset.Root>
-            <Box display={['none', null, 'flex']} w={'full'}>
-              <SimpleGrid columns={2} gap={5} mb={1} pl={4} pr={2} w={'full'}>
-                <FieldsetLegend px={0} info={cartLabels?.fonts?.info}>
-                  {cartLabels?.fonts?.label || 'Fonts'}
-                </FieldsetLegend>
-                <Flex justifyContent={'space-between'} pl={5}>
-                  <FieldsetLegend px={0} info={cartLabels?.licenseType?.info}>
-                    {cartLabels?.licenseType?.label || 'License Type'}
+
+              <HStack
+                justify='space-between'
+                w='full'
+                fontSize={'md'}
+                lineHeight={1}
+                h={6}
+              >
+                <Box flexGrow={1} pl={4}>
+                  {licenseSize?.label}
+                </Box>
+                <EditLicenseMetricsDialog
+                  label={cartLabels?.companySize?.label}
+                  info={cartLabels?.companySize?.info}
+                  setLicenseSize={setLicenseSize}
+                  isLicenseForClient={isLicenseForClient}
+                />
+              </HStack>
+            </SimpleGrid>
+          </Box>
+          <Box>
+            <Fieldset.Root>
+              <Box display={['none', null, 'flex']} w={'full'}>
+                <SimpleGrid
+                  columns={2}
+                  gap={5}
+                  mb={1}
+                  pl={4}
+                  pr={2}
+                  w={'full'}
+                >
+                  <FieldsetLegend px={0} info={cartLabels?.fonts?.info}>
+                    {cartLabels?.fonts?.label || 'Fonts'}
                   </FieldsetLegend>
-                  <FieldsetLegend px={0} info={cartLabels?.price?.info}>
-                    <Box pr={4}>{cartLabels?.price?.label || 'Price'}</Box>
-                  </FieldsetLegend>
-                </Flex>
-              </SimpleGrid>
-            </Box>
-            <Box display={['block', null, 'none']} mb={2}>
-              <FieldsetLegend>{'Items'}</FieldsetLegend>
-            </Box>
-          </Fieldset.Root>
-          <CartGroups groupedLineItems={groupedLineItems} />
-        </Box>
-        <VStack maxW={'60rem'}>
-          <Summary />
-          <CheckoutButton
-            orderId={orderId || ''}
-            isDisabled={!allLicenseInfoSet}
-          />
-        </VStack>
-      </Stack>
-    </Container>
+                  <Flex justifyContent={'space-between'} pl={5}>
+                    <FieldsetLegend
+                      px={0}
+                      info={cartLabels?.licenseType?.info}
+                    >
+                      {cartLabels?.licenseType?.label || 'License Type'}
+                    </FieldsetLegend>
+                    <FieldsetLegend px={0} info={cartLabels?.price?.info}>
+                      <Box pr={4}>{cartLabels?.price?.label || 'Price'}</Box>
+                    </FieldsetLegend>
+                  </Flex>
+                </SimpleGrid>
+              </Box>
+              <Box display={['block', null, 'none']} mb={2}>
+                <FieldsetLegend>{'Items'}</FieldsetLegend>
+              </Box>
+            </Fieldset.Root>
+            <CartGroups groupedLineItems={groupedLineItems} />
+          </Box>
+        </Stack>
+      </Box>
+      <VStack
+        pos={{ base: 'relative', lg: 'fixed' }}
+        right={{ base: 'auto', lg: '2rem' }}
+        px={{ base: '1rem', lg: 0 }}
+        pb={{ base: '1rem', lg: 0 }}
+        top={{ base: 'auto', lg: 5 }}
+      >
+        <CartSummary />
+        <CheckoutButton
+          orderId={orderId || ''}
+          isDisabled={!allLicenseInfoSet}
+        />
+      </VStack>
+    </Box>
   )
 }
 

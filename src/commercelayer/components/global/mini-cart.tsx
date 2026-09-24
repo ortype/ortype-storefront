@@ -5,16 +5,15 @@ import {
   formatPrice,
 } from '@/commercelayer/utils/prices'
 import {
-  Box,
   Button,
   Circle,
   HoverCard,
-  HStack,
   Portal,
   Text,
   VStack,
 } from '@chakra-ui/react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 interface Props {
@@ -29,24 +28,13 @@ interface FamilySummary {
   totalCents: number
 }
 
-const summaryFontSize = {
-  base: 'lg',
-  lg: 'sm',
-  xl: 'sm',
-  '2xl': 'sm',
-}
-
 const MiniCart = ({}: Props): JSX.Element => {
-  const {
-    order,
-    itemsCount,
-    selections,
-    skuOptions,
-    licenseSize,
-    isLicenseForClient,
-  } = useOrderContext()
+  const { itemsCount, selections, skuOptions, licenseSize } =
+    useOrderContext()
   const priceLocale = usePriceLocaleContext()
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+  const disabled = pathname?.startsWith('/cart')
 
   // @TODO: tech debt — duplicates the per-group total calculation in
   // CartProvider's groupedLineItems memo (providers/cart/index.tsx). Kept
@@ -88,7 +76,19 @@ const MiniCart = ({}: Props): JSX.Element => {
     })
   }, [selections, skuOptions, licenseSize?.modifier])
 
-  return (
+  return disabled ? (
+    <Circle
+      fontSize={'md'}
+      // size={11}
+      size={10}
+      width={itemsCount < 10 ? 'var(--or-sizes-5) !important' : 'auto'}
+      bg={'red'}
+      color={'white'}
+      asChild
+    >
+      <Link href={'/cart'}>{itemsCount}</Link>
+    </Circle>
+  ) : (
     <HoverCard.Root
       size='sm'
       open={open}

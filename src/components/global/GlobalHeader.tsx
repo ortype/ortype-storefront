@@ -41,7 +41,8 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
     itemsCount === 0
 
   // Hide on checkout routes
-  const hideLogin = pathname?.startsWith('/checkout')
+  const hideLogin =
+    pathname?.startsWith('/cart') || pathname?.startsWith('/checkout')
 
   const { settings, customer } = useIdentityContext()
   const { full_name } = customer?.metadata

@@ -1,5 +1,12 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
-import { Button, Flex, HStack, Spinner } from '@chakra-ui/react'
+import {
+  Button,
+  Flex,
+  HStack,
+  Spinner,
+  Stack,
+  VStack,
+} from '@chakra-ui/react'
 import { LockIcon } from '@sanity/icons'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
@@ -47,48 +54,65 @@ export const CheckoutButton: React.FC<Props> = ({
   }
 
   return (
-    <Flex justifyContent={'flex-end'} alignItems={'center'} w={'full'}>
-      <HStack gap={2}>
-        <Button
-          variant={'outline'}
-          bg={'white'}
-          borderRadius={'5rem'}
-          size={'sm'}
-          fontSize={'md'}
-        >
-          {'Share cart'}
-        </Button>
-        <Button
-          variant={'outline'}
-          bg={'white'}
-          borderRadius={'5rem'}
-          size={'sm'}
-          fontSize={'md'}
-        >
-          {'Save as PDF'}
-        </Button>
-        <Button
-          variant={'solid'}
-          bg={'black'}
-          borderRadius={'5rem'}
-          size={'sm'}
-          fontSize={'md'}
-          color={'white'}
-          disabled={isDisabled || isCommitting}
-          gap={1}
-          onClick={handleCheckout}
-        >
-          {isCommitting ? (
-            <>
-              <Spinner size={'xs'} /> {'Preparing order...'}
-            </>
-          ) : (
-            <>
-              <LockIcon /> {label || 'Proceed to Checkout'}
-            </>
-          )}
-        </Button>
-      </HStack>
-    </Flex>
+    <Stack
+      justifyContent={'flex-end'}
+      gap={2}
+      direction={{ base: 'row', sm: 'column' }}
+      w={'full'}
+    >
+      <Button
+        variant={'outline'}
+        bg={'white'}
+        borderRadius={'5rem'}
+        size={'sm'}
+        fontSize={'md'}
+        w={'full'}
+        _hover={{
+          bg: 'black',
+          color: 'white',
+        }}
+      >
+        {'Share cart'}
+      </Button>
+      <Button
+        variant={'outline'}
+        bg={'white'}
+        borderRadius={'5rem'}
+        size={'sm'}
+        fontSize={'md'}
+        w={'full'}
+        _hover={{
+          bg: 'black',
+          color: 'white',
+        }}
+      >
+        {'Save as PDF'}
+      </Button>
+      <Button
+        variant={'outline'}
+        bg={'black'}
+        borderRadius={'5rem'}
+        size={'sm'}
+        fontSize={'md'}
+        color={'white'}
+        _hover={{
+          bg: 'white',
+          color: 'black',
+        }}
+        disabled={isDisabled || isCommitting}
+        gap={1}
+        onClick={handleCheckout}
+      >
+        {isCommitting ? (
+          <>
+            <Spinner size={'xs'} /> {'Preparing order...'}
+          </>
+        ) : (
+          <>
+            <LockIcon /> {label || 'Proceed to Checkout'}
+          </>
+        )}
+      </Button>
+    </Stack>
   )
 }

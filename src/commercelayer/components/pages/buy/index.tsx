@@ -120,8 +120,7 @@ export const Buy = () => {
   const summaryFontSize = {
     base: 'lg',
     lg: 'sm',
-    xl: 'sm',
-    '2xl': 'sm',
+    '3xl': 'md',
   }
 
   return (
@@ -131,13 +130,13 @@ export const Buy = () => {
         ml={{
           base: '1rem',
           '2xl': '19rem',
-          '3xl': '21rem',
+          '3xl': '23rem',
         }}
         mr={{
           base: '1rem',
           lg: '18rem',
           '2xl': '19rem',
-          '3xl': '21rem',
+          '3xl': '23rem',
         }}
         position={'relative'}
       >
