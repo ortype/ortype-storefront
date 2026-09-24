@@ -6,7 +6,7 @@
     "prebuild": "npm run typegen",
     "build": "next build --webpack",
     "start": "next start --port 8000",
-    "format": "npx prettier --write . --ignore-path .gitignore",
+    "format": "npx prettier --write .",
     "lint": "eslint .",
     "lint:fix": "npm run format && npm run lint -- --fix",
     "type-check": "tsc --noEmit",

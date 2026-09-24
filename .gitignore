@@ -16,6 +16,8 @@
 # sanity
 /.sanity/
 /dist/
+schema.json
+sanity.types.ts
 
 # production
 /build
