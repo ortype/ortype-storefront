@@ -2,7 +2,7 @@ import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { startTransition, useOptimistic } from 'react'
 import type { FontGroup as FontGroupType } from './typefaces'
 
 interface FontVariant {
@@ -44,12 +44,17 @@ export const FontGroup: React.FC<Props> = ({
   } = summary
 
   const priceLocale = usePriceLocaleContext()
-  const [isLoading, setIsLoading] = useState(false)
+
+  // See SingleStyles: commit the (expensive) selection update in a transition
+  // and repaint this header's selected chrome optimistically.
+  const [optimisticAllSelected, setOptimisticAllSelected] =
+    useOptimistic(allSelected)
 
   const handleClick = () => {
-    setIsLoading(true)
-    onToggle()
-    setIsLoading(false)
+    startTransition(() => {
+      setOptimisticAllSelected(!optimisticAllSelected)
+      onToggle()
+    })
   }
 
   return (
@@ -57,7 +62,9 @@ export const FontGroup: React.FC<Props> = ({
       justifyContent={'space-between'}
       bg={'colorPalette.bg'}
       boxShadow={
-        allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'
+        optimisticAllSelected
+          ? 'inset 0 0 0 2px #000'
+          : 'inset 0 0 0 0px #000'
       }
       borderRadius={'full'}
       cursor={allSelected ? 'default' : 'pointer'}
@@ -84,8 +91,7 @@ export const FontGroup: React.FC<Props> = ({
           h={'1.385rem'}
           minW={'1.385rem'}
           p={0}
-          bg={allSelected ? 'black' : 'white'}
-          disabled={isLoading}
+          bg={optimisticAllSelected ? 'black' : 'white'}
           transition={
             'border-radius 200ms ease-in-out, border-width 200ms ease-in-out'
           }

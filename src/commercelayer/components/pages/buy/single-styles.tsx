@@ -1,7 +1,7 @@
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { startTransition, useOptimistic } from 'react'
 
 interface Props {
   name: string
@@ -26,21 +26,31 @@ export const SingleStyles: React.FC<Props> = ({
   onToggle,
 }) => {
   const priceLocale = usePriceLocaleContext()
-  const [isLoading, setIsLoading] = useState(false)
+
+  // The selection lives in the order reducer, so committing it re-renders
+  // every style row (and every order-context consumer). Running that inside a
+  // transition keeps the click handler cheap and the render interruptible,
+  // while `useOptimistic` lets *this row* repaint its selected chrome
+  // immediately. The optimistic value is discarded once the transition
+  // commits and `isSelected` arrives with the same value from props.
+  const [optimisticSelected, setOptimisticSelected] = useOptimistic(isSelected)
 
   const handleClick = () => {
     if (allSelected) return
-    setIsLoading(true)
-    onToggle()
-    setIsLoading(false)
+    startTransition(() => {
+      setOptimisticSelected(!optimisticSelected)
+      onToggle()
+    })
   }
 
   return (
     <Flex
       justifyContent={'space-between'}
       bg={'colorPalette.bg'}
-      boxShadow={isSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
-      borderRadius={isSelected ? '100px' : '0px'}
+      boxShadow={
+        optimisticSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'
+      }
+      borderRadius={optimisticSelected ? '100px' : '0px'}
       _hover={
         allSelected
           ? {}
@@ -72,8 +82,7 @@ export const SingleStyles: React.FC<Props> = ({
           h={'1.385rem'}
           minW={'1.385rem'}
           p={0}
-          bg={isSelected ? 'black' : 'white'}
-          disabled={isLoading}
+          bg={optimisticSelected ? 'black' : 'white'}
           transition={'border-width 200ms ease-in-out'}
         />
         <Text

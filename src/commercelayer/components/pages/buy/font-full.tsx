@@ -2,8 +2,8 @@ import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import { Font } from '@/types'
-import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
+import React, { startTransition, useOptimistic } from 'react'
 
 interface Props {
   font: Font
@@ -28,12 +28,15 @@ export const FontFull: React.FC<Props> = ({
   } = summary
 
   const priceLocale = usePriceLocaleContext()
-  const [isLoading, setIsLoading] = useState(false)
+
+  const [optimisticAllSelected, setOptimisticAllSelected] =
+    useOptimistic(allSelected)
 
   const handleClick = () => {
-    setIsLoading(true)
-    onToggle()
-    setIsLoading(false)
+    startTransition(() => {
+      setOptimisticAllSelected(!optimisticAllSelected)
+      onToggle()
+    })
   }
 
   return (
@@ -41,7 +44,9 @@ export const FontFull: React.FC<Props> = ({
       justifyContent={'space-between'}
       bg={'colorPalette.bg'}
       boxShadow={
-        allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'
+        optimisticAllSelected
+          ? 'inset 0 0 0 2px #000'
+          : 'inset 0 0 0 0px #000'
       }
       borderRadius={'full'}
       cursor={'pointer'}
@@ -68,8 +73,7 @@ export const FontFull: React.FC<Props> = ({
           h={'1.385rem'}
           minW={'1.385rem'}
           p={0}
-          bg={allSelected ? 'black' : 'white'}
-          disabled={isLoading}
+          bg={optimisticAllSelected ? 'black' : 'white'}
           transition={'border-width 200ms ease-in-out'}
         />
         <Stack direction={'column'} gap={1}>
