@@ -29,10 +29,18 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState,
 } from 'react'
+import {
+  countSelections,
+  pickSkuOptions,
+  skuOptionRefs,
+  withGroup,
+  type StyleGroup,
+} from './selection-utils'
 import { OrderStorageContext } from './Storage'
 import type {
   CommittedGroups,
@@ -107,7 +115,6 @@ type OrderProviderData = {
   itemsCount: number
   isLoading: boolean
   isInvalid: boolean
-  isCreatingOrder: boolean
   companySizes: CompanySize[]
   mediaTypes: MediaType[]
   buyLabels?: BuyLabels
@@ -161,8 +168,21 @@ type OrderProviderData = {
     skuCode: string
     licenseTypes: string[]
   }) => void
-  /** Commit a single parentUid group to CL line items */
-  commitGroup: (parentUid: string) => Promise<{
+  /**
+   * Commit `group` (a font's draft selections) to CL line items. On success
+   * the group becomes the font's `selections` entry and `options.licenseTypes`
+   * is promoted to the order-wide default license types.
+   */
+  commitGroup: (
+    parentUid: string,
+    group: StyleGroup,
+    options?: { licenseTypes?: string[] }
+  ) => Promise<{
+    success: boolean
+    error?: AddToCartError
+  }>
+  /** Remove a font from the cart (deletes its committed line items) */
+  removeGroup: (parentUid: string) => Promise<{
     success: boolean
     error?: AddToCartError
   }>
@@ -175,8 +195,6 @@ type OrderProviderData = {
     success: boolean
     error?: AddToCartError
   }>
-  /** Clear uncommitted selections for a specific font (parentUid) */
-  clearFontSelections: (parentUid: string) => void
   /** Resolved style groups per parentUid, for hybrid projection */
   groupResolutions: GroupResolutions
   /** Register resolved groups for a font (called by BuyProvider on mount) */
@@ -205,7 +223,6 @@ export type OrderStateData = {
   licenseSize?: LicenseSize // Make optional
   skuOptions: SkuOption[]
   selectedSkuOptions: SkuOption[]
-  itemsCount: number
   isLoading: boolean
   isInvalid: boolean
   selections: SelectionBuffer
@@ -226,7 +243,6 @@ const initialState: OrderStateData = {
   licenseSize: undefined,
   selectedSkuOptions: [],
   skuOptions: [],
-  itemsCount: 0,
   isLoading: true,
   isInvalid: false,
   selections: {},
@@ -261,8 +277,6 @@ export function OrderProvider({
   // Seeded once from server-fetched Sanity metrics (Providers → layout)
   const [companySizes] = useState<CompanySize[]>(metrics.sizes)
   const [mediaTypes] = useState<MediaType[]>(metrics.media)
-  // True while the CL order is lazily created after all license info is set
-  const [isCreatingOrder, setIsCreatingOrder] = useState(false)
 
   // Order persistence is handled through OrderStorageContext
   // using getLocalOrder/setLocalOrder for consistent storage management
@@ -347,9 +361,6 @@ export function OrderProvider({
         // Calculate additional settings based on the order
         const orderSettings = calculateSettings(order)
 
-        // Calculate the number of items in the order
-        const itemsCount = (order.line_items || []).length
-
         // Dispatch the CREATE_ORDER action
         dispatch({
           type: ActionType.CREATE_ORDER,
@@ -357,7 +368,6 @@ export function OrderProvider({
             order,
             orderId,
             others: {
-              itemsCount,
               isInvalid: false,
               ...orderSettings,
             },
@@ -447,7 +457,6 @@ export function OrderProvider({
               order: undefined,
               others: {
                 orderId: undefined,
-                itemsCount: 0,
                 isInvalid: false,
                 hasLicenseOwner: false,
                 isLicenseForClient: false,
@@ -488,7 +497,6 @@ export function OrderProvider({
             payload: {
               order,
               others: {
-                itemsCount: (order?.line_items || []).length,
                 isInvalid: !order,
                 orderId,
                 ...calculateSettings(order),
@@ -633,7 +641,8 @@ export function OrderProvider({
   ) // Only depend on config, not on state
 
   // Pure state update. Persistence to Commerce Layer is handled by the
-  // debounced metadata sync + lazy order-creation effects below.
+  // debounced metadata sync below (once an order exists) and by `ensureOrder`
+  // (which creates the order on the first commit).
   const setLicenseOwner = useCallback(
     (params: { licenseOwner?: LicenseOwnerInput }): void => {
       const licenseOwner = params.licenseOwner
@@ -676,8 +685,10 @@ export function OrderProvider({
     []
   )
 
-  // Pure state update (see setLicenseOwner note on persistence). `font` is
-  // accepted for caller compatibility but no longer used here.
+  // Pure state update (see setLicenseOwner note on persistence). Sets the
+  // order-wide DEFAULT license types only. The buy dialog edits its own
+  // per-font draft (BuyProvider) and promotes the types here on save via
+  // `commitGroup`. `font` is accepted for caller compatibility.
   const setSelectedSkuOptions = useCallback(
     (params: { selectedSkuOptions: SkuOption[]; font: any }): void => {
       if (process.env.NODE_ENV !== 'production') {
@@ -696,17 +707,6 @@ export function OrderProvider({
           },
         },
       })
-
-      const parentUid = params.font?.uid
-      if (parentUid) {
-        dispatch({
-          type: ActionType.SET_GROUP_LICENSE_TYPES,
-          payload: {
-            parentUid,
-            licenseTypes: params.selectedSkuOptions.map((o) => o.reference),
-          },
-        })
-      }
     },
     []
   )
@@ -1128,6 +1128,8 @@ export function OrderProvider({
       order?: Order
       selections?: SelectionBuffer
       committedGroups?: CommittedGroups
+      /** Override the order-wide default types (e.g. the draft being saved) */
+      licenseTypes?: string[]
     }): Promise<Order | undefined> => {
       const cl = config != null ? getCommerceLayer(config) : undefined
       const orderToSync = params?.order ?? state.order
@@ -1141,7 +1143,9 @@ export function OrderProvider({
       const licenseMetadata = {
         owner: state.licenseOwner,
         size: state.licenseSize,
-        types: state.selectedSkuOptions.map((o) => o.reference),
+        types:
+          params?.licenseTypes ??
+          state.selectedSkuOptions.map((o) => o.reference),
       }
       const selections = params?.selections ?? state.selections
       const committedGroups = params?.committedGroups ?? state.committedGroups
@@ -1303,73 +1307,100 @@ export function OrderProvider({
    * Ensure a CL order exists, creating one if needed.
    * Returns { cl, orderId, order } or throws.
    */
-  const ensureOrder = useCallback(async () => {
-    const cl = config != null ? getCommerceLayer(config) : undefined
-    if (!cl) throw new Error('Commerce Layer client not initialized')
+  const ensureOrder = useCallback(
+    async (licenseTypes?: string[]) => {
+      const cl = config != null ? getCommerceLayer(config) : undefined
+      if (!cl) throw new Error('Commerce Layer client not initialized')
 
-    let commitOrder = state.order
-    let commitOrderId = state.orderId
-    if (!commitOrderId || !commitOrder?.id) {
-      const created = await createOrder({
-        customMetadata: {
-          license: {
-            owner: state.licenseOwner,
-            size: state.licenseSize,
-            types: state.selectedSkuOptions.map((o) => o.reference),
+      let commitOrder = state.order
+      let commitOrderId = state.orderId
+      if (!commitOrderId || !commitOrder?.id) {
+        const created = await createOrder({
+          customMetadata: {
+            license: {
+              owner: state.licenseOwner,
+              size: state.licenseSize,
+              types: licenseTypes ?? skuOptionRefs(state.selectedSkuOptions),
+            },
           },
-        },
-      })
-      if (!created.success || !created.orderId) {
-        throw new Error('Failed to create order before committing')
+        })
+        if (!created.success || !created.orderId) {
+          throw new Error('Failed to create order before committing')
+        }
+        const refetched = await fetchOrder({
+          orderId: created.orderId,
+        })
+        commitOrder = refetched.order ?? created.order
+        commitOrderId = created.orderId
       }
-      const refetched = await fetchOrder({
-        orderId: created.orderId,
-      })
-      commitOrder = refetched.order ?? created.order
-      commitOrderId = created.orderId
-    }
-    if (!commitOrderId || !commitOrder?.id) {
-      throw new Error('Order must exist before committing')
-    }
-    return {
-      cl,
-      orderId: commitOrderId,
-      order: commitOrder,
-    }
-  }, [
-    config,
-    state.order,
-    state.orderId,
-    state.licenseOwner,
-    state.licenseSize,
-    state.selectedSkuOptions,
-    createOrder,
-    fetchOrder,
-  ])
+      if (!commitOrderId || !commitOrder?.id) {
+        throw new Error('Order must exist before committing')
+      }
+      return {
+        cl,
+        orderId: commitOrderId,
+        order: commitOrder,
+      }
+    },
+    [
+      config,
+      state.order,
+      state.orderId,
+      state.licenseOwner,
+      state.licenseSize,
+      state.selectedSkuOptions,
+      createOrder,
+      fetchOrder,
+    ]
+  )
 
   /**
    * Commit a single parentUid group to CL line items.
-   * Deletes any previously committed line items for this group,
-   * creates new ones with retryCall, and tracks the result.
+   * `group` is the group to commit (the BuyProvider draft), so unsaved edits
+   * never touch `selections` until this succeeds. Deletes any previously
+   * committed line items for this group, creates new ones with retryCall, and
+   * tracks the result. On success the group is written into `selections`, and
+   * `options.licenseTypes` (if provided) is promoted to the order-wide default.
+   * To remove a font from the cart use `removeGroup`.
    */
   const commitGroup = useCallback(
     async (
-      parentUid: string
+      parentUid: string,
+      group: StyleGroup,
+      options?: { licenseTypes?: string[] }
     ): Promise<{
       success: boolean
       error?: AddToCartError
     }> => {
+      if (Object.keys(group).length === 0) {
+        return {
+          success: false,
+          error: { message: `No selections for group ${parentUid}` },
+        }
+      }
+
       dispatch({ type: ActionType.START_LOADING })
 
       try {
-        const { cl, orderId, order: ensuredOrder } = await ensureOrder()
-        await syncOrderMetadata({ order: ensuredOrder })
+        // Types being committed: the draft's when provided, otherwise the
+        // current order-wide default. Canonical (skuOptions) order.
+        const commitSkuOptions = options?.licenseTypes
+          ? pickSkuOptions(state.skuOptions, options.licenseTypes)
+          : state.selectedSkuOptions
+        const commitTypeRefs = skuOptionRefs(commitSkuOptions)
+
+        const {
+          cl,
+          orderId,
+          order: ensuredOrder,
+        } = await ensureOrder(commitTypeRefs)
+        await syncOrderMetadata({
+          order: ensuredOrder,
+          licenseTypes: commitTypeRefs,
+        })
         const commitOrder = ensuredOrder
         const commitLicenseSize = state.licenseSize
-        const groupStyles = state.selections[parentUid]
-        if (!groupStyles || Object.keys(groupStyles).length === 0) {
-          throw new Error(`No selections for group ${parentUid}`)
-        }
+        const groupStyles = group
 
         const groupSize = Object.keys(groupStyles).length
 
@@ -1647,26 +1678,52 @@ export function OrderProvider({
 
         // 7. Track committed group (record the size these items were priced at)
         const hash = computeGroupHash(groupStyles)
+        const lineItemIds = createdLineItems.map((li) => li.id)
         const nextCommittedGroups: CommittedGroups = {
           ...state.committedGroups,
           [parentUid]: {
             hash,
-            lineItemIds: createdLineItems.map((li) => li.id),
+            lineItemIds,
             size: commitLicenseSize,
           },
         }
+        const nextSelections = withGroup(
+          state.selections,
+          parentUid,
+          groupStyles
+        )
         dispatch({
           type: ActionType.SET_COMMITTED_GROUP,
           payload: {
             parentUid,
             hash,
-            lineItemIds: createdLineItems.map((li) => li.id),
+            lineItemIds,
             size: commitLicenseSize,
           },
         })
+        // Promote the saved draft into the shared buffer
+        dispatch({
+          type: ActionType.SET_FONT_SELECTIONS,
+          payload: { parentUid, group: groupStyles },
+        })
+        // Promote the saved license types to the order-wide default so the next
+        // font inherits them.
+        if (options?.licenseTypes) {
+          dispatch({
+            type: ActionType.SET_LICENSE_TYPES,
+            payload: {
+              others: {
+                selectedSkuOptions: commitSkuOptions,
+                hasValidLicenseType: commitSkuOptions.length > 0,
+              },
+            },
+          })
+        }
         await syncOrderMetadata({
           order: refreshedOrder ?? commitOrder,
+          selections: nextSelections,
           committedGroups: nextCommittedGroups,
+          licenseTypes: commitTypeRefs,
         })
 
         if (process.env.NODE_ENV !== 'production') {
@@ -1719,8 +1776,133 @@ export function OrderProvider({
       state.committedGroups,
       state.licenseSize,
       state.skuOptions,
+      state.selectedSkuOptions,
       state.groupResolutions,
       ensureOrder,
+      syncOrderMetadata,
+      fetchOrder,
+      runConcurrent,
+    ]
+  )
+
+  /**
+   * Remove a font from the cart: deletes its committed line items and drops it
+   * from both `committedGroups` and `selections`. If nothing was ever pushed to
+   * CL for this font, only the local selections are dropped.
+   */
+  const removeGroup = useCallback(
+    async (
+      parentUid: string
+    ): Promise<{
+      success: boolean
+      error?: AddToCartError
+    }> => {
+      const committed = state.committedGroups[parentUid]
+      const existingItems = (state.order?.line_items ?? []).filter(
+        (li) =>
+          li.reference_origin === parentUid &&
+          (li.item_type === 'skus' || li.item_type === 'bundles')
+      )
+      const nextSelections = withGroup(state.selections, parentUid, {})
+      const { [parentUid]: _removed, ...nextCommittedGroups } =
+        state.committedGroups
+
+      if (!committed && existingItems.length === 0) {
+        dispatch({
+          type: ActionType.SET_FONT_SELECTIONS,
+          payload: { parentUid, group: {} },
+        })
+        return { success: true }
+      }
+
+      dispatch({ type: ActionType.START_LOADING })
+
+      try {
+        const cl = config != null ? getCommerceLayer(config) : undefined
+        if (!cl) throw new Error('Commerce Layer client not initialized')
+        const order = state.order
+        if (!order?.id) throw new Error('No order to remove items from')
+
+        // Prefer tracked ids; fall back to reference_origin in case
+        // committedGroups was lost.
+        const lineItemIds = committed?.lineItemIds.length
+          ? committed.lineItemIds
+          : existingItems.map((li) => li.id)
+
+        await cl.orders.update({ id: order.id, autorefresh: false })
+
+        await runConcurrent(
+          lineItemIds.map((id) => async () => {
+            const result = await retryCall(() => cl.line_items.delete(id))
+            if (!result?.success) {
+              console.warn(`[removeGroup] Failed to delete line item ${id}`)
+            }
+          }),
+          LINE_ITEM_CONCURRENCY
+        )
+
+        await forceOrderAutorefresh({
+          client: cl,
+          order: { ...order, autorefresh: false },
+        })
+
+        const { order: refreshedOrder } = await fetchOrder()
+
+        dispatch({
+          type: ActionType.REMOVE_COMMITTED_GROUP,
+          payload: { parentUid },
+        })
+        dispatch({
+          type: ActionType.SET_FONT_SELECTIONS,
+          payload: { parentUid, group: {} },
+        })
+        await syncOrderMetadata({
+          order: refreshedOrder ?? order,
+          selections: nextSelections,
+          committedGroups: nextCommittedGroups,
+        })
+
+        return { success: true }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(
+            `[OrderProvider] removeGroup error (${parentUid}):`,
+            error
+          )
+        }
+
+        // Best-effort autorefresh recovery
+        try {
+          const cl = config != null ? getCommerceLayer(config) : undefined
+          if (cl && state.order?.id) {
+            await cl.orders.update({
+              id: state.order.id,
+              autorefresh: true,
+            })
+          }
+        } catch {
+          /* silent */
+        }
+
+        return {
+          success: false,
+          error: {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to remove group',
+            originalError: error,
+          },
+        }
+      } finally {
+        dispatch({ type: ActionType.STOP_LOADING })
+      }
+    },
+    [
+      config,
+      state.order,
+      state.selections,
+      state.committedGroups,
       syncOrderMetadata,
       fetchOrder,
       runConcurrent,
@@ -1826,7 +2008,7 @@ export function OrderProvider({
 
     // Commit dirty/new groups sequentially
     for (const parentUid of dirtyOrNew) {
-      const result = await commitGroup(parentUid)
+      const result = await commitGroup(parentUid, selections[parentUid])
       if (!result.success) {
         return result // Bail on first failure
       }
@@ -1951,6 +2133,15 @@ export function OrderProvider({
     state.order?.line_items && state.order.line_items.length > 0
   )
 
+  // Single source of truth for the header / mini-cart badge: the number of
+  // styles in `selections`. NOT derived from `order.line_items` because group
+  // projections collapse many styles into one line item. Since the buy dialog
+  // edits a per-font draft, this only changes on save (or cart-page edits).
+  const itemsCount = useMemo(
+    () => countSelections(state.selections),
+    [state.selections]
+  )
+
   // --- Derived commit state ---
   // User-facing: is this font's selection committed and clean? Reflects only
   // styles/types (NOT license size), so an order-wide size change never flips
@@ -2010,31 +2201,6 @@ export function OrderProvider({
 
   const isDirty = committedUids.length > 0 && !isFullyCommitted
 
-  // --- Per-font selection management ---
-  // Uses SELECTIONS_STORAGE_KEY declared at the persistence section above.
-  const clearFontSelections = useCallback(
-    (parentUid: string) => {
-      dispatch({
-        type: ActionType.CLEAR_FONT_SELECTIONS,
-        payload: { parentUid },
-      })
-      // Write directly to localStorage so the clear survives navigation
-      // even if the persistence effect doesn't re-run before the page
-      // transition completes (production-only timing issue).
-      try {
-        const stored = localStorage.getItem(SELECTIONS_STORAGE_KEY)
-        if (stored) {
-          const parsed = JSON.parse(stored)
-          delete parsed[parentUid]
-          localStorage.setItem(SELECTIONS_STORAGE_KEY, JSON.stringify(parsed))
-        }
-      } catch {
-        /* localStorage unavailable */
-      }
-    },
-    [SELECTIONS_STORAGE_KEY]
-  )
-
   // --- Group resolutions ---
   const registerGroupResolutions = useCallback(
     (parentUid: string, groups: ResolvedFontGroup[]) => {
@@ -2061,58 +2227,15 @@ export function OrderProvider({
     }
   }, [state.groupResolutions, GROUP_RESOLUTIONS_STORAGE_KEY])
 
-  // Lazily create the CL order once all license info is set. Until then the
-  // license buffer lives purely in React state + localStorage. Guarded by a ref
-  // so we attempt creation at most once per mount; the commitSelections safety
-  // net covers the rare case where this has not finished before checkout.
-  const orderCreationAttemptedRef = useRef(false)
-  useEffect(() => {
-    if (!licenseInitializedRef.current) return
-    if (!allLicenseInfoSet) return
-    if (state.orderId || state.order?.id) return
-    if (orderCreationAttemptedRef.current) return
-
-    orderCreationAttemptedRef.current = true
-    let cancelled = false
-    setIsCreatingOrder(true)
-    ;(async () => {
-      try {
-        await createOrder({
-          customMetadata: {
-            license: {
-              owner: state.licenseOwner,
-              size: state.licenseSize,
-              types: state.selectedSkuOptions.map((o) => o.reference),
-            },
-          },
-        })
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('[OrderProvider] Lazy order creation failed:', error)
-        }
-      } finally {
-        if (!cancelled) setIsCreatingOrder(false)
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [
-    allLicenseInfoSet,
-    state.orderId,
-    state.order?.id,
-    state.licenseOwner,
-    state.licenseSize,
-    state.selectedSkuOptions,
-    createOrder,
-  ])
-
+  // NOTE: the CL order is created lazily by `ensureOrder`, the first time a
+  // group is committed ("Add to cart"). Until then the license buffer (owner /
+  // size) lives in React state + localStorage, and license *types* live in the
+  // BuyProvider draft.
   const value = {
     ...state,
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
-    isCreatingOrder,
+    itemsCount,
     companySizes,
     mediaTypes,
     buyLabels: labels?.buyPage,
@@ -2140,9 +2263,9 @@ export function OrderProvider({
     toggleGroup,
     setStyleLicenseTypes,
     commitGroup,
+    removeGroup,
     commitSelections,
     clearCommittedItems,
-    clearFontSelections,
     // Group resolutions (hybrid projection)
     groupResolutions: state.groupResolutions,
     registerGroupResolutions,

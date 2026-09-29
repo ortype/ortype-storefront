@@ -11,17 +11,12 @@ import BuySummary from './buy-summary'
 import Typefaces from './typefaces'
 
 export const Buy = () => {
-  const {
-    isLicenseForClient,
-    skuOptions,
-    setLicenseSize,
-    selectedSkuOptions,
-    setSelectedSkuOptions,
-    allLicenseInfoSet,
-    isCreatingOrder,
-    buyLabels,
-  } = useOrderContext()
-  const { font } = useBuyContext()
+  const { isLicenseForClient, skuOptions, setLicenseSize, buyLabels } =
+    useOrderContext()
+  // License types are part of the per-font draft: they are only promoted to
+  // the order-wide default when the font is saved (Add / Update cart).
+  const { font, licenseSkuOptions, setLicenseSkuOptions, canSelect } =
+    useBuyContext()
 
   // Add to cart / Go to cart button state
   const [isCommitting, setIsCommitting] = useState(false)
@@ -42,10 +37,10 @@ export const Buy = () => {
           '3xl': '23rem',
         }}
         position={'relative'}
-        opacity={isCreatingOrder || isCommitting ? 0.5 : 1}
+        opacity={isCommitting ? 0.5 : 1}
         // @NOTE: pointer-events: none does not prevent the font-full, font-group, etc.
         // from accepting click events or hover states
-        // pointerEvents={isCreatingOrder || isCommitting ? 'none' : 'auto'}
+        // pointerEvents={isCommitting ? 'none' : 'auto'}
         transition={'opacity 200ms ease-out'}
       >
         <SimpleGrid columns={2} gap={[12, null, null, null, null, null, 12]}>
@@ -78,8 +73,10 @@ export const Buy = () => {
               info={buyLabels?.licenseType?.info}
               font={font}
               skuOptions={skuOptions}
-              selectedSkuOptions={selectedSkuOptions}
-              setSelectedSkuOptions={setSelectedSkuOptions}
+              selectedSkuOptions={licenseSkuOptions}
+              setSelectedSkuOptions={({ selectedSkuOptions }) =>
+                setLicenseSkuOptions(selectedSkuOptions)
+              }
             />
           </GridItem>
           <GridItem colSpan={2}>
@@ -91,10 +88,8 @@ export const Buy = () => {
                 p={0}
                 m={0}
                 pos={'relative'}
-                pointerEvents={
-                  allLicenseInfoSet && !isCreatingOrder ? 'auto' : 'none'
-                }
-                opacity={allLicenseInfoSet ? 1 : 0.3}
+                pointerEvents={canSelect ? 'auto' : 'none'}
+                opacity={canSelect ? 1 : 0.3}
               >
                 <Typefaces />
               </Fieldset.Content>

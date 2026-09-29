@@ -4,17 +4,28 @@ import {
   calculateLineItemPrice,
 } from '@/commercelayer/utils/prices'
 import { Font } from '@/sanity/lib/queries'
+import type { SkuOption } from '@commercelayer/sdk'
 import {
   createContext,
   FC,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useReducer,
-  useRef,
+  useState,
 } from 'react'
 import slugify from 'slugify'
-import { useOrderContext } from '../Order'
+import { useOrderContext, type AddToCartError } from '../Order'
+import {
+  pickSkuOptions,
+  setGroupLicenseTypes,
+  skuOptionRefs,
+  toggleStyleInGroup,
+  toggleStylesInGroup,
+  type StyleGroup,
+} from '../Order/selection-utils'
+import { computeGroupHash } from '../Order/utils'
 import type {
   FontSelectionSummary,
   GroupPriceSummary,
@@ -45,6 +56,20 @@ export interface BuyProviderData {
   fullFamilySummary: GroupPriceSummary
   /** Pre-computed group summaries keyed by groupName */
   groupSummaries: { [groupName: string]: GroupPriceSummary }
+  /** Draft license types for this font (not order-wide until saved) */
+  licenseSkuOptions: SkuOption[]
+  /** Change the draft license types; stamps them on every draft style */
+  setLicenseSkuOptions: (options: SkuOption[]) => void
+  /** Owner + size set and at least one draft license type chosen */
+  canSelect: boolean
+  /** This font has committed line items in the cart */
+  isCommitted: boolean
+  /** Draft differs from the cart (unsaved edits, or pending removal) */
+  isDirty: boolean
+  /** Commit the draft: "Add to cart" / "Update cart" */
+  save: () => Promise<{ success: boolean; error?: AddToCartError }>
+  /** Remove this font from the cart */
+  remove: () => Promise<{ success: boolean; error?: AddToCartError }>
 }
 
 interface BuyProviderProps {
@@ -130,15 +155,18 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const {
-    selectedSkuOptions,
+    skuOptions,
+    selectedSkuOptions: defaultSkuOptions,
     licenseSize,
-    toggleStyle: orderToggleStyle,
-    toggleGroup: orderToggleGroup,
+    hasLicenseOwner,
     selections,
     committedGroups,
     registerGroupResolutions,
-    clearFontSelections,
+    commitGroup,
+    removeGroup,
   } = useOrderContext()
+
+  const fontUid = font.uid!
 
   // Resolve and register group resolutions when the font loads
   useEffect(() => {
@@ -149,64 +177,124 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
     }
   }, [font?._id, font?.uid, registerGroupResolutions])
 
-  // Clear uncommitted selections when leaving the /buy page.
-  // Covers both route navigation (React unmount) and tab close (beforeunload).
-  // Uses a ref so the handler always reads the latest committed state.
-  const committedRef = useRef(committedGroups)
-  committedRef.current = committedGroups
-  useEffect(() => {
-    const uid = font?.uid
-    if (!uid) return
+  // ── Draft buffer ─────────────────────────────────────────────────────────
+  // Unsaved edits for THIS font live here, not in the OrderProvider's
+  // `selections`, so nothing is persisted (localStorage / order metadata) until
+  // `save()` succeeds. Closing the dialog, navigating away, or reloading simply
+  // discards the draft, so no cleanup effect is needed.
+  //
+  // Seeded from `selections[fontUid]` on mount (BuyContainer keys this provider
+  // by font uid, so switching fonts re-seeds). Cart-page edits made before the
+  // dialog opened are therefore preserved in the draft.
+  const [draft, setDraft] = useState<StyleGroup>(
+    () => selections[fontUid] ?? {}
+  )
 
-    const clearIfUncommitted = () => {
-      if (!committedRef.current[uid]) {
-        clearFontSelections(uid)
-      }
-    }
+  /** Order refs canonically (skuOptions order) and drop unknown refs */
+  const canonicalTypes = useCallback(
+    (refs: string[]): string[] =>
+      skuOptionRefs(pickSkuOptions(skuOptions, refs)),
+    [skuOptions]
+  )
 
-    // Tab close / browser quit — React cleanup won't fire, but
-    // beforeunload does. clearFontSelections writes to localStorage
-    // synchronously so it completes before the page is destroyed.
-    window.addEventListener('beforeunload', clearIfUncommitted)
-
-    return () => {
-      window.removeEventListener('beforeunload', clearIfUncommitted)
-      // Route navigation — React unmount cleanup
-      clearIfUncommitted()
-    }
-  }, [font?.uid, clearFontSelections])
-
-  const selectedSkus = selections[font.uid] ?? {}
-
-  /** Build the StyleEntry metadata shared by both toggle helpers */
-  const buildStyleEntry = (params: ToggleStyleParams): StyleEntry => ({
-    licenseTypes: selectedSkuOptions.map((o) => o.reference) || [],
-    parentName: font.shortName ?? font.name,
-    className: params.className ?? '',
-    name: params.name,
-    defaultVariantId: font.defaultVariant?._id ?? '',
+  // Font-level license types for the draft. Seeded from this font's existing
+  // styles (first entry), else the order-wide default. The order default is
+  // only updated when the draft is saved.
+  const [draftTypes, setDraftTypes] = useState<string[]>(() => {
+    const firstEntry = Object.values(selections[fontUid] ?? {})[0]
+    return canonicalTypes(
+      firstEntry?.licenseTypes?.length
+        ? firstEntry.licenseTypes
+        : skuOptionRefs(defaultSkuOptions)
+    )
   })
 
-  /** Toggle a single style in/out of the selection buffer */
-  const toggleStyle = (params: ToggleStyleParams) => {
-    orderToggleStyle({
-      parentUid: font.uid!,
-      skuCode: params.skuCode,
-      styleMetadata: buildStyleEntry(params),
-    })
-  }
+  // Draft-scoped license types as SkuOptions. Everything below that prices or
+  // gates on "selected license types" uses this, not the order-wide default.
+  const selectedSkuOptions = useMemo(
+    () => pickSkuOptions(skuOptions, draftTypes),
+    [skuOptions, draftTypes]
+  )
 
-  /** Toggle an entire group (font family or subfamily) */
-  const toggleGroup = (styles: ToggleStyleParams[]) => {
-    if (styles.length === 0) return
-    orderToggleGroup({
-      parentUid: font.uid!,
-      styles: styles.map((s) => ({
-        skuCode: s.skuCode,
-        styleMetadata: buildStyleEntry(s),
-      })),
-    })
-  }
+  /** Change the draft's license types and stamp them on every draft style */
+  const setLicenseSkuOptions = useCallback(
+    (options: SkuOption[]) => {
+      const refs = canonicalTypes(skuOptionRefs(options))
+      setDraftTypes(refs)
+      setDraft((prev) => setGroupLicenseTypes(prev, refs))
+    },
+    [canonicalTypes]
+  )
+
+  const selectedSkus = draft
+
+  /** Build the StyleEntry metadata shared by both toggle helpers */
+  const buildStyleEntry = useCallback(
+    (params: ToggleStyleParams): StyleEntry => ({
+      licenseTypes: draftTypes,
+      parentName: font.shortName ?? font.name,
+      className: params.className ?? '',
+      name: params.name,
+      defaultVariantId: font.defaultVariant?._id ?? '',
+    }),
+    [draftTypes, font.shortName, font.name, font.defaultVariant?._id]
+  )
+
+  /** Toggle a single style in/out of the draft */
+  const toggleStyle = useCallback(
+    (params: ToggleStyleParams) => {
+      setDraft((prev) =>
+        toggleStyleInGroup(prev, params.skuCode, buildStyleEntry(params))
+      )
+    },
+    [buildStyleEntry]
+  )
+
+  /** Toggle an entire group (font family or subfamily) in the draft */
+  const toggleGroup = useCallback(
+    (styles: ToggleStyleParams[]) => {
+      if (styles.length === 0) return
+      setDraft((prev) =>
+        toggleStylesInGroup(
+          prev,
+          styles.map((s) => ({
+            skuCode: s.skuCode,
+            styleMetadata: buildStyleEntry(s),
+          }))
+        )
+      )
+    },
+    [buildStyleEntry]
+  )
+
+  // ── Save / remove ────────────────────────────────────────────────────────
+  const committed = committedGroups[fontUid]
+  const isCommitted = !!committed
+  const hasDraftStyles = Object.keys(draft).length > 0
+  const draftHash = useMemo(() => computeGroupHash(draft), [draft])
+
+  /**
+   * The draft differs from what's in the cart: unsaved additions/edits, or
+   * (empty draft + committed) a pending removal.
+   */
+  const isDirty = hasDraftStyles ? committed?.hash !== draftHash : isCommitted
+
+  /** Owner + size (order-wide) and at least one draft license type are set */
+  const canSelect =
+    hasLicenseOwner && !!licenseSize?.value && selectedSkuOptions.length > 0
+
+  /** Commit the draft (Add / Update cart). The draft is kept on failure. */
+  const save = useCallback(
+    () => commitGroup(fontUid, draft, { licenseTypes: draftTypes }),
+    [commitGroup, fontUid, draft, draftTypes]
+  )
+
+  /** Remove this font from the cart (deletes committed line items) */
+  const remove = useCallback(async () => {
+    const result = await removeGroup(fontUid)
+    if (result.success) setDraft({})
+    return result
+  }, [removeGroup, fontUid])
 
   // Still compute unitPrice/nextUnitPrice even with 0 selections
   // so the UI can show "what it would cost" for the first add
@@ -417,6 +505,13 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         toggleGroup,
         fullFamilySummary,
         groupSummaries,
+        licenseSkuOptions: selectedSkuOptions,
+        setLicenseSkuOptions,
+        canSelect,
+        isCommitted,
+        isDirty,
+        save,
+        remove,
       }}
     >
       {children}

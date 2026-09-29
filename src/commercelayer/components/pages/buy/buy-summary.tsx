@@ -71,31 +71,53 @@ export const BuySummary = ({
   isCommitting: boolean
   setIsCommitting: (value: boolean) => void
 }) => {
+  // Header badge count (derived from saved `selections`, so it only changes on
+  // save, not on every click in the dialog)
+  const { itemsCount } = useOrderContext()
+  // Everything else reflects this font's unsaved draft
   const {
-    itemsCount,
-    selections,
-    selectedSkuOptions,
-    allLicenseInfoSet,
-    isGroupCommitted,
-    commitGroup,
-    committedGroups,
-  } = useOrderContext()
-  const { font, summary } = useBuyContext()
+    font,
+    summary,
+    selectedSkus,
+    licenseSkuOptions,
+    canSelect,
+    isCommitted,
+    isDirty,
+    save,
+    remove,
+  } = useBuyContext()
   const priceLocale = usePriceLocaleContext()
 
   const {
     defaultVariant: { _id: defaultVariantId },
   } = font
 
-  // Add to cart / Go to cart button state
-  const fontUid = font.uid!
-  const groupIsCommitted = isGroupCommitted(fontUid)
-  const hasFontSelections = Object.keys(selections[font.uid] ?? {}).length > 0
+  const hasFontSelections = Object.keys(selectedSkus).length > 0
 
-  const licensesCount = selectedSkuOptions?.length
+  const licensesCount = licenseSkuOptions.length
 
-  const showAddUpdateButton =
-    allLicenseInfoSet && hasFontSelections && !groupIsCommitted
+  // Draft differs from the cart → "Add to cart" / "Update cart"
+  const showAddUpdateButton = canSelect && hasFontSelections && isDirty
+  // Draft matches what's in the cart → link to the cart
+  const showCartLink = canSelect && hasFontSelections && !isDirty
+  // Every style deselected on a font that is in the cart → offer removal
+  const showRemove = isCommitted && !hasFontSelections
+
+  const runAction = async (
+    action: () => Promise<{ success: boolean; error?: unknown }>
+  ) => {
+    setIsCommitting(true)
+    try {
+      const result = await action()
+      if (!result.success) {
+        console.error('[Buy] cart update failed:', result.error)
+      }
+    } catch (e) {
+      console.error('[Buy] cart update error:', e)
+    } finally {
+      setIsCommitting(false)
+    }
+  }
 
   // All pricing now derived from the selection buffer via BuyProvider
   const {
@@ -124,11 +146,7 @@ export const BuySummary = ({
       >
         {/* NAVIGATION */}
         <Presence
-          present={
-            allLicenseInfoSet &&
-            hasFontSelections &&
-            isGroupCommitted(fontUid)
-          }
+          present={showCartLink}
           animationName={{
             _open: 'slide-from-top, fade-in',
             _closed: 'slide-to-top, fade-out',
@@ -191,8 +209,33 @@ export const BuySummary = ({
         >
           <VStack gap={2}>
             <Text textStyle={summaryFontSize} w={'full'}>
-              {'Select your fonts'}
+              {showRemove
+                ? 'Select styles to keep, or remove this font from your cart'
+                : 'Select your fonts'}
             </Text>
+            {showRemove && (
+              <Button
+                variant={'solid'}
+                bg={'black'}
+                borderRadius={'5rem'}
+                size={'sm'}
+                fontSize={'md'}
+                color={'white'}
+                disabled={isCommitting}
+                w={'full'}
+                gap={1}
+                _hover={{ bg: 'red' }}
+                onClick={() => runAction(remove)}
+              >
+                {isCommitting ? (
+                  <>
+                    <Spinner size={'xs'} /> {'Processing...'}
+                  </>
+                ) : (
+                  'Remove from cart'
+                )}
+              </Button>
+            )}
           </VStack>
         </Box>
       </Presence>
@@ -387,22 +430,13 @@ export const BuySummary = ({
                     w={'full'}
                     gap={1}
                     _hover={{ bg: 'red' }}
-                    onClick={async () => {
-                      setIsCommitting(true)
-                      try {
-                        await commitGroup(fontUid)
-                      } catch (e) {
-                        console.error('[Buy] commitGroup error:', e)
-                      } finally {
-                        setIsCommitting(false)
-                      }
-                    }}
+                    onClick={() => runAction(save)}
                   >
                     {isCommitting ? (
                       <>
                         <Spinner size={'xs'} /> {'Processing...'}
                       </>
-                    ) : !committedGroups[font.uid] ? (
+                    ) : !isCommitted ? (
                       'Add to cart'
                     ) : (
                       'Update cart'

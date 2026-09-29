@@ -2,6 +2,12 @@ import {
   LicenseOwnerInput,
   OrderStateData,
 } from '@/commercelayer/providers/Order'
+import {
+  toggleStyleInGroup,
+  toggleStylesInGroup,
+  withGroup,
+  type StyleGroup,
+} from './selection-utils'
 import type {
   CommittedGroups,
   GroupResolutions,
@@ -28,7 +34,6 @@ export enum ActionType {
   TOGGLE_STYLE = 'TOGGLE_STYLE',
   TOGGLE_GROUP = 'TOGGLE_GROUP',
   SET_STYLE_LICENSE_TYPES = 'SET_STYLE_LICENSE_TYPES',
-  SET_GROUP_LICENSE_TYPES = 'SET_GROUP_LICENSE_TYPES',
   HYDRATE_SELECTIONS = 'HYDRATE_SELECTIONS',
   CLEAR_SELECTIONS = 'CLEAR_SELECTIONS',
   // Group-level commit tracking
@@ -37,7 +42,7 @@ export enum ActionType {
   HYDRATE_COMMITTED_GROUPS = 'HYDRATE_COMMITTED_GROUPS',
   CLEAR_ALL_COMMITTED = 'CLEAR_ALL_COMMITTED',
   // Per-font selection management
-  CLEAR_FONT_SELECTIONS = 'CLEAR_FONT_SELECTIONS',
+  SET_FONT_SELECTIONS = 'SET_FONT_SELECTIONS',
   // Group resolution tracking (for hybrid projection)
   REGISTER_GROUP_RESOLUTIONS = 'REGISTER_GROUP_RESOLUTIONS',
   HYDRATE_GROUP_RESOLUTIONS = 'HYDRATE_GROUP_RESOLUTIONS',
@@ -65,7 +70,6 @@ export type Action =
         order: Order
         orderId: string
         others: Partial<OrderStateData> & {
-          itemsCount: number
           isInvalid: boolean
           hasLicenseOwner: boolean
           isLicenseForClient: boolean
@@ -109,7 +113,6 @@ export type Action =
         order: Order
         orderId: string
         others: Partial<OrderStateData> & {
-          itemsCount: number
           hasLicenseOwner: boolean
           isLicenseForClient: boolean
           licenseOwner: LicenseOwnerInput
@@ -150,13 +153,6 @@ export type Action =
       }
     }
   | {
-      type: ActionType.SET_GROUP_LICENSE_TYPES
-      payload: {
-        parentUid: string
-        licenseTypes: string[]
-      }
-    }
-  | {
       type: ActionType.HYDRATE_SELECTIONS
       payload: {
         selections: SelectionBuffer
@@ -186,8 +182,8 @@ export type Action =
     }
   | { type: ActionType.CLEAR_ALL_COMMITTED }
   | {
-      type: ActionType.CLEAR_FONT_SELECTIONS
-      payload: { parentUid: string }
+      type: ActionType.SET_FONT_SELECTIONS
+      payload: { parentUid: string; group: StyleGroup }
     }
   | {
       type: ActionType.REGISTER_GROUP_RESOLUTIONS
@@ -202,14 +198,6 @@ export type Action =
         groupResolutions: GroupResolutions
       }
     }
-
-/** Count total styles across all parentUid groups */
-function countSelections(selections: SelectionBuffer): number {
-  return Object.values(selections).reduce(
-    (total, group) => total + Object.keys(group).length,
-    0
-  )
-}
 
 export function reducer(
   state: OrderStateData,
@@ -365,82 +353,25 @@ export function reducer(
     // --- Selection buffer actions ---
     case ActionType.TOGGLE_STYLE: {
       const { parentUid, skuCode, styleMetadata } = action.payload
-      const group = state.selections[parentUid] ?? {}
-      let updatedGroup: typeof group
-
-      if (group[skuCode]) {
-        // Remove style
-        const { [skuCode]: _, ...rest } = group
-        updatedGroup = rest
-      } else {
-        // Add style
-        updatedGroup = {
-          ...group,
-          [skuCode]: styleMetadata,
-        }
-      }
-
-      // Remove empty groups
-      const updatedSelections =
-        Object.keys(updatedGroup).length === 0
-          ? (({ [parentUid]: _, ...rest }) => rest)(state.selections)
-          : {
-              ...state.selections,
-              [parentUid]: updatedGroup,
-            }
-
+      const updatedGroup = toggleStyleInGroup(
+        state.selections[parentUid] ?? {},
+        skuCode,
+        styleMetadata
+      )
       return {
         ...state,
-        selections: updatedSelections,
-        itemsCount: countSelections(updatedSelections),
+        selections: withGroup(state.selections, parentUid, updatedGroup),
       }
     }
     case ActionType.TOGGLE_GROUP: {
       const { parentUid, styles } = action.payload
-      const group = state.selections[parentUid] ?? {}
-
-      // If all styles in this sub-group are already selected, remove them;
-      // otherwise add them all. Only touches the styles in `styles`, not the
-      // entire parentUid entry (which may contain other sub-groups).
-      const allSelected = styles.every(({ skuCode }) => !!group[skuCode])
-
-      let updatedSelections: SelectionBuffer
-      if (allSelected) {
-        // Remove only the styles in this sub-group
-        const codesToRemove = new Set(styles.map((s) => s.skuCode))
-        const remaining: typeof group = {}
-        for (const [code, entry] of Object.entries(group)) {
-          if (!codesToRemove.has(code)) {
-            remaining[code] = entry
-          }
-        }
-
-        if (Object.keys(remaining).length === 0) {
-          // No styles left for this font
-          const { [parentUid]: _, ...rest } = state.selections
-          updatedSelections = rest
-        } else {
-          updatedSelections = {
-            ...state.selections,
-            [parentUid]: remaining,
-          }
-        }
-      } else {
-        // Add all styles to the group
-        const updatedGroup = { ...group }
-        for (const { skuCode, styleMetadata } of styles) {
-          updatedGroup[skuCode] = styleMetadata
-        }
-        updatedSelections = {
-          ...state.selections,
-          [parentUid]: updatedGroup,
-        }
-      }
-
+      const updatedGroup = toggleStylesInGroup(
+        state.selections[parentUid] ?? {},
+        styles
+      )
       return {
         ...state,
-        selections: updatedSelections,
-        itemsCount: countSelections(updatedSelections),
+        selections: withGroup(state.selections, parentUid, updatedGroup),
       }
     }
     case ActionType.SET_STYLE_LICENSE_TYPES: {
@@ -459,40 +390,17 @@ export function reducer(
         },
       }
     }
-    case ActionType.SET_GROUP_LICENSE_TYPES: {
-      const { parentUid, licenseTypes } = action.payload
-      const group = state.selections[parentUid]
-      if (!group) return state
-
-      const updatedGroup = Object.entries(group).reduce<typeof group>(
-        (acc, [skuCode, entry]) => {
-          acc[skuCode] = { ...entry, licenseTypes }
-          return acc
-        },
-        {}
-      )
-
-      return {
-        ...state,
-        selections: {
-          ...state.selections,
-          [parentUid]: updatedGroup,
-        },
-      }
-    }
     case ActionType.HYDRATE_SELECTIONS: {
       const { selections } = action.payload
       return {
         ...state,
         selections,
-        itemsCount: countSelections(selections),
       }
     }
     case ActionType.CLEAR_SELECTIONS: {
       return {
         ...state,
         selections: {},
-        itemsCount: 0,
         committedGroups: {},
       }
     }
@@ -525,13 +433,12 @@ export function reducer(
         committedGroups: {},
       }
     }
-    case ActionType.CLEAR_FONT_SELECTIONS: {
-      const { parentUid } = action.payload
-      const { [parentUid]: _, ...restSelections } = state.selections
+    case ActionType.SET_FONT_SELECTIONS: {
+      // Replaces one font's selections; an empty group removes the entry.
+      const { parentUid, group } = action.payload
       return {
         ...state,
-        selections: restSelections,
-        itemsCount: countSelections(restSelections),
+        selections: withGroup(state.selections, parentUid, group),
       }
     }
     case ActionType.REGISTER_GROUP_RESOLUTIONS: {

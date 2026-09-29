@@ -31,7 +31,12 @@ const BuyContainer = ({ font, children }: Props): JSX.Element => {
     )
   }
 
-  return <BuyProvider font={font}>{children}</BuyProvider>
+  // Keyed by font uid so switching fonts (BuyNav) re-seeds the draft buffer
+  return (
+    <BuyProvider key={font?.uid} font={font}>
+      {children}
+    </BuyProvider>
+  )
 }
 
 export default BuyContainer
