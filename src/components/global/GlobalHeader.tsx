@@ -80,7 +80,8 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
                   color: 'white',
                 }}
                 variant={'circle'}
-                fontSize={'3xl'}
+                fontSize={'2rem'}
+                lineHeight={'2rem'}
                 className={'fontVariant-Ejdp7jjphH9hhnST6'}
                 textTransform={'uppercase'}
                 asChild
@@ -105,6 +106,10 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
                   variant='text'
                   size='sm'
                   fontSize='sm'
+                  textUnderlineOffset='5px'
+                  _hover={{
+                    textUnderlineOffset: '7px',
+                  }}
                   px={2}
                   py={1}
                   h='auto'

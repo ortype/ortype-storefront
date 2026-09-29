@@ -150,9 +150,11 @@ export const buttonRecipe = defineRecipe({
         textDecorationColor: 'black',
         _hover: {
           textDecoration: 'underline',
-          textUnderlineOffset: '3px',
-          textDecorationColor: 'transparent',
+          textDecorationThickness: '2px',
+          textUnderlineOffset: '4px',
+          // textDecorationColor: 'transparent',
         },
+        transition: 'text-decoration 200ms ease-out',
       },
       ghost: {
         color: 'colorPalette.fg',
