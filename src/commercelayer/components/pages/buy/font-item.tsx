@@ -112,8 +112,9 @@ export const FontItem: React.FC<Props> = ({
           )}
           <Collapsible.Content pl={hasMultipleGroups ? 8 : 0} asChild>
             <VStack
-              mt={groupFullySelected ? 0 : 0.5}
-              gap={0.5}
+              mt={groupFullySelected ? 0 : 1}
+              mb={0}
+              gap={1}
               w={'full'}
               alignItems={'stretch'}
               pos={'relative'}

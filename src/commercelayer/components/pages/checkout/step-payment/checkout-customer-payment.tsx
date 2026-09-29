@@ -82,6 +82,10 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
               onClick={handleClick}
               onCheckedChange={handleChange}
               variant={'outline'}
+              bg={'brand.50'}
+              _hover={{
+                bg: '#e3e3e3',
+              }}
               size={'sm'}
             >
               {t('stepPayment.saveToWallet') || 'Save to wallet'}

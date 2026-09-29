@@ -70,9 +70,9 @@ export const radioGroupSlotRecipe = defineSlotRecipe({
           transition:
             'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
           boxShadow: 'inset 0 0 0 0px #000',
-          bg: 'brand.50',
+          bg: 'colorPalette.bg',
           _hover: {
-            bg: '#e3e3e3',
+            bg: '#f4f4f4',
             borderRadius: '100px',
             cursor: 'pointer',
           },

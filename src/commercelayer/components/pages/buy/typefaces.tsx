@@ -71,7 +71,7 @@ export const Typefaces = () => {
   const hasMultipleGroups = (font.styleGroups?.length ?? 0) > 1
 
   return font.styleGroups ? (
-    <Flex direction={'column'} mt={1} mb={1} gap={0}>
+    <Flex direction={'column'} mt={1} mb={0} gap={1}>
       <FontFull
         font={font}
         summary={fullFamilySummary}
@@ -88,7 +88,7 @@ export const Typefaces = () => {
       ))}
     </Flex>
   ) : (
-    <Flex direction={'column'} mt={0.5} mb={1} gap={0.5}>
+    <Flex direction={'column'} mt={0.5} mb={0} gap={1}>
       <FontFull
         font={font}
         summary={fullFamilySummary}

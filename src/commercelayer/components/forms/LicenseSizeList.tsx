@@ -86,7 +86,7 @@ export const LicenseSizeList: React.FC<Props> = ({
           {label || '3. How big is your company?'}
         </FieldsetLegend>
         <Fieldset.Content asChild>
-          <VStack mt={1} gap={'3px'}>
+          <VStack mt={1} gap={1}>
             {sizes.map((size) => (
               <RadioGroup.Item
                 key={size.value}

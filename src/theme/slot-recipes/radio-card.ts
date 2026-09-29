@@ -189,12 +189,12 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       },
       subtle: {
         item: {
-          bg: 'brand.50',
+          bg: 'colorPalette.bg',
           borderRadius: '0px',
           transition:
             'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
           _hover: {
-            bg: '#e3e3e3',
+            bg: '#f4f4f4',
             opacity: 1,
             borderRadius: '100px',
           },

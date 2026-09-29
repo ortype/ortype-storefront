@@ -70,7 +70,8 @@ export function BuyDialog({ data }: BuyDialogProps) {
       <DialogContent
         backdrop={false}
         borderRadius={0}
-        bg={'colorPalette.bg'}
+        // bg={'colorPalette.bg'}
+        bg={'colorPalette.50'}
         h={'100vh'}
       >
         <DialogBody overflow={'auto'}>

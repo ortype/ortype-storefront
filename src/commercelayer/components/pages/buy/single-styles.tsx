@@ -38,17 +38,16 @@ export const SingleStyles: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={isSelected ? 'colorPalette.bg' : 'brand.50'}
+      bg={'colorPalette.bg'}
       boxShadow={isSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'}
       borderRadius={isSelected ? '100px' : '0px'}
       _hover={
         allSelected
           ? {}
           : {
+              bg: '#f4f4f4',
               borderRadius: '100px',
-              bg: '#e3e3e3',
               '& .toggle-button': {
-                // bg: 'colorPalette.fg',
                 borderWidth: '3px',
               },
             }

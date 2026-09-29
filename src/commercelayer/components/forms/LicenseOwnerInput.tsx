@@ -93,8 +93,9 @@ const LicenseOwnerInput: React.FC<Props> = ({ label, info }) => {
               '3xl': 'lg',
             }}
             mt={1}
+            bg={'colorPalette.bg'}
             _hover={{
-              bg: '#e3e3e3',
+              bg: '#f4f4f4',
             }}
             borderRadius={0}
             placeholder='Enter License Owner / Company Name*'

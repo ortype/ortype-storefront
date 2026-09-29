@@ -55,19 +55,16 @@ export const FontGroup: React.FC<Props> = ({
   return (
     <Flex
       justifyContent={'space-between'}
-      bg={allSelected ? 'colorPalette.bg' : 'brand.50'}
+      bg={'colorPalette.bg'}
       boxShadow={
         allSelected ? 'inset 0 0 0 2px #000' : 'inset 0 0 0 0px #000'
       }
-      // borderRadius={allSelected ? '0px' : '100px'}
       borderRadius={'full'}
       cursor={allSelected ? 'default' : 'pointer'}
       w={'full'}
       _hover={{
-        // borderRadius: '0px',
-        bg: '#e3e3e3',
+        bg: '#f4f4f4',
         '& .toggle-button': {
-          // bg: 'colorPalette.fg',
           borderWidth: '3px',
         },
       }}

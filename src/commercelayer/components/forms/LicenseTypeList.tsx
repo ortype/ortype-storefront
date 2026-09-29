@@ -117,7 +117,7 @@ export const LicenseTypeList: React.FC<Props> = ({
             value={selectedTypes?.map((option) => option.value) || []}
             onValueChange={(e) => handleTypeChange(e)}
             mt={1}
-            gap={'3px'}
+            gap={1}
           >
             {typeOptions.map((option) => (
               <Checkbox.Root
