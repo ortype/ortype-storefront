@@ -2,8 +2,9 @@ import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import { Font } from '@/types'
-import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
+import { Box, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { startTransition, useOptimistic } from 'react'
+import TogglePieButton from './toggle-pie-button'
 
 interface Props {
   font: Font
@@ -22,6 +23,7 @@ export const FontFull: React.FC<Props> = ({
   const {
     styleCount,
     allSelected,
+    countSelected,
     percentageDiscount,
     fullPriceCents,
     totalPriceCents,
@@ -29,12 +31,22 @@ export const FontFull: React.FC<Props> = ({
 
   const priceLocale = usePriceLocaleContext()
 
+  // See SingleStyles: commit the (expensive) selection update in a transition
+  // and repaint this header's selected chrome optimistically.
   const [optimisticAllSelected, setOptimisticAllSelected] =
     useOptimistic(allSelected)
+  // The pie fill needs the count, not just the all/nothing flag, so that
+  // individual style toggles inside an expanded group move it too.
+  const [optimisticCountSelected, setOptimisticCountSelected] =
+    useOptimistic(countSelected)
+
+  const selectedRatio =
+    styleCount > 0 ? optimisticCountSelected / styleCount : 0
 
   const handleClick = () => {
     startTransition(() => {
       setOptimisticAllSelected(!optimisticAllSelected)
+      setOptimisticCountSelected(optimisticAllSelected ? 0 : styleCount)
       onToggle()
     })
   }
@@ -62,19 +74,20 @@ export const FontFull: React.FC<Props> = ({
       }
       py={3}
       px={4}
-      mb={hasMultipleGroups ? 1 : 0}
+      mb={hasMultipleGroups ? 0.5 : 0}
     >
       <Stack direction={'row'} gap={3} alignItems={'center'}>
-        <Button
+        <TogglePieButton
           className={'toggle-button'}
-          variant={'circle'}
+          value={selectedRatio}
+          aria-label={`${optimisticCountSelected} of ${styleCount} styles selected`}
           w={'1.385rem'}
           borderWidth={'2px'}
           h={'1.385rem'}
           minW={'1.385rem'}
-          p={0}
-          bg={optimisticAllSelected ? 'black' : 'white'}
-          transition={'border-width 200ms ease-in-out'}
+          transition={
+            'border-radius 200ms ease-in-out, border-width 200ms ease-in-out'
+          }
         />
         <Stack direction={'column'} gap={1}>
           <Text

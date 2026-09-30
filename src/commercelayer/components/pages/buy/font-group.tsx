@@ -1,8 +1,9 @@
 import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
-import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
+import { Box, Flex, Stack, Text } from '@chakra-ui/react'
 import React, { startTransition, useOptimistic } from 'react'
+import { TogglePieButton } from './toggle-pie-button'
 import type { FontGroup as FontGroupType } from './typefaces'
 
 interface FontVariant {
@@ -49,10 +50,18 @@ export const FontGroup: React.FC<Props> = ({
   // and repaint this header's selected chrome optimistically.
   const [optimisticAllSelected, setOptimisticAllSelected] =
     useOptimistic(allSelected)
+  // The pie fill needs the count, not just the all/nothing flag, so that
+  // individual style toggles inside an expanded group move it too.
+  const [optimisticCountSelected, setOptimisticCountSelected] =
+    useOptimistic(countSelected)
+
+  const selectedRatio =
+    styleCount > 0 ? optimisticCountSelected / styleCount : 0
 
   const handleClick = () => {
     startTransition(() => {
       setOptimisticAllSelected(!optimisticAllSelected)
+      setOptimisticCountSelected(optimisticAllSelected ? 0 : styleCount)
       onToggle()
     })
   }
@@ -83,15 +92,14 @@ export const FontGroup: React.FC<Props> = ({
       px={4}
     >
       <Stack direction={'row'} gap={3} alignItems={'center'}>
-        <Button
+        <TogglePieButton
           className={'toggle-button'}
-          variant={'circle'}
+          value={selectedRatio}
+          aria-label={`${optimisticCountSelected} of ${styleCount} styles selected`}
           w={'1.385rem'}
           borderWidth={'2px'}
           h={'1.385rem'}
           minW={'1.385rem'}
-          p={0}
-          bg={optimisticAllSelected ? 'black' : 'white'}
           transition={
             'border-radius 200ms ease-in-out, border-width 200ms ease-in-out'
           }
@@ -109,11 +117,11 @@ export const FontGroup: React.FC<Props> = ({
             <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
               {`${styleCount} styles — variable font included`}
             </Text>
-            {!open && countSelected > 0 && countSelected < styleCount && (
+            {/*!open && countSelected > 0 && countSelected < styleCount && (
               <Text fontSize={'2xs'} as={'div'} lineHeight={0.75}>
                 {`(${countSelected} of ${styleCount} styles selected)`}
               </Text>
-            )}
+            )*/}
           </Stack>
         </Stack>
       </Stack>
