@@ -5,7 +5,6 @@ import { formatPrice } from '@/commercelayer/utils/prices'
 import {
   Box,
   Button,
-  Circle,
   Flex,
   HStack,
   Presence,
@@ -13,11 +12,27 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { AnimatePresence, motion, type Variants } from 'framer-motion'
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Variants,
+} from 'framer-motion'
 import Link from 'next/link'
-import { useState } from 'react'
 
 const ANIMATION_DURATION = 0.3
+
+// The clip wrapper reveals the "Cart →" label by animating its width, so the
+// pill grows as real layout (no transform scaling => no child wobble). The
+// label inside slides in from the right, i.e. from where the count sits.
+const cartClipVariants: Variants = {
+  hidden: { width: 0 },
+  visible: { width: 'auto' },
+}
+const cartLabelVariants: Variants = {
+  hidden: { opacity: 0, x: '100%' },
+  visible: { opacity: 1, x: 0 },
+}
 
 // The wrapper animates its own height so the surrounding panel grows/shrinks
 // smoothly. `when` sequences the two animations: expand the height BEFORE the
@@ -79,6 +94,10 @@ export const BuySummary = ({
     font,
     summary,
     selectedSkus,
+    // @NOTE: useful incase we want to gate each step in sequence
+    // hasLicenseOwner,
+    // hasLicenseSize,
+    // hasLicenseTypes,
     licenseSkuOptions,
     canSelect,
     isCommitted,
@@ -87,6 +106,10 @@ export const BuySummary = ({
     remove,
   } = useBuyContext()
   const priceLocale = usePriceLocaleContext()
+  const prefersReducedMotion = useReducedMotion()
+  const cartLabelTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { duration: ANIMATION_DURATION, ease: 'easeInOut' as const }
 
   const {
     defaultVariant: { _id: defaultVariantId },
@@ -102,6 +125,14 @@ export const BuySummary = ({
   const showCartLink = canSelect && hasFontSelections && !isDirty
   // Every style deselected on a font that is in the cart → offer removal
   const showRemove = isCommitted && !hasFontSelections
+
+  let wizardText =
+    'Please complete selections for steps 1 - 3 before choosing your fonts for the project'
+  if (canSelect) {
+    wizardText = showRemove
+      ? 'Select styles to keep, or remove this font from your cart'
+      : 'Select your font styles'
+  }
 
   const runAction = async (
     action: () => Promise<{ success: boolean; error?: unknown }>
@@ -144,44 +175,70 @@ export const BuySummary = ({
         top={{ base: 'auto', lg: 4 }}
         gap={1}
       >
-        {/* NAVIGATION */}
-        <Presence
-          present={showCartLink}
-          animationName={{
-            _open: 'slide-from-top, fade-in',
-            _closed: 'slide-to-top, fade-out',
-          }}
-          animationDuration='moderate'
-        >
-          <Button
-            asChild
-            variant={'outline'}
-            bg={'colorPalette.fg'}
-            color={'colorPalette.bg'}
-            borderRadius={'5rem'}
-            size={'xs'}
-            h={10}
-            fontSize={'md'}
-            css={{
-              _hover: {
-                bg: 'transparent',
-                color: 'colorPalette.fg',
-              },
-            }}
-          >
-            <Link href={'/cart/'}>{'Cart →'}</Link>
-          </Button>
-        </Presence>
-        <Circle
+        {/* NAVIGATION: red count pill that expands into a "Cart →" CTA */}
+        <Box
+          asChild
+          pos={'relative'}
+          display={'inline-flex'}
+          alignItems={'center'}
+          justifyContent={'center'}
+          h={10}
+          borderRadius={'full'}
+          overflow={'hidden'}
+          whiteSpace={'nowrap'}
           fontSize={'md'}
-          size={10}
-          width={itemsCount < 10 ? 'var(--or-sizes-5) !important' : 'auto'}
           bg={'red'}
           color={'white'}
-          asChild
+          _hover={{ bg: 'colorPalette.fg', color: 'colorPalette.bg' }}
+          px={2.5}
+          // gap={1}
         >
-          <Link href={'/cart'}>{itemsCount}</Link>
-        </Circle>
+          <Link href={'/cart'}>
+            {/* Clip wrapper: width 0 <-> auto reveals the label to the left of the
+                count. The count never moves relative to the pill's right edge. */}
+            <motion.span
+              variants={cartClipVariants}
+              initial={false}
+              animate={showCartLink ? 'visible' : 'hidden'}
+              transition={cartLabelTransition}
+              style={{ display: 'inline-block', overflow: 'hidden' }}
+              aria-hidden={!showCartLink}
+            >
+              <motion.span
+                variants={cartLabelVariants}
+                transition={cartLabelTransition}
+                style={{
+                  display: 'inline-block',
+                  paddingRight: '0.25rem',
+                }}
+              >
+                {'Cart → '}
+              </motion.span>
+            </motion.span>
+            {/* Collapsed: a fixed-width slot keeps the count centered in a circle.
+                Expanded: the slot shrinks to the digits + a 1rem right inset, so
+                there's no extra gap next to the label. */}
+            <motion.span
+              initial={false}
+              animate={{
+                minWidth: showCartLink
+                  ? '0rem'
+                  : itemsCount >= 100
+                    ? '2rem'
+                    : '1rem',
+              }}
+              transition={cartLabelTransition}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+              }}
+            >
+              {itemsCount}
+            </motion.span>
+          </Link>
+        </Box>
       </HStack>
       <Presence
         present={!showSummaryPanel}
@@ -192,7 +249,7 @@ export const BuySummary = ({
         animationDuration='moderate'
         pos={{ base: 'relative', lg: 'fixed' }}
         right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
-        top={{ base: 'auto', lg: 5 }}
+        top={{ base: 'auto', lg: 16 }}
       >
         <Box
           w={{
@@ -202,16 +259,14 @@ export const BuySummary = ({
             '3xl': '18rem',
           }}
           bg={'#FFF8D3'}
-          my={{ base: 4, xl: 0 }}
+          my={{ base: 4, lg: 0 }}
           borderRadius={20}
           px={4}
           py={5}
         >
           <VStack gap={2}>
             <Text textStyle={summaryFontSize} w={'full'}>
-              {showRemove
-                ? 'Select styles to keep, or remove this font from your cart'
-                : 'Select your fonts'}
+              {wizardText}
             </Text>
             {showRemove && (
               <Button

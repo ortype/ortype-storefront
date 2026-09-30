@@ -25,13 +25,13 @@ import {
   toggleStylesInGroup,
   type StyleGroup,
 } from '../Order/selection-utils'
-import { computeGroupHash } from '../Order/utils'
 import type {
   FontSelectionSummary,
   GroupPriceSummary,
   ResolvedFontGroup,
   StyleEntry,
 } from '../Order/types'
+import { computeGroupHash } from '../Order/utils'
 
 /** Minimal params for toggling a single style — font-level context is auto-filled */
 export interface ToggleStyleParams {
@@ -60,6 +60,9 @@ export interface BuyProviderData {
   licenseSkuOptions: SkuOption[]
   /** Change the draft license types; stamps them on every draft style */
   setLicenseSkuOptions: (options: SkuOption[]) => void
+  hasLicenseOwner: boolean
+  hasLicenseSize: boolean
+  hasLicenseTypes: boolean
   /** Owner + size set and at least one draft license type chosen */
   canSelect: boolean
   /** This font has committed line items in the cart */
@@ -85,10 +88,7 @@ const initialState: AppStateData = {
   isLoading: false,
 }
 
-const BuyContext = createContext<BuyProviderData>(
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  {} as BuyProviderData
-)
+const BuyContext = createContext<BuyProviderData>({} as BuyProviderData)
 
 export const useBuyContext = (): BuyProviderData => useContext(BuyContext)
 
@@ -278,6 +278,10 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
    * (empty draft + committed) a pending removal.
    */
   const isDirty = hasDraftStyles ? committed?.hash !== draftHash : isCommitted
+
+  const hasLicenseSize = !!licenseSize?.value
+
+  const hasLicenseTypes = selectedSkuOptions.length > 0
 
   /** Owner + size (order-wide) and at least one draft license type are set */
   const canSelect =
@@ -507,6 +511,9 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         groupSummaries,
         licenseSkuOptions: selectedSkuOptions,
         setLicenseSkuOptions,
+        hasLicenseOwner,
+        hasLicenseSize,
+        hasLicenseTypes,
         canSelect,
         isCommitted,
         isDirty,

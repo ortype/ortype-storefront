@@ -79,9 +79,8 @@ const MiniCart = ({}: Props): JSX.Element => {
   return disabled ? (
     <Circle
       fontSize={'md'}
-      // size={11}
       size={10}
-      width={itemsCount < 10 ? 'var(--or-sizes-5) !important' : 'auto'}
+      minW={itemsCount >= 100 ? 'var(--or-sizes-14)' : 'var(--or-sizes-10)'}
       bg={'red'}
       color={'white'}
       asChild
@@ -102,7 +101,9 @@ const MiniCart = ({}: Props): JSX.Element => {
           fontSize={'md'}
           // size={11}
           size={10}
-          width={itemsCount < 10 ? 'var(--or-sizes-5) !important' : 'auto'}
+          minW={
+            itemsCount >= 100 ? 'var(--or-sizes-14)' : 'var(--or-sizes-10)'
+          }
           bg={'red'}
           color={'white'}
           asChild
