@@ -150,17 +150,18 @@ export const OnAir: FC<OnAirProps> = ({ ...props }) => {
     return () => clearTimeout(timer)
   }, [])
 
-  const poem =
-    poemData?.latestPoemEntries?.length > 0 &&
-    poemData.latestPoemEntries.filter(
-      (item) => item.sessionId === sessionStorage.getItem('sessionId')
-    )
-
-  // Limit poem array to 4 items
+  // Only this session's entries, limited to the latest 4. Memoized on the query
+  // data (not a freshly filtered array) so it only recomputes when it changes.
+  // `sessionStorage` is read lazily here, never during SSR/hydration: there is
+  // no data until the client query resolves, so this bails out early until then.
+  const latestPoemEntries = poemData?.latestPoemEntries
   const limitedPoem = useMemo(() => {
-    if (!poem) return []
-    return [...poem].slice(-4)
-  }, [poem])
+    if (typeof window === 'undefined' || !latestPoemEntries?.length) return []
+    const sessionId = sessionStorage.getItem('sessionId')
+    return latestPoemEntries
+      .filter((item) => item.sessionId === sessionId)
+      .slice(-4)
+  }, [latestPoemEntries])
 
   return (
     <Box pos={'fixed'} bottom={4} left={4}>
@@ -170,7 +171,9 @@ export const OnAir: FC<OnAirProps> = ({ ...props }) => {
         // overflow={'hidden'}
         // boxShadow={'inset 0 0 0 4px red'}
         size={'sm'}
-        transition={'scale 0.3s ease, height 0.3s ease, background 0.3s ease'}
+        transition={
+          'transform 0.3s ease, height 0.3s ease, background 0.3s ease'
+        }
         h={isHovered ? '8rem' : 'var(--or-sizes-8)'}
         transform={isHovered ? 'scale(0.95)' : 'none'}
         onMouseEnter={() => setIsHovered(true)}
