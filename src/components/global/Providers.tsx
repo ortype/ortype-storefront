@@ -3,7 +3,6 @@ import { IdentityProvider } from '@/commercelayer/providers/identity'
 import { OrderProvider } from '@/commercelayer/providers/Order'
 import OrderStorage from '@/commercelayer/providers/Order/Storage'
 import { PriceLocaleProvider } from '@/commercelayer/providers/price-locale'
-import type { PriceLocale } from '@/commercelayer/utils/price-locale'
 import { ApolloClientProvider } from '@/components/data/ApolloProvider'
 import { Provider as ChakraProvider } from '@/components/ui/provider'
 import { type LicenseMetrics, type UiLabels } from '@/sanity/lib/queries'
@@ -22,17 +21,15 @@ function Providers({
   marketId,
   labels,
   metrics,
-  priceLocale,
 }: {
   children: React.ReactNode
   marketId: string
   labels?: UiLabels | null
   metrics: LicenseMetrics
-  priceLocale: PriceLocale
 }) {
   return (
     <>
-      <PriceLocaleProvider priceLocale={priceLocale}>
+      <PriceLocaleProvider>
         <ChakraProvider>
           <ApolloClientProvider initialApolloState={{}}>
             <IdentityProvider

@@ -10,10 +10,7 @@
 
 export type PriceLocale = 'de-DE' | 'en-US'
 
-/** Request header used to forward the resolved price locale from middleware to server components. */
-export const PRICE_LOCALE_HEADER = 'x-price-locale'
-
-/** Cookie used to persist the resolved price locale across requests. */
+/** Cookie set by the proxy and read client-side by `PriceLocaleProvider`. */
 export const PRICE_LOCALE_COOKIE = 'price-locale'
 
 /** ISO 3166-1 alpha-2 country codes for EU member states. */

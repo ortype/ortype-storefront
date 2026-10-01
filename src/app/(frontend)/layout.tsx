@@ -1,9 +1,5 @@
-import {
-  PRICE_LOCALE_COOKIE,
-  PRICE_LOCALE_HEADER,
-  type PriceLocale,
-} from '@/commercelayer/utils/price-locale'
 import { getIntegrationCommerceLayer } from '@/commercelayer/utils/get-integration-commerce-layer'
+import Globals from '@/components/global/Globals'
 import Providers from '@/components/global/Providers'
 import { DisableDraftMode } from '@/sanity/components/DisableDraftMode'
 import { sanityFetch, SanityLive } from '@/sanity/lib/live'
@@ -11,8 +7,7 @@ import { normalizeLicenseMetrics } from '@/sanity/lib/normalize'
 import { licenseMetricsQuery, uiLabelsQuery } from '@/sanity/lib/queries'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { unstable_cache } from 'next/cache'
-import { cookies, draftMode, headers } from 'next/headers'
-import Globals from '@/components/global/Globals'
+import { draftMode } from 'next/headers'
 import './storefront.css'
 
 // https://github.com/vercel/next.js/discussions/54075
@@ -62,24 +57,13 @@ export default async function FrontendLayout({
     )
   }
 
-  // Resolved in src/proxy.ts from the visitor's Accept-Language header.
-  // Fall back to the cookie (e.g. static/edge caching edge cases), then to
-  // 'en-US' if neither is present.
-  const priceLocale =
-    ((await headers()).get(PRICE_LOCALE_HEADER) as PriceLocale | null) ??
-    ((await cookies()).get(PRICE_LOCALE_COOKIE)
-      ?.value as PriceLocale | null) ??
-    'en-US'
-
+  // NOTE: do not call `headers()` / `cookies()` here. They opt every route
+  // under this layout into dynamic rendering. The visitor's price locale is
+  // resolved client-side in <PriceLocaleProvider /> instead.
   return (
     <>
       <Globals />
-      <Providers
-        marketId={marketId}
-        labels={labels}
-        metrics={metrics}
-        priceLocale={priceLocale}
-      >
+      <Providers marketId={marketId} labels={labels} metrics={metrics}>
         {children}
       </Providers>
       {(await draftMode()).isEnabled && (
