@@ -6,6 +6,7 @@ import {
   StripeElementSkelton,
 } from '@/commercelayer/components/ui/stripe-element-field'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { alltafVfUrl } from '@/components/global/Globals'
 import { Alert } from '@/components/ui/alert'
 import { Box, Spinner, Stack, Text } from '@chakra-ui/react'
 import {
@@ -22,7 +23,11 @@ import type {
 } from '@stripe/stripe-js'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { CustomStripePaymentProps } from './types'
-import { ALLTAF_VF_BASE } from '@/components/global/Globals'
+// @NOTE: The Stripe font is fetched from Stripe's iframe origin.
+// That origin isn't in the API's allowedOrigins, so the
+// Access-Control-Allow-Origin header falls back to CORS_ORIGIN.
+// I haven't verified whether that matters, but it's worth checking
+// if the Stripe fields ever fall back to a default font.
 
 interface CustomStripePaymentFormProps {
   stripe: Stripe | null
@@ -420,7 +425,7 @@ const CustomStripePaymentForm: React.FC<CustomStripePaymentFormProps> = ({
       {
         family: 'Alltaf-Regular',
         // src: 'url(https://assets.ortype.is/v3/alltaf-regular-webfont.woff) format(woff2)',
-        src: `url("${ALLTAF_VF_BASE}.woff2") format("woff2")`,
+        src: `url("${alltafVfUrl('woff2')}") format("woff2")`,
         weight: '400',
       },
     ],

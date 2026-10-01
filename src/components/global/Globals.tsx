@@ -1,7 +1,7 @@
 'use client'
+import { breakpoints as chakraBreakpoints } from '@/theme/breakpoints'
 import { Global } from '@emotion/react'
 import React from 'react'
-import { breakpoints as chakraBreakpoints } from '@/theme/breakpoints'
 
 // Reuse Chakra's own responsive breakpoints (`sm/md/lg/xl/2xl/3xl`) as the
 // step boundaries for the root font-size below, so the two scales never
@@ -43,34 +43,23 @@ const { BASELINE, FONT_SIZE_STEPS } = FontScale
 // `'Alltaf-Bold'` usages keep working unchanged.
 export const ALLTAF_VF_BASE = `${process.env.NEXT_PUBLIC_API_URL}/OrAlltaf-WebVF`
 
+// Bump this whenever the font file changes. The API serves fonts with
+// `Cache-Control: immutable`, so the URL must change to bust the cache.
+// express.static ignores the query string, so no server change is needed.
+export const ALLTAF_VF_VERSION = '1'
+
+export const alltafVfUrl = (ext: 'woff2' | 'woff') =>
+  `${ALLTAF_VF_BASE}.${ext}?v=${ALLTAF_VF_VERSION}`
+
 const Globals = () => {
   return (
     <>
       <Global
         styles={{
           '@font-face': {
-            fontFamily: 'Alltaf-Regular-OTF',
-            src: 'url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff2") format("woff2"), url("https://assets.ortype.is/v3/OrAlltafOTF-Regular.woff") format("woff")',
-            fontWeight: 'normal',
-          },
-        }}
-      />
-      <Global
-        styles={{
-          '@font-face': {
             fontFamily: 'Alltaf-Var',
-            src: `url("${ALLTAF_VF_BASE}.woff2") format("woff2"), url("${ALLTAF_VF_BASE}.woff") format("woff")`,
+            src: `url("${alltafVfUrl('woff2')}") format("woff2"), url("${alltafVfUrl('woff')}") format("woff")`,
             fontWeight: '400 700',
-            fontStyle: 'normal',
-          },
-        }}
-      />
-      <Global
-        styles={{
-          '@font-face': {
-            fontFamily: 'Alltaf-Regular',
-            src: `url("${ALLTAF_VF_BASE}.woff2") format("woff2"), url("${ALLTAF_VF_BASE}.woff") format("woff")`,
-            fontWeight: 400,
             fontStyle: 'normal',
           },
         }}
@@ -83,10 +72,13 @@ const Globals = () => {
             fontVariantNumeric: 'tabular-nums',
             lineHeight: `${BASELINE / 2}rem`,
             fontWeight: 400,
-            ...MQ.reduce((acc, mq, index) => {
-              acc[mq] = { fontSize: `${FONT_SIZE_STEPS[index + 1]}rem` }
-              return acc
-            }, {} as Record<string, { fontSize: string }>),
+            ...MQ.reduce(
+              (acc, mq, index) => {
+                acc[mq] = { fontSize: `${FONT_SIZE_STEPS[index + 1]}rem` }
+                return acc
+              },
+              {} as Record<string, { fontSize: string }>
+            ),
           },
         }}
       />
