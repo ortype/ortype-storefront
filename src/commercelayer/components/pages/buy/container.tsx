@@ -1,4 +1,5 @@
 'use client'
+import { DraftGuardRegistrar } from '@/commercelayer/components/pages/buy/use-draft-guard'
 import { BuyProvider } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import type { BuyFontsQueryResult } from '@/types'
@@ -34,6 +35,8 @@ const BuyContainer = ({ font, children }: Props): JSX.Element => {
   // Keyed by font uid so switching fonts (BuyNav) re-seeds the draft buffer
   return (
     <BuyProvider key={font?.uid} font={font}>
+      {/* Mirrors the draft into the discard-draft guard (see use-draft-guard) */}
+      <DraftGuardRegistrar />
       {children}
     </BuyProvider>
   )

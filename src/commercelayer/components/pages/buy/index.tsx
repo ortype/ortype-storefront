@@ -6,7 +6,7 @@ import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { Box, Fieldset, GridItem, SimpleGrid } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React from 'react'
 import BuySummary from './buy-summary'
 import Typefaces from './typefaces'
 
@@ -15,11 +15,13 @@ export const Buy = () => {
     useOrderContext()
   // License types are part of the per-font draft: they are only promoted to
   // the order-wide default when the font is saved (Add / Update cart).
-  const { font, licenseSkuOptions, setLicenseSkuOptions, canSelect } =
-    useBuyContext()
-
-  // Add to cart / Go to cart button state
-  const [isCommitting, setIsCommitting] = useState(false)
+  const {
+    font,
+    licenseSkuOptions,
+    setLicenseSkuOptions,
+    canSelect,
+    isCommitting,
+  } = useBuyContext()
 
   return (
     <Box pos={'relative'}>
@@ -97,10 +99,7 @@ export const Buy = () => {
           </GridItem>
         </SimpleGrid>
       </Box>
-      <BuySummary
-        isCommitting={isCommitting}
-        setIsCommitting={setIsCommitting}
-      />
+      <BuySummary />
     </Box>
   )
 }

@@ -9,6 +9,7 @@ import {
 import { ChevronDownIcon } from '@sanity/icons'
 import NextLink from 'next/link'
 
+import { useDraftGuard } from '@/commercelayer/components/pages/buy/use-draft-guard'
 import {
   MenuContent,
   MenuItem,
@@ -28,6 +29,8 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
   const getTypeAnchorRect = () => typeRef.current!.getBoundingClientRect()
   const [openTypeMenu, setTypeMenuOpen] = useState(false)
   const sortedFonts = [font, ...moreFonts]
+  // Switching fonts re-seeds the draft, so confirm before leaving a dirty one
+  const { guardedLinkClick } = useDraftGuard()
 
   return (
     <>
@@ -70,7 +73,12 @@ const BuyNav = ({ font, moreFonts }: BuyNavProps) => {
                 lineHeight={'1.25rem'}
               >
                 <Box whiteSpace={'nowrap'} asChild>
-                  <NextLink href={`/fonts/${item.slug}/buy`}>
+                  <NextLink
+                    href={`/fonts/${item.slug}/buy`}
+                    onClick={(e) =>
+                      guardedLinkClick(e, `/fonts/${item.slug}/buy`)
+                    }
+                  >
                     {item.shortName}
                   </NextLink>
                 </Box>

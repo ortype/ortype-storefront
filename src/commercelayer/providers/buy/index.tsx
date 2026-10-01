@@ -1,9 +1,9 @@
-import { ActionType, reducer } from '@/commercelayer/providers/buy/reducer'
+import { reducer } from '@/commercelayer/providers/buy/reducer'
 import {
   calculateDiscount,
   calculateLineItemPrice,
 } from '@/commercelayer/utils/prices'
-import { Font } from '@/sanity/lib/queries'
+import { type Font } from '@/types'
 import type { SkuOption } from '@commercelayer/sdk'
 import {
   createContext,
@@ -13,7 +13,9 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
+  type ReactNode,
 } from 'react'
 import slugify from 'slugify'
 import { useOrderContext, type AddToCartError } from '../Order'
@@ -38,6 +40,11 @@ export interface ToggleStyleParams {
   skuCode: string
   name: string
   className?: string
+}
+
+export interface CommitResult {
+  success: boolean
+  error?: AddToCartError
 }
 
 export interface BuyProviderData {
@@ -65,19 +72,30 @@ export interface BuyProviderData {
   hasLicenseTypes: boolean
   /** Owner + size set and at least one draft license type chosen */
   canSelect: boolean
+  /** The draft has at least one selected style */
+  hasFontSelections: boolean
   /** This font has committed line items in the cart */
   isCommitted: boolean
   /** Draft differs from the cart (unsaved edits, or pending removal) */
   isDirty: boolean
+  /** The dirty draft can be written to the cart right now (see `commit`) */
+  canCommit: boolean
+  /** A save / remove / commit is in flight */
+  isCommitting: boolean
   /** Commit the draft: "Add to cart" / "Update cart" */
-  save: () => Promise<{ success: boolean; error?: AddToCartError }>
+  save: () => Promise<CommitResult>
   /** Remove this font from the cart */
-  remove: () => Promise<{ success: boolean; error?: AddToCartError }>
+  remove: () => Promise<CommitResult>
+  /**
+   * Write the dirty draft to the cart: `remove` when the draft is a pending
+   * removal (empty draft on a committed font), otherwise `save`.
+   */
+  commit: () => Promise<CommitResult>
 }
 
 interface BuyProviderProps {
   font: Font
-  children?: JSX.Element[] | JSX.Element | null
+  children?: ReactNode
 }
 
 export interface AppStateData {
@@ -287,18 +305,78 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const canSelect =
     hasLicenseOwner && !!licenseSize?.value && selectedSkuOptions.length > 0
 
+  /**
+   * A dirty draft can only be written when it is a removal (needs nothing but
+   * the font uid) or when owner/size/types are all set, since `commitGroup`
+   * prices line items from them.
+   */
+  const canCommit = isDirty && ((isCommitted && !hasDraftStyles) || canSelect)
+
+  // ── Commit tracking ──────────────────────────────────────────────────────
+  // `isCommitting` lives here (not in a component) so every entry point — the
+  // summary buttons and the discard-draft dialog — shares one source of truth.
+  // The in-flight promise is also kept so a second request while a commit is
+  // running joins it instead of firing a duplicate cart write.
+  const [isCommitting, setIsCommitting] = useState(false)
+  const inFlightRef = useRef<Promise<CommitResult> | null>(null)
+
+  const track = useCallback(
+    (action: () => Promise<CommitResult>): Promise<CommitResult> => {
+      if (inFlightRef.current) return inFlightRef.current
+      setIsCommitting(true)
+      const promise = (async (): Promise<CommitResult> => {
+        try {
+          const result = await action()
+          if (!result.success) {
+            console.error('[Buy] cart update failed:', result.error)
+          }
+          return result
+        } catch (e) {
+          console.error('[Buy] cart update error:', e)
+          return {
+            success: false,
+            error: {
+              message: e instanceof Error ? e.message : 'Cart update failed',
+              originalError: e,
+            },
+          }
+        } finally {
+          inFlightRef.current = null
+          setIsCommitting(false)
+        }
+      })()
+      inFlightRef.current = promise
+      return promise
+    },
+    []
+  )
+
   /** Commit the draft (Add / Update cart). The draft is kept on failure. */
   const save = useCallback(
-    () => commitGroup(fontUid, draft, { licenseTypes: draftTypes }),
-    [commitGroup, fontUid, draft, draftTypes]
+    () =>
+      track(() => commitGroup(fontUid, draft, { licenseTypes: draftTypes })),
+    [track, commitGroup, fontUid, draft, draftTypes]
   )
 
   /** Remove this font from the cart (deletes committed line items) */
-  const remove = useCallback(async () => {
-    const result = await removeGroup(fontUid)
-    if (result.success) setDraft({})
-    return result
-  }, [removeGroup, fontUid])
+  const remove = useCallback(
+    () =>
+      track(async () => {
+        const result = await removeGroup(fontUid)
+        if (result.success) setDraft({})
+        return result
+      }),
+    [track, removeGroup, fontUid]
+  )
+
+  /** Empty draft on a committed font: the pending change is a removal */
+  const isPendingRemoval = isCommitted && !hasDraftStyles
+
+  /** Write the dirty draft to the cart, whichever way it needs to go */
+  const commit = useCallback(
+    () => (isPendingRemoval ? remove() : save()),
+    [isPendingRemoval, remove, save]
+  )
 
   // Still compute unitPrice/nextUnitPrice even with 0 selections
   // so the UI can show "what it would cost" for the first add
@@ -515,10 +593,14 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
         hasLicenseSize,
         hasLicenseTypes,
         canSelect,
+        hasFontSelections: hasDraftStyles,
         isCommitted,
         isDirty,
+        canCommit,
+        isCommitting,
         save,
         remove,
+        commit,
       }}
     >
       {children}

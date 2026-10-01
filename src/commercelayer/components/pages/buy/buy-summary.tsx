@@ -1,3 +1,4 @@
+import { useDraftGuard } from '@/commercelayer/components/pages/buy/use-draft-guard'
 import { useBuyContext } from '@/commercelayer/providers/buy'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
@@ -79,13 +80,7 @@ const buttonVariants: Variants = {
   },
 }
 
-export const BuySummary = ({
-  isCommitting,
-  setIsCommitting,
-}: {
-  isCommitting: boolean
-  setIsCommitting: (value: boolean) => void
-}) => {
+export const BuySummary = () => {
   // Header badge count (derived from saved `selections`, so it only changes on
   // save, not on every click in the dialog)
   const { itemsCount } = useOrderContext()
@@ -100,11 +95,15 @@ export const BuySummary = ({
     // hasLicenseTypes,
     licenseSkuOptions,
     canSelect,
+    hasFontSelections,
     isCommitted,
     isDirty,
+    isCommitting,
     save,
     remove,
   } = useBuyContext()
+  // Leaving a dirty draft (here: via the cart pill) prompts discard / save
+  const { guardedLinkClick } = useDraftGuard()
   const priceLocale = usePriceLocaleContext()
   const prefersReducedMotion = useReducedMotion()
   const cartLabelTransition = prefersReducedMotion
@@ -114,8 +113,6 @@ export const BuySummary = ({
   const {
     defaultVariant: { _id: defaultVariantId },
   } = font
-
-  const hasFontSelections = Object.keys(selectedSkus).length > 0
 
   const licensesCount = licenseSkuOptions.length
 
@@ -132,22 +129,6 @@ export const BuySummary = ({
     wizardText = showRemove
       ? 'Select styles to keep, or remove this font from your cart'
       : 'Select your font styles'
-  }
-
-  const runAction = async (
-    action: () => Promise<{ success: boolean; error?: unknown }>
-  ) => {
-    setIsCommitting(true)
-    try {
-      const result = await action()
-      if (!result.success) {
-        console.error('[Buy] cart update failed:', result.error)
-      }
-    } catch (e) {
-      console.error('[Buy] cart update error:', e)
-    } finally {
-      setIsCommitting(false)
-    }
   }
 
   // All pricing now derived from the selection buffer via BuyProvider
@@ -193,7 +174,7 @@ export const BuySummary = ({
           px={2.5}
           // gap={1}
         >
-          <Link href={'/cart'}>
+          <Link href={'/cart'} onClick={(e) => guardedLinkClick(e, '/cart')}>
             {/* Clip wrapper: width 0 <-> auto reveals the label to the left of the
                 count. The count never moves relative to the pill's right edge. */}
             <motion.span
@@ -225,7 +206,7 @@ export const BuySummary = ({
                   ? '0rem'
                   : itemsCount >= 100
                     ? '2rem'
-                    : '1rem',
+                    : '1.25rem',
               }}
               transition={cartLabelTransition}
               style={{
@@ -248,61 +229,7 @@ export const BuySummary = ({
         }}
         animationDuration='moderate'
         pos={{ base: 'relative', lg: 'fixed' }}
-        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
-        top={{ base: 'auto', lg: 16 }}
-      >
-        <Box
-          w={{
-            base: '100%',
-            lg: '16rem',
-            '2xl': '17rem',
-            '3xl': '18rem',
-          }}
-          bg={'#FFF8D3'}
-          my={{ base: 4, lg: 0 }}
-          borderRadius={20}
-          px={4}
-          py={5}
-        >
-          <VStack gap={2}>
-            <Text textStyle={summaryFontSize} w={'full'}>
-              {wizardText}
-            </Text>
-            {showRemove && (
-              <Button
-                variant={'solid'}
-                bg={'black'}
-                borderRadius={'5rem'}
-                size={'sm'}
-                fontSize={'md'}
-                color={'white'}
-                disabled={isCommitting}
-                w={'full'}
-                gap={1}
-                _hover={{ bg: 'red' }}
-                onClick={() => runAction(remove)}
-              >
-                {isCommitting ? (
-                  <>
-                    <Spinner size={'xs'} /> {'Processing...'}
-                  </>
-                ) : (
-                  'Remove from cart'
-                )}
-              </Button>
-            )}
-          </VStack>
-        </Box>
-      </Presence>
-      <Presence
-        present={showSummaryPanel}
-        animationName={{
-          _open: 'slide-from-right, fade-in',
-          _closed: 'slide-to-right, fade-out',
-        }}
-        animationDuration='moderate'
-        pos={{ base: 'relative', lg: 'fixed' }}
-        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
+        right={{ base: 'auto', lg: 4 }}
         top={{ base: 'auto', lg: 16 }}
       >
         <Box
@@ -329,11 +256,85 @@ export const BuySummary = ({
             >
               <Text
                 textStyle={{
-                  base: 'lg',
-                  lg: 'md',
-                  xl: 'lg',
+                  base: 'xl',
+                  lg: 'lg',
+                  xl: 'xl',
                 }}
-                textTransform={'uppercase'}
+                // textTransform={'uppercase'}
+                className={defaultVariantId}
+              >
+                {font.shortName}
+              </Text>
+            </Flex>
+            <Text textStyle={summaryFontSize} w={'full'}>
+              {wizardText}
+            </Text>
+            {showRemove && (
+              <Button
+                variant={'solid'}
+                bg={'black'}
+                borderRadius={'5rem'}
+                size={'sm'}
+                fontSize={'md'}
+                color={'white'}
+                disabled={isCommitting}
+                w={'full'}
+                gap={1}
+                _hover={{ bg: 'red' }}
+                onClick={() => remove()}
+              >
+                {isCommitting ? (
+                  <>
+                    <Spinner size={'xs'} /> {'Processing...'}
+                  </>
+                ) : (
+                  'Remove from cart'
+                )}
+              </Button>
+            )}
+          </VStack>
+        </Box>
+      </Presence>
+      <Presence
+        present={showSummaryPanel}
+        animationName={{
+          _open: 'slide-from-right, fade-in',
+          _closed: 'slide-to-right, fade-out',
+        }}
+        animationDuration='moderate'
+        pos={{ base: 'relative', lg: 'fixed' }}
+        right={{ base: 'auto', lg: 4 }}
+        top={{ base: 'auto', lg: 16 }}
+      >
+        <Box
+          w={{
+            base: '100%',
+            lg: '16rem',
+            '2xl': '17rem',
+            '3xl': '18rem',
+          }}
+          bg={'#FFF8D3'}
+          my={{ base: 4, lg: 0 }}
+          borderRadius={20}
+          px={4}
+          py={5}
+        >
+          <VStack gap={2}>
+            <Flex
+              w={'full'}
+              justifyContent={'space-between'}
+              borderBottom={'1px solid #CEC9AB'}
+              alignItems={'center'}
+              pb={2}
+              h={8}
+            >
+              <Text
+                textStyle={{
+                  base: 'xl',
+                  lg: 'lg',
+                  xl: 'xl',
+                }}
+                // textTransform={'uppercase'}
                 className={defaultVariantId}
               >
                 {font.shortName}
@@ -485,7 +486,7 @@ export const BuySummary = ({
                     w={'full'}
                     gap={1}
                     _hover={{ bg: 'red' }}
-                    onClick={() => runAction(save)}
+                    onClick={() => save()}
                   >
                     {isCommitting ? (
                       <>
