@@ -16,10 +16,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
-interface Props {
-  // settings: CheckoutSettings
-}
-
 interface FamilySummary {
   stylesCount: number
   parentUid: string
@@ -28,7 +24,7 @@ interface FamilySummary {
   totalCents: number
 }
 
-const MiniCart = ({}: Props): JSX.Element => {
+const MiniCart = (): JSX.Element => {
   const { itemsCount, selections, skuOptions, licenseSize } =
     useOrderContext()
   const priceLocale = usePriceLocaleContext()

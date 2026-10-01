@@ -34,6 +34,7 @@ export interface CartProviderData {
   groupedLineItems: CartBufferGroup[]
   // License form — forwarded for CartComponent
   isLicenseForClient: boolean
+  itemsCount: number
   allLicenseInfoSet: boolean
   licenseSize?: LicenseSize
   setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
@@ -65,7 +66,6 @@ interface CartProviderProps {
 }
 
 export const CartContext = createContext<CartProviderData>(
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   {} as CartProviderData
 )
 
@@ -78,6 +78,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     order,
     allLicenseInfoSet,
     isLicenseForClient,
+    itemsCount,
     licenseSize,
     setLicenseSize,
     buyLabels,
@@ -205,6 +206,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         order,
         groupedLineItems,
         allLicenseInfoSet,
+        itemsCount,
         isLicenseForClient,
         licenseSize,
         setLicenseSize,

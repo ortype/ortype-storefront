@@ -1,6 +1,5 @@
 'use client'
 
-import { CheckoutButton } from '@/commercelayer/components/ui/checkout-button'
 import { useCartContext } from '@/commercelayer/providers/cart'
 import { useRouter } from 'next/navigation'
 import { useRef } from 'react'
@@ -12,7 +11,6 @@ import {
   Box,
   Button,
   Center,
-  Container,
   Fieldset,
   Flex,
   Heading,
@@ -23,6 +21,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import { CheckoutButton } from '../../ui/checkout-button'
 import CartGroups from './cart-groups'
 import CartSummary from './cart-summary'
 
@@ -251,16 +250,12 @@ const CartComponent = () => {
       </Box>
       <VStack
         pos={{ base: 'relative', lg: 'fixed' }}
-        right={{ base: 'auto', lg: '1rem', '3xl': '2rem' }}
+        right={{ base: 'auto', lg: 4 }}
+        top={{ base: 'auto', lg: 16 }}
         px={{ base: '1rem', lg: 0 }}
         pb={{ base: '1rem', lg: 0 }}
-        top={{ base: 'auto', lg: 5 }}
       >
         <CartSummary />
-        {/*        <CheckoutButton
-          orderId={orderId || ''}
-          isDisabled={!allLicenseInfoSet}
-        />*/}
         <Stack
           justifyContent={'flex-end'}
           gap={2}
@@ -272,7 +267,7 @@ const CartComponent = () => {
             variant={'outline'}
             bg={'white'}
             borderRadius={'5rem'}
-            size={'xs'}
+            size={'sm'}
             fontSize={'md'}
             _hover={{
               bg: 'black',
@@ -286,7 +281,7 @@ const CartComponent = () => {
             variant={'outline'}
             bg={'white'}
             borderRadius={'5rem'}
-            size={'xs'}
+            size={'sm'}
             fontSize={'md'}
             _hover={{
               bg: 'black',
@@ -297,6 +292,10 @@ const CartComponent = () => {
             {'Save as PDF'}
           </Button>
         </Stack>
+        <CheckoutButton
+          orderId={orderId || ''}
+          isDisabled={!allLicenseInfoSet}
+        />
       </VStack>
     </Box>
   )

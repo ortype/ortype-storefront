@@ -59,8 +59,9 @@ export const CheckoutButton: React.FC<Props> = ({
       bg={'colorPalette.fg'}
       color={'colorPalette.bg'}
       borderRadius={'5rem'}
-      size={'xs'}
-      fontSize={'md'}
+      size={'md'}
+      fontSize={'lg'}
+      w={'full'}
       css={{
         _hover: {
           bg: 'transparent',

@@ -7,7 +7,6 @@ import {
 import { Box, Flex, Text, VStack } from '@chakra-ui/react'
 import type { SkuOption } from '@commercelayer/sdk'
 import { useMemo } from 'react'
-import { CheckoutButton } from '../../ui/checkout-button'
 
 const summaryFontSize = {
   base: 'lg',
@@ -17,8 +16,7 @@ const summaryFontSize = {
 }
 
 const Summary = () => {
-  const { orderId, allLicenseInfoSet, selections, licenseSize, skuOptions } =
-    useCartContext()
+  const { selections, licenseSize, skuOptions } = useCartContext()
   const priceLocale = usePriceLocaleContext()
 
   // Compute summary totals from the selection buffer (per-style license types), in cents
@@ -96,19 +94,14 @@ const Summary = () => {
         >
           <Text
             textStyle={{
-              base: 'md',
-              lg: 'sm',
-              xl: 'md',
+              base: 'lg',
+              lg: 'md',
+              xl: 'lg',
             }}
-            w={'50%'}
             textTransform={'uppercase'}
           >
-            {'Summary'}
+            {'Cart Summary'}
           </Text>
-          <CheckoutButton
-            orderId={orderId || ''}
-            isDisabled={!allLicenseInfoSet}
-          />
         </Flex>
         <Flex
           w={'full'}
