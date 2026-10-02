@@ -146,7 +146,6 @@ export const CartItem: React.FC<CartItemProps> = ({
       <SimpleGrid
         columns={[1, null, 2]}
         bg={'#F8F8F8'}
-        my={0.5}
         gap={3}
         p={3}
         ml={isInFullGroup ? 10 : 0}

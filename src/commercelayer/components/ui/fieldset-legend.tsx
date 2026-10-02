@@ -17,6 +17,7 @@ export const FieldsetLegend: React.FC<Props> = ({
     <Fieldset.Legend
       px={px}
       fontSize={'xs'}
+      fontWeight={400}
       textTransform={'uppercase'}
       color={'#737373'}
       asChild

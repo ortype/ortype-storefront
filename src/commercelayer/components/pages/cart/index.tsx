@@ -92,8 +92,8 @@ const CartComponent = () => {
         maxW={['100%']}
         ml={{
           base: '1rem',
-          '2xl': '20rem',
-          '3xl': '23rem',
+          // '2xl': '20rem',
+          // '3xl': '23rem',
         }}
         mr={{
           base: '1rem',

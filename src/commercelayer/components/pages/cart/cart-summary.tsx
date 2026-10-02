@@ -9,10 +9,10 @@ import type { SkuOption } from '@commercelayer/sdk'
 import { useMemo } from 'react'
 
 const summaryFontSize = {
-  base: 'lg',
-  lg: 'md',
-  xl: 'md',
-  '2xl': 'md',
+  base: 'xl',
+  lg: 'lg',
+  xl: 'lg',
+  '2xl': 'lg',
 }
 
 const Summary = () => {
@@ -94,9 +94,7 @@ const Summary = () => {
         >
           <Text
             textStyle={{
-              base: 'lg',
-              lg: 'md',
-              xl: 'lg',
+              base: 'xl',
             }}
             textTransform={'uppercase'}
           >

@@ -93,7 +93,8 @@ function BuyDialogContent({ data }: BuyDialogProps) {
         backdrop={false}
         borderRadius={0}
         // bg={'colorPalette.bg'}
-        bg={'colorPalette.50'}
+        // bg={'colorPalette.50'}
+        bg={'#e7e7e7'}
         h={'100vh'}
       >
         <DialogBody overflow={'auto'}>

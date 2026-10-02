@@ -95,11 +95,12 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
             borderColor: 'black',
           },
           _focusVisible: {
-            boxShadow: '0 0 0 2px #000',
+            // boxShadow: '0 0 0 2px #000',
             borderColor: 'black',
           },
           _hover: {
-            boxShadow: '0 0 0 2px #000',
+            // boxShadow: '0 0 0 2px #000',
+            borderColor: 'transparent',
             cursor: 'pointer',
           },
           // Size the field to the selected value instead of the widest
