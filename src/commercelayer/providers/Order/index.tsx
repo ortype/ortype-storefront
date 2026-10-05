@@ -5,6 +5,7 @@ import utils, {
   calculateSettings,
   computeGroupHash,
 } from '@/commercelayer/providers/Order/utils'
+import type { ClonePayload } from '@/commercelayer/utils/cart-share'
 import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
@@ -192,6 +193,17 @@ type OrderProviderData = {
     error?: AddToCartError
   }>
   clearCommittedItems: () => Promise<{
+    success: boolean
+    error?: AddToCartError
+  }>
+  /**
+   * Replace the whole cart with a cloned one (see `/cart/clone/[token]`):
+   * clears the existing committed line items, swaps in the payload's
+   * selections / group resolutions / license info, defaults the license
+   * holder to "Yourself" when unset, then creates the order if needed and
+   * commits every group to Commerce Layer.
+   */
+  importSelections: (payload: ClonePayload) => Promise<{
     success: boolean
     error?: AddToCartError
   }>
@@ -2118,6 +2130,159 @@ export function OrderProvider({
     }
   }, [config, state.committedGroups, state.order, fetchOrder, runConcurrent])
 
+  // --- Clone / import (replace the cart with a shared selection) ---
+  // `commitGroup` / `ensureOrder` close over `state.orderId`, so committing
+  // several groups in the same closure before an order exists would create
+  // one order per group. The import therefore runs in two phases driven by an
+  // effect (fresh closure each render): (a) create the order if there is none,
+  // then (b) once `orderId` is in state, `commitSelections()`.
+  const [isImportPending, setIsImportPending] = useState(false)
+  const importResolveRef = useRef<
+    ((result: { success: boolean; error?: AddToCartError }) => void) | null
+  >(null)
+  const importRunningRef = useRef(false)
+
+  const finishImport = useCallback(
+    (result: { success: boolean; error?: AddToCartError }) => {
+      importRunningRef.current = false
+      const resolve = importResolveRef.current
+      importResolveRef.current = null
+      setIsImportPending(false)
+      resolve?.(result)
+    },
+    []
+  )
+
+  useEffect(() => {
+    if (!isImportPending || importRunningRef.current) return
+    importRunningRef.current = true
+    ;(async () => {
+      try {
+        if (!state.orderId) {
+          // Phase (a): create the order. This effect re-runs once `orderId`
+          // lands in state and continues with phase (b).
+          await ensureOrder(skuOptionRefs(state.selectedSkuOptions))
+          importRunningRef.current = false
+          return
+        }
+        // Phase (b): every group is "new" after the clear, so this commits all.
+        const result = await commitSelections()
+        finishImport(result)
+      } catch (error) {
+        finishImport({
+          success: false,
+          error: {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to import cart',
+            originalError: error,
+          },
+        })
+      }
+    })()
+  }, [
+    isImportPending,
+    state.orderId,
+    state.selectedSkuOptions,
+    ensureOrder,
+    commitSelections,
+    finishImport,
+  ])
+
+  const importSelections = useCallback(
+    async (
+      payload: ClonePayload
+    ): Promise<{ success: boolean; error?: AddToCartError }> => {
+      if (importResolveRef.current) {
+        return {
+          success: false,
+          error: { message: 'A cart import is already in progress' },
+        }
+      }
+      if (Object.keys(payload.selections).length === 0) {
+        return {
+          success: false,
+          error: { message: 'Nothing to import' },
+        }
+      }
+
+      try {
+        // Replace: drop the existing line items first (keeps the order itself)
+        if (Object.keys(state.committedGroups).length > 0) {
+          const cleared = await clearCommittedItems()
+          if (!cleared.success) return cleared
+        }
+
+        dispatch({
+          type: ActionType.HYDRATE_SELECTIONS,
+          payload: { selections: payload.selections },
+        })
+        dispatch({
+          type: ActionType.HYDRATE_GROUP_RESOLUTIONS,
+          payload: { groupResolutions: payload.groupResolutions },
+        })
+        if (payload.licenseSize) {
+          dispatch({
+            type: ActionType.SET_LICENSE_SIZE,
+            payload: { licenseSize: payload.licenseSize },
+          })
+        }
+        if (payload.defaultLicenseTypes.length > 0) {
+          const picked = pickSkuOptions(
+            state.skuOptions,
+            payload.defaultLicenseTypes
+          )
+          dispatch({
+            type: ActionType.SET_LICENSE_TYPES,
+            payload: {
+              others: {
+                selectedSkuOptions: picked,
+                hasValidLicenseType: picked.length > 0,
+              },
+            },
+          })
+        }
+        // The shared license holder is never copied: default to "Yourself"
+        // unless the recipient already chose one.
+        if (!state.hasLicenseOwner) {
+          dispatch({
+            type: ActionType.SET_LICENSE_OWNER,
+            payload: { others: { licenseOwner: { is_client: false } } },
+          })
+        }
+        // Hydration is complete (callers wait for the provider to be ready),
+        // so selections can be persisted from here on.
+        selectionsInitializedRef.current = true
+
+        return await new Promise<{
+          success: boolean
+          error?: AddToCartError
+        }>((resolve) => {
+          importResolveRef.current = resolve
+          setIsImportPending(true)
+        })
+      } catch (error) {
+        return {
+          success: false,
+          error: {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to import cart',
+            originalError: error,
+          },
+        }
+      }
+    },
+    [
+      state.committedGroups,
+      state.skuOptions,
+      state.hasLicenseOwner,
+      clearCommittedItems,
+    ]
+  )
+
   // Compute additional state properties
   const hasValidLicenseSize = !!(state.licenseSize && state.licenseSize.value)
   const hasValidLicenseType = !!(
@@ -2266,6 +2431,7 @@ export function OrderProvider({
     removeGroup,
     commitSelections,
     clearCommittedItems,
+    importSelections,
     // Group resolutions (hybrid projection)
     groupResolutions: state.groupResolutions,
     registerGroupResolutions,

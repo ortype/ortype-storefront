@@ -35,7 +35,10 @@ export const GlobalHeader: React.FC<Props> = ({ fonts }) => {
   const pathname = usePathname()
 
   const hideCart =
-    pathname?.startsWith('/checkout') || !orderId || itemsCount === 0
+    pathname?.startsWith('/checkout') ||
+    pathname?.startsWith('/cart/clone') ||
+    !orderId ||
+    itemsCount === 0
 
   // Hide on checkout routes
   const hideLogin =

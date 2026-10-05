@@ -285,6 +285,23 @@ export const buyFontsQuery = defineQuery(`{
   }  
 }`)
 
+// Fonts referenced by a cart share link (`/cart/clone/[token]`). Only what's
+// needed to rebuild style entries + group resolutions.
+export const cloneFontsQuery = defineQuery(`
+*[_type == "font" && uid in $uids && isVisible == true] {
+  _id,
+  uid,
+  name,
+  shortName,
+  variants[]->{_id, optionName},
+  defaultVariant->{_id},
+  styleGroups[]{
+    groupName,
+    variants[]->{_id, optionName},
+    italicVariants[]->{_id, optionName}
+  }
+}`)
+
 // used in `getAllFonts` @TODO: consider removing if not really needed
 export const fontsQuery = defineQuery(`
 *[_type == "font"] | order(orderRank) {

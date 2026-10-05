@@ -1,8 +1,13 @@
 'use client'
 
 import { useCartContext } from '@/commercelayer/providers/cart'
+import {
+  buildCartShareUrl,
+  encodeCartShare,
+} from '@/commercelayer/utils/cart-share'
+import { toaster } from '@/components/ui/toaster'
 import { useRouter } from 'next/navigation'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 import EditLicenseMetricsDialog from '@/commercelayer/components/forms/edit-license-metrics-dialog'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -24,6 +29,7 @@ import {
 import { CheckoutButton } from '../../ui/checkout-button'
 import CartGroups from './cart-groups'
 import CartSummary from './cart-summary'
+import ShareCartDialog from './share-cart-dialog'
 
 const CartComponent = () => {
   const {
@@ -36,12 +42,36 @@ const CartComponent = () => {
     setLicenseSize,
     cartLabels,
     groupedLineItems,
+    selections,
+    groupResolutions,
   } = useCartContext()
 
   const router = useRouter()
+  const [shareUrl, setShareUrl] = useState<string>()
 
   const handleClick = () => {
     router.push(`/`)
+  }
+
+  // Build the share link when the dialog opens. Carts too large to fit in a
+  // link bail out with a warning (see CART_SHARE_MAX_TOKEN_LENGTH).
+  const handleShareClick = () => {
+    const result = encodeCartShare(selections, groupResolutions, licenseSize)
+    if (!result.ok) {
+      toaster.create({
+        type: 'warning',
+        title:
+          result.reason === 'too-large'
+            ? 'Your cart is too large to share by link'
+            : 'There is nothing to share yet',
+        description:
+          result.reason === 'too-large'
+            ? 'Try sharing a smaller selection of fonts.'
+            : undefined,
+      })
+      return
+    }
+    setShareUrl(buildCartShareUrl(window.location.origin, result.token))
   }
 
   const hasInitializedRef = useRef(false)
@@ -274,6 +304,7 @@ const CartComponent = () => {
               color: 'white',
             }}
             flexGrow={1}
+            onClick={handleShareClick}
           >
             {'Share cart'}
           </Button>
@@ -297,6 +328,11 @@ const CartComponent = () => {
           isDisabled={!allLicenseInfoSet}
         />
       </VStack>
+      <ShareCartDialog
+        open={!!shareUrl}
+        url={shareUrl}
+        onClose={() => setShareUrl(undefined)}
+      />
     </Box>
   )
 }
