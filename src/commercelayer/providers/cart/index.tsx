@@ -7,6 +7,10 @@ import type { BuyLabels, CartLabels, MediaType } from '@/sanity/lib/queries'
 import type { Order, SkuOption } from '@commercelayer/sdk'
 import { createContext, FC, useContext, useMemo } from 'react'
 
+import type {
+  AddToCartError,
+  LicenseOwnerInput,
+} from '@/commercelayer/providers/Order'
 import { useOrderContext } from '@/commercelayer/providers/Order'
 import type {
   GroupResolutions,
@@ -34,6 +38,7 @@ export interface CartProviderData {
   groupedLineItems: CartBufferGroup[]
   // License form — forwarded for CartComponent
   isLicenseForClient: boolean
+  licenseOwner?: LicenseOwnerInput
   itemsCount: number
   allLicenseInfoSet: boolean
   licenseSize?: LicenseSize
@@ -43,22 +48,26 @@ export interface CartProviderData {
   // Forwarded for CartItem / CartGroups
   skuOptions: SkuOption[]
   mediaTypes: MediaType[]
+  /** The cart, derived from the order (with in-flight edits overlaid) */
   selections: SelectionBuffer
   groupResolutions: GroupResolutions
-  toggleStyle: (params: {
+  /** Fonts whose last edit is still being written to Commerce Layer */
+  pendingFonts: string[]
+  /** An edit or reprice is queued/running (checkout should wait) */
+  hasPendingWrites: boolean
+  // Cart edits write through to Commerce Layer (optimistically reflected)
+  removeStyles: (params: {
     parentUid: string
-    skuCode: string
-    styleMetadata: StyleEntry
-  }) => void
-  toggleGroup: (params: {
+    skuCodes: string[]
+  }) => Promise<{ success: boolean; error?: AddToCartError }>
+  removeFont: (
     parentUid: string
-    styles: { skuCode: string; styleMetadata: StyleEntry }[]
-  }) => void
+  ) => Promise<{ success: boolean; error?: AddToCartError }>
   setStyleLicenseTypes: (params: {
     parentUid: string
     skuCode: string
     licenseTypes: string[]
-  }) => void
+  }) => Promise<{ success: boolean; error?: AddToCartError }>
 }
 
 interface CartProviderProps {
@@ -78,6 +87,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     order,
     allLicenseInfoSet,
     isLicenseForClient,
+    licenseOwner,
     itemsCount,
     licenseSize,
     setLicenseSize,
@@ -87,8 +97,10 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     groupResolutions,
     skuOptions,
     mediaTypes,
-    toggleStyle,
-    toggleGroup,
+    pendingFonts,
+    hasPendingWrites,
+    removeStyles,
+    removeFont,
     setStyleLicenseTypes,
   } = useOrderContext()
 
@@ -208,6 +220,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         allLicenseInfoSet,
         itemsCount,
         isLicenseForClient,
+        licenseOwner,
         licenseSize,
         setLicenseSize,
         buyLabels,
@@ -216,8 +229,10 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         mediaTypes,
         selections,
         groupResolutions,
-        toggleStyle,
-        toggleGroup,
+        pendingFonts,
+        hasPendingWrites,
+        removeStyles,
+        removeFont,
         setStyleLicenseTypes,
       }}
     >

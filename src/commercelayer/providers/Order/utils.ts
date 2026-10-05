@@ -25,37 +25,9 @@ import type { Dispatch } from 'react'
 import type { BaseError } from '../customer'
 import {
   type LicenseSize,
-  type SelectionBuffer,
-  type StyleEntry,
   type UpdateLineItemLicenseTypes,
   type UpdateLineItemsLicenseSize,
 } from './types'
-
-/**
- * Compute a stable hash of the selections buffer for change detection.
- * Used to determine if selections have changed since last commit.
- */
-export function computeSelectionsHash(selections: SelectionBuffer): string {
-  return JSON.stringify(selections)
-}
-/**
- * Compute a stable hash of a single parentUid group for per-group
- * commit tracking. Uses sorted keys for deterministic output.
- */
-export function computeGroupHash(group: {
-  [skuCode: string]: StyleEntry
-}): string {
-  const sorted = Object.keys(group)
-    .sort()
-    .reduce<Record<string, StyleEntry>>((acc, key) => {
-      acc[key] = group[key]
-      return acc
-    }, {})
-  // NOTE: licenseSize is intentionally excluded. Size is an order-wide setting;
-  // its "staleness" is tracked separately (CommittedGroup.size) so an order-wide
-  // size change never marks an individual font group as dirty.
-  return JSON.stringify({ group: sorted })
-}
 
 type ResourceIncludedLoaded = Partial<Record<ResourceIncluded, boolean>>
 

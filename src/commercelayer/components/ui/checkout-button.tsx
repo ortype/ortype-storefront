@@ -1,4 +1,5 @@
 import { useOrderContext } from '@/commercelayer/providers/Order'
+import { toaster } from '@/components/ui/toaster'
 import {
   Button,
   Flex,
@@ -24,12 +25,16 @@ export const CheckoutButton: React.FC<Props> = ({
   label,
   href,
 }) => {
-  const { commitSelections, isFullyCommitted } = useOrderContext()
+  const { flushPendingWrites, repriceAll, isFullyCommitted } =
+    useOrderContext()
   const router = useRouter()
   const [isCommitting, setIsCommitting] = useState(false)
 
+  // The order already holds the cart (cart edits write through as they are
+  // made), so there is nothing to reconcile here. We only wait for in-flight
+  // writes to settle and make sure no font is priced at a stale license size.
   const handleCheckout = async () => {
-    // Fast path: all groups already committed and clean
+    // Fast path: nothing pending and nothing stale
     if (isFullyCommitted) {
       router.push(href || `/checkout/${orderId}`)
       return
@@ -37,18 +42,21 @@ export const CheckoutButton: React.FC<Props> = ({
 
     setIsCommitting(true)
     try {
-      const result = await commitSelections()
+      await flushPendingWrites()
+      const result = await repriceAll()
       if (result.success) {
         router.push(href || `/checkout/${orderId}`)
       } else {
-        console.error(
-          '[CheckoutButton] commitSelections failed:',
-          result.error
-        )
+        console.error('[CheckoutButton] repriceAll failed:', result.error)
+        toaster.create({
+          type: 'error',
+          title: 'Your order could not be prepared',
+          description: result.error?.message,
+        })
         setIsCommitting(false)
       }
     } catch (error) {
-      console.error('[CheckoutButton] commitSelections error:', error)
+      console.error('[CheckoutButton] checkout preparation error:', error)
       setIsCommitting(false)
     }
   }

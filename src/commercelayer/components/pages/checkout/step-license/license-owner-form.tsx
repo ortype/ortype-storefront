@@ -262,11 +262,10 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   />
                 </Grid>
                 {/* @TODO: Re-enable license size changes during checkout.
-                    Changing size after commit requires a re-commit:
-                    1. Call clearCommittedItems() to delete existing line items
-                    2. Update licenseSize on the order
-                    3. Call commitSelections() to recreate with new pricing
-                    Until then, show the current size as read-only. */}
+                    Changing size after commit requires repricing the line
+                    items: update the order's licenseSize, then call
+                    repriceAll() (OrderProvider) to recommit each font at the
+                    new size. Until then, show the current size as read-only. */}
                 <Box bg={'brand.50'} p={4} w='full' px={3}>
                   <Text
                     fontSize={'xs'}

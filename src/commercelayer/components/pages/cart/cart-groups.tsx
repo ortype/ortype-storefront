@@ -21,7 +21,7 @@ interface CartGroupsProps {
 }
 
 const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
-  const { toggleGroup } = useCartContext()
+  const { removeFont, removeStyles, pendingFonts } = useCartContext()
 
   return (
     <>
@@ -38,7 +38,15 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
           fullUnitPriceTotalCents,
           percentageDiscount,
         }) => (
-          <div key={parentUid}>
+          <div
+            key={parentUid}
+            // This font's last edit is still being written to the order
+            style={{
+              opacity: pendingFonts.includes(parentUid) ? 0.5 : 1,
+              transition: 'opacity 200ms ease-out',
+            }}
+            aria-busy={pendingFonts.includes(parentUid)}
+          >
             <VStack
               gap={1}
               mb={1}
@@ -61,15 +69,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                   size={'sm'}
                   _hover={{ bg: 'white' }}
                   aria-label='Remove group'
-                  onClick={() =>
-                    toggleGroup({
-                      parentUid,
-                      styles: items.map((item) => ({
-                        skuCode: item.skuCode,
-                        styleMetadata: item.entry,
-                      })),
-                    })
-                  }
+                  onClick={() => removeFont(parentUid)}
                   css={{
                     '& svg': {
                       color: 'brand.600',
@@ -206,12 +206,11 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                             }}
                             aria-label='Remove group'
                             onClick={() =>
-                              toggleGroup({
+                              removeStyles({
                                 parentUid,
-                                styles: sg.items.map((item) => ({
-                                  skuCode: item.skuCode,
-                                  styleMetadata: item.entry,
-                                })),
+                                skuCodes: sg.items.map(
+                                  (item) => item.skuCode
+                                ),
                               })
                             }
                             css={{

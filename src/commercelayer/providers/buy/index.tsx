@@ -18,6 +18,7 @@ import {
   type ReactNode,
 } from 'react'
 import { useOrderContext, type AddToCartError } from '../Order'
+import { groupSignature } from '../Order/derive-selections'
 import {
   pickSkuOptions,
   setGroupLicenseTypes,
@@ -31,7 +32,6 @@ import type {
   GroupPriceSummary,
   StyleEntry,
 } from '../Order/types'
-import { computeGroupHash } from '../Order/utils'
 import { resolveFontGroups } from './resolve-font-groups'
 
 /** Minimal params for toggling a single style — font-level context is auto-filled */
@@ -137,13 +137,13 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
 
   // ── Draft buffer ─────────────────────────────────────────────────────────
   // Unsaved edits for THIS font live here, not in the OrderProvider's
-  // `selections`, so nothing is persisted (localStorage / order metadata) until
-  // `save()` succeeds. Closing the dialog, navigating away, or reloading simply
-  // discards the draft, so no cleanup effect is needed.
+  // `selections` (which are derived from the Commerce Layer order), so nothing
+  // is written until `save()` succeeds. Closing the dialog, navigating away, or
+  // reloading simply discards the draft, so no cleanup effect is needed.
   //
   // Seeded from `selections[fontUid]` on mount (BuyContainer keys this provider
-  // by font uid, so switching fonts re-seeds). Cart-page edits made before the
-  // dialog opened are therefore preserved in the draft.
+  // by font uid, so switching fonts re-seeds). What is already in the cart for
+  // this font is therefore the starting point of the draft.
   const [draft, setDraft] = useState<StyleGroup>(
     () => selections[fontUid] ?? {}
   )
@@ -229,13 +229,15 @@ export const BuyProvider: FC<BuyProviderProps> = ({ font, children }) => {
   const committed = committedGroups[fontUid]
   const isCommitted = !!committed
   const hasDraftStyles = Object.keys(draft).length > 0
-  const draftHash = useMemo(() => computeGroupHash(draft), [draft])
+  const draftSignature = useMemo(() => groupSignature(draft), [draft])
 
   /**
    * The draft differs from what's in the cart: unsaved additions/edits, or
    * (empty draft + committed) a pending removal.
    */
-  const isDirty = hasDraftStyles ? committed?.hash !== draftHash : isCommitted
+  const isDirty = hasDraftStyles
+    ? committed?.signature !== draftSignature
+    : isCommitted
 
   const hasLicenseSize = !!licenseSize?.value
 

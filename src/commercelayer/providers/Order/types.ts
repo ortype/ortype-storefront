@@ -56,17 +56,19 @@ export type GroupPriceSummary = {
   fullPriceCents: number
   totalPriceCents: number
 }
-/** Tracks a single committed parentUid group on the CL order */
+/**
+ * A single parentUid group as it exists on the CL order. Derived from the
+ * order's line items (see `derive-selections.ts`), never stored.
+ */
 export type CommittedGroup = {
-  /** Hash of the group's buffer state at commit time (styles + license types only) */
-  hash: string
+  /** Signature of the committed styles + license types (see `groupSignature`) */
+  signature: string
   /** CL line item IDs belonging to this group */
   lineItemIds: string[]
   /**
    * The order-wide license size these line items were priced at. Used to detect
-   * silent "size staleness" without marking the group dirty. Optional for
-   * backward-compat with records persisted before this field existed (missing
-   * size is treated as stale so it reconciles at checkout).
+   * silent "size staleness" without marking the group dirty. `undefined` (the
+   * line items disagree or carry no size) is treated as stale.
    */
   size?: LicenseSize
 }

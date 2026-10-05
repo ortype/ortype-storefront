@@ -38,6 +38,7 @@ const CartComponent = () => {
     order,
     allLicenseInfoSet,
     isLicenseForClient,
+    licenseOwner,
     licenseSize,
     setLicenseSize,
     cartLabels,
@@ -219,9 +220,7 @@ const CartComponent = () => {
               minH={12}
             >
               <Box flexGrow={1} pl={4} fontSize={'md'} lineHeight={1}>
-                {isLicenseForClient
-                  ? order?.metadata?.license?.owner?.company
-                  : 'Yourself'}
+                {isLicenseForClient ? licenseOwner?.company : 'Yourself'}
               </Box>
 
               <HStack

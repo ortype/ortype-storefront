@@ -38,7 +38,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     skuOptions,
     mediaTypes,
     licenseSize,
-    toggleStyle,
+    removeStyles,
     setStyleLicenseTypes,
   } = useCartContext()
   const priceLocale = usePriceLocaleContext()
@@ -133,12 +133,8 @@ export const CartItem: React.FC<CartItemProps> = ({
   }
 
   const handleRemove = () => {
-    canRemove &&
-      toggleStyle({
-        parentUid,
-        skuCode,
-        styleMetadata: entry,
-      })
+    // Writes through to the order (optimistically reflected in the cart)
+    canRemove && removeStyles({ parentUid, skuCodes: [skuCode] })
   }
 
   return (
