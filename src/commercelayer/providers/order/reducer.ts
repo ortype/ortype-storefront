@@ -1,29 +1,27 @@
-import {
-  LicenseOwnerInput,
-  OrderStateData,
-} from '@/commercelayer/providers/Order'
-import { Order, SkuOption } from '@commercelayer/sdk'
+import type { Order, SkuOption } from '@commercelayer/sdk'
 import type {
   GroupResolutions,
+  LicenseOwnerInput,
   LicenseSize,
+  OrderStateData,
   ResolvedFontGroup,
 } from './types'
+
 export enum ActionType {
   START_LOADING = 'START_LOADING',
   STOP_LOADING = 'STOP_LOADING',
   SET_ORDER = 'SET_ORDER',
+  /** Back to "no order" (e.g. the order was placed): clears order + license buffer */
+  RESET_ORDER = 'RESET_ORDER',
   UPDATE_ORDER = 'UPDATE_ORDER',
   CREATE_ORDER = 'CREATE_ORDER',
   SET_LICENSE_OWNER = 'SET_LICENSE_OWNER',
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
   SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
-  // Legacy actions (kept for backward compat during migration)
-  DELETE_LINE_ITEM = 'DELETE_LINE_ITEM',
-  ADD_TO_CART = 'ADD_TO_CART',
   // Group resolution tracking (for hybrid projection).
   // Cart selections and committed groups are NOT reducer state: they are
-  // derived from the order's line items (see ./derive-selections.ts).
+  // derived from the order's line items (see ./utils/derive-selections.ts).
   REGISTER_GROUP_RESOLUTIONS = 'REGISTER_GROUP_RESOLUTIONS',
   HYDRATE_GROUP_RESOLUTIONS = 'HYDRATE_GROUP_RESOLUTIONS',
 }
@@ -38,6 +36,7 @@ export type Action =
         others: Partial<OrderStateData>
       }
     }
+  | { type: ActionType.RESET_ORDER }
   | {
       type: ActionType.UPDATE_ORDER
       payload: {
@@ -71,7 +70,7 @@ export type Action =
   | {
       type: ActionType.SET_LICENSE_SIZE
       payload: {
-        licenseSize: LicenseSize
+        licenseSize?: LicenseSize
       }
     }
   | {
@@ -85,25 +84,6 @@ export type Action =
       payload: {
         skuOptions: SkuOption[]
         others: Partial<OrderStateData>
-      }
-    }
-  | {
-      type: ActionType.ADD_TO_CART
-      payload: {
-        order: Order
-        orderId: string
-        others: Partial<OrderStateData> & {
-          hasLicenseOwner: boolean
-          isLicenseForClient: boolean
-          licenseOwner: LicenseOwnerInput
-          licenseSize: LicenseSize
-        }
-      }
-    }
-  | {
-      type: ActionType.DELETE_LINE_ITEM
-      payload: {
-        order: Order
       }
     }
   | {
@@ -146,6 +126,23 @@ export function reducer(
         ...state,
         order: action.payload.order,
         ...action.payload.others,
+        isLoading: false,
+      }
+    }
+    case ActionType.RESET_ORDER: {
+      return {
+        ...state,
+        order: undefined,
+        orderId: undefined,
+        isInvalid: false,
+        licenseOwner: undefined,
+        hasLicenseOwner: false,
+        isLicenseForClient: false,
+        licenseSize: undefined,
+        hasValidLicenseSize: false,
+        hasValidLicenseType: false,
+        allLicenseInfoSet: false,
+        selectedSkuOptions: [],
         isLoading: false,
       }
     }
@@ -240,34 +237,6 @@ export function reducer(
         order: action.payload.order,
         orderId: action.payload.orderId,
         ...action.payload.others,
-        isLoading: false,
-      }
-    }
-    case ActionType.ADD_TO_CART: {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(
-          '[OrderProvider]: Reducer: ADD_TO_CART: action.payload:',
-          action.payload
-        )
-      }
-      return {
-        ...state,
-        order: action.payload.order,
-        orderId: action.payload.orderId,
-        ...action.payload.others,
-        isLoading: false,
-      }
-    }
-    case ActionType.DELETE_LINE_ITEM: {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(
-          '[OrderProvider]: Reducer: DELETE_LINE_ITEM: action.payload:',
-          action.payload
-        )
-      }
-      return {
-        ...state,
-        order: action.payload.order,
         isLoading: false,
       }
     }

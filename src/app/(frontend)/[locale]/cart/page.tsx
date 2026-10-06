@@ -1,13 +1,8 @@
-import { NextPage } from 'next'
 import CartComponent from '@/commercelayer/components/pages/cart/'
-import { CartProvider } from '@/commercelayer/providers/cart'
+import { NextPage } from 'next'
 
 const Cart: NextPage = async () => {
-  return (
-    <CartProvider>
-      <CartComponent />
-    </CartProvider>
-  )
+  return <CartComponent />
 }
 
 export default Cart

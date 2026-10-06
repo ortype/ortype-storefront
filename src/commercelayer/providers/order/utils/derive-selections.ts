@@ -15,7 +15,7 @@
  *  - a *style projection* (one line item per style, metadata: `styleName`,
  *    `license.types`, ...).
  */
-import { withGroup, type StyleGroup } from './selection-utils'
+import { withGroup } from './selection-utils'
 import type {
   CommittedGroups,
   GroupResolutions,
@@ -23,7 +23,8 @@ import type {
   ResolvedFontGroup,
   SelectionBuffer,
   StyleEntry,
-} from './types'
+  StyleGroup,
+} from '../types'
 
 /** The line item metadata `commitGroup` writes (all fields optional) */
 export interface ProjectionMetadata {

@@ -1,33 +1,17 @@
-import { LicenseOwner } from '@/commercelayer/providers/checkout'
-import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
-import {
-  ActionType,
-  reducer,
-  type Action,
-} from '@/commercelayer/providers/Order/reducer'
-import utils, {
-  calculateSettings,
-} from '@/commercelayer/providers/Order/utils'
-import type { ClonePayload } from '@/commercelayer/utils/cart-share'
+import type { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
 import { forceOrderAutorefresh } from '@/commercelayer/utils/forceOrderAutorefresh'
 import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
 import { calculateLineItemPrice } from '@/commercelayer/utils/prices'
 import { retryCall } from '@/commercelayer/utils/retryCall'
-import {
-  type BuyLabels,
-  type CartLabels,
-  type CompanySize,
-  type LicenseMetrics,
-  type MediaType,
-  type UiLabels,
+import type {
+  CompanySize,
+  LicenseMetrics,
+  MediaType,
+  UiLabels,
 } from '@/sanity/lib/queries'
-import { OrderUpdate, SkuOption, type Order } from '@commercelayer/sdk'
-import type { ChildrenElement } from 'CustomApp'
-import { getOrder } from './utils/getOrder'
-
-import { toaster } from '@/components/ui/toaster'
+import type { LineItem, Order, SkuOption } from '@commercelayer/sdk'
 import {
   createContext,
   useCallback,
@@ -37,66 +21,52 @@ import {
   useReducer,
   useRef,
   useState,
+  type JSX,
+  type ReactNode,
 } from 'react'
+import { ActionType, reducer, type Action } from './reducer'
+import { OrderStorageContext } from './storage'
+import type {
+  CartWriteError,
+  CartWriteResult,
+  CreateOrderResult,
+  GroupResolutions,
+  LicenseOwnerInput,
+  LicenseSize,
+  OrderProviderData,
+  OrderStateData,
+  ResolvedFontGroup,
+  StyleGroup,
+  UpdateOrderArgs,
+} from './types'
+import {
+  LINE_ITEM_CONCURRENCY,
+  effectiveGroupResolutions,
+  runConcurrent,
+  toWriteError,
+} from './utils/cart-writes'
+import { createOrder as createClOrder } from './utils/create-order'
 import {
   allCartLineItemIds,
-  applySelectionOverlay,
   deriveCommittedGroups,
-  deriveGroupResolutionsFromOrder,
   deriveSelectionsFromOrder,
   isCommittedSizeStale,
   lineItemIdsForFont,
-  mergeGroupResolutions,
-} from './derive-selections'
-import { createMutationQueue } from './mutation-queue'
+} from './utils/derive-selections'
+import { getOrder } from './utils/get-order'
+import {
+  calculateSettings,
+  licenseMetadataOf,
+  serializeLicense,
+} from './utils/license-settings'
+import { createMutationQueue } from './utils/mutation-queue'
 import {
   countSelections,
   pickSkuOptions,
   skuOptionRefs,
-  type StyleGroup,
-} from './selection-utils'
-import { OrderStorageContext } from './Storage'
-import type {
-  CommittedGroups,
-  GroupResolutions,
-  LicenseSize,
-  ResolvedFontGroup,
-  SelectionBuffer,
-} from './types'
+} from './utils/selection-utils'
 
-/*
-1. Clean separation between utils and provider:
-•  Utils handles core API interactions
-•  Provider manages state and orchestrates the flow
-•  Proper error typing and handling in both layers
-2. Strong TypeScript implementation:
-•  Well-defined types for OrderMetadata and OrderAttributes
-•  Proper error type definitions
-•  Consistent use of success/error return types
-3. Good error handling patterns:
-•  Consistent try/catch blocks
-•  Proper error logging in development
-•  Clear error messages
-*/
-
-export type LicenseOwnerInput = Pick<LicenseOwner, 'is_client' | 'company'>
-
-export type {
-  CommittedGroups,
-  GroupResolutions,
-  LicenseSize,
-  ResolvedFontGroup,
-  SelectionBuffer,
-  StyleEntry,
-} from './types'
-
-interface UpdateOrderArgs {
-  id: string
-  attributes: Omit<OrderUpdate, 'id'>
-  include?: string[]
-}
-
-// Add type definitions for metadata and attributes
+/** Metadata written to a newly created order */
 type OrderMetadata = {
   license?: {
     owner?: LicenseOwnerInput
@@ -108,163 +78,6 @@ type OrderMetadata = {
 
 type OrderAttributes = {
   [key: string]: any
-}
-
-export interface AddToCartError {
-  message: string
-  originalError?: unknown
-}
-
-export interface AddToCartResult {
-  success: boolean
-  error?: AddToCartError
-  order?: Order
-  orderId?: string
-}
-
-type OrderProviderData = {
-  order?: Order
-  orderId?: string
-  itemsCount: number
-  isLoading: boolean
-  isInvalid: boolean
-  companySizes: CompanySize[]
-  mediaTypes: MediaType[]
-  buyLabels?: BuyLabels
-  cartLabels?: CartLabels
-  licenseSize: LicenseSize
-  createOrder: (params?: {
-    customMetadata?: Record<string, any>
-    customAttributes?: Record<string, any>
-  }) => Promise<AddToCartResult>
-  refetchOrder: () => Promise<{
-    success: boolean
-    order?: Order
-  }>
-  updateOrder: (params: UpdateOrderArgs) => Promise<{
-    success: boolean
-    error?: AddToCartError
-    order?: Order
-  }>
-  hasLicenseOwner: boolean
-  isLicenseForClient: boolean
-  licenseOwner?: LicenseOwnerInput
-  hasValidLicenseSize: boolean
-  hasValidLicenseType: boolean
-  allLicenseInfoSet: boolean
-  hasLineItems: boolean
-  setLicenseOwner: (params: { licenseOwner?: LicenseOwnerInput }) => void
-  setLicenseSize: (params: { licenseSize?: LicenseSize }) => void
-  /**
-   * The styles in the cart, per font. DERIVED from `order.line_items` (the
-   * order is the source of truth) with in-flight cart edits overlaid.
-   */
-  selections: SelectionBuffer
-  /** Per-font signature / line item ids / priced size, derived from the order */
-  committedGroups: CommittedGroups
-  /** The order has line items, no write is pending, and no font is priced at a stale size */
-  isFullyCommitted: boolean
-  /** A cart write is queued or running, or an optimistic edit is unsettled */
-  hasPendingWrites: boolean
-  /** Some committed font was priced at a different license size than the current one */
-  isSizeStale: boolean
-  /** Fonts with an unsettled cart-page edit (for per-font pending UI) */
-  pendingFonts: string[]
-  /**
-   * Cart-page edit: remove styles from a font. Writes through to Commerce
-   * Layer (optimistically reflected in `selections` meanwhile).
-   */
-  removeStyles: (params: {
-    parentUid: string
-    skuCodes: string[]
-  }) => Promise<{ success: boolean; error?: AddToCartError }>
-  /** Cart-page edit: remove a whole font. Writes through like `removeStyles`. */
-  removeFont: (
-    parentUid: string
-  ) => Promise<{ success: boolean; error?: AddToCartError }>
-  /** Cart-page edit: change one style's license types. Writes through. */
-  setStyleLicenseTypes: (params: {
-    parentUid: string
-    skuCode: string
-    licenseTypes: string[]
-  }) => Promise<{ success: boolean; error?: AddToCartError }>
-  /**
-   * Commit `group` (a font's draft selections) to CL line items. The refetched
-   * order then drives `selections`; `options.licenseTypes` is promoted to the
-   * order-wide default license types.
-   */
-  commitGroup: (
-    parentUid: string,
-    group: StyleGroup,
-    options?: { licenseTypes?: string[] }
-  ) => Promise<{
-    success: boolean
-    error?: AddToCartError
-  }>
-  /** Remove a font from the cart (deletes its committed line items) */
-  removeGroup: (parentUid: string) => Promise<{
-    success: boolean
-    error?: AddToCartError
-  }>
-  /**
-   * Reprice every font whose line items were priced at a different license
-   * size than the current one (a recommit per stale font).
-   */
-  repriceAll: () => Promise<{
-    success: boolean
-    error?: AddToCartError
-  }>
-  /**
-   * Resolve once the cart is settled: the debounced license metadata write has
-   * been flushed and every queued cart write has finished.
-   */
-  flushPendingWrites: () => Promise<void>
-  clearCommittedItems: () => Promise<{
-    success: boolean
-    error?: AddToCartError
-  }>
-  /**
-   * Replace the whole cart with a cloned one (see `/cart/clone/[token]`):
-   * clears the existing line items, registers the payload's group resolutions
-   * and license info, defaults the license holder to "Yourself" when unset,
-   * then creates the order if needed and commits every font to Commerce Layer.
-   */
-  importSelections: (payload: ClonePayload) => Promise<{
-    success: boolean
-    error?: AddToCartError
-  }>
-  /** Resolved style groups per parentUid, for hybrid projection */
-  groupResolutions: GroupResolutions
-  /** Register resolved groups for a font (called by BuyProvider on mount) */
-  registerGroupResolutions: (
-    parentUid: string,
-    groups: ResolvedFontGroup[]
-  ) => void
-  skuOptions: SkuOption[]
-  selectedSkuOptions: SkuOption[]
-  setSelectedSkuOptions: (params: {
-    font: any // @TODO: font type
-    selectedSkuOptions: SkuOption[]
-  }) => void
-}
-
-export type OrderStateData = {
-  order?: Order
-  orderId?: string
-  licenseOwner?: LicenseOwnerInput // Make optional
-  hasLicenseOwner: boolean // Required, with boolean type
-  isLicenseForClient: boolean // Required, with boolean type
-  hasValidLicenseSize: boolean // Whether licenseSize is valid
-  hasValidLicenseType: boolean // Whether license type is valid
-  allLicenseInfoSet: boolean // Whether all license info is set
-  hasLineItems: boolean // Whether the order has line items
-  licenseSize?: LicenseSize // Make optional
-  skuOptions: SkuOption[]
-  selectedSkuOptions: SkuOption[]
-  isLoading: boolean
-  isInvalid: boolean
-  /** Resolutions registered by the buy page (cache); see `groupResolutions` for the effective set */
-  groupResolutions: GroupResolutions
 }
 
 const initialState: OrderStateData = {
@@ -285,10 +98,7 @@ const initialState: OrderStateData = {
   groupResolutions: {},
 }
 
-const OrderContext = createContext<OrderProviderData>(
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  {} as OrderProviderData
-)
+const OrderContext = createContext<OrderProviderData>({} as OrderProviderData)
 
 export const useOrderContext = (): OrderProviderData =>
   useContext(OrderContext)
@@ -297,54 +107,17 @@ type OrderProviderProps = {
   config: CLayerClientConfig
   labels?: UiLabels | null
   metrics: LicenseMetrics
-  children: ((props: OrderProviderData) => ChildrenElement) | ChildrenElement
+  children: ((props: OrderProviderData) => ReactNode) | ReactNode
 }
 
 /** How long a license edit waits before it is written to the order */
 const LICENSE_WRITE_DEBOUNCE_MS = 800
-
-type CartWriteResult = { success: boolean; error?: AddToCartError }
-
-const toWriteError = (error: unknown, fallback: string): AddToCartError => ({
-  message: error instanceof Error ? error.message : fallback,
-  originalError: error,
-})
-
-/** The license buffer as stored in `order.metadata.license` (defined fields only) */
-const licenseMetadataOf = (
-  s: Pick<
-    OrderStateData,
-    'licenseOwner' | 'licenseSize' | 'selectedSkuOptions'
-  >
-) => ({
-  ...(s.licenseOwner ? { owner: s.licenseOwner } : {}),
-  ...(s.licenseSize ? { size: s.licenseSize } : {}),
-  types: skuOptionRefs(s.selectedSkuOptions),
-})
-
-/** Stable form used to tell whether the order already has this license */
-const serializeLicense = (license: object): string => JSON.stringify(license)
-
-/**
- * Group resolutions in effect: those registered by the buy page (and cached in
- * localStorage), backed up by the groups already present on the order, so a
- * fresh device keeps full groups intact when it recommits a font.
- */
-const effectiveGroupResolutions = (
-  s: Pick<OrderStateData, 'order' | 'groupResolutions'>
-): GroupResolutions =>
-  mergeGroupResolutions(
-    deriveGroupResolutionsFromOrder(s.order),
-    s.groupResolutions
-  )
 
 export function OrderProvider({
   children,
   config,
   labels,
   metrics,
-  metadata,
-  attributes,
 }: OrderProviderProps): JSX.Element {
   const [state, rawDispatch] = useReducer(reducer, initialState)
   // The latest reducer state, updated *synchronously* on every dispatch.
@@ -358,19 +131,10 @@ export function OrderProvider({
   }, [])
 
   // Every cart write toggles `autorefresh` on the same order and refetches it,
-  // so they are serialized through one queue (see mutation-queue.ts).
+  // so they are serialized through one queue (see utils/mutation-queue.ts).
   const [queue] = useState(createMutationQueue)
   const [queueSize, setQueueSize] = useState(0)
   useEffect(() => queue.subscribe(() => setQueueSize(queue.size())), [queue])
-
-  // Optimistic cart-page edits, keyed by font, until their write settles.
-  // An empty group means "pending removal".
-  const [overlay, setOverlay] = useState<{ [parentUid: string]: StyleGroup }>(
-    {}
-  )
-  const overlayRef = useRef(overlay)
-  // Latest edit per font; an older edit must not settle a newer one's overlay
-  const intentTokenRef = useRef<Record<string, number>>({})
 
   // License buffer persistence bookkeeping
   // Guards persistence so we never write the empty initial state
@@ -402,7 +166,7 @@ export function OrderProvider({
     async (params?: {
       customMetadata?: OrderMetadata
       customAttributes?: OrderAttributes
-    }): Promise<AddToCartResult> => {
+    }): Promise<CreateOrderResult> => {
       // Early return if we already have an order ID. Read from the ref, not a
       // render-time closure, so back-to-back callers never create two orders.
       const current = stateRef.current
@@ -424,31 +188,24 @@ export function OrderProvider({
           throw new Error('Commerce Layer client not initialized')
         }
 
-        // Combine default metadata/attributes with custom ones if provided
         const mergedMetadata: OrderMetadata = {
-          license: {
-            ...(metadata?.license || {}),
-            ...(params?.customMetadata?.license || {}),
-          },
-          ...(metadata || {}),
+          license: {},
           ...(params?.customMetadata || {}),
         }
 
         if (process.env.NODE_ENV !== 'production') {
           console.log('[OrderProvider] createOrder: mergedMetadata:', {
-            metadata,
             customMetadata: params?.customMetadata,
             merged: mergedMetadata,
           })
         }
 
         const mergedAttributes: OrderAttributes = {
-          ...attributes,
           ...params?.customAttributes,
         }
 
         // Create the order using the utility function
-        const result = await utils.createOrder({
+        const result = await createClOrder({
           config,
           metadata: mergedMetadata,
           attributes: mergedAttributes,
@@ -501,7 +258,7 @@ export function OrderProvider({
         dispatch({ type: ActionType.STOP_LOADING })
       }
     },
-    [config, metadata, attributes, persistKey, setLocalOrder, dispatch]
+    [config, persistKey, setLocalOrder, dispatch]
   )
 
   const fetchOrder = useCallback(
@@ -515,7 +272,7 @@ export function OrderProvider({
       hydrateLicense?: boolean
     }): Promise<{
       success: boolean
-      order?: Order // Assuming Order is your type for order object
+      order?: Order
     }> => {
       const orderId =
         params?.orderId ??
@@ -555,24 +312,7 @@ export function OrderProvider({
           }
           lastLicenseHashRef.current = ''
           // Reset provider state: order (the cart is derived from it), license
-          dispatch({
-            type: ActionType.SET_ORDER,
-            payload: {
-              order: undefined,
-              others: {
-                orderId: undefined,
-                isInvalid: false,
-                hasLicenseOwner: false,
-                isLicenseForClient: false,
-                licenseOwner: undefined,
-                hasValidLicenseSize: false,
-                hasValidLicenseType: false,
-                allLicenseInfoSet: false,
-                licenseSize: undefined,
-                selectedSkuOptions: [],
-              },
-            },
-          })
+          dispatch({ type: ActionType.RESET_ORDER })
           return { success: true, order: undefined }
         }
 
@@ -595,20 +335,21 @@ export function OrderProvider({
         // if (!isValidStatus(order.status)) {
         // console.log('Invalid: Order status')
 
-        order &&
+        if (order) {
           dispatch({
             type: ActionType.SET_ORDER,
             payload: {
               order,
               others: {
-                isInvalid: !order,
+                isInvalid: false,
                 orderId,
                 ...(params?.hydrateLicense ? calculateSettings(order) : {}),
               },
             },
           })
+        }
         return { success: true, order }
-      } catch (error) {
+      } catch {
         return { success: false }
       }
     },
@@ -629,7 +370,7 @@ export function OrderProvider({
       include,
     }: UpdateOrderArgs): Promise<{
       success: boolean
-      error?: AddToCartError // Update to use same error type
+      error?: CartWriteError
       order?: Order
     }> => {
       const cl = config != null ? getCommerceLayer(config) : undefined
@@ -642,17 +383,15 @@ export function OrderProvider({
         await cl.orders.update(resource, { include })
         const { order } = await fetchOrder()
 
-        order &&
+        if (order) {
           dispatch({
             type: ActionType.UPDATE_ORDER,
-            payload: {
-              order,
-            },
+            payload: { order },
           })
+        }
 
         return { success: true, order }
       } catch (error) {
-        // Remove : any type
         if (process.env.NODE_ENV !== 'production') {
           console.error('Error updating order:', error)
         }
@@ -677,7 +416,7 @@ export function OrderProvider({
       mediaTypes: MediaType[] = []
     ): Promise<{
       success: boolean
-      error?: AddToCartError
+      error?: CartWriteError
     }> => {
       dispatch({ type: ActionType.START_LOADING })
       const cl = config != null ? getCommerceLayer(config) : undefined
@@ -686,7 +425,7 @@ export function OrderProvider({
           throw new Error('Commerce Layer client not initialized')
         }
 
-        let skuOptions = await cl.sku_options.list()
+        const skuOptions = await cl.sku_options.list()
 
         // Sort sku_options to match the order defined in Sanity media types
         if (mediaTypes.length > 0) {
@@ -801,7 +540,10 @@ export function OrderProvider({
   // per-font draft (BuyProvider) and promotes the types here on save via
   // `commitGroup`. `font` is accepted for caller compatibility.
   const setSelectedSkuOptions = useCallback(
-    (params: { selectedSkuOptions: SkuOption[]; font: any }): void => {
+    (params: {
+      selectedSkuOptions: SkuOption[]
+      font?: { shortName?: string | null }
+    }): void => {
       if (process.env.NODE_ENV !== 'production') {
         console.log('[OrderProvider] setSelectedSkuOptions (state-only):', {
           font: params.font?.shortName,
@@ -1134,25 +876,6 @@ export function OrderProvider({
     await queue.idle()
   }, [queue, writeLicenseNow])
 
-  // --- Concurrency helper: run promises in batches of N ---
-  const runConcurrent = useCallback(
-    async <T,>(
-      items: (() => Promise<T>)[],
-      concurrency: number
-    ): Promise<PromiseSettledResult<T>[]> => {
-      const results: PromiseSettledResult<T>[] = []
-      for (let i = 0; i < items.length; i += concurrency) {
-        const batch = items.slice(i, i + concurrency)
-        const batchResults = await Promise.allSettled(batch.map((fn) => fn()))
-        results.push(...batchResults)
-      }
-      return results
-    },
-    []
-  )
-
-  const LINE_ITEM_CONCURRENCY = 5
-
   /**
    * Ensure a CL order exists, creating one if needed.
    * Returns { cl, orderId, order } or throws.
@@ -1361,9 +1084,7 @@ export function OrderProvider({
           for (const code of matched.includedSkuCodes) {
             const types = groupStyles[code]?.licenseTypes ?? []
             perStyleTypes[code] = types
-            const styleSkuOpts = s.skuOptions.filter((o) =>
-              types.includes(o.reference)
-            )
+            const styleSkuOpts = pickSkuOptions(s.skuOptions, types)
             perStylePriceCents[code] = calculateLineItemPrice({
               skuOptions: styleSkuOpts,
               sizeModifier: commitLicenseSize?.modifier ?? 1,
@@ -1386,7 +1107,7 @@ export function OrderProvider({
             )
           }
 
-          const result = await retryCall(() =>
+          const result = await retryCall<LineItem>(() =>
             cl.line_items.create({
               order: orderRel,
               sku_code: matched.groupSkuCode,
@@ -1438,9 +1159,7 @@ export function OrderProvider({
               const styleEntry = groupStyles[skuCode]
               const types = styleEntry?.licenseTypes ?? []
               // Compute this style's unit price for order summary display
-              const styleSkuOpts = s.skuOptions.filter((o) =>
-                types.includes(o.reference)
-              )
+              const styleSkuOpts = pickSkuOptions(s.skuOptions, types)
               const priceCents = calculateLineItemPrice({
                 skuOptions: styleSkuOpts,
                 sizeModifier: commitLicenseSize?.modifier ?? 1,
@@ -1452,7 +1171,7 @@ export function OrderProvider({
                 count: 1,
               })
 
-              const result = await retryCall(() =>
+              const result = await retryCall<LineItem>(() =>
                 cl.line_items.create({
                   order: orderRel,
                   sku_code: skuCode,
@@ -1573,7 +1292,6 @@ export function OrderProvider({
       dispatch,
       ensureOrder,
       fetchOrder,
-      runConcurrent,
       writeLicenseNow,
       recoverAfterFailedWrite,
     ]
@@ -1639,7 +1357,7 @@ export function OrderProvider({
         dispatch({ type: ActionType.STOP_LOADING })
       }
     },
-    [config, dispatch, fetchOrder, runConcurrent, recoverAfterFailedWrite]
+    [config, dispatch, fetchOrder, recoverAfterFailedWrite]
   )
 
   /** Commit `group` for a font. Queued; a newer commit for the same font that
@@ -1749,199 +1467,12 @@ export function OrderProvider({
       } finally {
         dispatch({ type: ActionType.STOP_LOADING })
       }
-    }, [config, dispatch, fetchOrder, runConcurrent, recoverAfterFailedWrite])
+    }, [config, dispatch, fetchOrder, recoverAfterFailedWrite])
 
   /** Clears every line item from the CL order (the order itself is kept). */
   const clearCommittedItems = useCallback(
     (): Promise<CartWriteResult> => queue.enqueue(clearCommittedItemsNow),
     [queue, clearCommittedItemsNow]
-  )
-
-  // --- Cart-page edits (write through to Commerce Layer) ---
-  // Each edit is reflected immediately in `selections` through `overlay`, then
-  // written through the queue. The overlay entry is dropped once the write
-  // settles (the refetched order has taken over), or if it fails (the cart
-  // reverts to what is really on the order).
-
-  /** A font's styles as the user currently sees them (overlay, else order) */
-  const currentFontGroup = useCallback((parentUid: string): StyleGroup => {
-    if (parentUid in overlayRef.current) return overlayRef.current[parentUid]
-    return deriveSelectionsFromOrder(stateRef.current.order)[parentUid] ?? {}
-  }, [])
-
-  const setFontStyles = useCallback(
-    async (
-      parentUid: string,
-      group: StyleGroup
-    ): Promise<CartWriteResult> => {
-      const token = (intentTokenRef.current[parentUid] ?? 0) + 1
-      intentTokenRef.current[parentUid] = token
-
-      overlayRef.current = { ...overlayRef.current, [parentUid]: group }
-      setOverlay(overlayRef.current)
-
-      let result: CartWriteResult
-      try {
-        result = await queue.enqueueCoalesced(`font:${parentUid}`, () =>
-          Object.keys(group).length === 0
-            ? removeGroupNow(parentUid)
-            : commitGroupNow(parentUid, group)
-        )
-      } catch (error) {
-        result = {
-          success: false,
-          error: toWriteError(error, 'Failed to update your cart'),
-        }
-      }
-
-      // A newer edit for this font settles the overlay (and reports) instead
-      if (intentTokenRef.current[parentUid] === token) {
-        const rest = { ...overlayRef.current }
-        delete rest[parentUid]
-        overlayRef.current = rest
-        setOverlay(rest)
-        if (!result.success) {
-          toaster.create({
-            type: 'error',
-            title: 'Your cart could not be updated',
-            description: result.error?.message,
-          })
-        }
-      }
-      return result
-    },
-    [queue, commitGroupNow, removeGroupNow]
-  )
-
-  const removeStyles = useCallback(
-    (params: { parentUid: string; skuCodes: string[] }) => {
-      const remove = new Set(params.skuCodes)
-      const next: StyleGroup = {}
-      for (const [code, entry] of Object.entries(
-        currentFontGroup(params.parentUid)
-      )) {
-        if (!remove.has(code)) next[code] = entry
-      }
-      return setFontStyles(params.parentUid, next)
-    },
-    [currentFontGroup, setFontStyles]
-  )
-
-  const removeFont = useCallback(
-    (parentUid: string) => setFontStyles(parentUid, {}),
-    [setFontStyles]
-  )
-
-  const setStyleLicenseTypes = useCallback(
-    async (params: {
-      parentUid: string
-      skuCode: string
-      licenseTypes: string[]
-    }): Promise<CartWriteResult> => {
-      const group = currentFontGroup(params.parentUid)
-      const entry = group[params.skuCode]
-      if (!entry) return { success: true }
-
-      // A style without any license type would be priced at zero
-      if (params.licenseTypes.length === 0) {
-        const message = 'Each style needs at least one license type'
-        toaster.create({ type: 'info', title: message })
-        return { success: false, error: { message } }
-      }
-
-      return setFontStyles(params.parentUid, {
-        ...group,
-        [params.skuCode]: { ...entry, licenseTypes: params.licenseTypes },
-      })
-    },
-    [currentFontGroup, setFontStyles]
-  )
-
-  // --- Clone / import (replace the cart with a shared selection) ---
-  const importingRef = useRef(false)
-
-  const importSelections = useCallback(
-    async (payload: ClonePayload): Promise<CartWriteResult> => {
-      if (importingRef.current) {
-        return {
-          success: false,
-          error: { message: 'A cart import is already in progress' },
-        }
-      }
-      if (Object.keys(payload.selections).length === 0) {
-        return {
-          success: false,
-          error: { message: 'Nothing to import' },
-        }
-      }
-
-      importingRef.current = true
-      try {
-        // Replace: drop the existing line items first (keeps the order itself)
-        const cleared = await clearCommittedItems()
-        if (!cleared.success) return cleared
-
-        // Everything below updates `stateRef` synchronously, so the queued
-        // commits see the payload's resolutions / size / types / owner.
-        for (const [uid, groups] of Object.entries(
-          payload.groupResolutions
-        )) {
-          dispatch({
-            type: ActionType.REGISTER_GROUP_RESOLUTIONS,
-            payload: { parentUid: uid, groups },
-          })
-        }
-        if (payload.licenseSize) {
-          dispatch({
-            type: ActionType.SET_LICENSE_SIZE,
-            payload: { licenseSize: payload.licenseSize },
-          })
-        }
-        if (payload.defaultLicenseTypes.length > 0) {
-          const picked = pickSkuOptions(
-            stateRef.current.skuOptions,
-            payload.defaultLicenseTypes
-          )
-          dispatch({
-            type: ActionType.SET_LICENSE_TYPES,
-            payload: {
-              others: {
-                selectedSkuOptions: picked,
-                hasValidLicenseType: picked.length > 0,
-              },
-            },
-          })
-        }
-        // The shared license holder is never copied: default to "Yourself"
-        // unless the recipient already chose one.
-        if (!stateRef.current.hasLicenseOwner) {
-          dispatch({
-            type: ActionType.SET_LICENSE_OWNER,
-            payload: { others: { licenseOwner: { is_client: false } } },
-          })
-        }
-
-        return await queue.enqueue(async (): Promise<CartWriteResult> => {
-          // Create the order once up front; each commit then reuses it
-          await ensureOrder(
-            skuOptionRefs(stateRef.current.selectedSkuOptions)
-          )
-          for (const uid of Object.keys(payload.selections)) {
-            const result = await commitGroupNow(uid, payload.selections[uid])
-            if (!result.success) return result // Bail on first failure
-          }
-          return { success: true }
-        })
-      } catch (error) {
-        return {
-          success: false,
-          error: toWriteError(error, 'Failed to import cart'),
-        }
-      } finally {
-        importingRef.current = false
-      }
-    },
-    [queue, dispatch, clearCommittedItems, ensureOrder, commitGroupNow]
   )
 
   // Compute additional state properties
@@ -1962,18 +1493,15 @@ export function OrderProvider({
   // --- The cart, derived from the order ---
   // Commerce Layer line items are the single source of truth for what is in
   // the cart. `selections` / `committedGroups` are computed from them (see
-  // derive-selections.ts), with in-flight cart-page edits overlaid.
-  const derivedSelections = useMemo(
+  // utils/derive-selections.ts). Optimistic cart-page edits are overlaid by
+  // `CartProvider`, not here.
+  const selections = useMemo(
     () => deriveSelectionsFromOrder(state.order),
     [state.order]
   )
-  const selections = useMemo(
-    () => applySelectionOverlay(derivedSelections, overlay),
-    [derivedSelections, overlay]
-  )
   const committedGroups = useMemo(
-    () => deriveCommittedGroups(state.order, derivedSelections),
-    [state.order, derivedSelections]
+    () => deriveCommittedGroups(state.order, selections),
+    [state.order, selections]
   )
   // Resolutions registered by the buy page, backed up by the groups already
   // present on the order (so a fresh device keeps full groups intact)
@@ -1998,9 +1526,18 @@ export function OrderProvider({
     [committedGroups, state.licenseSize]
   )
 
-  const pendingFonts = useMemo(() => Object.keys(overlay), [overlay])
-  const hasPendingWrites = queueSize > 0 || pendingFonts.length > 0
+  const hasPendingWrites = queueSize > 0
   const isFullyCommitted = hasLineItems && !hasPendingWrites && !isSizeStale
+
+  // --- Public helpers for cart-side code (CartProvider) ---
+  const ensureOrderPublic = useCallback(
+    async (licenseTypes?: string[]) => {
+      const { orderId, order } = await ensureOrder(licenseTypes)
+      return { orderId, order }
+    },
+    [ensureOrder]
+  )
+  const getSnapshot = useCallback(() => stateRef.current, [])
 
   // --- Group resolutions ---
   const registerGroupResolutions = useCallback(
@@ -2033,21 +1570,20 @@ export function OrderProvider({
   // group is committed ("Add to cart"). Until then the license buffer (owner /
   // size) lives in React state + localStorage, and license *types* live in the
   // BuyProvider draft.
-  const value = {
+  const value: OrderProviderData = {
     ...state,
     isLoading: state.isLoading,
     isInvalid: state.isInvalid,
     itemsCount,
     companySizes,
     mediaTypes,
-    buyLabels: labels?.buyPage,
-    cartLabels: labels?.cartPage,
+    buyLabels: labels?.buyPage ?? undefined,
+    cartLabels: labels?.cartPage ?? undefined,
     hasValidLicenseSize,
     hasValidLicenseType,
     allLicenseInfoSet,
     hasLineItems,
     createOrder,
-    fetchOrder,
     refetchOrder,
     updateOrder,
     setLicenseOwner,
@@ -2059,16 +1595,13 @@ export function OrderProvider({
     isFullyCommitted,
     hasPendingWrites,
     isSizeStale,
-    pendingFonts,
-    removeStyles,
-    removeFont,
-    setStyleLicenseTypes,
     commitGroup,
     removeGroup,
     repriceAll,
     flushPendingWrites,
     clearCommittedItems,
-    importSelections,
+    ensureOrder: ensureOrderPublic,
+    getSnapshot,
     // Group resolutions (hybrid projection)
     groupResolutions,
     registerGroupResolutions,

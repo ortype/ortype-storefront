@@ -1,5 +1,5 @@
 /**
- * Run with: npx tsx --test src/commercelayer/providers/Order/derive-selections.test.ts
+ * Run with: npx tsx --test src/commercelayer/providers/order/utils/derive-selections.test.ts
  * (uses node's built-in test runner; no extra dependencies)
  */
 import assert from 'node:assert/strict'
@@ -16,7 +16,7 @@ import {
   mergeGroupResolutions,
   type DerivableOrder,
 } from './derive-selections'
-import type { StyleEntry } from './types'
+import type { StyleEntry } from '../types'
 
 const SIZE = { label: 'Small', value: 'small', modifier: 1 }
 const BIG = { label: 'Big', value: 'big', modifier: 2 }

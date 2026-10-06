@@ -1,5 +1,5 @@
 /**
- * Run with: npx tsx --test src/commercelayer/providers/Order/mutation-queue.test.ts
+ * Run with: npx tsx --test src/commercelayer/providers/order/utils/mutation-queue.test.ts
  */
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'

@@ -1,5 +1,5 @@
 import type { SkuOption } from '@commercelayer/sdk'
-import type { SelectionBuffer, StyleEntry } from './types'
+import type { SelectionBuffer, StyleEntry, StyleGroup } from '../types'
 
 /** References of the given SkuOptions (skipping any without a reference) */
 export function skuOptionRefs(options: SkuOption[]): string[] {
@@ -13,9 +13,6 @@ export function pickSkuOptions(
 ): SkuOption[] {
   return options.filter((o) => !!o.reference && refs.includes(o.reference))
 }
-
-/** The selected styles for a single font (parentUid), keyed by skuCode */
-export type StyleGroup = { [skuCode: string]: StyleEntry }
 
 /** Count total styles across all parentUid groups */
 export function countSelections(selections: SelectionBuffer): number {

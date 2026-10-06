@@ -17,21 +17,22 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { useOrderContext, type AddToCartError } from '../Order'
-import { groupSignature } from '../Order/derive-selections'
+import { useOrderContext } from '../order'
+import type {
+  CartWriteError,
+  FontSelectionSummary,
+  GroupPriceSummary,
+  StyleEntry,
+  StyleGroup,
+} from '../order/types'
+import { groupSignature } from '../order/utils/derive-selections'
 import {
   pickSkuOptions,
   setGroupLicenseTypes,
   skuOptionRefs,
   toggleStyleInGroup,
   toggleStylesInGroup,
-  type StyleGroup,
-} from '../Order/selection-utils'
-import type {
-  FontSelectionSummary,
-  GroupPriceSummary,
-  StyleEntry,
-} from '../Order/types'
+} from '../order/utils/selection-utils'
 import { resolveFontGroups } from './resolve-font-groups'
 
 /** Minimal params for toggling a single style — font-level context is auto-filled */
@@ -43,7 +44,7 @@ export interface ToggleStyleParams {
 
 export interface CommitResult {
   success: boolean
-  error?: AddToCartError
+  error?: CartWriteError
 }
 
 export interface BuyProviderData {

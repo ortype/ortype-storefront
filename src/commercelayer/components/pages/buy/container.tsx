@@ -1,7 +1,7 @@
 'use client'
 import { DraftGuardRegistrar } from '@/commercelayer/components/pages/buy/use-draft-guard'
 import { BuyProvider } from '@/commercelayer/providers/buy'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import type { BuyFontsQueryResult } from '@/types'
 import { Box, Center, Spinner, Text } from '@chakra-ui/react'
 import { useRef } from 'react'

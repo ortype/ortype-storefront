@@ -10,7 +10,7 @@ import {
 import type { BaseError } from '../customer'
 import type { TCustomerAddress } from '../customer/reducer'
 import { useIdentityContext } from '../identity'
-import { useOrderContext } from '../Order'
+import { useOrderContext } from '../order'
 import {
   ActionType,
   addressInitialState,

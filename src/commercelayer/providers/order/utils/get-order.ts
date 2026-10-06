@@ -25,7 +25,7 @@ export const getOrder = async (config: GetOrderConfig) => {
   return retryCall(() => getAsyncOrder(client, orderId))
 }
 
-export const getAsyncOrder = async (
+const getAsyncOrder = async (
   client: CommerceLayerClient,
   orderId: string
 ) => {

@@ -4,7 +4,7 @@ import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeLis
 import { LicenseTypeList } from '@/commercelayer/components/forms/LicenseTypeList'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
 import { useBuyContext } from '@/commercelayer/providers/buy'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import { Box, Fieldset, GridItem, SimpleGrid } from '@chakra-ui/react'
 import React from 'react'
 import BuySummary from './buy-summary'

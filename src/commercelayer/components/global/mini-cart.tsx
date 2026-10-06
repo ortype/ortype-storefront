@@ -1,4 +1,4 @@
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import {
   calculateLineItemPrice,

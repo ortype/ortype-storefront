@@ -3,7 +3,7 @@ import { createContext, useEffect, useState } from 'react'
 
 import { getInfoFromJwt } from '@/utils/getInfoFromJwt'
 // import { getOrder } from '@/utils/getOrder'
-import { getOrder } from '@/commercelayer/providers/Order/utils/getOrder'
+import { getOrder } from '@/commercelayer/providers/order/utils/get-order'
 
 type CustomerOrderProviderData = {
   order?: Order

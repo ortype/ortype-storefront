@@ -1,4 +1,4 @@
-import type { GroupPriceSummary } from '@/commercelayer/providers/Order/types'
+import type { GroupPriceSummary } from '@/commercelayer/providers/order/types'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Flex, Stack, Text } from '@chakra-ui/react'

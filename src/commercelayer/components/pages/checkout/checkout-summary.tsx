@@ -1,5 +1,5 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import {
   Box,
   Button,

@@ -1,5 +1,6 @@
 /**
  * ARCHIVE: retired selections sync (localStorage + order metadata)
+ * and retired order utils (see `legacy-order-utils.ts`)
  * ================================================================
  *
  * Nothing in the app imports from this folder. It is kept (and type-checked,
@@ -35,9 +36,9 @@
  *
  * What replaced it
  * ----------------
- *  - `../derive-selections.ts`: `selections` / `committedGroups` /
+ *  - `../utils/derive-selections.ts`: `selections` / `committedGroups` /
  *    group resolutions are derived from `order.line_items`.
- *  - `../mutation-queue.ts`: cart edits write through to Commerce Layer,
+ *  - `../utils/mutation-queue.ts`: cart edits write through to Commerce Layer,
  *    serialized through one queue, with an optimistic overlay.
  *  - A tiny license-only write (`order.metadata.license`: owner / size /
  *    types) remains in `OrderProvider`.
@@ -45,5 +46,6 @@
  * The git tag `archive/selections-sync` is suggested on the last commit that
  * still has this wired into `OrderProvider`.
  */
+export * from './legacy-order-utils'
 export * from './order-metadata-sync'
 export * from './selections-local-storage'

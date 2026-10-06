@@ -3,21 +3,39 @@ import {
   calculateDiscount,
   calculateLineItemPrice,
 } from '@/commercelayer/utils/prices'
+import type { ClonePayload } from '@/commercelayer/utils/cart-share'
+import { toaster } from '@/components/ui/toaster'
 import type { BuyLabels, CartLabels, MediaType } from '@/sanity/lib/queries'
 import type { Order, SkuOption } from '@commercelayer/sdk'
-import { createContext, FC, useContext, useMemo } from 'react'
+import {
+  createContext,
+  FC,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
+import { useOrderContext } from '@/commercelayer/providers/order'
 import type {
-  AddToCartError,
-  LicenseOwnerInput,
-} from '@/commercelayer/providers/Order'
-import { useOrderContext } from '@/commercelayer/providers/Order'
-import type {
+  CartWriteResult,
   GroupResolutions,
+  LicenseOwnerInput,
   LicenseSize,
   SelectionBuffer,
   StyleEntry,
-} from '@/commercelayer/providers/Order/types'
+  StyleGroup,
+} from '@/commercelayer/providers/order/types'
+import {
+  applySelectionOverlay,
+  deriveSelectionsFromOrder,
+} from '@/commercelayer/providers/order/utils/derive-selections'
+import {
+  countSelections,
+  pickSkuOptions,
+  skuOptionRefs,
+} from '@/commercelayer/providers/order/utils/selection-utils'
 import type {
   CartBufferGroup,
   CartBufferItem,
@@ -59,15 +77,20 @@ export interface CartProviderData {
   removeStyles: (params: {
     parentUid: string
     skuCodes: string[]
-  }) => Promise<{ success: boolean; error?: AddToCartError }>
-  removeFont: (
-    parentUid: string
-  ) => Promise<{ success: boolean; error?: AddToCartError }>
+  }) => Promise<CartWriteResult>
+  removeFont: (parentUid: string) => Promise<CartWriteResult>
   setStyleLicenseTypes: (params: {
     parentUid: string
     skuCode: string
     licenseTypes: string[]
-  }) => Promise<{ success: boolean; error?: AddToCartError }>
+  }) => Promise<CartWriteResult>
+  /**
+   * Replace the whole cart with a cloned one (see `/cart/clone/[token]`):
+   * clears the existing line items, registers the payload's group resolutions
+   * and license info, defaults the license holder to "Yourself" when unset,
+   * then creates the order if needed and commits every font to Commerce Layer.
+   */
+  importSelections: (payload: ClonePayload) => Promise<CartWriteResult>
 }
 
 interface CartProviderProps {
@@ -88,21 +111,229 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     allLicenseInfoSet,
     isLicenseForClient,
     licenseOwner,
-    itemsCount,
     licenseSize,
     setLicenseSize,
+    setLicenseOwner,
+    setSelectedSkuOptions,
     buyLabels,
     cartLabels,
-    selections,
+    selections: orderSelections,
     groupResolutions,
+    registerGroupResolutions,
     skuOptions,
     mediaTypes,
-    pendingFonts,
-    hasPendingWrites,
-    removeStyles,
-    removeFont,
-    setStyleLicenseTypes,
+    hasPendingWrites: orderHasPendingWrites,
+    commitGroup,
+    removeGroup,
+    clearCommittedItems,
+    ensureOrder,
+    getSnapshot,
   } = useOrderContext()
+
+  // --- Cart-page edits (write through to Commerce Layer) ---
+  // Each edit is reflected immediately in `selections` through `overlay`, then
+  // written through the order's mutation queue. The overlay entry is dropped
+  // once the write settles (the refetched order has taken over), or if it
+  // fails (the cart reverts to what is really on the order).
+  const [overlay, setOverlay] = useState<{ [parentUid: string]: StyleGroup }>(
+    {}
+  )
+  const overlayRef = useRef(overlay)
+  // Latest edit per font; an older edit must not settle a newer one's overlay
+  const intentTokenRef = useRef<Record<string, number>>({})
+
+  const selections = useMemo(
+    () => applySelectionOverlay(orderSelections, overlay),
+    [orderSelections, overlay]
+  )
+  const itemsCount = useMemo(() => countSelections(selections), [selections])
+  const pendingFonts = useMemo(() => Object.keys(overlay), [overlay])
+  const hasPendingWrites = orderHasPendingWrites || pendingFonts.length > 0
+
+  /** A font's styles as the user currently sees them (overlay, else order) */
+  const currentFontGroup = useCallback(
+    (parentUid: string): StyleGroup => {
+      if (parentUid in overlayRef.current)
+        return overlayRef.current[parentUid]
+      return deriveSelectionsFromOrder(getSnapshot().order)[parentUid] ?? {}
+    },
+    [getSnapshot]
+  )
+
+  const setFontStyles = useCallback(
+    async (
+      parentUid: string,
+      group: StyleGroup
+    ): Promise<CartWriteResult> => {
+      const token = (intentTokenRef.current[parentUid] ?? 0) + 1
+      intentTokenRef.current[parentUid] = token
+
+      overlayRef.current = { ...overlayRef.current, [parentUid]: group }
+      setOverlay(overlayRef.current)
+
+      let result: CartWriteResult
+      try {
+        result =
+          Object.keys(group).length === 0
+            ? await removeGroup(parentUid)
+            : await commitGroup(parentUid, group)
+      } catch (error) {
+        result = {
+          success: false,
+          error: {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to update your cart',
+            originalError: error,
+          },
+        }
+      }
+
+      // A newer edit for this font settles the overlay (and reports) instead
+      if (intentTokenRef.current[parentUid] === token) {
+        const rest = { ...overlayRef.current }
+        delete rest[parentUid]
+        overlayRef.current = rest
+        setOverlay(rest)
+        if (!result.success) {
+          toaster.create({
+            type: 'error',
+            title: 'Your cart could not be updated',
+            description: result.error?.message,
+          })
+        }
+      }
+      return result
+    },
+    [commitGroup, removeGroup]
+  )
+
+  const removeStyles = useCallback(
+    (params: { parentUid: string; skuCodes: string[] }) => {
+      const remove = new Set(params.skuCodes)
+      const next: StyleGroup = {}
+      for (const [code, entry] of Object.entries(
+        currentFontGroup(params.parentUid)
+      )) {
+        if (!remove.has(code)) next[code] = entry
+      }
+      return setFontStyles(params.parentUid, next)
+    },
+    [currentFontGroup, setFontStyles]
+  )
+
+  const removeFont = useCallback(
+    (parentUid: string) => setFontStyles(parentUid, {}),
+    [setFontStyles]
+  )
+
+  const setStyleLicenseTypes = useCallback(
+    async (params: {
+      parentUid: string
+      skuCode: string
+      licenseTypes: string[]
+    }): Promise<CartWriteResult> => {
+      const group = currentFontGroup(params.parentUid)
+      const entry = group[params.skuCode]
+      if (!entry) return { success: true }
+
+      // A style without any license type would be priced at zero
+      if (params.licenseTypes.length === 0) {
+        const message = 'Each style needs at least one license type'
+        toaster.create({ type: 'info', title: message })
+        return { success: false, error: { message } }
+      }
+
+      return setFontStyles(params.parentUid, {
+        ...group,
+        [params.skuCode]: { ...entry, licenseTypes: params.licenseTypes },
+      })
+    },
+    [currentFontGroup, setFontStyles]
+  )
+
+  // --- Clone / import (replace the cart with a shared selection) ---
+  const importingRef = useRef(false)
+
+  const importSelections = useCallback(
+    async (payload: ClonePayload): Promise<CartWriteResult> => {
+      if (importingRef.current) {
+        return {
+          success: false,
+          error: { message: 'A cart import is already in progress' },
+        }
+      }
+      if (Object.keys(payload.selections).length === 0) {
+        return {
+          success: false,
+          error: { message: 'Nothing to import' },
+        }
+      }
+
+      importingRef.current = true
+      try {
+        // Replace: drop the existing line items first (keeps the order itself)
+        const cleared = await clearCommittedItems()
+        if (!cleared.success) return cleared
+
+        // The order provider's setters update its state synchronously, so the
+        // commits below see the payload's resolutions / size / types / owner.
+        for (const [uid, groups] of Object.entries(
+          payload.groupResolutions
+        )) {
+          registerGroupResolutions(uid, groups)
+        }
+        if (payload.licenseSize) {
+          setLicenseSize({ licenseSize: payload.licenseSize })
+        }
+        if (payload.defaultLicenseTypes.length > 0) {
+          setSelectedSkuOptions({
+            selectedSkuOptions: pickSkuOptions(
+              getSnapshot().skuOptions,
+              payload.defaultLicenseTypes
+            ),
+          })
+        }
+        // The shared license holder is never copied: default to "Yourself"
+        // unless the recipient already chose one.
+        if (!getSnapshot().hasLicenseOwner) {
+          setLicenseOwner({ licenseOwner: { is_client: false } })
+        }
+
+        // Create the order once up front; each commit then reuses it
+        await ensureOrder(skuOptionRefs(getSnapshot().selectedSkuOptions))
+        for (const uid of Object.keys(payload.selections)) {
+          const result = await commitGroup(uid, payload.selections[uid])
+          if (!result.success) return result // Bail on first failure
+        }
+        return { success: true }
+      } catch (error) {
+        return {
+          success: false,
+          error: {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Failed to import cart',
+            originalError: error,
+          },
+        }
+      } finally {
+        importingRef.current = false
+      }
+    },
+    [
+      clearCommittedItems,
+      registerGroupResolutions,
+      setLicenseSize,
+      setSelectedSkuOptions,
+      setLicenseOwner,
+      getSnapshot,
+      ensureOrder,
+      commitGroup,
+    ]
+  )
 
   /** Resolve a style's licenseType refs to SkuOption objects */
   const resolveSkuOptions = (entry: StyleEntry): SkuOption[] =>
@@ -234,6 +465,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         removeStyles,
         removeFont,
         setStyleLicenseTypes,
+        importSelections,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import slugify from 'slugify'
-import type { ResolvedFontGroup } from '../Order/types'
+import type { ResolvedFontGroup } from '../order/types'
 
 type VariantRef = { _id: string } | null
 

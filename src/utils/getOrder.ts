@@ -3,7 +3,7 @@
  * Will be removed once account area is refactored.
  * For new code:
  * - Use fetchOrder from @/commercelayer/providers/checkout/utils for checkout context
- * - Use getOrder from @/commercelayer/providers/Order/utils/getOrder for cart/order display
+ * - Use getOrder from @/commercelayer/providers/order/utils/get-order for cart/order display
  */
 
 import type { CommerceLayerClient } from '@commercelayer/sdk'

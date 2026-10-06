@@ -1,4 +1,5 @@
-import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
+import type { LicenseSize } from '@/commercelayer/providers/order/types'
 import { FloatingLabelSelect } from '@/commercelayer/components/ui/floating-label-select'
 import { type CompanySize } from '@/sanity/lib/queries'
 

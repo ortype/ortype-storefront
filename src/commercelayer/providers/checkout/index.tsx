@@ -21,7 +21,7 @@ import React, {
 
 import { type AddressInput } from '@/commercelayer/providers/address'
 import { CLayerClientConfig } from '@/commercelayer/providers/identity/types'
-import { OrderStorageContext } from '@/commercelayer/providers/Order/Storage'
+import { OrderStorageContext } from '@/commercelayer/providers/order/storage'
 import {
   setOrderBillingAddress as attachBillingAddressToOrderUtil,
   createBillingAddress as createBillingAddressUtil,

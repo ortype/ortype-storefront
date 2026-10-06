@@ -1,5 +1,5 @@
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import { Button, useStepsContext } from '@chakra-ui/react'
 import { Order } from '@commercelayer/sdk'
 import { LockIcon } from '@sanity/icons'

@@ -11,7 +11,7 @@ import { Nav } from './Nav'
 import { SessionId } from './SessionId'
 
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import { useState } from 'react'
 
 const DynamicMiniCart: any = dynamic(

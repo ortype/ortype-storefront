@@ -1,5 +1,5 @@
 import { LicenseSizeList } from '@/commercelayer/components/forms/LicenseSizeList'
-import type { LicenseSize } from '@/commercelayer/providers/Order'
+import type { LicenseSize } from '@/commercelayer/providers/order/types'
 import {
   DialogBody,
   DialogCloseTrigger,

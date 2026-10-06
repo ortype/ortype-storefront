@@ -26,7 +26,7 @@ const RETRIES = 3
 export const retryCall = async <T>(
   f: () => Promise<T>
 ): Promise<FetchResource<T> | undefined> => {
-  return await retry(
+  return await retry<FetchResource<T>>(
     async (_, attempt) => {
       try {
         return {

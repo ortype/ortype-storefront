@@ -15,7 +15,7 @@ import { StepShipping } from '@/commercelayer/components/pages/checkout/step-shi
 import type { SingleStepEnum } from '@/commercelayer/components/pages/checkout/types'
 import { OrderSummary } from '@/commercelayer/components/ui/order-summary'
 import { useCheckoutContext } from '@/commercelayer/providers/checkout'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 
 interface Props {
   logoUrl?: string

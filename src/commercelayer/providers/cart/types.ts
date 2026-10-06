@@ -1,4 +1,4 @@
-import type { StyleEntry } from '@/commercelayer/providers/Order/types'
+import type { StyleEntry } from '@/commercelayer/providers/order/types'
 
 /** A single cart item derived from the selection buffer */
 export interface CartBufferItem {

@@ -1,5 +1,5 @@
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
 import { Fieldset, Group } from '@chakra-ui/react'
 

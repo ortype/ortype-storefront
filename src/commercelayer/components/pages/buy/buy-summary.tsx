@@ -1,6 +1,6 @@
 import { useDraftGuard } from '@/commercelayer/components/pages/buy/use-draft-guard'
 import { useBuyContext } from '@/commercelayer/providers/buy'
-import { useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import {

@@ -1,5 +1,6 @@
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
-import { LicenseSize, useOrderContext } from '@/commercelayer/providers/Order'
+import { useOrderContext } from '@/commercelayer/providers/order'
+import type { LicenseSize } from '@/commercelayer/providers/order/types'
 import { Fieldset, RadioGroup, VStack } from '@chakra-ui/react'
 import React, { useCallback, useState } from 'react'
 import ConfirmLicenseSizeChangeDialog from './confirm-license-size-change-dialog'

@@ -1,7 +1,7 @@
 'use client'
 
-import { useOrderContext } from '@/commercelayer/providers/Order'
-import { countSelections } from '@/commercelayer/providers/Order/selection-utils'
+import { useCartContext } from '@/commercelayer/providers/cart'
+import { countSelections } from '@/commercelayer/providers/order/utils/selection-utils'
 import type { ClonePayload } from '@/commercelayer/utils/cart-share'
 import { toaster } from '@/components/ui/toaster'
 import { Box, Button, Center, Spinner, Text, VStack } from '@chakra-ui/react'
@@ -30,7 +30,7 @@ const CartCloneHandler = ({
 }: CartCloneHandlerProps) => {
   const router = useRouter()
   const { isLoading, skuOptions, itemsCount, importSelections } =
-    useOrderContext()
+    useCartContext()
 
   const [phase, setPhase] = useState<Phase>('undecided')
   const [error, setError] = useState<string>()
