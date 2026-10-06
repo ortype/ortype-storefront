@@ -91,7 +91,7 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
           borderRadius: 'none',
           borderBottom: '2px solid black',
           _focus: {
-            boxShadow: '0 0 0 2px #000',
+            // boxShadow: '0 0 0 2px #000',
             borderColor: 'black',
           },
           _focusVisible: {
