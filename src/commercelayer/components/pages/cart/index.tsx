@@ -26,10 +26,11 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import { CloseIcon } from '@sanity/icons'
 import { CheckoutButton } from '../../ui/checkout-button'
 import CartGroups from './cart-groups'
 import CartSummary from './cart-summary'
-import ShareCartDialog from './share-cart-dialog'
+import ShareCartPanel from './share-cart-panel'
 
 const CartComponent = () => {
   const {
@@ -48,15 +49,22 @@ const CartComponent = () => {
   } = useCartContext()
 
   const router = useRouter()
+  const [shareOpen, setShareOpen] = useState(false)
   const [shareUrl, setShareUrl] = useState<string>()
 
   const handleClick = () => {
     router.push(`/`)
   }
 
-  // Build the share link when the dialog opens. Carts too large to fit in a
+  // Build the share link when the panel opens. Carts too large to fit in a
   // link bail out with a warning (see CART_SHARE_MAX_TOKEN_LENGTH).
   const handleShareClick = () => {
+    if (shareOpen) {
+      setShareOpen(false)
+      setShareUrl(undefined)
+      return
+    }
+    setShareOpen(true)
     const result = encodeCartShare(selections, groupResolutions, licenseSize)
     if (!result.ok) {
       toaster.create({
@@ -283,55 +291,65 @@ const CartComponent = () => {
         top={{ base: 'auto', lg: 16 }}
         px={{ base: '1rem', lg: 0 }}
         pb={{ base: '1rem', lg: 0 }}
+        w={{
+          base: '100%',
+          lg: '16rem',
+          '2xl': '17rem',
+          '3xl': '18rem',
+        }}
       >
         <CartSummary />
-        <Stack
-          justifyContent={'flex-end'}
-          gap={2}
-          // direction={{ base: 'row', sm: 'column' }}
-          direction={'row'}
-          w={'full'}
-        >
-          <Button
-            variant={'outline'}
-            bg={'white'}
-            borderRadius={'5rem'}
-            size={'sm'}
-            fontSize={'md'}
-            _hover={{
-              bg: 'black',
-              color: 'white',
-            }}
-            flexGrow={1}
-            onClick={handleShareClick}
+        <VStack gap={0} alignSelf={'stretch'} alignItems={'stretch'}>
+          <Stack
+            justifyContent={'flex-end'}
+            gap={2}
+            // direction={{ base: 'row', sm: 'column' }}
+            direction={'row'}
+            alignItems={'stretch'}
           >
-            {'Share cart'}
-          </Button>
-          <Button
-            variant={'outline'}
-            bg={'white'}
-            borderRadius={'5rem'}
-            size={'sm'}
-            fontSize={'md'}
-            _hover={{
-              bg: 'black',
-              color: 'white',
-            }}
-            flexGrow={1}
-          >
-            {'Save as PDF'}
-          </Button>
-        </Stack>
+            <Button
+              variant={'outline'}
+              bg={'white'}
+              borderRadius={'5rem'}
+              size={'sm'}
+              fontSize={'md'}
+              _hover={{
+                bg: 'black',
+                color: 'white',
+              }}
+              flexGrow={1}
+              onClick={handleShareClick}
+            >
+              {shareOpen ? (
+                <CloseIcon width={'4rem'} height={'4rem'} />
+              ) : (
+                'Share cart'
+              )}
+            </Button>
+            <Button
+              variant={'outline'}
+              bg={'white'}
+              borderRadius={'5rem'}
+              size={'sm'}
+              fontSize={'md'}
+              _hover={{
+                bg: 'black',
+                color: 'white',
+              }}
+              flexGrow={1}
+            >
+              {'Save as PDF'}
+            </Button>
+          </Stack>
+          <ShareCartPanel open={!!shareOpen} url={shareUrl} />
+          {/*  <Show when={!!shareOpen}>
+          </Show>*/}
+        </VStack>
         <CheckoutButton
           orderId={orderId || ''}
           isDisabled={!allLicenseInfoSet}
         />
       </VStack>
-      <ShareCartDialog
-        open={!!shareUrl}
-        url={shareUrl}
-        onClose={() => setShareUrl(undefined)}
-      />
     </Box>
   )
 }

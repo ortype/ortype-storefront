@@ -71,18 +71,7 @@ const Summary = () => {
   }, [selections, licenseSize, skuOptions])
 
   return (
-    <Box
-      w={{
-        base: '100%',
-        lg: '16rem',
-        '2xl': '17rem',
-        '3xl': '18rem',
-      }}
-      bg={'#FFF8D3'}
-      px={4}
-      py={5}
-      borderRadius={20}
-    >
+    <Box w={'full'} bg={'#FFF8D3'} px={4} py={5} borderRadius={20}>
       <VStack gap={2} w={'full'}>
         <Flex
           w={'full'}
@@ -143,7 +132,7 @@ const Summary = () => {
           alignItems={'center'}
         >
           <Text as={'span'} textStyle={summaryFontSize} w={'50%'}>
-            {'Total EUR'}
+            {'TOTAL EUR'}
           </Text>
           <Text
             as={'span'}
