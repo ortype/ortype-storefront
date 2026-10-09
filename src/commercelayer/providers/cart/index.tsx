@@ -47,9 +47,13 @@ import {
   removeStylesFromGroup,
   restoreStyles,
 } from './utils/cart-draft'
+import { sortByFontOrder } from './utils/font-order'
 
 /** How long the "Undo" toast stays after a removal */
 const UNDO_TOAST_MS = 8000
+
+/** Stable default so `fontOrder` does not change identity every render */
+const NO_FONT_ORDER: readonly string[] = []
 
 export type {
   CartBufferGroup,
@@ -117,6 +121,12 @@ export interface CartProviderData {
 
 interface CartProviderProps {
   children: React.ReactNode
+  /**
+   * Font uids in site order (Sanity `orderRank`). The cart lists its fonts in
+   * this order, so saving a font (which recreates its line items) never
+   * reshuffles the cart. Fonts not listed go last.
+   */
+  fontOrder?: readonly string[]
 }
 
 export const CartContext = createContext<CartProviderData>(
@@ -125,7 +135,10 @@ export const CartContext = createContext<CartProviderData>(
 
 export const useCartContext = (): CartProviderData => useContext(CartContext)
 
-export const CartProvider: FC<CartProviderProps> = ({ children }) => {
+export const CartProvider: FC<CartProviderProps> = ({
+  children,
+  fontOrder = NO_FONT_ORDER,
+}) => {
   const {
     isLoading,
     orderId,
@@ -502,7 +515,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     const parentUids = Object.keys(selections)
     if (parentUids.length === 0) return []
 
-    return parentUids.map((parentUid) => {
+    const groups = parentUids.map((parentUid) => {
       const selectedSkus = selections[parentUid]
       const skuCodes = Object.keys(selectedSkus)
       const first = selectedSkus[skuCodes[0]]
@@ -594,7 +607,16 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         discountedPriceTotalCents: discountedTotalCents,
       }
     })
-  }, [selections, groupResolutions, licenseSize?.modifier, skuOptions])
+
+    // Site font order, not the order line items came back in
+    return sortByFontOrder(groups, fontOrder)
+  }, [
+    selections,
+    groupResolutions,
+    licenseSize?.modifier,
+    skuOptions,
+    fontOrder,
+  ])
 
   return (
     <CartContext.Provider

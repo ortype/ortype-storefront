@@ -213,6 +213,12 @@ export const fontSlugsQuery = defineQuery(`
 *[_type == "font" && defined(slug.current)][].slug.current
 `)
 
+// Every font's uid in site order (the `orderRank` the font grid uses). The cart
+// sorts its fonts by this so their order is stable (see `sortByFontOrder`).
+export const fontUidsQuery = defineQuery(`
+*[_type == "font" && defined(uid)] | order(orderRank) { uid }
+`)
+
 export const categoryFiters = defineQuery(`
 *[_type == 'category' && count(*[_type == 'post' && references(^._id)]) > 0] | order(count(*[_type == 'post' && references(^._id)]) desc) {
     _id,
