@@ -73,30 +73,32 @@ export default function ShareCartPanel({ open, url }: ShareCartPanelProps) {
             borderTop={'1px solid #CEC9AB'}
             // borderBottom={'1px solid #CEC9AB'}
           >
-            <Code
-              colorPalette={'gray'}
-              variant='subtle'
-              size={'lg'}
-              minW={0}
-              overflow={'hidden'}
-              textOverflow={'ellipsis'}
-              whiteSpace={'nowrap'}
-              title={url}
-            >
-              {url}
-            </Code>
             <Clipboard.Root value={url ?? ''} timeout={1500}>
               <Clipboard.Trigger asChild>
-                <IconButton
-                  aria-label={'Copy link'}
-                  variant={'outline'}
-                  bg={'transparent'}
-                  borderRadius={'full'}
-                  size={'sm'}
-                  disabled={!url}
-                >
-                  <Clipboard.Indicator />
-                </IconButton>
+                <Box>
+                  <Code
+                    colorPalette={'gray'}
+                    variant='subtle'
+                    size={'lg'}
+                    minW={0}
+                    overflow={'hidden'}
+                    textOverflow={'ellipsis'}
+                    whiteSpace={'nowrap'}
+                    title={url}
+                  >
+                    {url}
+                  </Code>
+                  <IconButton
+                    aria-label={'Copy link'}
+                    variant={'outline'}
+                    bg={'white'}
+                    borderRadius={'full'}
+                    size={'sm'}
+                    disabled={!url}
+                  >
+                    <Clipboard.Indicator />
+                  </IconButton>
+                </Box>
               </Clipboard.Trigger>
             </Clipboard.Root>
           </HStack>

@@ -1,13 +1,8 @@
 'use client'
 
 import { useCartContext } from '@/commercelayer/providers/cart'
-import {
-  buildCartShareUrl,
-  encodeCartShare,
-} from '@/commercelayer/utils/cart-share'
-import { toaster } from '@/components/ui/toaster'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import EditLicenseMetricsDialog from '@/commercelayer/components/forms/edit-license-metrics-dialog'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -26,64 +21,29 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { CloseIcon } from '@sanity/icons'
-import { CheckoutButton } from '../../ui/checkout-button'
 import CartActionBar from './cart-action-bar'
 import CartGroups from './cart-groups'
 import CartSummary from './cart-summary'
-import ShareCartPanel from './share-cart-panel'
 
 const CartComponent = () => {
   const {
     isLoading,
     orderId,
     order,
-    allLicenseInfoSet,
     isLicenseForClient,
     licenseOwner,
     licenseSize,
     setLicenseSize,
     cartLabels,
     groupedLineItems,
-    selections,
-    groupResolutions,
     isDirty,
     isSaving,
   } = useCartContext()
 
   const router = useRouter()
-  const [shareOpen, setShareOpen] = useState(false)
-  const [shareUrl, setShareUrl] = useState<string>()
 
   const handleClick = () => {
     router.push(`/`)
-  }
-
-  // Build the share link when the panel opens. Carts too large to fit in a
-  // link bail out with a warning (see CART_SHARE_MAX_TOKEN_LENGTH).
-  const handleShareClick = () => {
-    if (shareOpen) {
-      setShareOpen(false)
-      setShareUrl(undefined)
-      return
-    }
-    setShareOpen(true)
-    const result = encodeCartShare(selections, groupResolutions, licenseSize)
-    if (!result.ok) {
-      toaster.create({
-        type: 'warning',
-        title:
-          result.reason === 'too-large'
-            ? 'Your cart is too large to share by link'
-            : 'There is nothing to share yet',
-        description:
-          result.reason === 'too-large'
-            ? 'Try sharing a smaller selection of fonts.'
-            : undefined,
-      })
-      return
-    }
-    setShareUrl(buildCartShareUrl(window.location.origin, result.token))
   }
 
   const hasInitializedRef = useRef(false)
@@ -305,60 +265,10 @@ const CartComponent = () => {
           '2xl': '17rem',
           '3xl': '18rem',
         }}
+        gap={0}
       >
         <CartSummary />
-        <VStack gap={0} alignSelf={'stretch'} alignItems={'stretch'}>
-          <Stack
-            justifyContent={'flex-end'}
-            gap={2}
-            // direction={{ base: 'row', sm: 'column' }}
-            direction={'row'}
-            alignItems={'stretch'}
-          >
-            <Button
-              variant={'outline'}
-              bg={'white'}
-              borderRadius={'5rem'}
-              size={'sm'}
-              fontSize={'md'}
-              _hover={{
-                bg: 'black',
-                color: 'white',
-              }}
-              flexGrow={1}
-              onClick={handleShareClick}
-            >
-              {shareOpen ? (
-                <CloseIcon width={'4rem'} height={'4rem'} />
-              ) : (
-                'Share cart'
-              )}
-            </Button>
-            <Button
-              variant={'outline'}
-              bg={'white'}
-              borderRadius={'5rem'}
-              size={'sm'}
-              fontSize={'md'}
-              _hover={{
-                bg: 'black',
-                color: 'white',
-              }}
-              flexGrow={1}
-            >
-              {'Save as PDF'}
-            </Button>
-          </Stack>
-          <ShareCartPanel open={!!shareOpen} url={shareUrl} />
-          {/*  <Show when={!!shareOpen}>
-          </Show>*/}
-        </VStack>
         <CartActionBar />
-        <CheckoutButton
-          orderId={orderId || ''}
-          // Unsaved edits must be saved (or discarded) before paying
-          isDisabled={!allLicenseInfoSet || isDirty || isSaving}
-        />
       </VStack>
     </Box>
   )

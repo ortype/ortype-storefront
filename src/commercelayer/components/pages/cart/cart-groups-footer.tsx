@@ -92,7 +92,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
               if (e.button === 1) void handleClick(e)
             }}
           >
-            {isLeaving ? 'Saving…' : 'Add More Styles'}
+            {isLeaving ? 'Updating…' : 'Add more styles'}
           </Link>
         </Button>
         {percentageDiscount === 0 && (

@@ -261,7 +261,8 @@ export const CartProvider: FC<CartProviderProps> = ({
       stageFont(parentUid, next)
       toaster.create({
         type: 'info',
-        title: `Removed ${label}`,
+        title: `REMOVED: ${label}`,
+        // description: `${label}`,
         duration: UNDO_TOAST_MS,
         action: {
           label: 'Undo',
@@ -319,7 +320,7 @@ export const CartProvider: FC<CartProviderProps> = ({
       if (params.licenseTypes.length === 0) {
         toaster.create({
           type: 'info',
-          title: 'Each style needs at least one license type',
+          description: 'Each style needs at least one license type',
         })
         return
       }

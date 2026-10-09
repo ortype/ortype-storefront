@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   IconButton as ChakraIconButton,
@@ -93,9 +94,16 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                     {parentName}
                   </Text>
                   {isDirtyFont && (
-                    <Text as={'span'} fontSize={'xs'}>
-                      {'edited'}
-                    </Text>
+                    <Badge
+                      size={'xs'}
+                      bg={'white'}
+                      color={'black'}
+                      variant={'solid'}
+                      borderRadius={'full'}
+                      // textTransform={'uppercase'}
+                    >
+                      {'Edited'}
+                    </Badge>
                   )}
                 </HStack>
                 {hasSubGroups ? (

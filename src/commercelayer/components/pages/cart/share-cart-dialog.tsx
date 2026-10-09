@@ -8,20 +8,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { toaster } from '@/components/ui/toaster'
-import {
-  Button,
-  Clipboard,
-  Code,
-  Dialog,
-  HStack,
-  IconButton,
-} from '@chakra-ui/react'
+import { Button, Clipboard, Dialog, HStack, Link } from '@chakra-ui/react'
 import { CloseIcon } from '@sanity/icons'
 
 export interface ShareCartDialogProps {
   open: boolean
   /** The share link to display / copy / send */
   url?: string
+  setShareOpen: () => void
   onClose: () => void
 }
 
@@ -31,8 +25,18 @@ const SHARE_TEXT = 'Here is my cart from Or Type:'
 export default function ShareCartDialog({
   open,
   url,
+  setShareOpen,
   onClose,
 }: ShareCartDialogProps) {
+  const handleClick = () => {
+    console.log('handle clipboard click')
+    toaster.create({
+      type: 'info',
+      title: 'Copied',
+      description: 'Link copied to your clipboard',
+    })
+  }
+
   const handleSend = async () => {
     if (!url) return
 
@@ -64,9 +68,10 @@ export default function ShareCartDialog({
     <DialogRoot
       lazyMount
       open={open}
-      onOpenChange={(e) => {
+      /*onOpenChange={(e) => {
         if (!e.open) onClose()
-      }}
+      }}*/
+      onOpenChange={(e) => setShareOpen(e.open)}
       size={'md'}
       placement={'center'}
       motionPreset={'slide-in-bottom'}
@@ -103,46 +108,41 @@ export default function ShareCartDialog({
         </DialogHeader>
         <DialogBody p={0} pt={3}>
           <HStack gap={2} w={'full'}>
-            <Code
-              flex={'1 1 0'}
-              minW={0}
-              px={3}
-              py={2}
-              overflow={'hidden'}
-              textOverflow={'ellipsis'}
-              whiteSpace={'nowrap'}
-              title={url}
+            <Clipboard.Root
+              value={url ?? ''}
+              timeout={1500}
+              maxW={'100%'}
+              minW={'0'}
             >
-              {url}
-            </Code>
-            <Clipboard.Root value={url ?? ''} timeout={1500}>
-              <Clipboard.Trigger asChild>
-                <IconButton
-                  aria-label={'Copy link'}
-                  variant={'outline'}
-                  bg={'white'}
-                  borderRadius={'full'}
-                  size={'sm'}
-                  disabled={!url}
-                >
+              <Clipboard.Trigger
+                onClick={handleClick}
+                display={'flex'}
+                flexDirection={'row'}
+                maxW={'100%'}
+                minW={0}
+                asChild
+              >
+                <Link variant={'plain'} color={'black'}>
                   <Clipboard.Indicator />
-                </IconButton>
+                  <Clipboard.ValueText
+                    overflow={'hidden'}
+                    textOverflow={'ellipsis'}
+                    whiteSpace={'nowrap'}
+                  />
+                </Link>
               </Clipboard.Trigger>
             </Clipboard.Root>
             <Button
               onClick={handleSend}
               disabled={!url}
-              variant={'solid'}
-              bg={'black'}
-              color={'white'}
+              variant={'outline'}
+              bg={'transparent'}
               borderRadius={'5rem'}
-              border={'2px solid #000'}
               size={'sm'}
               fontSize={'md'}
-              flexShrink={0}
               _hover={{
-                bg: 'transparent',
-                color: 'colorPalette.fg',
+                bg: 'black',
+                color: 'white',
               }}
             >
               {'Send Email'}

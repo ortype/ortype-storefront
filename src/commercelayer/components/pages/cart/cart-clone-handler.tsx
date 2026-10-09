@@ -8,7 +8,8 @@ import { toaster } from '@/components/ui/toaster'
 import { Box, Button, Center, Spinner, Text, VStack } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import ReplaceCartDialog from './replace-cart-dialog'
+// @NOTE: deprecated
+// import ReplaceCartDialog from './replace-cart-dialog'
 
 interface CartCloneHandlerProps {
   /** Resolved shared cart. Missing when the link is invalid / out of date. */
