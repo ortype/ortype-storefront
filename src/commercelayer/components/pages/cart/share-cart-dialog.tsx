@@ -77,9 +77,9 @@ export default function ShareCartDialog({
       motionPreset={'slide-in-bottom'}
     >
       <DialogContent
-        backdrop={false}
+        backdrop={true}
         boxShadow={'lg'}
-        bg={'#FFF8D3'}
+        bg={'#F8F8F8'}
         borderRadius={20}
         px={4}
         py={5}

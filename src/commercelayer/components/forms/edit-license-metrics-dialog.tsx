@@ -61,25 +61,20 @@ export default function EditLicenseMetricsDialog({
           {'Edit'}
         </Button>
       </DialogTrigger>
-      <DialogContent backdrop borderRadius={0} bg={'transparent'} h={'100vh'}>
+      <DialogContent
+        backdrop={true}
+        blurred={true}
+        borderRadius={0}
+        bg={'transparent'}
+        h={'100vh'}
+      >
         <DialogBody overflow={'auto'}>
           <DialogTitle
             textAlign={'center'}
             fontSize={'2rem'}
             fontWeight={'normal'}
             textTransform={'uppercase'}
-            ml={{
-              base: '1rem',
-              xl: '15rem',
-              '3xl': '21rem',
-            }}
-            mr={{
-              base: '1rem',
-              lg: '15rem',
-              xl: '15rem',
-              '2xl': '17rem',
-              '3xl': '21rem',
-            }}
+
             pb={8}
             my={4}
             lineHeight={1}

@@ -48,7 +48,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
   return (
     <>
       <DialogRoot open={registerOpen} size={'xl'}>
-        <DialogContent maxW={'35rem'}>
+        <DialogContent maxW={'35rem'} blurred={true}>
           <DialogHeader asChild>
             <Heading
               textAlign={'center'}
@@ -75,12 +75,18 @@ export const Account = ({ openLogin, setLoginOpen }) => {
                 Already have an account?{' '}
               </Text>
               <Button
-                variant={'outline'}
-                borderRadius={'full'}
-                size={'2xs'}
+                variant={'solid'}
                 bg={'black'}
                 color={'white'}
-                _hover={{ bg: 'white', color: 'black' }}
+                borderRadius={'5rem'}
+                border={'2px solid #000'}
+                size={'xs'}
+                fontSize={'sm'}
+                gap={1}
+                _hover={{
+                  bg: 'transparent',
+                  color: 'colorPalette.fg',
+                }}
                 onClick={handleLoginClick}
               >
                 {'Login'}
@@ -90,7 +96,7 @@ export const Account = ({ openLogin, setLoginOpen }) => {
         </DialogContent>
       </DialogRoot>
       <DialogRoot open={openLogin} size={'xl'}>
-        <DialogContent maxW={'35rem'}>
+        <DialogContent maxW={'35rem'} blurred={true}>
           <DialogHeader asChild>
             <Heading
               textAlign={'center'}
@@ -145,10 +151,13 @@ export const Account = ({ openLogin, setLoginOpen }) => {
                   {resetPasswordUrl.length > 0 && (
                     <Button
                       asChild
-                      size={'2xs'}
-                      bg={'brand.50'}
-                      variant={'subtle'}
-                      borderRadius={'full'}
+                      variant='text'
+                      size='xs'
+                      fontSize='xs'
+                      px={2}
+                      py={1}
+                      h='auto'
+                      minH='auto'
                     >
                       <ChakraLink
                         target='_blank'
@@ -160,12 +169,18 @@ export const Account = ({ openLogin, setLoginOpen }) => {
                     </Button>
                   )}
                   <Button
-                    variant={'outline'}
-                    borderRadius={'full'}
-                    size={'2xs'}
+                    variant={'solid'}
                     bg={'black'}
                     color={'white'}
-                    _hover={{ bg: 'white', color: 'black' }}
+                    borderRadius={'5rem'}
+                    border={'2px solid #000'}
+                    size={'xs'}
+                    fontSize={'sm'}
+                    gap={1}
+                    _hover={{
+                      bg: 'transparent',
+                      color: 'colorPalette.fg',
+                    }}
                     onClick={handleRegisterClick}
                   >
                     {'Register'}

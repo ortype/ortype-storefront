@@ -17,14 +17,13 @@ export const dialogSlotRecipe = defineSlotRecipe({
   className: 'chakra-dialog',
   base: {
     backdrop: {
-      bg: 'blackAlpha.300',
+      bg: 'blackAlpha.500',
       pos: 'fixed',
       left: 0,
       top: 0,
       w: '100vw',
       h: '100dvh',
       zIndex: 'modal',
-      backdropFilter: 'blur(40px)',
       _open: {
         animationName: 'fade-in',
         animationDuration: 'slow',

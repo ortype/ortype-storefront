@@ -32,21 +32,7 @@ export const RadioCardItem = React.forwardRef<
   const ContentWrapper = indicator ? RadioCard.ItemContent : React.Fragment
 
   return (
-    <RadioCard.Item
-      {...rest}
-      _hover={{
-        '& .dot': {
-          bg: 'colorPalette.fg',
-        },
-      }}
-      _checked={{
-        _hover: {
-          '& .dot': {
-            bg: 'colorPalette.fg',
-          },
-        },
-      }}
-    >
+    <RadioCard.Item {...rest}>
       <RadioCard.ItemHiddenInput ref={ref} {...inputProps} />
       <RadioCard.ItemControl alignItems={'center'}>
         {indicatorPlacement === 'start' && indicator}

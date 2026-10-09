@@ -197,10 +197,19 @@ export const radioCardSlotRecipe = defineSlotRecipe({
             bg: '#f4f4f4',
             opacity: 1,
             borderRadius: '100px',
+            '& .dot': {
+              borderWidth: '3px',
+            },
           },
           opacity: 1,
           _checked: {
             borderRadius: '100px',
+            _hover: {
+              bg: '#f4f4f4',
+              '& .dot': {
+                borderWidth: 0,
+              },
+            },
             opacity: 1,
           },
         },

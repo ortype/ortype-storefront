@@ -478,7 +478,7 @@ export const BuySummary = () => {
                     variant={'solid'}
                     bg={'black'}
                     borderRadius={'5rem'}
-                    size={'sm'}
+                    size={'md'}
                     fontSize={'md'}
                     color={'white'}
                     disabled={isCommitting}

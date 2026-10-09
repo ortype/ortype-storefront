@@ -74,9 +74,6 @@ const LicenseOwnerRadio: React.FC<Props> = ({
                   flex='1'
                   alignSelf='stretch'
                   indicatorPlacement='start'
-                  _hover={{
-                    bg: '#e3e3e3',
-                  }}
                 />
               ))}
             </Group>
