@@ -28,6 +28,7 @@ import {
 } from '@chakra-ui/react'
 import { CloseIcon } from '@sanity/icons'
 import { CheckoutButton } from '../../ui/checkout-button'
+import CartActionBar from './cart-action-bar'
 import CartGroups from './cart-groups'
 import CartSummary from './cart-summary'
 import ShareCartPanel from './share-cart-panel'
@@ -46,6 +47,8 @@ const CartComponent = () => {
     groupedLineItems,
     selections,
     groupResolutions,
+    isDirty,
+    isSaving,
   } = useCartContext()
 
   const router = useRouter()
@@ -101,8 +104,10 @@ const CartComponent = () => {
     )
   }
 
-  // Show error if orderId is missing
-  if (!orderId || groupedLineItems.length === 0) {
+  // Nothing to show. Not while edits are staged or saving: removing every item
+  // is still an unsaved change, and the action bar (Update / Discard) must stay.
+  const isEmpty = groupedLineItems.length === 0
+  if (!orderId || (isEmpty && !isDirty && !isSaving)) {
     return (
       <Box pos='fixed' inset='0' bg='bg/80'>
         <Center h='full'>
@@ -281,6 +286,9 @@ const CartComponent = () => {
                 <FieldsetLegend>{'Items'}</FieldsetLegend>
               </Box>
             </Fieldset.Root>
+            {isEmpty && (
+              <Text py={6}>{'Everything removed from your cart.'}</Text>
+            )}
             <CartGroups groupedLineItems={groupedLineItems} />
           </Box>
         </Stack>
@@ -345,9 +353,11 @@ const CartComponent = () => {
           {/*  <Show when={!!shareOpen}>
           </Show>*/}
         </VStack>
+        <CartActionBar />
         <CheckoutButton
           orderId={orderId || ''}
-          isDisabled={!allLicenseInfoSet}
+          // Unsaved edits must be saved (or discarded) before paying
+          isDisabled={!allLicenseInfoSet || isDirty || isSaving}
         />
       </VStack>
     </Box>

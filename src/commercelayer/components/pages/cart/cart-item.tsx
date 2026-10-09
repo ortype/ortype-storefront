@@ -40,6 +40,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     licenseSize,
     removeStyles,
     setStyleLicenseTypes,
+    isSaving,
   } = useCartContext()
   const priceLocale = usePriceLocaleContext()
 
@@ -133,7 +134,7 @@ export const CartItem: React.FC<CartItemProps> = ({
   }
 
   const handleRemove = () => {
-    // Writes through to the order (optimistically reflected in the cart)
+    // Staged in the cart's draft (written by "Update cart")
     canRemove && removeStyles({ parentUid, skuCodes: [skuCode] })
   }
 
@@ -152,7 +153,7 @@ export const CartItem: React.FC<CartItemProps> = ({
               <ChakraIconButton
                 variant='ghost'
                 rounded={'full'}
-                disabled={!canRemove}
+                disabled={!canRemove || isSaving}
                 px={0}
                 size={'sm'}
                 _hover={{ bg: 'white' }}

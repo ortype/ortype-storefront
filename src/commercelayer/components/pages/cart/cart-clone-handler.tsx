@@ -1,6 +1,7 @@
 'use client'
 
 import { useCartContext } from '@/commercelayer/providers/cart'
+import { useOrderContext } from '@/commercelayer/providers/order'
 import { countSelections } from '@/commercelayer/providers/order/utils/selection-utils'
 import type { ClonePayload } from '@/commercelayer/utils/cart-share'
 import { toaster } from '@/components/ui/toaster'
@@ -29,8 +30,9 @@ const CartCloneHandler = ({
   invalidMessage,
 }: CartCloneHandlerProps) => {
   const router = useRouter()
-  const { isLoading, skuOptions, itemsCount, importSelections } =
-    useCartContext()
+  const { isLoading, skuOptions, importSelections } = useCartContext()
+  // The saved cart (not the draft-applied one): the import discards unsaved edits
+  const { itemsCount } = useOrderContext()
 
   const [phase, setPhase] = useState<Phase>('undecided')
   const [error, setError] = useState<string>()

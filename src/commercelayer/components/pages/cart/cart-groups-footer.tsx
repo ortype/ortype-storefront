@@ -1,8 +1,12 @@
+'use client'
+
+import { useCartContext } from '@/commercelayer/providers/cart'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
 import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
 import Link from 'next/link'
-import React from 'react'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 
 interface CartGroupsFooterProps {
   parentUid: string
@@ -18,6 +22,47 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
   percentageDiscount,
 }) => {
   const priceLocale = usePriceLocaleContext()
+  const router = useRouter()
+  const { isDirty, isSaving, save } = useCartContext()
+  const [isLeaving, setIsLeaving] = useState(false)
+  const href = `/cart/buy/${parentUid}`
+
+  // The buy dialog seeds its draft from the saved order, and the user may
+  // leave /cart from inside it (discarding unsaved edits). So opening it first
+  // saves EVERY dirty font. Clean cart: the link behaves normally.
+  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!isDirty && !isSaving) return
+    e.preventDefault()
+    if (isLeaving) return
+
+    // Modified clicks (cmd/ctrl/shift/alt, middle click) also save first, then
+    // open buy in a new tab. The tab is opened synchronously, inside the click
+    // gesture, so popup blockers allow it; it is pointed at buy after the save.
+    const isModified =
+      e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+    const newTab = isModified ? window.open('', '_blank') : null
+
+    setIsLeaving(true)
+    try {
+      const result = await save()
+      if (!result.success) {
+        // Stay on the cart; the action bar shows the error
+        newTab?.close()
+        return
+      }
+      if (newTab) {
+        newTab.location.href = new URL(
+          href,
+          window.location.origin
+        ).toString()
+      } else {
+        router.push(href)
+      }
+    } finally {
+      setIsLeaving(false)
+    }
+  }
+
   return (
     <HStack
       justifyContent={'space-between'}
@@ -39,7 +84,16 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
             color: 'white',
           }}
         >
-          <Link href={`/cart/buy/${parentUid}`}>{'Add More Styles'}</Link>
+          <Link
+            href={href}
+            onClick={handleClick}
+            onAuxClick={(e) => {
+              // Middle click does not fire `onClick`
+              if (e.button === 1) void handleClick(e)
+            }}
+          >
+            {isLeaving ? 'Saving…' : 'Add More Styles'}
+          </Link>
         </Button>
         {percentageDiscount === 0 && (
           <Text as={Box} textAlign={'center'} textStyle={'xs'} opacity={0.8}>

@@ -21,7 +21,7 @@ interface CartGroupsProps {
 }
 
 const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
-  const { removeFont, removeStyles, pendingFonts } = useCartContext()
+  const { removeFont, removeStyles, dirtyFonts, isSaving } = useCartContext()
 
   return (
     <>
@@ -37,80 +37,90 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
           discountedPriceTotalCents,
           fullUnitPriceTotalCents,
           percentageDiscount,
-        }) => (
-          <div
-            key={parentUid}
-            // This font's last edit is still being written to the order
-            style={{
-              opacity: pendingFonts.includes(parentUid) ? 0.5 : 1,
-              transition: 'opacity 200ms ease-out',
-            }}
-            aria-busy={pendingFonts.includes(parentUid)}
-          >
-            <VStack
-              gap={1}
-              mb={1}
-
-              alignItems={'stretch'}
-              pos={'relative'}
+        }) => {
+          // Unsaved edits on this font; while saving it is still waiting to be written
+          const isDirtyFont = dirtyFonts.includes(parentUid)
+          const isWaiting = isSaving && isDirtyFont
+          return (
+            <div
+              key={parentUid}
+              data-dirty={isDirtyFont || undefined}
+              style={{
+                opacity: isWaiting ? 0.5 : 1,
+                transition: 'opacity 200ms ease-out',
+              }}
+              aria-busy={isWaiting}
             >
-              <HStack
-                py={2}
-                px={2}
-                gap={2}
-                bg={'brand.50'}
-                w={'full'}
-                borderRadius={'full'}
+              <VStack
+                gap={1}
+                mb={1}
+
+                alignItems={'stretch'}
+                pos={'relative'}
               >
-                <ChakraIconButton
-                  variant='ghost'
-                  rounded={'full'}
-                  px={0}
-                  size={'sm'}
-                  _hover={{ bg: 'white' }}
-                  aria-label='Remove group'
-                  onClick={() => removeFont(parentUid)}
-                  css={{
-                    '& svg': {
-                      color: 'brand.600',
-                    },
-                  }}
+                <HStack
+                  py={2}
+                  px={2}
+                  gap={2}
+                  bg={'brand.50'}
+                  w={'full'}
+                  borderRadius={'full'}
                 >
-                  <CloseIcon width={'2rem'} height={'2rem'} />
-                </ChakraIconButton>
-                <Text
-                  fontSize={'2xl'}
-                  lineHeight={1}
-                  ml={1}
-                  as={'div'}
-                  className={defaultVariantId}
-                >
-                  {parentName}
-                </Text>
-              </HStack>
-              {hasSubGroups ? (
-                subGroups.map((sg) => (
-                  <React.Fragment key={sg.groupName}>
-                    <Flex
-                      px={3}
-                      pt={2}
-                      gap={1}
-                      minH={7}
-                      justifyContent={'flex-start'}
-                      alignItems={'center'}
-                    >
-                      <Text
-                        as={'span'}
-                        fontSize={'sm'}
-                        ml={10}
-                        pl={0.5}
-                        // ml={7}
-                        textTransform={'uppercase'}
-                        color={'#737373'}
+                  <ChakraIconButton
+                    variant='ghost'
+                    rounded={'full'}
+                    px={0}
+                    size={'sm'}
+                    _hover={{ bg: 'white' }}
+                    aria-label='Remove group'
+                    disabled={isSaving}
+                    onClick={() => removeFont(parentUid)}
+                    css={{
+                      '& svg': {
+                        color: 'brand.600',
+                      },
+                    }}
+                  >
+                    <CloseIcon width={'2rem'} height={'2rem'} />
+                  </ChakraIconButton>
+                  <Text
+                    fontSize={'2xl'}
+                    lineHeight={1}
+                    ml={1}
+                    as={'div'}
+                    className={defaultVariantId}
+                  >
+                    {parentName}
+                  </Text>
+                  {isDirtyFont && (
+                    <Text as={'span'} fontSize={'xs'}>
+                      {'edited'}
+                    </Text>
+                  )}
+                </HStack>
+                {hasSubGroups ? (
+                  subGroups.map((sg) => (
+                    <React.Fragment key={sg.groupName}>
+                      <Flex
+                        px={3}
+                        pt={2}
+                        gap={1}
+                        minH={7}
+                        justifyContent={'flex-start'}
+                        alignItems={'center'}
                       >
-                        {sg.groupName}
-                      </Text>
-                      {/*sg.allSelected && (
+                        <Text
+                          as={'span'}
+                          fontSize={'sm'}
+                          ml={10}
+                          pl={0.5}
+                          // ml={7}
+                          textTransform={'uppercase'}
+                          color={'#737373'}
+                        >
+                          {sg.groupName}
+                        </Text>
+                        {/*sg.allSelected && (
                         <ChakraIconButton
                           // left={3}
                           // position={'absolute'}
@@ -144,132 +154,134 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                           <CloseIcon width={'2rem'} height={'2rem'} />
                         </ChakraIconButton>
                       )*/}
-                    </Flex>
-                    <Box pos={'relative'}>
-                      <>
-                        {sg.allSelected && (
-                          <>
-                            {
+                      </Flex>
+                      <Box pos={'relative'}>
+                        <>
+                          {sg.allSelected && (
+                            <>
+                              {
+                                <Box
+                                  _before={{
+                                    content: '""',
+                                    pos: 'absolute',
+                                    left: 8,
+                                    top: -3.5,
+                                    w: 4,
+                                    // borderLeft: '2px solid #D6D5D5',
+                                    borderTop: '2px solid #D6D5D5',
+                                    // borderBottom: '2px solid #D6D5D5',
+                                    // borderRight: '2px solid transparent',
+                                    zIndex: 0,
+                                  }}
+                                />
+                              }
                               <Box
                                 _before={{
                                   content: '""',
                                   pos: 'absolute',
-                                  left: 8,
+                                  left: 6,
                                   top: -3.5,
-                                  w: 4,
-                                  // borderLeft: '2px solid #D6D5D5',
+                                  bottom: 6,
+                                  w: 3,
+                                  borderLeft: '2px solid #D6D5D5',
                                   borderTop: '2px solid #D6D5D5',
-                                  // borderBottom: '2px solid #D6D5D5',
-                                  // borderRight: '2px solid transparent',
+                                  borderBottom: '2px solid #D6D5D5',
+                                  borderRight: '2px solid transparent',
                                   zIndex: 0,
                                 }}
                               />
-                            }
-                            <Box
-                              _before={{
-                                content: '""',
-                                pos: 'absolute',
-                                left: 6,
-                                top: -3.5,
-                                bottom: 6,
-                                w: 3,
-                                borderLeft: '2px solid #D6D5D5',
-                                borderTop: '2px solid #D6D5D5',
-                                borderBottom: '2px solid #D6D5D5',
-                                borderRight: '2px solid transparent',
-                                zIndex: 0,
+                            </>
+                          )}
+                          {sg.allSelected && (
+                            <ChakraIconButton
+                              left={3}
+                              ml={'1px'}
+                              position={'absolute'}
+                              // top={-6}
+                              // mt={-0.25}
+                              top={'50%'}
+                              transform={'translateY(-2rem)'}
+                              minW={'1.5rem'}
+                              maxH={'1.5rem'}
+                              variant='ghost'
+                              rounded={'full'}
+                              // border={'2px solid #D6D5D5'}
+                              border={'none'}
+                              px={0}
+                              size={'sm'}
+                              bg={'white'}
+                              _hover={{
+                                bg: '#D6D5D5',
+                                borderColor: '#D6D5D5',
                               }}
-                            />
-                          </>
-                        )}
-                        {sg.allSelected && (
-                          <ChakraIconButton
-                            left={3}
-                            ml={'1px'}
-                            position={'absolute'}
-                            // top={-6}
-                            // mt={-0.25}
-                            top={'50%'}
-                            transform={'translateY(-2rem)'}
-                            minW={'1.5rem'}
-                            maxH={'1.5rem'}
-                            variant='ghost'
-                            rounded={'full'}
-                            // border={'2px solid #D6D5D5'}
-                            border={'none'}
-                            px={0}
-                            size={'sm'}
-                            bg={'white'}
-                            _hover={{
-                              bg: '#D6D5D5',
-                              borderColor: '#D6D5D5',
-                            }}
-                            aria-label='Remove group'
-                            onClick={() =>
-                              removeStyles({
-                                parentUid,
-                                skuCodes: sg.items.map(
-                                  (item) => item.skuCode
-                                ),
-                              })
-                            }
-                            css={{
-                              '& svg': {
-                                color: 'brand.600',
-                              },
-                            }}
-                          >
-                            <CloseIcon width={'2rem'} height={'2rem'} />
-                          </ChakraIconButton>
-                        )}
-                        <VStack gap={1} alignItems={'stretch'} w={'full'}>
-                          {sg.items.map((item) => (
-                            <CartItem
-                              key={item.skuCode}
-                              item={item}
-                              allSelected={sg.allSelected}
-                            />
-                          ))}
-                        </VStack>
-                      </>
-                    </Box>
-                  </React.Fragment>
-                ))
-              ) : (
-                <Box pos={'relative'}>
-                  {allSelected && (
-                    <Box
-                      _before={{
-                        content: '""',
-                        pos: 'absolute',
-                        left: 6,
-                        top: 1,
-                        bottom: 9,
-                        w: 3,
-                        borderLeft: '2px solid #D6D5D5',
-                        // borderTop: '2px solid #D6D5D5',
-                        borderBottom: '2px solid #D6D5D5',
-                        borderRight: '2px solid transparent',
-                        zIndex: 0,
-                      }}
-                    />
-                  )}
-                  <VStack gap={1} alignItems={'stretch'} w={'full'}>
-                    {items.map((item) => (
-                      <CartItem key={item.skuCode} item={item} />
-                    ))}
-                  </VStack>
-                </Box>
-              )}
-            </VStack>
-            <CartGroupsFooter
-              parentUid={parentUid}
-              discountedPriceTotalCents={discountedPriceTotalCents}
-              fullUnitPriceTotalCents={fullUnitPriceTotalCents}
-              percentageDiscount={percentageDiscount}
-            />
-          </div>
-        )
+                              aria-label='Remove group'
+                              disabled={isSaving}
+                              onClick={() =>
+                                removeStyles({
+                                  parentUid,
+                                  skuCodes: sg.items.map(
+                                    (item) => item.skuCode
+                                  ),
+                                })
+                              }
+                              css={{
+                                '& svg': {
+                                  color: 'brand.600',
+                                },
+                              }}
+                            >
+                              <CloseIcon width={'2rem'} height={'2rem'} />
+                            </ChakraIconButton>
+                          )}
+                          <VStack gap={1} alignItems={'stretch'} w={'full'}>
+                            {sg.items.map((item) => (
+                              <CartItem
+                                key={item.skuCode}
+                                item={item}
+                                allSelected={sg.allSelected}
+                              />
+                            ))}
+                          </VStack>
+                        </>
+                      </Box>
+                    </React.Fragment>
+                  ))
+                ) : (
+                  <Box pos={'relative'}>
+                    {allSelected && (
+                      <Box
+                        _before={{
+                          content: '""',
+                          pos: 'absolute',
+                          left: 6,
+                          top: 1,
+                          bottom: 9,
+                          w: 3,
+                          borderLeft: '2px solid #D6D5D5',
+                          // borderTop: '2px solid #D6D5D5',
+                          borderBottom: '2px solid #D6D5D5',
+                          borderRight: '2px solid transparent',
+                          zIndex: 0,
+                        }}
+                      />
+                    )}
+                    <VStack gap={1} alignItems={'stretch'} w={'full'}>
+                      {items.map((item) => (
+                        <CartItem key={item.skuCode} item={item} />
+                      ))}
+                    </VStack>
+                  </Box>
+                )}
+              </VStack>
+              <CartGroupsFooter
+                parentUid={parentUid}
+                discountedPriceTotalCents={discountedPriceTotalCents}
+                fullUnitPriceTotalCents={fullUnitPriceTotalCents}
+                percentageDiscount={percentageDiscount}
+              />
+            </div>
+          )
+        }
       )}
     </>
   )

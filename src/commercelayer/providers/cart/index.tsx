@@ -1,9 +1,9 @@
 'use client'
+import type { ClonePayload } from '@/commercelayer/utils/cart-share'
 import {
   calculateDiscount,
   calculateLineItemPrice,
 } from '@/commercelayer/utils/prices'
-import type { ClonePayload } from '@/commercelayer/utils/cart-share'
 import { toaster } from '@/components/ui/toaster'
 import type { BuyLabels, CartLabels, MediaType } from '@/sanity/lib/queries'
 import type { Order, SkuOption } from '@commercelayer/sdk'
@@ -41,6 +41,15 @@ import type {
   CartBufferItem,
   CartSubFamilyGroup,
 } from './types'
+import {
+  normalizeDraft,
+  pickStyles,
+  removeStylesFromGroup,
+  restoreStyles,
+} from './utils/cart-draft'
+
+/** How long the "Undo" toast stays after a removal */
+const UNDO_TOAST_MS = 8000
 
 export type {
   CartBufferGroup,
@@ -66,24 +75,37 @@ export interface CartProviderData {
   // Forwarded for CartItem / CartGroups
   skuOptions: SkuOption[]
   mediaTypes: MediaType[]
-  /** The cart, derived from the order (with in-flight edits overlaid) */
+  /** The cart as the user sees it: the order with unsaved edits applied */
   selections: SelectionBuffer
   groupResolutions: GroupResolutions
-  /** Fonts whose last edit is still being written to Commerce Layer */
-  pendingFonts: string[]
-  /** An edit or reprice is queued/running (checkout should wait) */
+  /** An order write is queued/running, or the draft is being saved */
   hasPendingWrites: boolean
-  // Cart edits write through to Commerce Layer (optimistically reflected)
-  removeStyles: (params: {
-    parentUid: string
-    skuCodes: string[]
-  }) => Promise<CartWriteResult>
-  removeFont: (parentUid: string) => Promise<CartWriteResult>
+  // --- Draft: cart edits are staged locally until `save()` ("Update cart") ---
+  /** Fonts with unsaved edits (a pending removal counts) */
+  dirtyFonts: string[]
+  /** There are unsaved edits */
+  isDirty: boolean
+  /** `save()` is running; edits are ignored until it settles */
+  isSaving: boolean
+  /** Fonts written so far / total, while saving */
+  saveProgress?: { done: number; total: number }
+  /** Why the last save stopped (the unsaved fonts stay dirty) */
+  saveError?: string
+  /**
+   * Write every dirty font to Commerce Layer, one at a time (removals first).
+   * Stops at the first failure and keeps the remaining fonts dirty.
+   */
+  save: () => Promise<CartWriteResult>
+  /** Throw away all unsaved edits */
+  discard: () => void
+  // Edits are staged in the draft (instant, undoable), not written
+  removeStyles: (params: { parentUid: string; skuCodes: string[] }) => void
+  removeFont: (parentUid: string) => void
   setStyleLicenseTypes: (params: {
     parentUid: string
     skuCode: string
     licenseTypes: string[]
-  }) => Promise<CartWriteResult>
+  }) => void
   /**
    * Replace the whole cart with a cloned one (see `/cart/clone/[token]`):
    * clears the existing line items, registers the payload's group resolutions
@@ -130,128 +152,253 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     getSnapshot,
   } = useOrderContext()
 
-  // --- Cart-page edits (write through to Commerce Layer) ---
-  // Each edit is reflected immediately in `selections` through `overlay`, then
-  // written through the order's mutation queue. The overlay entry is dropped
-  // once the write settles (the refetched order has taken over), or if it
-  // fails (the cart reverts to what is really on the order).
-  const [overlay, setOverlay] = useState<{ [parentUid: string]: StyleGroup }>(
-    {}
+  // --- Cart-page edits (staged in a draft, written by `save()`) ---
+  // Edits only touch `draft`: `{ [parentUid]: StyleGroup }` for the fonts the
+  // user changed (an empty group is a pending removal). `selections` is the
+  // order with the draft applied, so edits are instant. Nothing is written to
+  // Commerce Layer until `save()` ("Update cart"), which rewrites each dirty
+  // font once.
+  //
+  // The order stays the source of truth: draft entries equal to the order are
+  // not edits (see `normalizeDraft`), and the buy dialog seeds its own draft
+  // from the order, so `save()` must run before the user opens it (the cart's
+  // "Add More Styles" does that). This provider lives for every /cart/* route
+  // (including the buy dialog over the cart); leaving /cart/* discards the
+  // draft, like the buy dialog's draft. Reload / back are deliberately not
+  // guarded: discarding just leaves the cart as it was saved.
+  const [draft, setDraft] = useState<SelectionBuffer>({})
+  const draftRef = useRef(draft)
+  const [isSaving, setIsSaving] = useState(false)
+  // Read by edit handlers, which must ignore edits while saving
+  const isSavingRef = useRef(false)
+  const [saveProgress, setSaveProgress] = useState<
+    { done: number; total: number } | undefined
+  >(undefined)
+  const [saveError, setSaveError] = useState<string | undefined>(undefined)
+  // A second `save()` while one is running joins it instead of writing twice
+  const inFlightRef = useRef<Promise<CartWriteResult> | null>(null)
+
+  const updateDraft = useCallback((next: SelectionBuffer) => {
+    draftRef.current = next
+    setDraft(next)
+  }, [])
+
+  const effectiveDraft = useMemo(
+    () => normalizeDraft(orderSelections, draft),
+    [orderSelections, draft]
   )
-  const overlayRef = useRef(overlay)
-  // Latest edit per font; an older edit must not settle a newer one's overlay
-  const intentTokenRef = useRef<Record<string, number>>({})
+  const dirtyFonts = useMemo(
+    () => Object.keys(effectiveDraft),
+    [effectiveDraft]
+  )
+  const isDirty = dirtyFonts.length > 0
 
   const selections = useMemo(
-    () => applySelectionOverlay(orderSelections, overlay),
-    [orderSelections, overlay]
+    () => applySelectionOverlay(orderSelections, effectiveDraft),
+    [orderSelections, effectiveDraft]
   )
   const itemsCount = useMemo(() => countSelections(selections), [selections])
-  const pendingFonts = useMemo(() => Object.keys(overlay), [overlay])
-  const hasPendingWrites = orderHasPendingWrites || pendingFonts.length > 0
+  const hasPendingWrites = orderHasPendingWrites || isSaving
 
-  /** A font's styles as the user currently sees them (overlay, else order) */
+  /** A font's styles as the user currently sees them (draft, else order) */
   const currentFontGroup = useCallback(
     (parentUid: string): StyleGroup => {
-      if (parentUid in overlayRef.current)
-        return overlayRef.current[parentUid]
-      return deriveSelectionsFromOrder(getSnapshot().order)[parentUid] ?? {}
+      const fromOrder = deriveSelectionsFromOrder(getSnapshot().order)
+      const current = normalizeDraft(fromOrder, draftRef.current)
+      return parentUid in current
+        ? current[parentUid]
+        : (fromOrder[parentUid] ?? {})
     },
     [getSnapshot]
   )
 
-  const setFontStyles = useCallback(
-    async (
-      parentUid: string,
-      group: StyleGroup
-    ): Promise<CartWriteResult> => {
-      const token = (intentTokenRef.current[parentUid] ?? 0) + 1
-      intentTokenRef.current[parentUid] = token
-
-      overlayRef.current = { ...overlayRef.current, [parentUid]: group }
-      setOverlay(overlayRef.current)
-
-      let result: CartWriteResult
-      try {
-        result =
-          Object.keys(group).length === 0
-            ? await removeGroup(parentUid)
-            : await commitGroup(parentUid, group)
-      } catch (error) {
-        result = {
-          success: false,
-          error: {
-            message:
-              error instanceof Error
-                ? error.message
-                : 'Failed to update your cart',
-            originalError: error,
-          },
-        }
-      }
-
-      // A newer edit for this font settles the overlay (and reports) instead
-      if (intentTokenRef.current[parentUid] === token) {
-        const rest = { ...overlayRef.current }
-        delete rest[parentUid]
-        overlayRef.current = rest
-        setOverlay(rest)
-        if (!result.success) {
-          toaster.create({
-            type: 'error',
-            title: 'Your cart could not be updated',
-            description: result.error?.message,
-          })
-        }
-      }
-      return result
+  /** Replace a font's styles in the draft */
+  const stageFont = useCallback(
+    (parentUid: string, group: StyleGroup) => {
+      const fromOrder = deriveSelectionsFromOrder(getSnapshot().order)
+      updateDraft(
+        normalizeDraft(fromOrder, { ...draftRef.current, [parentUid]: group })
+      )
+      setSaveError(undefined)
     },
-    [commitGroup, removeGroup]
+    [getSnapshot, updateDraft]
+  )
+
+  /** Undo a removal: merge the removed styles back into the font's current ones */
+  const restoreRemoved = useCallback(
+    (parentUid: string, removed: StyleGroup) => {
+      if (isSavingRef.current) return
+      stageFont(
+        parentUid,
+        restoreStyles(currentFontGroup(parentUid), removed)
+      )
+    },
+    [currentFontGroup, stageFont]
+  )
+
+  /** Stage a removal and offer to undo it */
+  const stageRemoval = useCallback(
+    (
+      parentUid: string,
+      next: StyleGroup,
+      removed: StyleGroup,
+      label: string
+    ) => {
+      if (Object.keys(removed).length === 0) return
+      stageFont(parentUid, next)
+      toaster.create({
+        type: 'info',
+        title: `Removed ${label}`,
+        duration: UNDO_TOAST_MS,
+        action: {
+          label: 'Undo',
+          onClick: () => restoreRemoved(parentUid, removed),
+        },
+      })
+    },
+    [stageFont, restoreRemoved]
   )
 
   const removeStyles = useCallback(
     (params: { parentUid: string; skuCodes: string[] }) => {
-      const remove = new Set(params.skuCodes)
-      const next: StyleGroup = {}
-      for (const [code, entry] of Object.entries(
-        currentFontGroup(params.parentUid)
-      )) {
-        if (!remove.has(code)) next[code] = entry
-      }
-      return setFontStyles(params.parentUid, next)
+      if (isSavingRef.current) return
+      const group = currentFontGroup(params.parentUid)
+      const removed = pickStyles(group, params.skuCodes)
+      const removedEntries = Object.values(removed)
+      stageRemoval(
+        params.parentUid,
+        removeStylesFromGroup(group, params.skuCodes),
+        removed,
+        removedEntries.length === 1
+          ? removedEntries[0].name
+          : `${removedEntries.length} styles`
+      )
     },
-    [currentFontGroup, setFontStyles]
+    [currentFontGroup, stageRemoval]
   )
 
   const removeFont = useCallback(
-    (parentUid: string) => setFontStyles(parentUid, {}),
-    [setFontStyles]
+    (parentUid: string) => {
+      if (isSavingRef.current) return
+      const group = currentFontGroup(parentUid)
+      stageRemoval(
+        parentUid,
+        {},
+        group,
+        Object.values(group)[0]?.parentName || 'font'
+      )
+    },
+    [currentFontGroup, stageRemoval]
   )
 
   const setStyleLicenseTypes = useCallback(
-    async (params: {
+    (params: {
       parentUid: string
       skuCode: string
       licenseTypes: string[]
-    }): Promise<CartWriteResult> => {
+    }) => {
+      if (isSavingRef.current) return
       const group = currentFontGroup(params.parentUid)
       const entry = group[params.skuCode]
-      if (!entry) return { success: true }
+      if (!entry) return
 
       // A style without any license type would be priced at zero
       if (params.licenseTypes.length === 0) {
-        const message = 'Each style needs at least one license type'
-        toaster.create({ type: 'info', title: message })
-        return { success: false, error: { message } }
+        toaster.create({
+          type: 'info',
+          title: 'Each style needs at least one license type',
+        })
+        return
       }
 
-      return setFontStyles(params.parentUid, {
+      stageFont(params.parentUid, {
         ...group,
         [params.skuCode]: { ...entry, licenseTypes: params.licenseTypes },
       })
     },
-    [currentFontGroup, setFontStyles]
+    [currentFontGroup, stageFont]
   )
+
+  /** Throw away all unsaved edits */
+  const discard = useCallback(() => {
+    if (isSavingRef.current) return
+    updateDraft({})
+    setSaveError(undefined)
+  }, [updateDraft])
+
+  /**
+   * Write every dirty font to Commerce Layer through the order's mutation
+   * queue: removals first, then commits, one font at a time. A font leaves the
+   * draft as soon as it is written (the refetched order has taken over), so a
+   * failure keeps only the unwritten fonts dirty.
+   */
+  const save = useCallback((): Promise<CartWriteResult> => {
+    if (inFlightRef.current) return inFlightRef.current
+
+    const fromOrder = deriveSelectionsFromOrder(getSnapshot().order)
+    const dirty = Object.keys(normalizeDraft(fromOrder, draftRef.current))
+    if (dirty.length === 0) return Promise.resolve({ success: true })
+
+    const isRemoval = (uid: string) =>
+      Object.keys(draftRef.current[uid] ?? {}).length === 0
+    const ordered = [
+      ...dirty.filter(isRemoval),
+      ...dirty.filter((uid) => !isRemoval(uid)),
+    ]
+
+    isSavingRef.current = true
+    setIsSaving(true)
+    setSaveError(undefined)
+    setSaveProgress({ done: 0, total: ordered.length })
+
+    const promise = (async (): Promise<CartWriteResult> => {
+      try {
+        for (let i = 0; i < ordered.length; i++) {
+          const uid = ordered[i]
+          const group = draftRef.current[uid] ?? {}
+
+          let result: CartWriteResult
+          try {
+            result =
+              Object.keys(group).length === 0
+                ? await removeGroup(uid)
+                : await commitGroup(uid, group)
+          } catch (error) {
+            result = {
+              success: false,
+              error: {
+                message:
+                  error instanceof Error
+                    ? error.message
+                    : 'Failed to update your cart',
+                originalError: error,
+              },
+            }
+          }
+
+          if (!result.success) {
+            setSaveError(
+              result.error?.message ?? 'Your cart could not be updated'
+            )
+            return result
+          }
+
+          const rest = { ...draftRef.current }
+          delete rest[uid]
+          updateDraft(rest)
+          setSaveProgress({ done: i + 1, total: ordered.length })
+        }
+        return { success: true }
+      } finally {
+        isSavingRef.current = false
+        inFlightRef.current = null
+        setIsSaving(false)
+        setSaveProgress(undefined)
+      }
+    })()
+    inFlightRef.current = promise
+    return promise
+  }, [getSnapshot, commitGroup, removeGroup, updateDraft])
 
   // --- Clone / import (replace the cart with a shared selection) ---
   const importingRef = useRef(false)
@@ -270,6 +417,13 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
           error: { message: 'Nothing to import' },
         }
       }
+
+      // The import replaces the whole cart: let an in-flight save finish, then
+      // drop any unsaved edits
+      if (inFlightRef.current)
+        await inFlightRef.current.catch(() => undefined)
+      updateDraft({})
+      setSaveError(undefined)
 
       importingRef.current = true
       try {
@@ -332,6 +486,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
       getSnapshot,
       ensureOrder,
       commitGroup,
+      updateDraft,
     ]
   )
 
@@ -460,8 +615,14 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         mediaTypes,
         selections,
         groupResolutions,
-        pendingFonts,
         hasPendingWrites,
+        dirtyFonts,
+        isDirty,
+        isSaving,
+        saveProgress,
+        saveError,
+        save,
+        discard,
         removeStyles,
         removeFont,
         setStyleLicenseTypes,
