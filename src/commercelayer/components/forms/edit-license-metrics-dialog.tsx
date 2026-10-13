@@ -18,8 +18,8 @@ import {
 } from '@chakra-ui/react'
 import { useEffect, useRef } from 'react'
 import LicenseOwnerRadio from './license-owner-radio'
-import LicenseOwnerInput from './LicenseOwnerInput'
 import LicenseSizeRadioList from './license-size-radio-list'
+import LicenseOwnerInput from './LicenseOwnerInput'
 import { useLicenseSizeChange } from './use-license-size-change'
 
 /**
@@ -173,7 +173,7 @@ export default function EditLicenseMetricsDialog({
                   <Box
                     w={'full'}
                     mt={2}
-                    bg={'#FFF8D3'}
+                    bg={'orange.300'}
                     borderRadius={20}
                     px={4}
                     py={3}
@@ -181,7 +181,7 @@ export default function EditLicenseMetricsDialog({
                   >
                     <Text
                       textStyle={'sm'}
-                      fontWeight={500}
+                      // fontWeight={500}
                       textTransform={'uppercase'}
                     >
                       {'Update cart pricing?'}

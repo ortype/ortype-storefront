@@ -153,7 +153,8 @@ export const CartActionBar = ({ onEditLicense }: Props) => {
                   w={'full'}
                   alignSelf={'flex-start'}
                   justifyContent={'center'}
-                  bg={'#FFF8D3'}
+                  // bg={'#FFF8D3'}
+                  bg={'orange.300'}
                   px={4}
                   py={2}
                   borderRadius={20}
@@ -208,6 +209,7 @@ export const CartActionBar = ({ onEditLicense }: Props) => {
                         w={'full'}
                         justifyContent={'center'}
                         bg={'#F8F8F8'}
+                        // bg={'orange.300'}
                         px={4}
                         py={2}
                         borderRadius={20}

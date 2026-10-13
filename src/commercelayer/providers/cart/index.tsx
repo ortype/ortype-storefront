@@ -260,7 +260,7 @@ export const CartProvider: FC<CartProviderProps> = ({
       if (Object.keys(removed).length === 0) return
       stageFont(parentUid, next)
       toaster.create({
-        type: 'info',
+        type: 'success',
         title: `REMOVED: ${label}`,
         // description: `${label}`,
         duration: UNDO_TOAST_MS,
