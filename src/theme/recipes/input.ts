@@ -70,11 +70,27 @@ export const inputRecipe = defineRecipe({
       },
       subtle: {
         bg: 'brand.50',
+        borderRadius: 0,
+        // on grey background: bg={'colorPalette.bg'}
         focusVisibleRing: 'inside',
         focusRingWidth: '2px',
         focusRingColor: 'transparent',
         _hover: {
           bg: '#e3e3e3',
+          outlineWidth: '1px',
+          outlineColor: 'transparent',
+          outlineStyle: 'solid',
+          borderColor: 'transparent',
+        },
+      },
+      white: {
+        bg: 'colorPalette.bg',
+        borderRadius: 0,
+        focusVisibleRing: 'inside',
+        focusRingWidth: '2px',
+        focusRingColor: 'transparent',
+        _hover: {
+          bg: '#f4f4f4',
           outlineWidth: '1px',
           outlineColor: 'transparent',
           outlineStyle: 'solid',

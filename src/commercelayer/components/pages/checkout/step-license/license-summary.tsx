@@ -1,4 +1,5 @@
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
+import { CloseButton } from '@/components/ui/close-button'
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -11,11 +12,16 @@ import {
 import {
   Box,
   Button,
+  ButtonGroup,
+  Container,
+  Drawer,
   Flex,
+  Portal,
   Text,
   useStepsContext,
   VStack,
 } from '@chakra-ui/react'
+import { useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { LicenseOwnerForm, LicenseOwnerFormData } from './license-owner-form'
@@ -47,6 +53,7 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
 }) => {
   const { t } = useTranslation()
   const stepsContext = useStepsContext()
+  // const ref = useRef<HTMLInputElement | null>(null)
 
   return (
     <VStack gap={2} mb={4} align='start'>
@@ -62,7 +69,7 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
         </Flex>
       </Box>
       <Box bg={'brand.50'} p={4} w='full'>
-        <VStack align='start' gap={2}>
+        <VStack minW={'18rem'} align='start' gap={2}>
           {licenseOwner?.company && <Text>{licenseOwner.company}</Text>}
 
           <Text>{licenseOwner.full_name}</Text>
@@ -78,58 +85,146 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
           </Text>
 
           <Text>{licenseOwner.country_code}</Text>
+          <Drawer.Root
+            lazyMount
+            open={editing}
+            onOpenChange={(e) => setEditing(e.open)}
+            size={'md'}
+            // initialFocusEl={() => ref.current}
+          >
+            <Drawer.Trigger asChild>
+              <Button variant='text' size='sm'>
+                {t('stepLicense.editButton', 'Edit address')}
+              </Button>
+            </Drawer.Trigger>
+            <Portal>
+              <Drawer.Backdrop css={{ backdropFilter: 'blur(5px)' }} />
+              <Drawer.Positioner
+              // p={10}
+              >
+                <Drawer.Content
+                  rounded={0}
+                  // rounded={40}
+                  p={4}
+                  bg={'#e7e7e7'}
+                >
+                  <Drawer.CloseTrigger
+                    position={'absolute'}
+                    top={'1rem'}
+                    left={'-4rem'}
+                    asChild
+                  >
+                    <CloseButton size='2xl' />
+                  </Drawer.CloseTrigger>
+                  <Drawer.Header pt={2} pb={3}>
+                    <Drawer.Title
+                      fontSize={'2rem'}
+                      fontWeight={'normal'}
+                      textTransform={'uppercase'}
+                      lineHeight={1}
+                      pb={3}
+                      borderBottom={'1px solid #919191'}
+                    >
+                      {'Edit license owner'}
+                    </Drawer.Title>
+                  </Drawer.Header>
+                  <Drawer.Body>
+                    <LicenseOwnerForm
+                      projectType={projectType}
+                      onProjectTypeChange={onProjectTypeChange}
+                      form={form}
+                      onSubmit={onSubmit}
+                      handleProceed={handleProceed}
+                      isLocalLoader={isLocalLoader}
+                      error={error}
+                      isDialog={true}
+                      showProjectTypeSelection={true}
+                      submitButtonText={String(
+                        t('stepLicense.saveChanges', 'Save Changes')
+                      )}
+                      onCancel={() => setEditing(false)}
+                    />
+                  </Drawer.Body>
+                </Drawer.Content>
+              </Drawer.Positioner>
+            </Portal>
+          </Drawer.Root>
+          {/*
           <DialogRoot
             lazyMount
             open={editing}
             onOpenChange={(e) => setEditing(e.open)}
+            size={'full'}
+            motionPreset={'slide-in-bottom-custom'}
           >
             <DialogTrigger asChild>
               <Button variant='text' size='sm'>
                 {t('stepLicense.editButton', 'Edit address')}
               </Button>
             </DialogTrigger>
-            <DialogContent maxW={'50rem'}>
-              <DialogHeader>
+            <DialogContent
+              backdrop
+              blurred
+              borderRadius={0}
+              bg={'transparent'}
+              h={'100vh'}
+            >
+              <DialogBody>
                 <DialogTitle
                   textAlign={'center'}
                   fontSize={'2rem'}
                   fontWeight={'normal'}
                   textTransform={'uppercase'}
-                  mx={'auto'}
-                  pb={4}
+
+                  pb={8}
+                  my={4}
+                  lineHeight={1}
                 >
                   {'Edit license owner'}
                 </DialogTitle>
-                <DialogCloseTrigger />
-              </DialogHeader>
-              <DialogBody>
-                <LicenseOwnerForm
-                  projectType={projectType}
-                  onProjectTypeChange={onProjectTypeChange}
-                  form={form}
-                  onSubmit={onSubmit}
-                  handleProceed={handleProceed}
-                  isLocalLoader={isLocalLoader}
-                  error={error}
-                  isDialog={true}
-                  showProjectTypeSelection={false}
-                  submitButtonText={String(
-                    t('stepLicense.saveChanges', 'Save Changes')
-                  )}
-                  onCancel={() => setEditing(false)}
-                />
+                <Container maxW={'30rem'}>
+                  <LicenseOwnerForm
+                    projectType={projectType}
+                    onProjectTypeChange={onProjectTypeChange}
+                    form={form}
+                    onSubmit={onSubmit}
+                    handleProceed={handleProceed}
+                    isLocalLoader={isLocalLoader}
+                    error={error}
+                    isDialog={true}
+                    showProjectTypeSelection={false}
+                    submitButtonText={String(
+                      t('stepLicense.saveChanges', 'Save Changes')
+                    )}
+                    onCancel={() => setEditing(false)}
+                  />
+                </Container>
               </DialogBody>
+              <Box position={'absolute'} top={3} left={3}>
+                <DialogCloseTrigger
+                  position={'relative'}
+                  top={'auto'}
+                  right={'auto'}
+                >
+                  <CloseButton size='2xl' />
+                </DialogCloseTrigger>
+              </Box>
             </DialogContent>
-          </DialogRoot>
+          </DialogRoot>*/}
         </VStack>
       </Box>
       <Button
         type={'button'}
+        alignSelf='flex-start'
         variant={'outline'}
         bg={'white'}
         borderRadius={'5rem'}
-        size={'sm'}
+        size={'xs'}
         fontSize={'md'}
+        _hover={{
+          bg: 'black',
+          color: 'white',
+        }}
         onClick={() => stepsContext.setStep(3)}
       >
         {'Proceed'}

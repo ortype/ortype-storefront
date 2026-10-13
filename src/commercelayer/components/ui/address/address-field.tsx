@@ -22,15 +22,13 @@ export const AddressField = forwardRef<HTMLInputElement, AddressFieldProps>(
     return (
       <FloatingLabelInput
         ref={ref}
-        {...props}
-        label={label}
-        error={error}
         variant='subtle'
         size='lg'
-        fontSize='md'
-        borderRadius={0}
+        label={label}
+        error={error}
         value={value}
         onChange={handleChange}
+        {...props}
       />
     )
   }

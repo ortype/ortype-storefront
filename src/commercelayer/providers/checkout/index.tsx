@@ -235,6 +235,7 @@ const initialState: AppStateData = {
   hasLicenseOwner: false,
   isLicenseForClient: false,
   licenseOwner: { is_client: false, full_name: '' }, // @TODO: update type def
+  clientLicenseOwner: undefined,
   shipments: [],
   customerAddresses: [],
   paymentMethod: undefined,
@@ -877,6 +878,12 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           owner,
         })
 
+        // The client's own details are kept alongside the authoritative owner,
+        // so a "Yourself" save (which copies the billing address into `owner`)
+        // doesn't discard them — including the company entered on /buy, which
+        // until now only lived on a client-flagged `owner`.
+        const clientOwner = isForClient ? owner : state.clientLicenseOwner
+
         // Update the order with license metadata
         const result = await updateOrder({
           id: orderId,
@@ -885,6 +892,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
               license: {
                 ...state.order?.metadata?.license,
                 owner,
+                ...(clientOwner ? { client_owner: clientOwner } : {}),
               },
             },
           },
@@ -920,6 +928,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       updateOrder,
       setLicenseOwner,
       state.billingAddress,
+      state.clientLicenseOwner,
       state.order,
     ]
   )

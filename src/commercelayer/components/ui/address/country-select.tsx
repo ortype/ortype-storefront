@@ -1,6 +1,7 @@
 import { FloatingLabelSelect } from '@/commercelayer/components/ui/floating-label-select'
 import type { CountryOption } from '@/commercelayer/utils/country-utils'
 import { getCountries } from '@/commercelayer/utils/country-utils'
+import { rest } from 'lodash'
 import { forwardRef } from 'react'
 
 interface CountrySelectProps {
@@ -30,6 +31,7 @@ export const CountrySelect = forwardRef<
       placeholder,
       disabled,
       countries: propCountries,
+      ...rest
     },
     ref
   ) => {
@@ -63,6 +65,7 @@ export const CountrySelect = forwardRef<
         value={value || ''}
         onChange={handleChange}
         disabled={disabled}
+        {...rest}
       />
     )
   }

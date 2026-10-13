@@ -88,6 +88,8 @@ export interface FetchOrderByIdResponse {
   taxIncluded?: boolean
   shippingMethodName?: string
   licenseOwner: LicenseOwner
+  /** The details entered for "Your client" (see `deriveClientLicenseOwner`) */
+  clientLicenseOwner?: LicenseOwner
   hasLicenseOwner?: boolean
   isLicenseForClient?: boolean
   licenseSize: LicenseSize
@@ -461,6 +463,27 @@ export function isValidLicenseOwner(licenseOwner?: any): boolean {
   return hasRequiredFields
 }
 
+/**
+ * The license owner details the customer entered for *their client*.
+ *
+ * `metadata.license.owner` is the authoritative owner of the order, and for
+ * "Yourself" it is a copy of the billing address — never the client's details.
+ * The client's own details are therefore kept alongside it (`client_owner`), so
+ * toggling between "Yourself" and "Your client" can't leak the billing address
+ * into the client address form. Orders written before `client_owner` existed
+ * fall back to a client-flagged `owner`.
+ */
+export function deriveClientLicenseOwner(
+  order: Order
+): LicenseOwner | undefined {
+  const license = order.metadata?.license
+  const owner = license?.owner
+
+  return (
+    license?.client_owner || (owner?.is_client === true ? owner : undefined)
+  )
+}
+
 export function calculateAddresses(
   order: Order,
   addresses?: CustomerAddress[]
@@ -519,6 +542,7 @@ export function calculateSettings(
     hasLicenseOwner: isValidLicenseOwner(order.metadata?.license?.owner),
     isLicenseForClient: order.metadata?.license?.owner?.is_client || false,
     licenseOwner: order.metadata?.license?.owner || {},
+    clientLicenseOwner: deriveClientLicenseOwner(order),
     licenseSize: order.metadata?.license?.size,
     emailAddress: order.customer_email,
     hasLineItems,

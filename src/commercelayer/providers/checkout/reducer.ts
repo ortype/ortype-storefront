@@ -10,6 +10,7 @@ import { AppStateData, type LicenseOwner } from './index'
 import {
   checkPaymentMethod,
   creditCardPayment,
+  deriveClientLicenseOwner,
   hasShippingMethodSet,
   prepareShipments,
 } from './utils'
@@ -227,6 +228,11 @@ export function reducer(state: AppStateData, action: Action): AppStateData {
         licenseOwner: action.payload.licenseOwner,
         hasLicenseOwner: true,
         isLicenseForClient: action.payload.licenseOwner.is_client,
+        // Saving "Yourself" overwrites `licenseOwner` with the billing
+        // address, but must leave the client's own details untouched.
+        clientLicenseOwner:
+          deriveClientLicenseOwner(action.payload.order) ??
+          state.clientLicenseOwner,
         isLoading: false,
       }
     }

@@ -66,7 +66,28 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
         field: {
           bg: 'brand.50',
           focusRingWidth: '2px',
-          focusRingColor: 'black',
+          focusRingColor: 'transparent',
+          _hover: {
+            bg: '#e3e3e3',
+            outlineWidth: '1px',
+            outlineColor: 'transparent',
+            outlineStyle: 'solid',
+            borderColor: 'transparent',
+          },
+        },
+      },
+      white: {
+        field: {
+          bg: 'colorPalette.bg',
+          focusRingWidth: '2px',
+          focusRingColor: 'transparent',
+          _hover: {
+            bg: '#f4f4f4',
+            outlineWidth: '1px',
+            outlineColor: 'transparent',
+            outlineStyle: 'solid',
+            borderColor: 'transparent',
+          },
         },
       },
       flushed: {

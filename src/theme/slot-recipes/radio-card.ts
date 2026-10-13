@@ -42,7 +42,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
     },
     label: {
       display: 'inline-flex',
-      fontWeight: 'medium',
+      fontWeight: 'normal',
       textStyle: 'lg',
       _disabled: {
         opacity: '0.5',
@@ -189,12 +189,13 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       },
       subtle: {
         item: {
-          bg: 'colorPalette.bg',
+          border: 'none',
+          bg: 'brand.50',
           borderRadius: '0px',
           transition:
-            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
+            'border-radius 200ms ease-in-out, background 200ms ease-in-out',
           _hover: {
-            bg: '#f4f4f4',
+            bg: '#e3e3e3',
             opacity: 1,
             borderRadius: '100px',
             '& .dot': {
@@ -205,7 +206,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
           _checked: {
             borderRadius: '100px',
             _hover: {
-              bg: '#f4f4f4',
+              bg: '#e3e3e3',
               '& .dot': {
                 borderWidth: 0,
               },
@@ -216,8 +217,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
         itemControl: {
           _checked: {
             opacity: 1,
-            boxShadow: 'inset 0 0 0 2px #000',
-            bg: 'colorPalette.bg',
+            bg: 'blackAlpha.300',
             color: 'colorPalette.fg',
           },
         },
@@ -236,20 +236,51 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       },
       outline: {
         item: {
-          borderWidth: '1px',
+          border: 'none',
+          bg: 'colorPalette.bg',
+          borderRadius: '0px',
+          transition:
+            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
+          _hover: {
+            bg: '#f4f4f4',
+            borderRadius: '100px',
+            '& .dot': {
+              borderWidth: '3px',
+            },
+          },
           _checked: {
-            boxShadow: '0 0 0 1px var(--shadow-color)',
-            boxShadowColor: 'colorPalette.solid',
-            borderColor: 'colorPalette.solid',
+            borderColor: 'transparent',
+            boxShadow: 'none',
+            borderRadius: '100px',
+            _hover: {
+              bg: '#f4f4f4',
+              '& .dot': {
+                borderWidth: 0,
+              },
+            },
+          },
+        },
+        itemControl: {
+          _checked: {
+            opacity: 1,
+            boxShadow: 'inset 0 0 0 2px #000',
+            bg: 'colorPalette.bg',
+            color: 'colorPalette.fg',
           },
         },
         itemIndicator: {
-          borderWidth: '1px',
-          borderColor: 'border',
+          borderWidth: '2px',
+          borderColor: 'colorPalette.fg',
+          bg: 'colorPalette.bg',
+          _focusVisible: {
+            outlineColor: 'transparent',
+          },
           _checked: {
-            bg: 'colorPalette.solid',
-            color: 'colorPalette.contrast',
-            borderColor: 'colorPalette.solid',
+            color: 'colorPalette.fg',
+            borderColor: 'colorPalette.fg',
+          },
+          '& .dot': {
+            scale: '1',
           },
         },
       },

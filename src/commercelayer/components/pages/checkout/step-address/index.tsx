@@ -3,6 +3,7 @@ import {
   useAddressState,
 } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
+import { Alert } from '@/components/ui/alert'
 import { Box, Button, Flex, useStepsContext, VStack } from '@chakra-ui/react'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -117,21 +118,26 @@ const StepAddressContainer: React.FC<{
       )}
 
       {/* Proceed button within the address step */}
-      <Box>
+      <Flex w={'full'} direction={'column'} gap={2}>
         {error && (
-          <Box color='red.500' fontSize='sm' mb={4}>
+          <Alert status='error' my='4'>
             {error}
-          </Box>
+          </Alert>
         )}
         <Button
           onClick={handleProceed}
           loading={isLoading}
           disabled={!canProceed || isLoading}
+          alignSelf='flex-end'
           variant={'outline'}
           bg={'white'}
           borderRadius={'5rem'}
-          size={'sm'}
+          size={'xs'}
           fontSize={'md'}
+          _hover={{
+            bg: 'black',
+            color: 'white',
+          }}
         >
           {isLoading
             ? 'Saving Address...'
@@ -139,7 +145,7 @@ const StepAddressContainer: React.FC<{
               ? t('stepAddress.continueToShipping', 'Proceed')
               : t('stepAddress.continueToLicense', 'Proceed')}
         </Button>
-      </Box>
+      </Flex>
     </VStack>
   )
 }

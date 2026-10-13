@@ -29,6 +29,7 @@ export const StepLicense: React.FC<Props> = () => {
   const {
     saveLicenseOwner,
     licenseOwner,
+    clientLicenseOwner,
     hasLicenseOwner,
     isLicenseForClient,
   } = checkoutCtx || {}
@@ -40,28 +41,34 @@ export const StepLicense: React.FC<Props> = () => {
     setProjectType(isLicenseForClient ? 'client' : 'yourself')
   }, [isLicenseForClient])
 
-  // Seed the form from the OrderProvider/checkout licenseOwner. `values` (vs
+  // This form only ever collects the *client's* details, so it is seeded from
+  // `clientLicenseOwner` — never from `licenseOwner`, which for "Yourself" is
+  // a copy of the billing address and would otherwise prepopulate the client
+  // address fields when toggling between the two options. `values` (vs
   // `defaultValues`) is reactive, so the form updates once the order — and its
   // license metadata (e.g. the company entered on /buy) — finishes loading
   // asynchronously. `defaultValues` alone is captured only on mount and would
   // leave the fields empty.
   const licenseOwnerValues = useMemo<LicenseOwnerFormData>(
     () => ({
-      company: licenseOwner?.company || '',
-      full_name: licenseOwner?.full_name || '',
-      line_1: licenseOwner?.line_1 || '',
-      line_2: licenseOwner?.line_2 || '',
-      city: licenseOwner?.city || '',
-      zip_code: licenseOwner?.zip_code || '',
-      country_code: licenseOwner?.country_code || '',
-      state_code: licenseOwner?.state_code || '',
+      company: clientLicenseOwner?.company || '',
+      full_name: clientLicenseOwner?.full_name || '',
+      line_1: clientLicenseOwner?.line_1 || '',
+      line_2: clientLicenseOwner?.line_2 || '',
+      city: clientLicenseOwner?.city || '',
+      zip_code: clientLicenseOwner?.zip_code || '',
+      country_code: clientLicenseOwner?.country_code || '',
+      state_code: clientLicenseOwner?.state_code || '',
     }),
-    [licenseOwner]
+    [clientLicenseOwner]
   )
 
   const form = useForm<LicenseOwnerFormData>({
     resolver: zodResolver(licenseOwnerSchema),
     values: licenseOwnerValues,
+    // A re-seed (e.g. after saving or a background order refresh) must not
+    // wipe what the user has already typed into the client address form.
+    resetOptions: { keepDirtyValues: true },
   })
 
   const handleProceed = async () => {

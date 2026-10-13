@@ -1,7 +1,8 @@
-import { LicenseSizeNativeSelect } from '@/commercelayer/components/forms/LicenseSizeNativeSelect'
+// import { LicenseSizeNativeSelect } from '@/commercelayer/components/forms/LicenseSizeNativeSelect'
 import { AddressField } from '@/commercelayer/components/ui/address/address-field'
 import { CountrySelect } from '@/commercelayer/components/ui/address/country-select'
 import { useOrderContext } from '@/commercelayer/providers/order'
+import { Alert } from '@/components/ui/alert'
 import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
 import {
   Box,
@@ -88,7 +89,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
         <RadioCardRoot
           value={projectType}
           onValueChange={(e) => onProjectTypeChange(e.value || '')}
-          variant={'subtle'}
+          variant={isDialog ? 'outline' : 'subtle'}
           size={'lg'}
         >
           <RadioCard.Label
@@ -117,6 +118,13 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                 flex='1'
                 alignSelf='stretch'
                 indicatorPlacement='start'
+                /*bg={isDialog ? 'colorPalette.bg' : 'brand.50'}
+                _hover={{
+                  bg: '#e3e3e3',
+                  _checked: {
+                    bg: '#e3e3e3',
+                  },
+                }}*/
               />
             ))}
           </Group>
@@ -126,13 +134,14 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
       <FormProvider {...form}>
         <Box as='form' w='full' onSubmit={handleSubmit(onSubmit)}>
           <VStack gap={1} alignItems={'flex-start'} w={'full'}>
-            {projectType === 'client' || isDialog ? (
+            {projectType === 'client' ? (
               <>
                 {isDialog && (
                   <Text
                     fontSize={'xs'}
                     textTransform={'uppercase'}
                     color={'#737373'}
+                    pl={3}
                   >
                     {'Your client'}
                   </Text>
@@ -148,6 +157,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                         )
                       )}
                       type='text'
+                      variant={isDialog ? 'white' : 'subtle'}
                       value={field.value}
                       onChange={field.onChange}
                       error={error?.message}
@@ -163,6 +173,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                         t('stepLicense.fullNameLabel', 'Full Name*')
                       )}
                       type='text'
+                      variant={isDialog ? 'white' : 'subtle'}
                       value={field.value}
                       onChange={field.onChange}
                       error={error?.message}
@@ -178,6 +189,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                         t('stepLicense.addressLabel', 'Address*')
                       )}
                       type='text'
+                      variant={isDialog ? 'white' : 'subtle'}
                       value={field.value}
                       onChange={field.onChange}
                       error={error?.message}
@@ -196,6 +208,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                         )
                       )}
                       type='text'
+                      variant={isDialog ? 'white' : 'subtle'}
                       value={field.value || ''}
                       onChange={field.onChange}
                       error={error?.message}
@@ -210,6 +223,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                       <AddressField
                         label={String(t('stepLicense.cityLabel', 'City*'))}
                         type='text'
+                        variant={isDialog ? 'white' : 'subtle'}
                         value={field.value}
                         onChange={field.onChange}
                         error={error?.message}
@@ -225,6 +239,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                           t('stepLicense.zipCodeLabel', 'Zip Code*')
                         )}
                         type='text'
+                        variant={isDialog ? 'white' : 'subtle'}
                         value={field.value}
                         onChange={field.onChange}
                         error={error?.message}
@@ -240,6 +255,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                           t('stepLicense.stateLabel', 'State/Province')
                         )}
                         type='text'
+                        variant={isDialog ? 'white' : 'subtle'}
                         value={field.value || ''}
                         onChange={field.onChange}
                         error={error?.message}
@@ -257,6 +273,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                         value={field.value}
                         onChange={field.onChange}
                         error={error?.message}
+                        variant={isDialog ? 'white' : 'subtle'}
                       />
                     )}
                   />
@@ -266,24 +283,38 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                     items: update the order's licenseSize, then call
                     repriceAll() (OrderProvider) to recommit each font at the
                     new size. Until then, show the current size as read-only. */}
-                <Box bg={'brand.50'} p={4} w='full' px={3}>
-                  <Text
-                    fontSize={'xs'}
-                    textTransform={'uppercase'}
-                    color={'#737373'}
-                  >
-                    {'Your clients company size'}
+                <Text
+                  fontSize={'xs'}
+                  textTransform={'uppercase'}
+                  color={'#737373'}
+                  mt={1}
+                  pl={3}
+                >
+                  {'Your clients company size'}
+                </Text>
+                <Box
+                  bg={isDialog ? 'colorPalette.bg' : 'brand.50'}
+                  w='full'
+                  px={3}
+                  py={3}
+                >
+                  <Text fontSize={'md'} lineHeight={1.2}>
+                    {licenseSize?.label}
                   </Text>
-                  <Text fontSize={'md'}>{licenseSize?.label}</Text>
                 </Box>
               </>
             ) : (
               <>
-                <Box bg={'brand.50'} p={4} w='full' px={3}>
+                <Box
+                  bg={isDialog ? 'colorPalette.bg' : 'brand.50'}
+                  p={4}
+                  w='full'
+                  px={3}
+                >
                   <Text>
                     {t(
                       'stepLicense.billingAddressUsed',
-                      'Your address will be used for license owner information.'
+                      'Your billing address will be used for license owner information.'
                     )}
                   </Text>
                 </Box>
@@ -294,15 +325,22 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   label={'Your company size'}
                 />
                 */}
-                <Box bg={'brand.50'} p={4} w='full' px={3}>
-                  <Text
-                    fontSize={'xs'}
-                    lineHeight={1}
-                    textTransform={'uppercase'}
-                    color={'#737373'}
-                  >
-                    {'Your company size'}
-                  </Text>
+                <Text
+                  fontSize={'xs'}
+                  lineHeight={1}
+                  textTransform={'uppercase'}
+                  color={'#737373'}
+                  mt={1}
+                  pl={3}
+                >
+                  {'Your company size'}
+                </Text>
+                <Box
+                  bg={isDialog ? 'colorPalette.bg' : 'brand.50'}
+                  w='full'
+                  px={3}
+                  py={3}
+                >
                   <Text fontSize={'md'} lineHeight={1.2}>
                     {licenseSize?.label}
                   </Text>
@@ -312,9 +350,9 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
 
             {/* Display save errors */}
             {error && (
-              <Box color='red.500' fontSize='sm' w='full' textAlign='left'>
+              <Alert status='error' my='4'>
                 {error}
-              </Box>
+              </Alert>
             )}
 
             {/* Display form errors */}
@@ -328,18 +366,16 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
             )}
 
             {showSubmitButton && (
-              <HStack
-                mt={2}
-                gap={2}
-                w='full'
-                justify={onCancel ? 'flex-end' : 'flex-start'}
-              >
+              <HStack mt={2} gap={2} w='full' justify={'flex-end'}>
                 {onCancel && (
                   <Button
-                    variant={'rounded'}
-                    bg={'white'}
-                    size={'sm'}
-                    fontSize={'md'}
+                    variant='text'
+                    size='xs'
+                    fontSize='xs'
+                    px={2}
+                    py={1}
+                    h='auto'
+                    minH='auto'
                     onClick={onCancel}
                     disabled={isLocalLoader}
                   >
@@ -355,12 +391,19 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   }
                   loading={isLocalLoader}
                   disabled={isLocalLoader}
-                  variant={'rounded'}
+                  alignSelf='flex-end'
+                  variant={'solid'}
                   bg={'black'}
                   color={'white'}
                   borderRadius={'5rem'}
+                  border={'2px solid #000'}
                   size={'sm'}
                   fontSize={'md'}
+                  gap={1}
+                  _hover={{
+                    bg: 'transparent',
+                    color: 'colorPalette.fg',
+                  }}
                 >
                   {isLocalLoader
                     ? t('stepLicense.saving', 'Saving...')

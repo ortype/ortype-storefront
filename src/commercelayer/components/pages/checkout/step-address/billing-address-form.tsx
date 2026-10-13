@@ -57,6 +57,9 @@ export const BillingAddressForm: React.FC<Props> = ({
       case 'billing_address_last_name':
         updateBillingAddressData({ last_name: value })
         break
+      case 'billing_address_company':
+        updateBillingAddressData({ company: value })
+        break
       case 'billing_address_line_1':
         updateBillingAddressData({ line_1: value })
         break
@@ -110,6 +113,15 @@ export const BillingAddressForm: React.FC<Props> = ({
             required
           />
         </Grid>
+
+        <AddressInputGroup
+          fieldName='billing_address_company'
+          resource='billing_address'
+          type='text'
+          value={billing.company || ''}
+          onChange={handleAddressInputChange}
+          required
+        />
 
         <AddressInputGroup
           fieldName='billing_address_line_1'
