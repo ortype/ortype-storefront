@@ -148,6 +148,7 @@ export default function EditLicenseMetricsDialog({
                 <LicenseOwnerRadio
                   label={'License holder'}
                   info={'The license owner is the business entity...'}
+                  variant={'outline'}
                 />
                 {isLicenseForClient && (
                   <Box my={2}>

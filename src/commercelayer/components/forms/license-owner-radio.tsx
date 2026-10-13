@@ -20,12 +20,14 @@ interface Props {
   label?: string
   info?: string
   showProjectTypeSelection?: boolean
+  variant?: string
 }
 
 const LicenseOwnerRadio: React.FC<Props> = ({
   label,
   info,
   showProjectTypeSelection = true,
+  variant = 'subtle',
 }) => {
   // The OrderProvider is the single source of truth. Driving the selection
   // from `licenseOwner.is_client` keeps the radio and the conditional
@@ -55,7 +57,7 @@ const LicenseOwnerRadio: React.FC<Props> = ({
           <RadioCardRoot
             value={selectedValue}
             onValueChange={(e) => handleValueChange(e.value || '')}
-            variant={'subtle'}
+            variant={variant}
             size={'md'}
           >
             <Group

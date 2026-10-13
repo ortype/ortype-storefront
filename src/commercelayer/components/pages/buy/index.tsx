@@ -50,6 +50,7 @@ export const Buy = () => {
             <LicenseOwnerRadio
               label={buyLabels?.licenseHolder?.label}
               info={buyLabels?.licenseHolder?.info}
+              variant={'outline'}
             />
             {isLicenseForClient && (
               <Box my={2}>

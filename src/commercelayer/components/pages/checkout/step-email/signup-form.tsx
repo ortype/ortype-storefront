@@ -17,11 +17,11 @@ import getCommerceLayer, {
 import { Alert } from '@/components/ui/alert'
 import {
   Box,
-  Center,
-  Spinner,
   Button,
+  Center,
   Container,
   Fieldset,
+  Spinner,
   Stack,
   useStepsContext,
 } from '@chakra-ui/react'
@@ -226,23 +226,25 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
                 label='Confirm Password'
               />
               <Button
-                variant={'subtle'}
-                w={'full'}
-                borderColor={'brand.50'}
-                borderWidth={'2px'}
-                bg={'brand.50'}
-                _hover={{
-                  bg: 'brand.50',
-                  borderColor: 'black',
-                }}
-                borderRadius={'full'}
-                size={'sm'}
-                py={5}
-                fontSize={'lg'}
                 type='submit'
                 loadingText={'Submitting'}
                 disabled={isSubmitting}
                 loading={isSubmitting}
+                variant={'subtle'}
+                w={'full'}
+                borderColor={'none'}
+                borderWidth={'none'}
+                bg={'brand.50'}
+                _hover={{
+                  bg: '#e3e3e3',
+                }}
+                borderRadius={'100px'}
+                transition={
+                  'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
+                }
+                size={'sm'}
+                py={5}
+                fontSize={'lg'}
               >
                 {'Register now'}
               </Button>

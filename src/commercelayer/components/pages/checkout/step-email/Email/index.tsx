@@ -95,14 +95,18 @@ export const Email: React.FC<Props> = ({
               )}
               <Button
                 type='submit'
-                alignSelf='flex-start'
                 loading={isLoading}
                 disabled={readonly}
+                alignSelf='flex-end'
                 variant={'outline'}
                 bg={'white'}
                 borderRadius={'5rem'}
-                size={'sm'}
+                size={'xs'}
                 fontSize={'md'}
+                _hover={{
+                  bg: 'black',
+                  color: 'white',
+                }}
               >
                 {isLoading ? 'Saving...' : 'Save'}
               </Button>

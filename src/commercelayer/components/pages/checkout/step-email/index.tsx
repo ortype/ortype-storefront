@@ -88,10 +88,13 @@ export const StepEmail: React.FC<Props> = () => {
                 {resetPasswordUrl.length > 0 && (
                   <Button
                     asChild
-                    size={'2xs'}
-                    bg={'brand.50'}
-                    variant={'subtle'}
-                    borderRadius={'full'}
+                    variant='text'
+                    size='xs'
+                    fontSize='xs'
+                    px={2}
+                    py={1}
+                    h='auto'
+                    minH='auto'
                   >
                     <ChakraLink
                       target='_blank'
