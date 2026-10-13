@@ -56,6 +56,7 @@ import {
 import { getOrder } from './utils/get-order'
 import {
   calculateSettings,
+  licenseMetadata,
   licenseMetadataOf,
   serializeLicense,
 } from './utils/license-settings'
@@ -89,6 +90,7 @@ const initialState: OrderStateData = {
   hasValidLicenseSize: false,
   hasValidLicenseType: false,
   allLicenseInfoSet: false,
+  licenseHydrated: false,
   hasLineItems: false,
   licenseSize: undefined,
   selectedSkuOptions: [],
@@ -137,8 +139,10 @@ export function OrderProvider({
   useEffect(() => queue.subscribe(() => setQueueSize(queue.size())), [queue])
 
   // License buffer persistence bookkeeping
-  // Guards persistence so we never write the empty initial state
-  const licenseInitializedRef = useRef(false)
+  // `state.licenseHydrated` guards persistence so a partially hydrated buffer
+  // is never written. It lives in the reducer (rather than a ref) because
+  // flipping it has to re-run the write effect below: edits made while the
+  // buffer was still hydrating would otherwise never be persisted.
   // Serialized license metadata last known to be on the order
   const lastLicenseHashRef = useRef('')
   const licenseWriteTimerRef =
@@ -618,11 +622,13 @@ export function OrderProvider({
 
         // What Commerce Layer already has, so the license write effect only
         // fires for real changes
-        lastLicenseHashRef.current = serializeLicense({
-          owner: order.metadata?.license?.owner,
-          size: order.metadata?.license?.size,
-          types: existingTypes,
-        })
+        lastLicenseHashRef.current = serializeLicense(
+          licenseMetadata({
+            owner: order.metadata?.license?.owner,
+            size: order.metadata?.license?.size,
+            types: existingTypes,
+          })
+        )
 
         if (process.env.NODE_ENV !== 'production') {
           console.log(
@@ -686,10 +692,6 @@ export function OrderProvider({
         }
       }
 
-      // License buffer is now hydrated (order metadata seeds it via SET_ORDER, or
-      // localStorage above); enable persistence for subsequent changes.
-      licenseInitializedRef.current = true
-
       // Reconcile stale licenseSize with current Sanity data.
       // Metrics are server-fetched and provided via props (Providers → layout),
       // so no client-side Sanity fetch is needed here.
@@ -728,6 +730,14 @@ export function OrderProvider({
         console.warn('Failed to fetch SKU options during initialization')
       }
 
+      // The license buffer is only fully hydrated now: owner / size come from
+      // the order metadata (or localStorage) above, but the default *types*
+      // live in `selectedSkuOptions`, which `fetchSkuOptions` just resolved
+      // from their references. Arming persistence any earlier lets the
+      // debounced write below fire with an empty types buffer and wipe
+      // `order.metadata.license.types`.
+      dispatch({ type: ActionType.LICENSE_HYDRATED })
+
       if (process.env.NODE_ENV !== 'production') {
         console.log(
           '[OrderProvider] ✅ initializeProvider: Initialized with',
@@ -762,7 +772,7 @@ export function OrderProvider({
   // reload. Once the order exists its metadata is the source of truth.
   const LICENSE_STORAGE_KEY = `${persistKey}_license`
   useEffect(() => {
-    if (!licenseInitializedRef.current || state.orderId) return
+    if (!state.licenseHydrated || state.orderId) return
     try {
       const serialized = JSON.stringify({
         owner: state.licenseOwner,
@@ -774,6 +784,7 @@ export function OrderProvider({
       // localStorage unavailable (SSR, private browsing quota, etc.)
     }
   }, [
+    state.licenseHydrated,
     state.licenseOwner,
     state.licenseSize,
     state.selectedSkuOptions,
@@ -816,9 +827,11 @@ export function OrderProvider({
     }
   }, [config, dispatch])
 
-  // Debounced background write once an order exists and the license changed
+  // Debounced background write once an order exists and the license changed.
+  // `licenseHydrated` is a dependency, not a ref read: edits made while the
+  // buffer was still hydrating must be written once it is armed.
   useEffect(() => {
-    if (!licenseInitializedRef.current || !state.order?.id) return
+    if (!state.licenseHydrated || !state.order?.id) return
     const license = serializeLicense(
       licenseMetadataOf({
         licenseOwner: state.licenseOwner,
@@ -846,6 +859,7 @@ export function OrderProvider({
       }
     }
   }, [
+    state.licenseHydrated,
     state.licenseOwner,
     state.licenseSize,
     state.selectedSkuOptions,
@@ -863,7 +877,7 @@ export function OrderProvider({
       clearTimeout(licenseWriteTimerRef.current)
       licenseWriteTimerRef.current = undefined
     }
-    if (licenseInitializedRef.current && stateRef.current.order?.id) {
+    if (stateRef.current.licenseHydrated && stateRef.current.order?.id) {
       try {
         await queue.enqueueCoalesced('license', writeLicenseNow)
       } catch (error) {
@@ -903,11 +917,13 @@ export function OrderProvider({
           throw new Error('Failed to create order before committing')
         }
         // The new order already carries the license buffer
-        lastLicenseHashRef.current = serializeLicense({
-          ...(s.licenseOwner ? { owner: s.licenseOwner } : {}),
-          ...(s.licenseSize ? { size: s.licenseSize } : {}),
-          types,
-        })
+        lastLicenseHashRef.current = serializeLicense(
+          licenseMetadata({
+            owner: s.licenseOwner,
+            size: s.licenseSize,
+            types,
+          })
+        )
         const refetched = await fetchOrder({
           orderId: created.orderId,
         })
@@ -1554,7 +1570,7 @@ export function OrderProvider({
   // data, not user state)
   const GROUP_RESOLUTIONS_STORAGE_KEY = `${persistKey}_group_resolutions`
   useEffect(() => {
-    if (!licenseInitializedRef.current) return
+    if (!state.licenseHydrated) return
     if (Object.keys(state.groupResolutions).length === 0) return
     try {
       localStorage.setItem(
@@ -1564,7 +1580,11 @@ export function OrderProvider({
     } catch {
       /* localStorage unavailable */
     }
-  }, [state.groupResolutions, GROUP_RESOLUTIONS_STORAGE_KEY])
+  }, [
+    state.licenseHydrated,
+    state.groupResolutions,
+    GROUP_RESOLUTIONS_STORAGE_KEY,
+  ])
 
   // NOTE: the CL order is created lazily by `ensureOrder`, the first time a
   // group is committed ("Add to cart"). Until then the license buffer (owner /

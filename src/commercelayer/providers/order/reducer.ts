@@ -19,6 +19,8 @@ export enum ActionType {
   SET_LICENSE_SIZE = 'SET_LICENSE_SIZE',
   SET_LICENSE_TYPES = 'SET_LICENSE_TYPES',
   SET_SKU_OPTIONS = 'SET_SKU_OPTIONS',
+  /** The license buffer finished hydrating; persistence may start */
+  LICENSE_HYDRATED = 'LICENSE_HYDRATED',
   // Group resolution tracking (for hybrid projection).
   // Cart selections and committed groups are NOT reducer state: they are
   // derived from the order's line items (see ./utils/derive-selections.ts).
@@ -86,6 +88,7 @@ export type Action =
         others: Partial<OrderStateData>
       }
     }
+  | { type: ActionType.LICENSE_HYDRATED }
   | {
       type: ActionType.REGISTER_GROUP_RESOLUTIONS
       payload: {
@@ -223,6 +226,12 @@ export function reducer(
         skuOptions: action.payload.skuOptions,
         ...action.payload.others,
         isLoading: false,
+      }
+    }
+    case ActionType.LICENSE_HYDRATED: {
+      return {
+        ...state,
+        licenseHydrated: true,
       }
     }
     case ActionType.CREATE_ORDER: {

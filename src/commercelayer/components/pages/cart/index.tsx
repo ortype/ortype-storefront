@@ -2,7 +2,7 @@
 
 import { useCartContext } from '@/commercelayer/providers/cart'
 import { useRouter } from 'next/navigation'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 import EditLicenseMetricsDialog from '@/commercelayer/components/forms/edit-license-metrics-dialog'
 import { FieldsetLegend } from '@/commercelayer/components/ui/fieldset-legend'
@@ -33,7 +33,6 @@ const CartComponent = () => {
     isLicenseForClient,
     licenseOwner,
     licenseSize,
-    setLicenseSize,
     cartLabels,
     groupedLineItems,
     isDirty,
@@ -41,6 +40,10 @@ const CartComponent = () => {
   } = useCartContext()
 
   const router = useRouter()
+
+  // Owned here so the action bar can send the user straight to the fields
+  // that are blocking checkout.
+  const [editLicenseOpen, setEditLicenseOpen] = useState(false)
 
   const handleClick = () => {
     router.push(`/`)
@@ -209,8 +212,9 @@ const CartComponent = () => {
                 <EditLicenseMetricsDialog
                   label={cartLabels?.companySize?.label}
                   info={cartLabels?.companySize?.info}
-                  setLicenseSize={setLicenseSize}
                   isLicenseForClient={isLicenseForClient}
+                  open={editLicenseOpen}
+                  onOpenChange={setEditLicenseOpen}
                 />
               </HStack>
             </SimpleGrid>
@@ -268,7 +272,7 @@ const CartComponent = () => {
         gap={0}
       >
         <CartSummary />
-        <CartActionBar />
+        <CartActionBar onEditLicense={() => setEditLicenseOpen(true)} />
       </VStack>
     </Box>
   )

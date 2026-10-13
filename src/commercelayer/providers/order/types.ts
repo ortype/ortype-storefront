@@ -144,6 +144,13 @@ export type OrderStateData = {
   hasValidLicenseType: boolean
   /** Whether all license info is set */
   allLicenseInfoSet: boolean
+  /**
+   * The license buffer (owner / size / default types) has finished hydrating
+   * from the order metadata, localStorage and `fetchSkuOptions`. Until then
+   * the buffer is only partly filled in and must not be persisted, or a write
+   * would overwrite `order.metadata.license` with it.
+   */
+  licenseHydrated: boolean
   /** Whether the order has line items */
   hasLineItems: boolean
   licenseSize?: LicenseSize

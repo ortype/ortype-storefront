@@ -50,11 +50,16 @@ const panelVariants: Variants = {
   },
 }
 
+interface Props {
+  /** Opens the "Update license metrics" dialog on the cart page */
+  onEditLicense?: () => void
+}
+
 /**
  * Unsaved cart edits: "Update cart" writes them, "Discard" drops them.
  * Foundation only (logic + bare markup); style and word it as needed.
  */
-export const CartActionBar = () => {
+export const CartActionBar = ({ onEditLicense }: Props) => {
   const {
     orderId,
     isDirty,
@@ -62,6 +67,8 @@ export const CartActionBar = () => {
     isSaving,
     saveProgress,
     allLicenseInfoSet,
+    isLicenseForClient,
+    licenseOwner,
     licenseSize,
     saveError,
     selections,
@@ -108,6 +115,22 @@ export const CartActionBar = () => {
   // The edit panel stays mounted while saving (the last font leaves the draft
   // before the save settles) and after a failed save (to show the error).
   const showEditPanel = isDirty || isSaving || !!saveError
+
+  // Checkout is gated on complete license info (see `allLicenseInfoSet`). Name
+  // the missing piece and point at the editor, so a disabled button is never a
+  // dead end — e.g. switching the holder to "Your client" without a company
+  // name silently blocked checkout before.
+  const missingLicenseInfo: string[] = []
+  if (isLicenseForClient && !licenseOwner?.company?.trim()) {
+    missingLicenseInfo.push("your client's company name")
+  }
+  if (!licenseSize?.value) {
+    missingLicenseInfo.push('a company size')
+  }
+  const licenseBlockerMessage =
+    missingLicenseInfo.length > 0
+      ? `Add ${missingLicenseInfo.join(' and ')} to check out.`
+      : 'Complete your license details to check out.'
 
   return (
     <>
@@ -252,6 +275,34 @@ export const CartActionBar = () => {
                     {'Save as PDF'}
                   </Button>
                 </Stack>
+                {!allLicenseInfoSet && (
+                  <Box
+                    w={'full'}
+                    bg={'#FFF8D3'}
+                    px={4}
+                    py={2}
+                    borderRadius={20}
+                  >
+                    <Text textStyle={'sm'} role='alert'>
+                      {licenseBlockerMessage}{' '}
+                      {onEditLicense && (
+                        <Button
+                          variant='link'
+                          size='sm'
+                          fontSize='sm'
+                          px={0}
+                          py={0}
+                          color={'black'}
+                          h='auto'
+                          minH='auto'
+                          onClick={onEditLicense}
+                        >
+                          {'Edit license metrics'}
+                        </Button>
+                      )}
+                    </Text>
+                  </Box>
+                )}
                 <CheckoutButton
                   orderId={orderId || ''}
                   // Unsaved edits must be saved (or discarded) before paying
