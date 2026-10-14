@@ -4,12 +4,7 @@ import { Button, useStepsContext } from '@chakra-ui/react'
 import { Order } from '@commercelayer/sdk'
 import { LockIcon } from '@sanity/icons'
 
-import React, {
-  useContext,
-  useState,
-  type MouseEvent,
-  type ReactNode,
-} from 'react'
+import React, { useState, type MouseEvent, type ReactNode } from 'react'
 
 interface PlaceOrderButtonProps {
   className?: string
@@ -46,7 +41,6 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
     submitRegisteredPayment,
   } = checkoutCtx
 
-  // @TODO: include checkoutCtx.hasPaymentMethod === true
   const canPlaceOrder = order && !isLoading && !isPlacing && !disabled
 
   const handleClick = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -58,7 +52,10 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
 
     try {
       setIsPlacing(true)
-      if (!hasPaymentMethod) {
+      // A new Stripe card has no saved card data until it is confirmed.
+      // Order refreshes can therefore reset hasPaymentMethod even though a
+      // method is selected. Let the registered form validate the card details.
+      if (!hasPaymentMethod && !order.payment_method?.id) {
         console.error('Payment method not selected')
         if (onClick) {
           onClick({ placed: false, order })
@@ -73,7 +70,7 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
       if (!termsChecked) {
         // highlight the Terms of Use box in case it isn't
         console.log('Terms not checked...')
-        onClick && onClick({ placed: false, order })
+        onClick?.({ placed: false, order })
         return
       }
 
@@ -122,12 +119,16 @@ export const PlaceOrderButton: React.FC<PlaceOrderButtonProps> = ({
 
   return (
     <Button
+      className={className}
       type='submit'
       variant={'solid'}
       bg={'black'}
       borderRadius={'5rem'}
       size={'xl'}
       color={'white'}
+      _hover={{
+        bg: 'red',
+      }}
       onClick={handleClick}
       disabled={!canPlaceOrder}
       gap={1}
