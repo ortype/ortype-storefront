@@ -39,11 +39,13 @@ const validationSchema = yup.object().shape({
 interface LoginFormProps {
   emailAddress?: string
   onSuccess?: () => void
+  variant?: string
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({
   emailAddress,
   onSuccess,
+  variant,
 }) => {
   const { settings, config, isLoading, handleLogin } = useIdentityContext()
   // Try to get Steps context if available (for checkout flow)
@@ -183,25 +185,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 name='customerEmail'
                 label='Email'
                 type='email'
-                variant='subtle'
+                variant={variant}
                 size='lg'
                 fontSize='lg'
                 borderRadius={0}
               />
-              <PasswordInput name='customerPassword' label='Password' />
+              <PasswordInput
+                variant={variant}
+                name='customerPassword'
+                label='Password'
+              />
               <Button
-                variant={'subtle'}
+                variant={variant === 'white' ? 'solid' : 'subtle'}
                 w={'full'}
-                borderColor={'none'}
-                borderWidth={'none'}
-                bg={'brand.50'}
-                _hover={{
-                  bg: '#e3e3e3',
-                }}
-                borderRadius={'100px'}
-                transition={
-                  'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
-                }
                 size={'sm'}
                 py={5}
                 fontSize={'lg'}

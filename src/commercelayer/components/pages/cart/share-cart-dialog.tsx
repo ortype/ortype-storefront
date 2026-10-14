@@ -78,6 +78,7 @@ export default function ShareCartDialog({
     >
       <DialogContent
         backdrop
+        blurred
         boxShadow={'lg'}
         bg={'#F8F8F8'}
         borderRadius={20}

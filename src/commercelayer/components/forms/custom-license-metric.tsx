@@ -39,7 +39,8 @@ export default function CustomLicenseMetricDialog({
           DOM subtree, so pressing Ok/Cancel isn't treated as an "interact
           outside" that would dismiss the parent dialog. */}
       <DialogContent
-        backdrop={true}
+        backdrop
+        blurred
         portalled={false}
         boxShadow={'lg'}
         bg={'#F8F8F8'}

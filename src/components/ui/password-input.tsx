@@ -34,6 +34,7 @@ export interface PasswordVisibilityProps {
 export interface PasswordInputProps
   extends Omit<InputProps, 'type'>, PasswordVisibilityProps {
   rootProps?: GroupProps
+  variant?: string
   label?: string
   name?: string
   error?: string
@@ -105,6 +106,7 @@ export const PasswordInput = React.forwardRef<
         >
           <ChakraInput
             {...(registration ?? {})}
+            variant={'subtle'}
             {...rest}
             ref={(node) => {
               registration?.ref(node)
@@ -115,7 +117,7 @@ export const PasswordInput = React.forwardRef<
                 ).current = node
             }}
             placeholder={label}
-            variant={'subtle'}
+
             size={'lg'}
             fontSize={'lg'}
             borderRadius={0}

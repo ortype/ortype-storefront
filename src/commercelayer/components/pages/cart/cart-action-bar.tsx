@@ -184,14 +184,13 @@ export const CartActionBar = ({ onEditLicense }: Props) => {
                     bg={'black'}
                     color={'white'}
                     borderRadius={'5rem'}
-                    border={'2px solid #000'}
                     size={'md'}
                     fontSize={'md'}
                     flexGrow={1}
                     gap={1}
                     _hover={{
-                      bg: 'transparent',
-                      color: 'colorPalette.fg',
+                      bg: 'red',
+                      color: 'colorPalette.bg',
                     }}
                     disabled={isSaving || !isDirty}
                     onClick={() => void save()}

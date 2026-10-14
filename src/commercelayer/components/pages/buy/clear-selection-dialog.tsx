@@ -34,15 +34,16 @@ export default function ClearSelectionDialog({
           DOM subtree, so pressing Ok/Cancel isn't treated as an "interact
           outside" that would dismiss the parent dialog. */}
       <DialogContent
-        backdrop={true}
+        backdrop
+        blurred
         portalled={false}
         boxShadow={'lg'}
-        bg={'#F8F8F8'}
+        bg={'orange.300'}
         borderRadius={20}
         px={4}
         py={5}
       >
-        <DialogHeader p={0} pb={2} borderBottom={'1px solid #CEC9AB'}>
+        <DialogHeader p={0} pb={2} borderBottom={'1px solid #333'}>
           <DialogTitle
             fontSize={'2xl'}
             fontWeight={'normal'}

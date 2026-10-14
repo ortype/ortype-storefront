@@ -12,8 +12,10 @@ import {
   Button,
   ButtonGroup,
   Link as ChakraLink,
+  Drawer,
   Group,
   Heading,
+  Portal,
   Text,
 } from '@chakra-ui/react'
 import Link from 'next/link'
@@ -23,6 +25,7 @@ import React, { useEffect, useState } from 'react'
 import { LoginForm } from '@/commercelayer/components/forms/LoginForm'
 import { SignUpForm } from '@/commercelayer/components/forms/SignUpForm'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
+import { CloseButton } from '@/components/ui/close-button'
 
 export const Account = ({ openLogin, setLoginOpen }) => {
   const { settings, config, customer, handleLogout } = useIdentityContext()
@@ -47,155 +50,55 @@ export const Account = ({ openLogin, setLoginOpen }) => {
 
   return (
     <>
-      <DialogRoot
+      <Drawer.Root
+        lazyMount
+        size={'md'}
         open={registerOpen}
-        size={'lg'}
-        placement={'center'}
-        motionPreset={'slide-in-bottom'}
+        // initialFocusEl={() => ref.current}
       >
-        <DialogContent
-          maxW={'35rem'}
-          backdrop
-          blurred
-          bg={'#F8F8F8'}
-          borderRadius={20}
-          boxShadow={'lg'}
-          px={16}
-          py={10}
-        >
-          <DialogHeader asChild>
-            <Heading
-              textAlign={'center'}
-              fontSize={'2.5rem'}
-              lineHeight={1}
-              fontWeight={'normal'}
-              textTransform={'uppercase'}
-              mx={'auto'}
-              pb={6}
+        <Portal>
+          <Drawer.Backdrop css={{ backdropFilter: 'blur(5px)' }} />
+          <Drawer.Positioner
+          // p={10}
+          >
+            <Drawer.Content
+              rounded={0}
+              // rounded={40}
+              p={4}
+              bg={'#e7e7e7'}
             >
-              {`Register`}
-            </Heading>
-          </DialogHeader>
-          <DialogCloseTrigger onClick={() => setRegisterOpen(false)} />
-          <DialogBody pb={2}>
-            <SignUpForm
-              emailAddress={customer.email}
-              onSuccess={() => setRegisterOpen(false)}
-            />
-          </DialogBody>
-          <DialogFooter asChild>
-            <Group gap={2} justifyContent={'center'}>
-              <Text textStyle={'xs'} textAlign='center'>
-                Already have an account?{' '}
-              </Text>
-              <Button
-                variant={'solid'}
-                bg={'black'}
-                color={'white'}
-                borderRadius={'5rem'}
-                border={'2px solid #000'}
-                size={'xs'}
-                fontSize={'sm'}
-                gap={1}
-                _hover={{
-                  bg: 'transparent',
-                  color: 'colorPalette.fg',
-                }}
-                onClick={handleLoginClick}
+              <Drawer.CloseTrigger
+                position={'absolute'}
+                top={'1rem'}
+                left={'-4rem'}
+                asChild
               >
-                {'Login'}
-              </Button>
-            </Group>
-          </DialogFooter>
-        </DialogContent>
-      </DialogRoot>
-      <DialogRoot
-        open={openLogin}
-        size={'lg'}
-        placement={'center'}
-        motionPreset={'slide-in-bottom'}
-      >
-        <DialogContent
-          maxW={'35rem'}
-          backdrop
-          blurred
-          bg={'#F8F8F8'}
-          borderRadius={20}
-          boxShadow={'lg'}
-          px={16}
-          py={10}
-        >
-          <DialogHeader asChild>
-            <Heading
-              textAlign={'center'}
-              fontSize={'2.5rem'}
-              lineHeight={1}
-              fontWeight={'normal'}
-              textTransform={'uppercase'}
-              mx={'auto'}
-              pb={6}
-            >
-              {settings?.customerId ? `Account` : 'Login'}
-            </Heading>
-          </DialogHeader>
-          <DialogCloseTrigger onClick={() => setLoginOpen(false)} />
-          <DialogBody pb={2}>
-            <LoginForm
-              emailAddress={customer.email}
-              onSuccess={() => setLoginOpen(false)}
-            />
-          </DialogBody>
-          <DialogFooter justifyContent={'center'}>
-            <Group gap={2}>
-              {settings?.customerId && (
-                <Button
-                  as={Link}
-                  href={`/account`}
-                  variant={'outline'}
-                  borderRadius={'full'}
-                  size={'2xs'}
-                  bg={'black'}
-                  color={'white'}
-                  _hover={{ bg: 'white', color: 'black' }}
+                <CloseButton size='2xl' />
+              </Drawer.CloseTrigger>
+              <Drawer.Header pt={2} pb={3}>
+                <Drawer.Title
+                  fontSize={'2rem'}
+                  fontWeight={'normal'}
+                  textTransform={'uppercase'}
+                  lineHeight={1}
+                  pb={3}
+                  borderBottom={'1px solid #919191'}
                 >
-                  {'My account'}
-                </Button>
-              )}
-              {customer?.email ? (
-                <ButtonGroup gap={1} variant={'subtle'}>
-                  <Button
-                    borderRadius={'full'}
-                    size={'2xs'}
-                    bg={'black'}
-                    color={'white'}
-                    _hover={{ bg: 'white', color: 'black' }}
-                    onClick={handleLogout}
-                  >
-                    {'Logout'}
-                  </Button>
-                </ButtonGroup>
-              ) : (
-                <ButtonGroup gap={1} variant={'subtle'}>
-                  {resetPasswordUrl.length > 0 && (
-                    <Button
-                      asChild
-                      variant='text'
-                      size='xs'
-                      fontSize='xs'
-                      px={2}
-                      py={1}
-                      h='auto'
-                      minH='auto'
-                    >
-                      <ChakraLink
-                        target='_blank'
-                        as={Link}
-                        href={`${resetPasswordUrl}`}
-                      >
-                        Forgot password?
-                      </ChakraLink>
-                    </Button>
-                  )}
+                  {`Register`}
+                </Drawer.Title>
+              </Drawer.Header>
+              <Drawer.Body>
+                <SignUpForm
+                  emailAddress={customer.email}
+                  onSuccess={() => setRegisterOpen(false)}
+                  variant={'white'}
+                />
+              </Drawer.Body>
+              <Drawer.Footer asChild>
+                <Group gap={2} justifyContent={'center'}>
+                  <Text textStyle={'xs'} textAlign='center'>
+                    Already have an account?{' '}
+                  </Text>
                   <Button
                     variant={'solid'}
                     bg={'black'}
@@ -209,16 +112,136 @@ export const Account = ({ openLogin, setLoginOpen }) => {
                       bg: 'transparent',
                       color: 'colorPalette.fg',
                     }}
-                    onClick={handleRegisterClick}
+                    onClick={handleLoginClick}
                   >
-                    {'Register'}
+                    {'Login'}
                   </Button>
-                </ButtonGroup>
-              )}
-            </Group>
-          </DialogFooter>
-        </DialogContent>
-      </DialogRoot>
+                </Group>
+              </Drawer.Footer>
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Portal>
+      </Drawer.Root>
+      <Drawer.Root
+        lazyMount
+        size={'md'}
+        open={openLogin}
+        // initialFocusEl={() => ref.current}
+      >
+        <Portal>
+          <Drawer.Backdrop css={{ backdropFilter: 'blur(5px)' }} />
+          <Drawer.Positioner
+          // p={10}
+          >
+            <Drawer.Content
+              rounded={0}
+              // rounded={40}
+              p={4}
+              bg={'#e7e7e7'}
+            >
+              <Drawer.CloseTrigger
+                position={'absolute'}
+                top={'1rem'}
+                left={'-4rem'}
+                asChild
+              >
+                <CloseButton size='2xl' />
+              </Drawer.CloseTrigger>
+              <Drawer.Header pt={2} pb={3}>
+                <Drawer.Title
+                  fontSize={'2rem'}
+                  fontWeight={'normal'}
+                  textTransform={'uppercase'}
+                  lineHeight={1}
+                  pb={3}
+                  borderBottom={'1px solid #919191'}
+                >
+                  {settings?.customerId ? `Account` : 'Login'}
+                </Drawer.Title>
+              </Drawer.Header>
+              <Drawer.Body>
+                <LoginForm
+                  variant={'white'}
+                  emailAddress={customer.email}
+                  onSuccess={() => setLoginOpen(false)}
+                />
+              </Drawer.Body>
+              <Drawer.Footer asChild>
+                <Group gap={2} justifyContent={'center'}>
+                  {settings?.customerId && (
+                    <Button
+                      as={Link}
+                      href={`/account`}
+                      variant={'outline'}
+                      borderRadius={'full'}
+                      size={'2xs'}
+                      bg={'black'}
+                      color={'white'}
+                      _hover={{ bg: 'white', color: 'black' }}
+                    >
+                      {'My account'}
+                    </Button>
+                  )}
+                  {customer?.email ? (
+                    <ButtonGroup gap={1} variant={'subtle'}>
+                      <Button
+                        borderRadius={'full'}
+                        size={'2xs'}
+                        bg={'black'}
+                        color={'white'}
+                        _hover={{ bg: 'white', color: 'black' }}
+                        onClick={handleLogout}
+                      >
+                        {'Logout'}
+                      </Button>
+                    </ButtonGroup>
+                  ) : (
+                    <ButtonGroup gap={1} variant={'subtle'}>
+                      {resetPasswordUrl.length > 0 && (
+                        <Button
+                          asChild
+                          variant='text'
+                          size='xs'
+                          fontSize='xs'
+                          px={2}
+                          py={1}
+                          h='auto'
+                          minH='auto'
+                        >
+                          <ChakraLink
+                            target='_blank'
+                            as={Link}
+                            href={`${resetPasswordUrl}`}
+                          >
+                            Forgot password?
+                          </ChakraLink>
+                        </Button>
+                      )}
+                      <Button
+                        variant={'solid'}
+                        bg={'black'}
+                        color={'white'}
+                        borderRadius={'5rem'}
+                        border={'2px solid #000'}
+                        size={'xs'}
+                        fontSize={'sm'}
+                        gap={1}
+                        _hover={{
+                          bg: 'transparent',
+                          color: 'colorPalette.fg',
+                        }}
+                        onClick={handleRegisterClick}
+                      >
+                        {'Register'}
+                      </Button>
+                    </ButtonGroup>
+                  )}
+                </Group>
+              </Drawer.Footer>
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Portal>
+      </Drawer.Root>
     </>
   )
 }

@@ -61,11 +61,13 @@ const validationSchema = yup.object().shape({
 interface SignUpFormProps {
   emailAddress?: string
   onSuccess?: () => void
+  variant?: string
 }
 
 export const SignUpForm: React.FC<SignUpFormProps> = ({
   emailAddress,
   onSuccess,
+  variant,
 }): JSX.Element => {
   const { settings, clientConfig, config, isLoading, handleLogin, customer } =
     useIdentityContext()
@@ -197,39 +199,34 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 name='customerEmail'
                 label='Email'
                 type='email'
-                variant='subtle'
                 size='lg'
                 fontSize='lg'
                 borderRadius={0}
+                variant={variant}
               />
               <FloatingLabelInput
                 name='customerName'
                 label='Full name'
                 type='text'
-                variant='subtle'
                 size='lg'
                 fontSize='lg'
                 borderRadius={0}
+                variant={variant}
               />
-              <PasswordInput name='customerPassword' label='Password' />
               <PasswordInput
+                variant={variant}
+                name='customerPassword'
+                label='Password'
+              />
+              <PasswordInput
+                variant={variant}
                 name='customerConfirmPassword'
                 label='Confirm Password'
               />
 
               <Button
-                variant={'subtle'}
+                variant={variant === 'white' ? 'solid' : 'subtle'}
                 w={'full'}
-                borderColor={'none'}
-                borderWidth={'none'}
-                bg={'brand.50'}
-                _hover={{
-                  bg: '#e3e3e3',
-                }}
-                borderRadius={'100px'}
-                transition={
-                  'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
-                }
                 size={'sm'}
                 py={5}
                 fontSize={'lg'}

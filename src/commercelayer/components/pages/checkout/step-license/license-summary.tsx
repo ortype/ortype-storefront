@@ -16,8 +16,6 @@ import {
 import {
   Box,
   Button,
-  ButtonGroup,
-  Container,
   Drawer,
   Flex,
   Portal,
@@ -25,7 +23,6 @@ import {
   useStepsContext,
   VStack,
 } from '@chakra-ui/react'
-import { useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { LicenseOwnerForm, LicenseOwnerFormData } from './license-owner-form'

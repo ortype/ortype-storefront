@@ -112,14 +112,19 @@ export const buttonRecipe = defineRecipe({
     },
     variant: {
       solid: {
-        bg: 'colorPalette.solid',
-        color: 'colorPalette.contrast',
+        bg: 'colorPalette.bg',
+        color: 'colorPalette.fg',
+        borderRadius: '100px',
+        borderColor: 'none',
+        borderWidth: 'none',
         _hover: {
-          bg: 'colorPalette.solid/90',
+          bg: '#e4e4e4',
         },
         _expanded: {
-          bg: 'colorPalette.solid/90',
+          bg: '#e4e4e4',
         },
+        transition:
+          'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
       },
       subtle: {
         bg: 'colorPalette.subtle',

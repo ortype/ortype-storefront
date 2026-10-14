@@ -1,14 +1,5 @@
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
-import {
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  SimpleGrid,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+import { Box, Flex, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 interface LicenseSummaryProps {
