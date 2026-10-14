@@ -74,7 +74,7 @@ const SummaryGroup: React.FC<{
               fontSize={'sm'}
               justifyContent={'flex-end'}
             >
-              {formatPrice(group.groupTotalCents, priceLocale)} EUR
+              {formatPrice(group.groupTotalCents, priceLocale)}
             </Flex>
           </SimpleGrid>
         </HStack>
@@ -94,7 +94,7 @@ const SummaryGroup: React.FC<{
             <Box fontSize={'xs'}>{style.licenseTypeLabels.join(', ')}</Box>
             <Box textAlign={'right'}>
               {style.priceCents != null ? (
-                <>{formatPrice(style.priceCents, priceLocale)} EUR</>
+                <>{formatPrice(style.priceCents, priceLocale)}</>
               ) : (
                 ''
               )}
@@ -207,6 +207,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             borderBottom={'1px solid #E7E0BF'}
             mb={1.5}
             fontSize={'sm'}
+            gap={2}
           >
             <Box>{parentFontCount}</Box>
             <Box pl={3}>{allStylesCount}</Box>
@@ -228,7 +229,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               {'Subtotal (excl. discounts)'}
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
-              {formatPrice(subtotalCents, priceLocale)} EUR
+              {formatPrice(subtotalCents, priceLocale)}
             </Box>
           </SimpleGrid>
           {totalDiscountCents > 0 && (
@@ -244,7 +245,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               </Box>
               <Box fontSize={'lg'} textAlign={'right'}>
                 {'-'}
-                {formatPrice(totalDiscountCents, priceLocale)} EUR
+                {formatPrice(totalDiscountCents, priceLocale)}
               </Box>
             </SimpleGrid>
           )}
@@ -254,16 +255,15 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               textTransform={'uppercase'}
               fontWeight={'normal'}
             >
-              {'Total'}
+              {'Total EUR'}
             </Box>
-            <Box fontSize={'xl'} textAlign={'right'}>
+            <Box fontSize={'xl'} fontWeight={500} textAlign={'right'}>
               {order && (
                 <>
                   {formatPrice(
                     order.subtotal_taxable_amount_cents,
                     priceLocale
                   )}{' '}
-                  EUR
                 </>
               )}
             </Box>

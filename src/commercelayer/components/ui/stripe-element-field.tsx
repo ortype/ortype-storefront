@@ -142,6 +142,7 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
 
     return {
       style: {
+        // these individual Card Elements use style.base, not the Appearance API
         base: {
           width: '100%',
           fontSize: '20px', // these get reset by element updater
@@ -152,6 +153,9 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
           // '-webkit-font-smoothing': 'antialiased', // @TODO: how to implement this prop in the iframe?
           '::placeholder': {
             color: 'transparent', // Hide Stripe's placeholder to avoid overlap
+          },
+          hover: {
+            bg: '#e3e3e3',
           },
         },
         invalid: {
@@ -175,7 +179,7 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
           borderRadius: 0,
           pointerEvents: 'none',
           ...(isFocused && {
-            boxShadow: '0 0 0 3px black',
+            bg: '#e3e3e3',
           }),
         }}
       >
@@ -185,6 +189,9 @@ export const StripeElementField: React.FC<StripeElementFieldProps> = ({
           borderStyle='solid'
           borderColor='transparent'
           bg='brand.50'
+          _hover={{
+            bg: '#e3e3e3',
+          }}
           px={3}
           borderRadius={0}
           h={'var(--or-sizes-11)'}

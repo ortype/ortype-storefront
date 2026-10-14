@@ -50,7 +50,13 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
 
   return (
     <Card.Root w={'full'}>
-      <Card.Body p={3}>
+      <Card.Body
+        p={3}
+        bg={'brand.50'}
+        _hover={{
+          bg: '#e4e4e4',
+        }}
+      >
         <Checkbox
           data-testid={dataTestId}
           name={fieldName}

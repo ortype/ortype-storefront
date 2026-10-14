@@ -423,24 +423,12 @@ const CustomStripePaymentForm: React.FC<CustomStripePaymentFormProps> = ({
     // @NOTE: This appears to successfully enable custom fonts in the Elements
     fonts: [
       {
-        family: 'Alltaf-Regular',
+        family: 'Alltaf-Var',
         // src: 'url(https://assets.ortype.is/v3/alltaf-regular-webfont.woff) format(woff2)',
-        src: `url("${alltafVfUrl('woff2')}") format("woff2")`,
+        src: `url("${alltafVfUrl('woff2')}") format("woff2"), url("${alltafVfUrl('woff')}") format("woff")`,
         weight: '400',
       },
     ],
-    // @NOTE: These appear to have no effect with the current setup
-    appearance: {
-      variables: {
-        spacingUnit: 'rem',
-        colorPrimary: 'black',
-        colorBackground: '#EEE',
-        fontSizeBase: '20px',
-        fontFamily: 'Alltaf-Var, sans',
-      },
-      theme: 'flat',
-      labels: 'floating',
-    },
   }
 
   return (

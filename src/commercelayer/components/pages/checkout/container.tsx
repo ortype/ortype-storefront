@@ -5,9 +5,9 @@ import getCommerceLayer, {
   isValidCommerceLayerConfig,
 } from '@/commercelayer/utils/getCommerceLayer'
 import { isValidCheckout } from '@/commercelayer/utils/isValidCheckout'
-import { Box, Center, Spinner, Text } from '@chakra-ui/react'
+import { Box, Button, Center, Spinner, Text, VStack } from '@chakra-ui/react'
 import type { Order } from '@commercelayer/sdk'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface Props {
@@ -30,7 +30,10 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
   const fetchKeyRef = useRef<string | null>(null)
 
   const params = useParams()
-
+  const router = useRouter()
+  const handleClick = () => {
+    router.push(`/`)
+  }
   // Extract and validate orderId (handle string[] case from dynamic routes)
   const orderId = Array.isArray(params.orderId)
     ? params.orderId[0]
@@ -205,27 +208,65 @@ const CheckoutContainer = ({ children }: Props): JSX.Element => {
   // Show error if order fetching failed
   if (localError) {
     return (
-      <Text fontSize={'xs'} color={'red'}>
-        {`Failed to load checkout: ${localError}`}
-      </Text>
+      <Center h='full'>
+        <VStack gap={6}>
+          <Text
+            fontSize={'2xl'}
+          >{`Failed to load checkout: ${localError}`}</Text>
+          <Button
+            onClick={handleClick}
+            variant={'outline'}
+            bg={'white'}
+            borderRadius={'5rem'}
+            size={'sm'}
+            fontSize={'md'}
+          >
+            {'Continue shopping'}
+          </Button>
+        </VStack>
+      </Center>
     )
   }
 
   // Show error if orderId is missing
   if (!orderId) {
     return (
-      <Text fontSize={'xs'} color={'red'}>
-        {'Order ID is required for checkout'}
-      </Text>
+      <Center h='full'>
+        <VStack gap={6}>
+          <Text fontSize={'2xl'}>{'Order ID is required for checkout'}</Text>
+          <Button
+            onClick={handleClick}
+            variant={'outline'}
+            bg={'white'}
+            borderRadius={'5rem'}
+            size={'sm'}
+            fontSize={'md'}
+          >
+            {'Continue shopping'}
+          </Button>
+        </VStack>
+      </Center>
     )
   }
 
   // Show error if checkout is invalid
   if (!valid) {
     return (
-      <Text fontSize={'xs'} color={'red'}>
-        {'Invalid checkout'}
-      </Text>
+      <Center h='full'>
+        <VStack gap={6}>
+          <Text fontSize={'2xl'}>{'Invalid checkout 😢'}</Text>
+          <Button
+            onClick={handleClick}
+            variant={'outline'}
+            bg={'white'}
+            borderRadius={'5rem'}
+            size={'sm'}
+            fontSize={'md'}
+          >
+            {'Continue shopping'}
+          </Button>
+        </VStack>
+      </Center>
     )
   }
 

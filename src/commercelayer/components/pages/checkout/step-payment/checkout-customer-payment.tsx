@@ -72,7 +72,13 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
 
       return (
         <Card.Root w={'full'}>
-          <Card.Body p={3}>
+          <Card.Body
+            p={3}
+            bg={'brand.50'}
+            _hover={{
+              bg: '#e4e4e4',
+            }}
+          >
             <Checkbox
               name={name}
               id={name}
@@ -81,11 +87,7 @@ export const CheckoutCustomerPayment: React.FC<Props> = memo(
               defaultChecked={false}
               onClick={handleClick}
               onCheckedChange={handleChange}
-              variant={'outline'}
-              bg={'brand.50'}
-              _hover={{
-                bg: '#e3e3e3',
-              }}
+              variant={'solid'}
               size={'sm'}
             >
               {t('stepPayment.saveToWallet') || 'Save to wallet'}

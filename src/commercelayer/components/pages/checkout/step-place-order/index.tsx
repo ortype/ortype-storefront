@@ -79,6 +79,10 @@ const StepPlaceOrder: React.FC<Props> = ({ termsUrl, privacyUrl }) => {
                     }
                   : {}
               }
+              bg={'brand.50'}
+              _hover={{
+                bg: '#e4e4e4',
+              }}
             >
               {/*<Card.Title mb={2}>{'Terms of use'}</Card.Title>*/}
 

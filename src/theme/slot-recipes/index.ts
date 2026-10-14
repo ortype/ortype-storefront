@@ -13,7 +13,7 @@ import { dialogSlotRecipe } from './dialog'
 // import { drawerSlotRecipe } from "./drawer"
 // import { editableSlotRecipe } from "./editable"
 // import { emptyStateSlotRecipe } from "./empty-state"
-// import { fieldSlotRecipe } from "./field"
+import { fieldSlotRecipe } from './field'
 // import { fieldsetSlotRecipe } from "./fieldset"
 // import { fileUploadSlotRecipe } from "./file-upload"
 import { hoverCardSlotRecipe } from './hover-card'
@@ -60,7 +60,7 @@ export const slotRecipes = {
   // drawer: drawerSlotRecipe,
   // editable: editableSlotRecipe,
   // emptyState: emptyStateSlotRecipe,
-  // field: fieldSlotRecipe,
+  field: fieldSlotRecipe,
   // fieldset: fieldsetSlotRecipe,
   // fileUpload: fileUploadSlotRecipe,
   hoverCard: hoverCardSlotRecipe,
