@@ -2,6 +2,7 @@
 import { AddButton } from '@/commercelayer/components/ui/add-button'
 import AddressesContainer from '@/commercelayer/providers/addresses'
 import { useCustomerContext } from '@/commercelayer/providers/customer'
+import { getStateName } from '@/commercelayer/utils/country-utils'
 import {
   Box,
   Button,
@@ -16,13 +17,12 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { Address } from '@commercelayer/sdk'
-import { EllipsisHorizontalIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import AddressFormDialog from '../address/address-form-dialog'
 import { CustomerDetailsForm } from './customer-details-form'
-import { getStateName } from '@/commercelayer/utils/country-utils'
 
 const AddressCard = ({
   address,
@@ -86,7 +86,7 @@ const AddressCard = ({
             }}
             size='sm'
           >
-            <EllipsisHorizontalIcon />
+            <Icon symbol={'ellipsis-horizontal'} />
           </IconButton>
         </Menu.Trigger>
         <Portal>

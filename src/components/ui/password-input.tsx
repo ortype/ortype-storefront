@@ -9,8 +9,8 @@ import type {
 } from '@chakra-ui/react'
 import {
   Box,
-  Field,
   Input as ChakraInput,
+  Field,
   HStack,
   IconButton,
   InputGroup,
@@ -18,9 +18,9 @@ import {
   defineStyle,
   useControllableState,
 } from '@chakra-ui/react'
+import { EyeClosedIcon, EyeOpenIcon } from '@sanity/icons'
 import * as React from 'react'
 import { useFormContext } from 'react-hook-form'
-import { LuEye, LuEyeOff } from 'react-icons/lu'
 export interface PasswordVisibilityProps {
   defaultVisible?: boolean
   visible?: boolean
@@ -51,7 +51,7 @@ export const PasswordInput = React.forwardRef<
     defaultVisible,
     visible: visibleProp,
     onVisibleChange,
-    visibilityIcon = { on: <LuEye />, off: <LuEyeOff /> },
+    visibilityIcon = { on: <EyeOpenIcon />, off: <EyeClosedIcon /> },
     ...rest
   } = props
 

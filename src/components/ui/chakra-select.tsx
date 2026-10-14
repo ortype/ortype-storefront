@@ -8,7 +8,7 @@ import {
   Portal,
   useSelectItemContext,
 } from '@chakra-ui/react'
-import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import * as React from 'react'
 import { CloseButton } from './close-button'
 
@@ -19,7 +19,7 @@ interface SelectTriggerProps extends ChakraSelect.ControlProps {
 const SelectTriggerIndicator = () => {
   return (
     <Box fontSize={'2rem'} w={8} ml={-1}>
-      <ChevronDownIcon />
+      <Icon symbol='chevron-down' />
     </Box>
   )
 }

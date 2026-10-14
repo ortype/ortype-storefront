@@ -2,8 +2,8 @@ import {
   NumberInput as ChakraNumberInput,
   InputGroup,
 } from '@chakra-ui/react'
+import { Icon } from '@sanity/icons'
 import * as React from 'react'
-import { LuArrowRightLeft } from 'react-icons/lu'
 
 export interface NumberInputProps extends ChakraNumberInput.RootProps {}
 
@@ -20,7 +20,7 @@ export const NumberInputRoot = React.forwardRef<
           startElementProps={{ pointerEvents: 'auto' }}
           startElement={
             <ChakraNumberInput.Scrubber>
-              <LuArrowRightLeft />
+              <Icon symbol='arrow-right' />
             </ChakraNumberInput.Scrubber>
           }
         >

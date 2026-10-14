@@ -2,8 +2,7 @@ import {
   useBuyContext,
   type ToggleStyleParams,
 } from '@/commercelayer/providers/buy'
-import { Box, Collapsible, Flex, HStack, VStack } from '@chakra-ui/react'
-import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
+import { Flex } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { SingleStyles } from './single-styles'
 

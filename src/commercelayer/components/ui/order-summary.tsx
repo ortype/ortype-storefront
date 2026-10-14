@@ -16,7 +16,7 @@ import {
   SimpleGrid,
   Text,
 } from '@chakra-ui/react'
-import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 
@@ -49,7 +49,11 @@ const SummaryGroup: React.FC<{
               <Collapsible.Context>
                 {({ open }) => (
                   <Box fontSize={'md'} w={4}>
-                    {open ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                    {open ? (
+                      <Icon symbol='chevron-down' />
+                    ) : (
+                      <Icon symbol={'chevron-right'} />
+                    )}
                   </Box>
                 )}
               </Collapsible.Context>

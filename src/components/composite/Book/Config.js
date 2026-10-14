@@ -33,14 +33,7 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 
-import { CloseButton } from '@/components/ui/close-button'
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  CogIcon,
-  CopyIcon,
-  TransferIcon,
-} from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 
 const Config = () => {
   const bookLayoutStore = useBookLayoutStore()
@@ -66,7 +59,7 @@ const Config = () => {
       <PopoverRoot>
         <PopoverTrigger asChild>
           <IconButton variant={'outline'}>
-            <CogIcon width={'1.5rem'} height={'1.5rem'} />
+            <Icon symbol='cog' width={'1.5rem'} height={'1.5rem'} />
           </IconButton>
         </PopoverTrigger>
         <Portal>
@@ -112,7 +105,11 @@ const Config = () => {
                         as={Button}
                         variant={'outline'}
                         leftIcon={
-                          <CopyIcon width={'1.5rem'} height={'1.5rem'} />
+                          <Icon
+                            symbol='copy'
+                            width={'1.5rem'}
+                            height={'1.5rem'}
+                          />
                         }
                       >
                         <Text fontSize={'sm'}>{'Duplicate'}</Text>
@@ -120,7 +117,8 @@ const Config = () => {
                       <MenuContent portalled={false}>
                         <MenuItem
                           icon={
-                            <ArrowRightIcon
+                            <Icon
+                              symbol='arrow-right'
                               width={'1.5rem'}
                               height={'1.5rem'}
                             />
@@ -131,7 +129,8 @@ const Config = () => {
                         </MenuItem>
                         <MenuItem
                           icon={
-                            <ArrowLeftIcon
+                            <Icon
+                              symbol='arrow-left'
                               width={'1.5rem'}
                               height={'1.5rem'}
                             />
@@ -147,7 +146,11 @@ const Config = () => {
                       variant={'outline'}
                       onClick={handleSwap}
                     >
-                      <TransferIcon width={'1.5rem'} height={'1.5rem'} />{' '}
+                      <Icon
+                        symbol='transfer'
+                        width={'1.5rem'}
+                        height={'1.5rem'}
+                      />{' '}
                       {'Swap'}
                     </Button>
                   </Group>

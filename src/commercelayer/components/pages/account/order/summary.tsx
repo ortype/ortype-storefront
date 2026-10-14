@@ -18,7 +18,7 @@ import {
   Portal,
   SimpleGrid,
 } from '@chakra-ui/react'
-import { EllipsisHorizontalIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import { format, parseISO } from 'date-fns'
 import { useMemo } from 'react'
 
@@ -119,7 +119,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
                 }}
                 size="sm"
               >
-                <EllipsisHorizontalIcon />
+                <Icon symbol={'ellipsis-horizontal'} />
               </IconButton>*/}
               <Button
                 variant='text'

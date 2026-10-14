@@ -1,6 +1,6 @@
 import type { ButtonProps } from '@chakra-ui/react'
 import { IconButton as ChakraIconButton } from '@chakra-ui/react'
-import { CloseIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import * as React from 'react'
 
 export type CloseButtonProps = ButtonProps
@@ -27,7 +27,9 @@ export const CloseButton = React.forwardRef<
       ref={ref}
       {...props}
     >
-      {props.children ?? <CloseIcon width={'4rem'} height={'4rem'} />}
+      {props.children ?? (
+        <Icon symbol='close' width={'4rem'} height={'4rem'} />
+      )}
     </ChakraIconButton>
   )
 })

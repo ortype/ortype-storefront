@@ -3,7 +3,6 @@ import { useBookLayoutStore } from '@/components/data/BookProvider'
 import { Box, Container, Flex, Text } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React, { useContext, useEffect, useState } from 'react'
-import { LuBoomBox } from 'react-icons/lu'
 import { type BlockStyle, type LineParams, type Update } from './bookTypes'
 
 const EntrySpans = ({ entry, line, layout }) => {

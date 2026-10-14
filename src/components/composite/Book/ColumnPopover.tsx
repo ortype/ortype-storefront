@@ -1,32 +1,19 @@
 import { useBookLayoutStore } from '@/components/data/BookProvider'
-import { CloseButton } from '@/components/ui/close-button'
 import {
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverHeader,
   PopoverRoot,
-  PopoverTitle,
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Box, Button, ButtonGroup, Text, VStack } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 
-import {
-  type BlockParams,
-  type BlockStyle,
-  type LineParams,
-  type Update,
-} from './bookTypes'
+import { type BlockParams, type Update } from './bookTypes'
 
-import {
-  CopyIcon,
-  EllipsisVerticalIcon,
-  InsertAboveIcon,
-  InsertBelowIcon,
-  TrashIcon,
-} from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 
 const ColumnPopover: React.FC<{
   blocks: BlockParams[]
@@ -61,7 +48,7 @@ const ColumnPopover: React.FC<{
             background: '#f1f1f18a',
           }}
         >
-          <EllipsisVerticalIcon />
+          <Icon symbol='ellipsis-vertical' />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -136,7 +123,7 @@ const ColumnPopover: React.FC<{
                   }
                   fontSize={'2xl'}
                 >
-                  <InsertAboveIcon />{' '}
+                  <Icon symbol='insert-above' />{' '}
                   <Text as={'span'} fontSize={'xs'}>
                     Before
                   </Text>
@@ -148,7 +135,7 @@ const ColumnPopover: React.FC<{
                     bookLayoutStore.addColumn(page, 30, 'after', col)
                   }
                   fontSize={'2xl'}
-                  rightIcon={<InsertBelowIcon />}
+                  rightIcon={<Icon symbol='insert-below' />}
                 >
                   <Text as={'span'} fontSize={'xs'}>
                     After
@@ -165,7 +152,7 @@ const ColumnPopover: React.FC<{
                   bookLayoutStore.duplicateColumn(page, width, blocks, col)
                 }
               >
-                <CopyIcon />{' '}
+                <Icon symbol='copy' />{' '}
                 <Text as={'span'} fontSize={'xs'}>
                   Duplicate
                 </Text>
@@ -176,7 +163,7 @@ const ColumnPopover: React.FC<{
                 size={'sm'}
                 onClick={() => bookLayoutStore.removeColumn(page, col)}
               >
-                <TrashIcon />
+                <Icon symbol='trash' />
                 <Text as={'span'} fontSize={'xs'}>
                   Remove
                 </Text>

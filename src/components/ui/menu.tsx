@@ -1,8 +1,8 @@
 'use client'
 
 import { AbsoluteCenter, Menu as ChakraMenu, Portal } from '@chakra-ui/react'
+import { Icon } from '@sanity/icons'
 import * as React from 'react'
-import { LuCheck, LuChevronRight } from 'react-icons/lu'
 
 interface MenuContentProps extends ChakraMenu.ContentProps {
   portalled?: boolean
@@ -40,7 +40,7 @@ export const MenuCheckboxItem = React.forwardRef<
   return (
     <ChakraMenu.CheckboxItem ref={ref} {...props}>
       <ChakraMenu.ItemIndicator hidden={false}>
-        <LuCheck />
+        <Icon symbol='checkmark' />
       </ChakraMenu.ItemIndicator>
       {props.children}
     </ChakraMenu.CheckboxItem>
@@ -56,7 +56,7 @@ export const MenuRadioItem = React.forwardRef<
     <ChakraMenu.RadioItem ps='8' ref={ref} {...rest}>
       <AbsoluteCenter axis='horizontal' left='4' asChild>
         <ChakraMenu.ItemIndicator>
-          <LuCheck />
+          <Icon symbol='checkmark' />
         </ChakraMenu.ItemIndicator>
       </AbsoluteCenter>
       <ChakraMenu.ItemText>{children}</ChakraMenu.ItemText>
@@ -94,7 +94,7 @@ export const MenuTriggerItem = React.forwardRef<
     <ChakraMenu.TriggerItem ref={ref} {...rest}>
       {startIcon}
       {children}
-      <LuChevronRight />
+      <Icon symbol='chevron-right' />
     </ChakraMenu.TriggerItem>
   )
 })

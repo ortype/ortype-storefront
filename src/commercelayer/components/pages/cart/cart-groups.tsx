@@ -1,15 +1,13 @@
 import {
   Badge,
   Box,
-  Button,
   IconButton as ChakraIconButton,
   Flex,
   HStack,
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { CloseIcon } from '@sanity/icons'
-import Link from 'next/link'
+import { Icon } from '@sanity/icons'
 import React from 'react'
 
 import type { CartBufferGroup } from '@/commercelayer/providers/cart'
@@ -82,7 +80,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                       },
                     }}
                   >
-                    <CloseIcon width={'2rem'} height={'2rem'} />
+                    <Icon symbol={'close'} width={'2rem'} height={'2rem'} />
                   </ChakraIconButton>
                   <Text
                     fontSize={'2xl'}
@@ -159,7 +157,7 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                             },
                           }}
                         >
-                          <CloseIcon width={'2rem'} height={'2rem'} />
+                          <Icon symbol='close' width={'2rem'} height={'2rem'} />
                         </ChakraIconButton>
                       )*/}
                       </Flex>
@@ -238,7 +236,11 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                                 },
                               }}
                             >
-                              <CloseIcon width={'2rem'} height={'2rem'} />
+                              <Icon
+                                symbol='close'
+                                width={'2rem'}
+                                height={'2rem'}
+                              />
                             </ChakraIconButton>
                           )}
                           <VStack gap={1} alignItems={'stretch'} w={'full'}>

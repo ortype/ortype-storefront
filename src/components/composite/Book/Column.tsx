@@ -1,17 +1,14 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react'
-import { InsertBelowIcon } from '@sanity/icons'
 import { useBookLayoutStore } from '@/components/data/BookProvider'
 import GetBlocks from '@/components/data/BookProvider/GetBlocks'
+import { Box, Flex } from '@chakra-ui/react'
 import { observer } from 'mobx-react-lite'
-import React, { useContext, useRef } from 'react'
+import React from 'react'
 import Block from './Block'
 import {
-  type BlockParams,
   type BlockStyle,
   type BlockStyleOptions,
   type BlockStyleParams,
   type ColumnProps,
-  type Metrics,
 } from './bookTypes'
 import { ColumnPopover } from './index'
 

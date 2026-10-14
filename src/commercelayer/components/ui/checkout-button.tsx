@@ -1,14 +1,7 @@
 import { useOrderContext } from '@/commercelayer/providers/order'
 import { toaster } from '@/components/ui/toaster'
-import {
-  Button,
-  Flex,
-  HStack,
-  Spinner,
-  Stack,
-  VStack,
-} from '@chakra-ui/react'
-import { LockIcon } from '@sanity/icons'
+import { Button, Spinner } from '@chakra-ui/react'
+import { Icon } from '@sanity/icons'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
@@ -63,7 +56,7 @@ export const CheckoutButton: React.FC<Props> = ({
 
   return (
     <Button
-      variant={'outline'}
+      variant={'solid'}
       bg={'colorPalette.fg'}
       color={'colorPalette.bg'}
       borderRadius={'5rem'}
@@ -72,7 +65,7 @@ export const CheckoutButton: React.FC<Props> = ({
       w={'full'}
       css={{
         _hover: {
-          bg: 'transparent',
+          bg: 'red',
           color: 'colorPalette.fg',
         },
       }}
@@ -86,7 +79,7 @@ export const CheckoutButton: React.FC<Props> = ({
         </>
       ) : (
         <>
-          <LockIcon /> {label || 'Checkout  →'}
+          <Icon symbol={'lock'} /> {label || 'Checkout  →'}
         </>
       )}
     </Button>

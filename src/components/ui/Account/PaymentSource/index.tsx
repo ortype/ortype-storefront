@@ -1,6 +1,5 @@
 import { PaymentSourceBrandName } from '@commercelayer/react-components/payment_source/PaymentSourceBrandName'
 import { PaymentSourceDetail } from '@commercelayer/react-components/payment_source/PaymentSourceDetail'
-import { AsteriskSimple } from 'phosphor-react'
 import { Trans, useTranslation } from 'react-i18next'
 
 import { getTranslations } from '@/utils/payments'
@@ -30,48 +29,13 @@ export function PaymentSourceCreditCardEndingIn(): JSX.Element {
   )
 }
 
-function PaymentSourceCreditCardAsterisks(): JSX.Element {
-  return (
-    <div className='flex items-center'>
-      <AsteriskSimple size={8} />
-      <AsteriskSimple size={8} />
-      <AsteriskSimple size={8} />
-      <AsteriskSimple size={8} />
-    </div>
-  )
-}
-
-function PaymentSourceCreditCardAsterisksGroup(): JSX.Element {
-  return (
-    <div className='flex items-center py-1 gap-1'>
-      <PaymentSourceCreditCardAsterisks />
-      <PaymentSourceCreditCardAsterisks />
-      <PaymentSourceCreditCardAsterisks />
-    </div>
-  )
-}
-
-function PaymentSourceCreditCardExpiresAsterisks(): JSX.Element {
-  return (
-    <div className='flex items-center'>
-      <AsteriskSimple size={8} />
-      <AsteriskSimple size={8} />
-    </div>
-  )
-}
-
 export function PaymentSourceCreditCardNumber(): JSX.Element {
   return (
     <Flex>
-      <PaymentSourceCreditCardAsterisksGroup />
       <Text>
         <PaymentSourceDetail type='last4'>
           {({ text }) => {
-            return text === '****' ? (
-              <PaymentSourceCreditCardAsterisks />
-            ) : (
-              <span>{text}</span>
-            )
+            return <span>{text}</span>
           }}
         </PaymentSourceDetail>
       </Text>
@@ -87,25 +51,13 @@ export function PaymentSourceCreditCardExpires({
 }: PaymentSourceCreditCardExpiresProps): JSX.Element {
   const expiry_month = (
     <PaymentSourceDetail type='exp_month'>
-      {({ text }) =>
-        text === '**' ? (
-          <PaymentSourceCreditCardExpiresAsterisks />
-        ) : (
-          <span>{text}</span>
-        )
-      }
+      {({ text }) => <span>{text}</span>}
     </PaymentSourceDetail>
   )
 
   const exp_year = (
     <PaymentSourceDetail type='exp_year'>
-      {({ text }) =>
-        text === '**' ? (
-          <PaymentSourceCreditCardExpiresAsterisks />
-        ) : (
-          <span>{text.toString().slice(-2)}</span>
-        )
-      }
+      {({ text }) => <span>{text}</span>}
     </PaymentSourceDetail>
   )
 

@@ -46,17 +46,7 @@ import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect, useState } from 'react'
 
-import {
-  AddDocumentIcon,
-  ChevronDownIcon,
-  ClipboardImageIcon,
-  CopyIcon,
-  EditIcon,
-  EyeOpenIcon,
-  PublishIcon,
-  ResetIcon,
-  TrashIcon,
-} from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 
 const layoutOptions = (layouts) => {
   const {
@@ -420,13 +410,17 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                 {updateLoading ? (
                   <Spinner />
                 ) : (
-                  <PublishIcon width={'1.5rem'} height={'1.5rem'} />
+                  <Icon symbol='publish' width={'1.5rem'} height={'1.5rem'} />
                 )}{' '}
                 <Text fontSize={'sm'}>{`Publish`}</Text>
               </Button>
               <MenuRoot>
                 <MenuTrigger as={IconButton} variant={'outline'}>
-                  <ChevronDownIcon width={'1.5rem'} height={'1.5rem'} />
+                  <Icon
+                    symbol='chevron-down'
+                    width={'1.5rem'}
+                    height={'1.5rem'}
+                  />
                 </MenuTrigger>
                 <MenuContent>
                   <MenuItem
@@ -434,23 +428,31 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
                     onClick={handleDiscard}
                     value={'discard'}
                   >
-                    <ResetIcon width={'1.5rem'} height={'1.5rem'} />
+                    <Icon symbol='reset' width={'1.5rem'} height={'1.5rem'} />
                     <Text fontSize={'sm'}>{`Discard changes`}</Text>
                   </MenuItem>
                   <MenuItem onClick={handleAdd} value={'add'}>
-                    <AddDocumentIcon width={'1.5rem'} height={'1.5rem'} />
+                    <Icon
+                      symbol='add-document'
+                      width={'1.5rem'}
+                      height={'1.5rem'}
+                    />
                     <Text fontSize={'sm'}>{`Create`}</Text>
                   </MenuItem>
                   <MenuItem onClick={handleDuplicate} value={'duplicate'}>
-                    <CopyIcon width={'1.5rem'} height={'1.5rem'} />
+                    <Icon symbol='copy' width={'1.5rem'} height={'1.5rem'} />
                     <Text fontSize={'sm'}>{`Duplicate`}</Text>
                   </MenuItem>
                   <MenuItem onClick={() => setOpen(true)} value={'delete'}>
-                    <TrashIcon width={'1.5rem'} height={'1.5rem'} />
+                    <Icon symbol='trash' width={'1.5rem'} height={'1.5rem'} />
                     <Text fontSize={'sm'}>{`Delete`}</Text>
                   </MenuItem>
                   <MenuItem onClick={handleExport} value={'export'}>
-                    <ClipboardImageIcon width={'1.5rem'} height={'1.5rem'} />{' '}
+                    <Icon
+                      symbol='clipboard-image'
+                      width={'1.5rem'}
+                      height={'1.5rem'}
+                    />{' '}
                     <Text fontSize={'sm'}>{`Export snapshot`}</Text>
                   </MenuItem>
                 </MenuContent>
@@ -500,9 +502,19 @@ const Toolbar = observer(({ font, fonts, bookLayoutData }) => {
         onClick={() => bookLayoutStore.setEditMode(!bookLayoutStore.editMode)}
       >
         {bookLayoutStore.editMode ? (
-          <EyeOpenIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
+          <Icon
+            symbol='eye-open'
+            color={'#FFF'}
+            width={'1.5rem'}
+            height={'1.5rem'}
+          />
         ) : (
-          <EditIcon color={'#FFF'} width={'1.5rem'} height={'1.5rem'} />
+          <Icon
+            symbol='edit'
+            color={'#FFF'}
+            width={'1.5rem'}
+            height={'1.5rem'}
+          />
         )}
       </IconButton>
     </Box>

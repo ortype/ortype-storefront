@@ -1,4 +1,4 @@
-import { LinkIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 
 export default defineType({
@@ -29,7 +29,7 @@ export default defineType({
             name: 'internalLink',
             type: 'object',
             title: 'Internal link',
-            icon: () => <LinkIcon />,
+            icon: () => <Icon symbol='link' />,
             fields: [
               {
                 name: 'reference',

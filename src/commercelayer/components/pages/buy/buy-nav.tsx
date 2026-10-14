@@ -1,12 +1,5 @@
 'use client'
-import {
-  Box,
-  Button,
-  Link as ChakraLink,
-  For,
-  IconButton,
-} from '@chakra-ui/react'
-import { ChevronDownIcon } from '@sanity/icons'
+import { Box, Button, For } from '@chakra-ui/react'
 import NextLink from 'next/link'
 
 import { useDraftGuard } from '@/commercelayer/components/pages/buy/use-draft-guard'

@@ -1,7 +1,7 @@
 import { Tooltip } from '@/components/ui/tooltip'
 import { signOut } from '@/lib/auth/helpers'
-import { Box, IconButton, useDisclosure } from '@chakra-ui/react'
-import { LeaveIcon } from '@sanity/icons'
+import { Box, IconButton } from '@chakra-ui/react'
+import { Icon } from '@sanity/icons'
 
 const Logout: React.FC<{}> = ({}) => {
   const handleLogout = async () => {
@@ -22,7 +22,7 @@ const Logout: React.FC<{}> = ({}) => {
           colorScheme={'brand'}
           aria-label={''}
         >
-          <LeaveIcon width={'1.5rem'} height={'1.5rem'} />
+          <Icon symbol='leave' width={'1.5rem'} height={'1.5rem'} />
         </IconButton>
       </Tooltip>
     </Box>

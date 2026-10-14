@@ -21,7 +21,7 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { type SkuOption } from '@commercelayer/sdk'
-import { CloseIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import { AnimatePresence, motion } from 'framer-motion'
 import React, { useMemo } from 'react'
 
@@ -164,7 +164,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                   },
                 }}
               >
-                <CloseIcon width={'2rem'} height={'2rem'} />
+                <Icon symbol={'close'} width={'2rem'} height={'2rem'} />
               </ChakraIconButton>
             </Link>
           )}

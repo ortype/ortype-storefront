@@ -3,7 +3,6 @@ import {
   IconButton,
   Portal,
 } from '@chakra-ui/react'
-import { InfoOutlineIcon } from '@sanity/icons'
 import * as React from 'react'
 
 export interface ToggleTipProps extends ChakraPopover.RootProps {

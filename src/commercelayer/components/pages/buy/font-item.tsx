@@ -3,7 +3,7 @@ import {
   type ToggleStyleParams,
 } from '@/commercelayer/providers/buy'
 import { Box, Collapsible, Flex, HStack, VStack } from '@chakra-ui/react'
-import { ChevronDownIcon, ChevronRightIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import React, { useState } from 'react'
 import { SingleStyles } from './single-styles'
 
@@ -78,7 +78,11 @@ export const FontItem: React.FC<Props> = ({
                 <Collapsible.Context>
                   {({ open }) => (
                     <Box fontSize={'2rem'} w={8} ml={-1}>
-                      {open ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                      {open ? (
+                        <Icon symbol={'chevron-down'} />
+                      ) : (
+                        <Icon symbol={'chevron-right'} />
+                      )}
                     </Box>
                   )}
                 </Collapsible.Context>

@@ -1,5 +1,4 @@
 import { Checkbox } from '@/components/ui/checkbox'
-import { CloseButton } from '@/components/ui/close-button'
 import {
   Box,
   Button,
@@ -23,16 +22,9 @@ import { useBookLayoutStore } from '@/components/data/BookProvider'
 import { regexOptions } from '@/components/data/BookProvider/bookDefaults'
 import StyledSelect from '@/components/ui/Select'
 import { toJS } from 'mobx'
-import React, { useState } from 'react'
-import Select from 'react-select'
+import React from 'react'
 
-import {
-  EditIcon,
-  InsertAboveIcon,
-  InsertBelowIcon,
-  RefreshIcon,
-  TrashIcon,
-} from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 import { type BlockStyle, type LineParams, type Update } from './bookTypes'
 
 const BlockPopover: React.FC<{
@@ -243,7 +235,11 @@ const BlockPopover: React.FC<{
                     bookLayoutStore.addBlock(page, col, 'before', block)
                   }
                 >
-                  <InsertAboveIcon width={'1.5rem'} height={'1.5rem'} />{' '}
+                  <Icon
+                    symbol={'insert-above'}
+                    width={'1.5rem'}
+                    height={'1.5rem'}
+                  />{' '}
                   <Text fontSize={'xs'}>Above</Text>
                 </Button>
                 <Button
@@ -255,13 +251,17 @@ const BlockPopover: React.FC<{
                   }
                 >
                   <Text fontSize={'xs'}>Below</Text>{' '}
-                  <InsertBelowIcon width={'1.5rem'} height={'1.5rem'} />
+                  <Icon
+                    symbol={'insert-below'}
+                    width={'1.5rem'}
+                    height={'1.5rem'}
+                  />
                 </Button>
               </ButtonGroup>
             </Box>
             <ButtonGroup variant={'outline'} gap='2' width={'100%'}>
               <Button width={'50%'} size={'sm'} onClick={() => refetch()}>
-                <RefreshIcon width={'1.5rem'} height={'1.5rem'} />{' '}
+                <Icon symbol={'refresh'} width={'1.5rem'} height={'1.5rem'} />{' '}
                 <Text fontSize={'xs'}>Refresh</Text>
               </Button>
 
@@ -270,7 +270,7 @@ const BlockPopover: React.FC<{
                 size={'sm'}
                 onClick={() => bookLayoutStore.removeBlock(page, col, block)}
               >
-                <TrashIcon width={'1.5rem'} height={'1.5rem'} />{' '}
+                <Icon symbol={'trash'} width={'1.5rem'} height={'1.5rem'} />{' '}
                 <Text fontSize={'xs'}>Remove</Text>
               </Button>
             </ButtonGroup>

@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button, Dialog, Text } from '@chakra-ui/react'
-import { CloseIcon } from '@sanity/icons'
+import { Icon } from '@sanity/icons'
 
 export interface ReplaceCartDialogProps {
   open: boolean
@@ -73,7 +73,7 @@ export default function ReplaceCartDialog({
             right={'-0.5rem'}
             asChild
           >
-            <CloseIcon width={'2.5rem'} height={'2.5rem'} />
+            <Icon symbol={'close'} width={'2.5rem'} height={'2.5rem'} />
           </Dialog.CloseTrigger>
         </DialogHeader>
         <DialogBody p={0} pt={2}>
