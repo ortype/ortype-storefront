@@ -46,7 +46,7 @@ export const ALLTAF_VF_BASE = `${process.env.NEXT_PUBLIC_API_URL}/OrAlltaf-WebVF
 // Bump this whenever the font file changes. The API serves fonts with
 // `Cache-Control: immutable`, so the URL must change to bust the cache.
 // express.static ignores the query string, so no server change is needed.
-export const ALLTAF_VF_VERSION = '1'
+export const ALLTAF_VF_VERSION = '1.1'
 
 export const alltafVfUrl = (ext: 'woff2' | 'woff') =>
   `${ALLTAF_VF_BASE}.${ext}?v=${ALLTAF_VF_VERSION}`
