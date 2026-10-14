@@ -85,6 +85,7 @@ const initialState: OrderStateData = {
   order: undefined,
   orderId: undefined,
   licenseOwner: undefined,
+  clientLicenseOwner: undefined,
   hasLicenseOwner: false,
   isLicenseForClient: false,
   hasValidLicenseSize: false,

@@ -139,6 +139,7 @@ export function reducer(
         orderId: undefined,
         isInvalid: false,
         licenseOwner: undefined,
+        clientLicenseOwner: undefined,
         hasLicenseOwner: false,
         isLicenseForClient: false,
         licenseSize: undefined,
@@ -169,13 +170,38 @@ export function reducer(
           action.payload
         )
       }
-      // Merge with the existing owner so partial updates from the radio
-      // (is_client only) and the company input (company only) don't clobber
+      const incoming = action.payload.others.licenseOwner
+      const current = state.licenseOwner
+      const wasClient = current?.is_client === true
+      const willBeClient = (incoming.is_client ?? current?.is_client) === true
+
+      // The two holders have different details — "Yourself" is the buyer's
+      // billing address (written at checkout), "Your client" is an address of
+      // its own — so the client's are kept in their own buffer. Merging the
+      // shapes used to leave the client's address on the order flagged as
+      // `is_client: false` after switching to "Yourself".
+      const clientLicenseOwner: LicenseOwnerInput | undefined = willBeClient
+        ? {
+            ...state.clientLicenseOwner,
+            ...(wasClient ? current : {}),
+            ...incoming,
+            is_client: true,
+          }
+        : wasClient
+          ? { ...state.clientLicenseOwner, ...current }
+          : state.clientLicenseOwner
+
+      // Within one holder, partial updates from the radio (is_client only) and
+      // the company input (company only) still merge, so they don't clobber
       // each other.
-      const licenseOwner: LicenseOwnerInput = {
-        ...state.licenseOwner,
-        ...action.payload.others.licenseOwner,
-      }
+      const licenseOwner: LicenseOwnerInput = willBeClient
+        ? (clientLicenseOwner as LicenseOwnerInput)
+        : wasClient
+          ? // Switching to "Yourself": the client's details are parked in
+            // `clientLicenseOwner`, and the owner is completed from the
+            // billing address on the checkout license step.
+            { is_client: incoming.is_client ?? null }
+          : { ...current, ...incoming }
       const hasLicenseOwnerType = typeof licenseOwner.is_client === 'boolean'
       const isLicenseForClient = licenseOwner.is_client === true
       // "Yourself" needs no name; "Your client" requires a license owner /
@@ -188,6 +214,7 @@ export function reducer(
         hasLicenseOwner,
         isLicenseForClient,
         licenseOwner,
+        clientLicenseOwner,
       }
     }
     case ActionType.SET_LICENSE_SIZE: {

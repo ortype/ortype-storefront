@@ -136,6 +136,12 @@ export type OrderStateData = {
   order?: Order
   orderId?: string
   licenseOwner?: LicenseOwnerInput
+  /**
+   * The details entered for "Your client", kept apart from `licenseOwner` so a
+   * switch to "Yourself" neither inherits nor destroys them (see
+   * `utils/license-settings.ts#deriveClientLicenseOwner`).
+   */
+  clientLicenseOwner?: LicenseOwnerInput
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
   /** Whether licenseSize is valid */
@@ -191,6 +197,8 @@ export type OrderProviderData = {
   hasLicenseOwner: boolean
   isLicenseForClient: boolean
   licenseOwner?: LicenseOwnerInput
+  /** See `OrderStateData['clientLicenseOwner']` */
+  clientLicenseOwner?: LicenseOwnerInput
   hasValidLicenseSize: boolean
   hasValidLicenseType: boolean
   allLicenseInfoSet: boolean

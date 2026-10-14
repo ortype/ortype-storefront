@@ -15,8 +15,13 @@ import {
   WireTransfer,
 } from '@commercelayer/sdk'
 
+import { deriveClientLicenseOwner } from '@/commercelayer/providers/order/utils/license-settings'
 import { LINE_ITEMS_SHIPPABLE } from '@/components/utils/constants'
 import { AppStateData, LicenseOwner, LicenseSize } from './index'
+
+// The license owner shape is owned by the OrderProvider's license metadata
+// helpers; re-exported here so checkout code can keep importing from './utils'.
+export { deriveClientLicenseOwner }
 
 export type LineItemType =
   | 'gift_cards'
@@ -461,27 +466,6 @@ export function isValidLicenseOwner(licenseOwner?: any): boolean {
   }
 
   return hasRequiredFields
-}
-
-/**
- * The license owner details the customer entered for *their client*.
- *
- * `metadata.license.owner` is the authoritative owner of the order, and for
- * "Yourself" it is a copy of the billing address — never the client's details.
- * The client's own details are therefore kept alongside it (`client_owner`), so
- * toggling between "Yourself" and "Your client" can't leak the billing address
- * into the client address form. Orders written before `client_owner` existed
- * fall back to a client-flagged `owner`.
- */
-export function deriveClientLicenseOwner(
-  order: Order
-): LicenseOwner | undefined {
-  const license = order.metadata?.license
-  const owner = license?.owner
-
-  return (
-    license?.client_owner || (owner?.is_client === true ? owner : undefined)
-  )
 }
 
 export function calculateAddresses(
