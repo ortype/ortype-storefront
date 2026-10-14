@@ -22,6 +22,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import AddressFormDialog from '../address/address-form-dialog'
 import { CustomerDetailsForm } from './customer-details-form'
+import { getStateName } from '@/commercelayer/utils/country-utils'
 
 const AddressCard = ({
   address,
@@ -53,7 +54,8 @@ const AddressCard = ({
           {address.zip_code} {address.city}
         </Text>
         <Text>
-          {address.state_code} ({address.country_code})
+          {getStateName(address.country_code, address.state_code)} (
+          {address.country_code})
         </Text>
         {/*<Text>{address.phone}</Text>*/}
         <Text mt={1}>{address.billing_info}</Text>

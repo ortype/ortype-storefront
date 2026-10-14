@@ -1551,3 +1551,38 @@ export function isValidState(params: {
 export function requiresStateSelection(countryCode: string): boolean {
   return COUNTRIES_WITH_STATES.has(countryCode)
 }
+
+/*
+getStateName('GR', 'A')       // 'Attica'
+getStateName('DE', 'BB')      // 'Brandenburg'
+getStateName('US', 'NY')      // 'New York'
+getStateName('GR', 'Attica')  // 'Attica' — preserves existing text
+getStateName('DE', 'B')       // 'B' — unknown code; doesn't guess
+getStateName('GR', null)      // ''
+*/
+export function getStateName(
+  countryCode?: string | null,
+  stateCode?: string | null
+): string {
+  const originalValue = stateCode?.trim() ?? ''
+  const country = countryCode?.trim().toUpperCase()
+
+  if (!originalValue || !country) return originalValue
+  const option = getStateOfCountry({ countryCode: country }).find(
+    ({ value }) => value.toUpperCase() === originalValue.toUpperCase()
+  )
+
+  return option?.label ?? originalValue
+}
+
+export function getCountryName(countryCode?: string | null): string {
+  const originalValue = countryCode?.trim() ?? ''
+
+  if (!originalValue) return ''
+
+  const option = getCountries().find(
+    ({ value }) => value === originalValue.toUpperCase()
+  )
+
+  return option?.label ?? originalValue
+}

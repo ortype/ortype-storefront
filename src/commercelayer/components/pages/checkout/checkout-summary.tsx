@@ -1,5 +1,6 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { useOrderContext } from '@/commercelayer/providers/order'
+import { getStateName } from '@/commercelayer/utils/country-utils'
 import {
   Box,
   Button,
@@ -80,7 +81,7 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({
     if (line_1) addressParts.push(line_1)
     if (line_2) addressParts.push(line_2)
     if (city) addressParts.push(city)
-    if (state_code) addressParts.push(state_code)
+    if (state_code) addressParts.push(getStateName(country_code, state_code))
     if (zip_code) addressParts.push(zip_code)
     if (country_code) addressParts.push(country_code)
 

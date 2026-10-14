@@ -1,4 +1,8 @@
 import { LicenseOwner } from '@/commercelayer/providers/checkout'
+import {
+  getCountryName,
+  getStateName,
+} from '@/commercelayer/utils/country-utils'
 import { CloseButton } from '@/components/ui/close-button'
 import {
   DialogBody,
@@ -55,6 +59,18 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
   const stepsContext = useStepsContext()
   // const ref = useRef<HTMLInputElement | null>(null)
 
+  const location = [
+    licenseOwner.city,
+    getStateName(licenseOwner.country_code, licenseOwner.state_code),
+    licenseOwner.zip_code,
+  ]
+    .filter(Boolean)
+    .join(', ')
+
+  const country = getCountryName(licenseOwner.country_code)
+
+  // 'Athens, Attica, Greece'
+
   return (
     <VStack gap={2} mb={4} align='start'>
       <Box
@@ -79,12 +95,8 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
             {licenseOwner.line_2 && `, ${licenseOwner.line_2}`}
           </Text>
 
-          <Text>
-            {licenseOwner.city}, {licenseOwner.state_code}{' '}
-            {licenseOwner.zip_code}
-          </Text>
-
-          <Text>{licenseOwner.country_code}</Text>
+          <Text>{location}</Text>
+          <Text>{country}</Text>
           <Drawer.Root
             lazyMount
             open={editing}
