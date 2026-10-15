@@ -80,9 +80,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
 
         <GridItem textAlign={'right'}>
           <Menu.Root
-            variant={'right'}
-            size={'sm'}
-            positioning={{ placement: 'bottom-end' }}
+            variant={'outline'}
+            size={'xs'}
+            // positioning={{ placement: 'bottom-end' }}
           >
             <Menu.Trigger
               asChild

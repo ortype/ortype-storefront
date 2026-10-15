@@ -232,16 +232,6 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
                 loading={isSubmitting}
                 variant={'subtle'}
                 w={'full'}
-                borderColor={'none'}
-                borderWidth={'none'}
-                bg={'brand.50'}
-                _hover={{
-                  bg: '#e3e3e3',
-                }}
-                borderRadius={'100px'}
-                transition={
-                  'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
-                }
                 size={'sm'}
                 py={5}
                 fontSize={'lg'}

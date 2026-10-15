@@ -1,8 +1,8 @@
 'use client'
 import { AddButton } from '@/commercelayer/components/ui/add-button'
+import { AddressCard } from '@/commercelayer/components/ui/address/address-card'
 import AddressesContainer from '@/commercelayer/providers/addresses'
 import { useCustomerContext } from '@/commercelayer/providers/customer'
-import { getStateName } from '@/commercelayer/utils/country-utils'
 import {
   Box,
   Button,
@@ -13,7 +13,6 @@ import {
   IconButton,
   Menu,
   Portal,
-  Text,
   VStack,
 } from '@chakra-ui/react'
 import { Address } from '@commercelayer/sdk'
@@ -24,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import AddressFormDialog from '../address/address-form-dialog'
 import { CustomerDetailsForm } from './customer-details-form'
 
-const AddressCard = ({
+const AccountAddressCard = ({
   address,
   setOpen,
   setAddressId,
@@ -35,91 +34,57 @@ const AddressCard = ({
   setAddressId: any //: (id: string) => void
   deleteCustomerAddress: any
 }) => {
-  // const ref = useRef<HTMLDivElement | null>(null)
-  // const getAnchorRect = () => ref.current!.getBoundingClientRect()
 
   return (
-    <GridItem key={address.id} bg={'brand.50'} p={4} pos={'relative'}>
-      <VStack align='start' gap={2}>
-        {address?.company && <Text>{address.company}</Text>}
-
-        <Text>{address.full_name}</Text>
-
-        <Text>
-          {address.line_1}
-          {address.line_2 && `, ${address.line_2}`}
-        </Text>
-
-        <Text>
-          {address.zip_code} {address.city}
-        </Text>
-        <Text>
-          {getStateName(address.country_code, address.state_code)} (
-          {address.country_code})
-        </Text>
-        {/*<Text>{address.phone}</Text>*/}
-        <Text mt={1}>{address.billing_info}</Text>
-      </VStack>
-      {/*<Box
-        w={1}
-        h={1}
-        bg={'blue'}
-        ref={ref}
-        pos={'absolute'}
-        top={5}
-        right={5}
-      />*/}
-      <Menu.Root
-        variant={'right'}
-        size={'sm'}
-        positioning={{ placement: 'bottom-end' }}
-        // positioning={{ getAnchorRect }}
-      >
-        <Menu.Trigger asChild pos={'absolute'} right={2} top={2}>
-          <IconButton
-            borderRadius={'full'}
-            variant='ghost'
-            bg={'white'}
-            _hover={{
-              bg: 'black',
-              color: 'white',
-            }}
-            size='sm'
-          >
-            <Icon symbol={'ellipsis-horizontal'} />
-          </IconButton>
-        </Menu.Trigger>
-        <Portal>
-          <Menu.Positioner>
-            <Menu.Content>
-              <Menu.Item
-                value={'edit'}
-                onClick={() => {
-                  address.id && setAddressId(address.id)
-                  setOpen(true)
-                }}
-                asChild
-              >
-                <Button variant={'plain'}>{'Edit address'}</Button>
-              </Menu.Item>
-              <Menu.Item
-                value={'delete'}
-                onClick={() =>
-                  deleteCustomerAddress &&
-                  address.reference &&
-                  deleteCustomerAddress({
-                    customerAddressId: address.reference,
-                  })
-                }
-                asChild
-              >
-                <Button variant={'plain'}>{'Delete'}</Button>
-              </Menu.Item>
-            </Menu.Content>
-          </Menu.Positioner>
-        </Portal>
-      </Menu.Root>
-    </GridItem>
+    <AddressCard
+      address={address}
+      actions={
+        <Menu.Root variant={'outline'} size={'xs'}>
+          <Menu.Trigger asChild pos={'absolute'} right={2} top={2}>
+            <IconButton
+              borderRadius={'full'}
+              variant='ghost'
+              bg={'white'}
+              _hover={{
+                bg: 'black',
+                color: 'white',
+              }}
+              size='sm'
+              css={{ '& svg': { flexGrow: 1 } }}
+            >
+              <Icon symbol={'ellipsis-horizontal'} />
+            </IconButton>
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content>
+                <Menu.Item
+                  value={'edit'}
+                  onClick={() => {
+                    address.id && setAddressId(address.id)
+                    setOpen(true)
+                  }}
+                >
+                  {'Edit address'}
+                </Menu.Item>
+                <Menu.Item
+                  value={'delete'}
+                  onClick={() =>
+                    deleteCustomerAddress &&
+                    address.reference &&
+                    deleteCustomerAddress({
+                      customerAddressId: address.reference,
+                    })
+                  }
+                >
+                  {'Delete'}
+                </Menu.Item>
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
+      }
+    />
   )
 }
 
@@ -168,7 +133,7 @@ function AddressesPage(): JSX.Element {
               {addresses &&
                 addresses?.map((address, i) => {
                   return (
-                    <AddressCard
+                    <AccountAddressCard
                       key={address.id}
                       address={address}
                       setOpen={setOpen}

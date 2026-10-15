@@ -4,6 +4,7 @@ import { CustomerAddressProvider } from '@/commercelayer/providers/customer-addr
 import { useIdentityContext } from '@/commercelayer/providers/identity'
 import { useTranslation } from 'react-i18next'
 
+import { CloseButton } from '@/components/ui/close-button'
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -11,10 +12,8 @@ import {
   DialogHeader,
   DialogRoot,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button } from '@chakra-ui/react'
-import { useState } from 'react'
+import { Button, Drawer, Portal } from '@chakra-ui/react'
 import SaveAddressesButton from './save-addresses-button'
 
 export default function AddressFormDialog({
@@ -36,62 +35,88 @@ export default function AddressFormDialog({
   if (isLoading || !settings) return <div />
 
   return (
-    <DialogRoot
+    <Drawer.Root
       lazyMount
       open={open}
       onOpenChange={(e) => {
         setOpen(e.open)
       }}
+      size={'md'}
+      // initialFocusEl={() => ref.current}
     >
-      <DialogContent maxW={'50rem'}>
-        <DialogHeader>
-          <DialogTitle
-            textAlign={'center'}
-            fontSize={'2rem'}
-            fontWeight={'normal'}
-            textTransform={'uppercase'}
-            mx={'auto'}
-            pb={4}
+      <Portal>
+        <Drawer.Backdrop css={{ backdropFilter: 'blur(5px)' }} />
+        <Drawer.Positioner
+        // p={10}
+        >
+          <Drawer.Content
+            rounded={0}
+            // rounded={40}
+            p={4}
+            bg={'#e7e7e7'}
           >
-            {addressId === undefined
-              ? t('addresses.addressForm.new_address_title')
-              : t('addresses.addressForm.edit_address_title')}
-          </DialogTitle>
-          <DialogCloseTrigger onClick={handleClose} />
-        </DialogHeader>
-        <DialogBody>
-          <CustomerAddressProvider
-            accessToken={settings?.accessToken as string}
-            domain={config?.domain as string}
-            slug={config?.slug as string}
-            addressId={addressId}
-          >
-            <AddressesContainer>
-              <CustomerAddressForm
+            <Drawer.CloseTrigger
+              position={'absolute'}
+              top={'1rem'}
+              left={'-4rem'}
+              asChild
+            >
+              <CloseButton size='2xl' />
+            </Drawer.CloseTrigger>
+            <Drawer.Header pt={2} pb={3}>
+              <Drawer.Title
+                fontSize={'2rem'}
+                fontWeight={'normal'}
+                textTransform={'uppercase'}
+                lineHeight={1}
+                pb={3}
+                borderBottom={'1px solid #919191'}
+              >
+                {addressId === undefined
+                  ? t('addresses.addressForm.new_address_title')
+                  : t('addresses.addressForm.edit_address_title')}
+              </Drawer.Title>
+            </Drawer.Header>
+            <Drawer.Body>
+              <CustomerAddressProvider
+                accessToken={settings?.accessToken as string}
+                domain={config?.domain as string}
+                slug={config?.slug as string}
                 addressId={addressId}
-                closeButton={
-                  <Button
-                    onClick={handleClose}
-                    variant={'rounded'}
-                    size={'sm'}
-                    fontSize={'md'}
-                  >
-                    {t('addresses.addressForm.discard_changes')}
-                  </Button>
-                }
-                saveButton={
-                  <SaveAddressesButton
-                    data-test-id='save-address'
-                    label={t('addresses.addressForm.save')}
-                    onClick={handleClose}
+              >
+                <AddressesContainer>
+                  <CustomerAddressForm
                     addressId={addressId}
+                    variant={'white'}
+                    closeButton={
+                      <Button
+                        onClick={handleClose}
+                        variant='text'
+                        size='xs'
+                        fontSize='xs'
+                        px={2}
+                        py={1}
+                        h='auto'
+                        minH='auto'
+                      >
+                        {t('addresses.addressForm.discard_changes')}
+                      </Button>
+                    }
+                    saveButton={
+                      <SaveAddressesButton
+                        data-test-id='save-address'
+                        label={t('addresses.addressForm.save')}
+                        onClick={handleClose}
+                        addressId={addressId}
+                      />
+                    }
                   />
-                }
-              />
-            </AddressesContainer>
-          </CustomerAddressProvider>
-        </DialogBody>
-      </DialogContent>
-    </DialogRoot>
+                </AddressesContainer>
+              </CustomerAddressProvider>
+            </Drawer.Body>
+          </Drawer.Content>
+        </Drawer.Positioner>
+      </Portal>
+    </Drawer.Root>
   )
 }

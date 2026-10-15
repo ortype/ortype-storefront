@@ -45,7 +45,7 @@ interface LoginFormProps {
 export const LoginForm: React.FC<LoginFormProps> = ({
   emailAddress,
   onSuccess,
-  variant,
+  variant = 'subtle',
 }) => {
   const { settings, config, isLoading, handleLogin } = useIdentityContext()
   // Try to get Steps context if available (for checkout flow)

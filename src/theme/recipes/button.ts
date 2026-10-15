@@ -127,14 +127,19 @@ export const buttonRecipe = defineRecipe({
           'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
       },
       subtle: {
-        bg: 'colorPalette.subtle',
+        bg: 'brand.50',
+        borderRadius: '100px',
+        borderColor: 'none',
+        borderWidth: 'none',
         color: 'colorPalette.fg',
         _hover: {
-          bg: 'colorPalette.muted',
+          bg: '#e3e3e3',
         },
         _expanded: {
-          bg: 'colorPalette.muted',
+          bg: '#e3e3e3',
         },
+        transition:
+          'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out',
       },
       outline: {
         borderWidth: '2px',
