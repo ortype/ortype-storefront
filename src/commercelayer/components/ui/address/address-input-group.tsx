@@ -9,7 +9,6 @@ import { AddressField } from '@/commercelayer/components/ui/address/address-fiel
 import { CountrySelect } from '@/commercelayer/components/ui/address/country-select'
 import { StateSelect } from '@/commercelayer/components/ui/address/state-select'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Box } from '@chakra-ui/react'
 
 type TFieldName = string
 
@@ -24,7 +23,9 @@ interface Props {
   value?: string
   openShippingAddress?: (props: ShippingToggleProps) => void
   onChange?: (fieldName: string, value: string) => void
+  /** Current country from the parent form, used to choose state/province options. */
   countryCode?: string
+  variant?: string
 }
 
 // Mapping object to determine which component to use for each field
@@ -39,6 +40,17 @@ const FIELD_COMPONENT_MAPPING = {
 } as const
 
 type ComponentType = 'AddressField' | 'CountrySelect' | 'StateSelect'
+/**
+ * Field-routing adapter for billing/shipping address forms, not a replacement
+ * for AddressField: country fields use CountrySelect, state fields use
+ * StateSelect, and other fields use AddressField, with translated labels.
+ *
+ * Keeps a local input value in sync with value and reports changes as
+ * onChange(fieldName, value); the parent owns persistence and must pass its
+ * current countryCode to state fields. Also applies checkout shipping-country
+ * locks and optionally reevaluates the shipping toggle on billing-country changes.
+ * Independent RHF forms can use the primitives directly, with StateSelect standalone.
+ */
 
 export const AddressInputGroup: React.FC<Props> = ({
   fieldName,
@@ -49,6 +61,7 @@ export const AddressInputGroup: React.FC<Props> = ({
   openShippingAddress,
   onChange,
   countryCode,
+  variant = 'subtle',
 }) => {
   const { t } = useTranslation()
   const checkoutCtx = useContext(CheckoutContext)
@@ -71,6 +84,7 @@ export const AddressInputGroup: React.FC<Props> = ({
     label: t(`addressForm.${fieldName}`),
     value: value || '',
     required,
+    variant,
   }
 
   // Handle change events and state updates
@@ -80,7 +94,7 @@ export const AddressInputGroup: React.FC<Props> = ({
     setValueStatus(value || '')
   }, [value])
 
-  // Memoized common onChange handler that bridges between internal state and the Address context
+  // Bridge primitive value callbacks to the parent's field-name/value handler.
   const handleChange = useCallback(
     (newValue: string) => {
       // 1. Update local controlled input state
@@ -166,7 +180,7 @@ export const AddressInputGroup: React.FC<Props> = ({
               fieldName as
                 'billing_address_state_code' | 'shipping_address_state_code'
             }
-            countryCode={countryCode || ''}
+            countryCode={countryCode}
           />
         )
 

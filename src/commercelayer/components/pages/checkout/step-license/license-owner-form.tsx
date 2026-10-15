@@ -1,6 +1,7 @@
 // import { LicenseSizeNativeSelect } from '@/commercelayer/components/forms/LicenseSizeNativeSelect'
 import { AddressField } from '@/commercelayer/components/ui/address/address-field'
 import { CountrySelect } from '@/commercelayer/components/ui/address/country-select'
+import { StateSelect } from '@/commercelayer/components/ui/address/state-select'
 import { useOrderContext } from '@/commercelayer/providers/order'
 import { Alert } from '@/components/ui/alert'
 import { RadioCardItem, RadioCardRoot } from '@/components/ui/radio-card'
@@ -14,7 +15,12 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { Controller, FormProvider, UseFormReturn } from 'react-hook-form'
+import {
+  Controller,
+  FormProvider,
+  UseFormReturn,
+  useWatch,
+} from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
@@ -79,6 +85,11 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
     handleSubmit,
     formState: { errors },
   } = form
+  // License-owner country/state belong to this form, not the billing address.
+  const countryCode = useWatch({
+    control: form.control,
+    name: 'country_code',
+  })
 
   // Access OrderProvider for license size
   const { licenseSize, setLicenseSize } = useOrderContext()
@@ -250,14 +261,18 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   <Controller
                     name='state_code'
                     render={({ field, fieldState: { error } }) => (
-                      <AddressField
+                      <StateSelect
+                        standalone
+                        ref={field.ref}
                         label={String(
                           t('stepLicense.stateLabel', 'State/Province')
                         )}
-                        type='text'
+                        countryCode={countryCode ?? ''}
+                        placeholder='Select State/Province'
                         variant={isDialog ? 'white' : 'subtle'}
                         value={field.value || ''}
                         onChange={field.onChange}
+                        onBlur={field.onBlur}
                         error={error?.message}
                       />
                     )}

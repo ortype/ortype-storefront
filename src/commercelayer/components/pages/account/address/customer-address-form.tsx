@@ -19,10 +19,12 @@ function CustomerAddressForm({
   addressId,
   closeButton,
   saveButton,
+  variant = 'subtle',
 }: {
   addressId?: string
   closeButton?: React.ReactNode
   saveButton?: React.ReactNode
+  variant?: string
 }): JSX.Element | null {
   const ctx = useContext(CustomerAddressContext)
   const {
@@ -126,6 +128,7 @@ function CustomerAddressForm({
               fieldName='billing_address_first_name'
               type='text'
               resource='billing_address'
+              variant={variant}
               value={address?.first_name || ''}
               onChange={handleAddressInputChange}
             />
@@ -133,6 +136,7 @@ function CustomerAddressForm({
               fieldName='billing_address_last_name'
               type='text'
               resource='billing_address'
+              variant={variant}
               value={address?.last_name || ''}
               onChange={handleAddressInputChange}
             />
@@ -150,6 +154,7 @@ function CustomerAddressForm({
             fieldName='billing_address_line_1'
             type='text'
             resource='billing_address'
+            variant={variant}
             value={address?.line_1 || ''}
             onChange={handleAddressInputChange}
           />
@@ -158,6 +163,7 @@ function CustomerAddressForm({
             fieldName='billing_address_line_2'
             type='text'
             resource='billing_address'
+            variant={variant}
             value={address?.line_2 || ''}
             onChange={handleAddressInputChange}
           />
@@ -166,6 +172,7 @@ function CustomerAddressForm({
               fieldName='billing_address_city'
               type='text'
               resource='billing_address'
+              variant={variant}
               value={address?.city || ''}
               onChange={handleAddressInputChange}
             />
@@ -173,6 +180,7 @@ function CustomerAddressForm({
               fieldName='billing_address_country_code'
               type='text'
               resource='billing_address'
+              variant={variant}
               value={address?.country_code || ''}
               onChange={handleAddressInputChange}
             />
@@ -182,13 +190,18 @@ function CustomerAddressForm({
               fieldName='billing_address_state_code'
               type='text'
               resource='billing_address'
+              variant={variant}
               value={address?.state_code || ''}
+              countryCode={
+                billingAddress?.country_code ?? address?.country_code ?? ''
+              }
               onChange={handleAddressInputChange}
             />
             <AddressInputGroup
               fieldName='billing_address_zip_code'
               type='text'
               resource='billing_address'
+              variant={variant}
               value={address?.zip_code || ''}
               onChange={handleAddressInputChange}
             />
@@ -198,6 +211,7 @@ function CustomerAddressForm({
             type='tel'
             // @TODO: allow only numeric input with javascript
             resource='billing_address'
+            variant={variant}
             value={address?.phone || ''}
             onChange={handleAddressInputChange}
           />
@@ -213,6 +227,7 @@ function CustomerAddressForm({
             fieldName='billing_address_billing_info'
             type='text'
             resource='billing_address'
+            variant={variant}
             value={address?.billing_info || ''}
             onChange={handleAddressInputChange}
           />

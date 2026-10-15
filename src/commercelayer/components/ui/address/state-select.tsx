@@ -29,9 +29,15 @@ interface StateSelectProps {
   error?: string
   value?: string
   onChange?: (stateCode: string) => void
+  onBlur?: React.FocusEventHandler<HTMLSelectElement | HTMLInputElement>
   placeholder?: string
   disabled?: boolean
   countryCode?: string
+  /**
+   * Use only countryCode and onChange, without billing-country fallbacks or
+   * billing-address writes. Useful for independent forms such as license owners.
+   */
+  standalone?: boolean
   name?: AddressStateSelectName
   required?: boolean
   /**
@@ -54,6 +60,8 @@ interface StateSelectProps {
    * Optional states list to extend the default one.
    */
   states?: States
+
+  variant?: string
 }
 
 /**
@@ -61,6 +69,7 @@ interface StateSelectProps {
  * Automatically detects the country from billing/shipping address context
  * and renders appropriate states. Falls back to text input for countries
  * without predefined states.
+ * Set standalone for forms that own their country/state independently of checkout.
  *
  * Similar to Commerce Layer's AddressStateSelector component.
  */
@@ -74,9 +83,11 @@ export const StateSelect = forwardRef<
       error,
       value,
       onChange,
+      onBlur,
       placeholder,
       disabled,
       countryCode: propCountryCode,
+      standalone = false,
       name = 'billing_address_state_code',
       required = false,
       inputClassName = '',
@@ -84,6 +95,7 @@ export const StateSelect = forwardRef<
       selectClassName = '',
       selectPlaceholder,
       states,
+      variant,
     },
     ref
   ) => {
@@ -103,40 +115,17 @@ export const StateSelect = forwardRef<
       // Address context not available - this is OK, we'll work without it
     }
 
-    const [countryCode, setCountryCode] = useState('')
-    const [val, setVal] = useState(value ?? '')
-    const [hasError, setHasError] = useState(false)
+    // An explicit empty country must remain empty, rather than restoring billing.
+    const countryCode = standalone
+      ? (propCountryCode ?? '')
+      : (propCountryCode ??
+        checkoutCtx?.billingAddress?.country_code ??
+        addressState?.billing?.country_code ??
+        '')
 
-    // Get country code from various sources
-    useEffect(() => {
-      let detectedCountryCode = propCountryCode
-
-      // Try to get from checkout context (billing address)
-      if (!detectedCountryCode && checkoutCtx?.billingAddress?.country_code) {
-        detectedCountryCode = checkoutCtx.billingAddress.country_code
-      }
-
-      // Try to get from address state context
-      if (!detectedCountryCode && addressState?.billing?.country_code) {
-        detectedCountryCode = addressState.billing.country_code
-      }
-
-      if (detectedCountryCode && detectedCountryCode !== countryCode) {
-        setCountryCode(detectedCountryCode)
-      }
-    }, [
-      propCountryCode,
-      checkoutCtx?.billingAddress?.country_code,
-      addressState?.billing?.country_code,
-      countryCode,
-    ])
-
-    // Update value when prop changes (but not when val changes due to user input)
-    useEffect(() => {
-      if (value != null && value !== '' && value !== val) {
-        setVal(value)
-      }
-    }, [value])
+    const [localValue, setVal] = useState(value ?? '')
+    // Controlled values (including empty resets) take precedence over local input.
+    const val = value ?? localValue
 
     // Reset state when country changes and current state is invalid
     useEffect(() => {
@@ -159,11 +148,6 @@ export const StateSelect = forwardRef<
         }
       }
     }, [countryCode, val, states, onChange])
-
-    // Update error state
-    useEffect(() => {
-      setHasError(!!error)
-    }, [error])
 
     const stateOptions = useMemo(() => {
       if (!countryCode) {
@@ -188,7 +172,11 @@ export const StateSelect = forwardRef<
       onChange?.(selectedValue)
 
       // Update address context if available
-      if (name === 'billing_address_state_code' && updateBillingAddressData) {
+      if (
+        !standalone &&
+        name === 'billing_address_state_code' &&
+        updateBillingAddressData
+      ) {
         updateBillingAddressData({
           state_code: selectedValue,
         })
@@ -200,7 +188,11 @@ export const StateSelect = forwardRef<
       onChange?.(inputValue)
 
       // Update address context if available
-      if (name === 'billing_address_state_code' && updateBillingAddressData) {
+      if (
+        !standalone &&
+        name === 'billing_address_state_code' &&
+        updateBillingAddressData
+      ) {
         updateBillingAddressData({ state_code: inputValue })
       }
     }
@@ -214,6 +206,7 @@ export const StateSelect = forwardRef<
           error={error}
           value={val}
           onChange={(e) => handleInputChange(e.target.value)}
+          onBlur={onBlur}
           placeholder={
             inputPlaceholder ||
             placeholder ||
@@ -222,7 +215,7 @@ export const StateSelect = forwardRef<
           disabled={disabled}
           required={required}
           type='text'
-          variant='subtle'
+          variant={variant}
           size='lg'
           fontSize='md'
           borderRadius={0}
@@ -253,12 +246,14 @@ export const StateSelect = forwardRef<
         label={label}
         error={error}
         items={items}
+        variant={variant}
         value={val}
         onChange={handleSelectChange}
+        onBlur={onBlur}
         disabled={disabled}
         className={selectClassName}
         required={required}
-        name={name}
+        name={standalone ? undefined : name}
       />
     )
   }
