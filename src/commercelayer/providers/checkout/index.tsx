@@ -181,7 +181,8 @@ export interface CheckoutProviderData extends FetchOrderByIdResponse {
   // Enhanced save method for address (orchestrates multiple steps)
   saveAddress: (
     addressData: AddressInput,
-    useAsShipping?: boolean
+    useAsShipping?: boolean,
+    saveToCustomerAddressBook?: boolean
   ) => Promise<{
     success: boolean
     error?: string
@@ -378,17 +379,15 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       isShipmentRequired,
       // FIX We are using customer addresses saved in reducer because
       // we don't receive them from fetchOrder
-      state.customerAddresses
+      currentOrder.customer?.customer_addresses ?? state.customerAddresses
     )
-    setTimeout(() => {
-      dispatch({
-        type: ActionType.SET_ADDRESSES,
-        payload: {
-          order: currentOrder,
-          others,
-        },
-      })
-    }, 100)
+    dispatch({
+      type: ActionType.SET_ADDRESSES,
+      payload: {
+        order: currentOrder,
+        others,
+      },
+    })
   }
 
   const setCouponOrGiftCard = async (order?: Order) => {
@@ -1024,29 +1023,30 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         }
       }
 
-      const result = await attachBillingAddressToOrderUtil({
-        cl,
-        orderId,
-        addressId,
-        useAsShipping,
-      })
+      try {
+        // The clone retains this reference, allowing the UI to match it to
+        // its address-book source even when the source had no reference.
+        await cl.addresses.update({ id: addressId, reference: addressId })
 
-      // If successful, refresh the order state using setAddresses
-      if (result.success && result.data) {
-        const currentOrder = await getOrderFromRef()
-        const mergedOrder = {
-          ...currentOrder, // Keep existing order data
-          ...result.data, // Overlay address data
-          // Ensure we preserve specific fields that might be newer in currentOrder
-          id: currentOrder.id,
+        const result = await attachBillingAddressToOrderUtil({
+          cl,
+          orderId,
+          addressId,
+          useAsShipping,
+        })
+
+        if (result.success && result.data) {
+          const order = await fetchOrder(cl, orderId)
+          await setAddresses(order)
+          return { success: true, data: order }
         }
 
-        await setAddresses(mergedOrder)
+        return result
+      } catch (error) {
+        return { success: false, error }
       }
-
-      return result
     },
-    [cl, orderId]
+    [cl, orderId, setAddresses]
   )
 
   // Payment methods helper method
@@ -1108,7 +1108,8 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   const saveAddress = useCallback(
     async (
       addressData: AddressInput,
-      useAsShipping: boolean = false
+      useAsShipping: boolean = false,
+      saveToCustomerAddressBook: boolean = false
     ): Promise<{
       success: boolean
       error?: string
@@ -1117,6 +1118,18 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
       try {
         if (!cl) {
           throw new Error('Commerce Layer client not available')
+        }
+        const currentOrder = await getOrderFromRef()
+        const customerId = currentOrder.customer?.id
+        const customerEmail =
+          currentOrder.customer_email || currentOrder.customer?.email
+
+        if (saveToCustomerAddressBook && (!customerId || !customerEmail)) {
+          return {
+            success: false,
+            error:
+              'A customer and email are required to save to the address book',
+          }
         }
 
         // Step 1: Validate the address data locally
@@ -1143,6 +1156,16 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
           return { success: false, error: errorMessage }
         }
 
+        // Persist the source address before replacing the order's billing
+        // address. The clone retains its reference to this source address.
+        if (saveToCustomerAddressBook && customerId && customerEmail) {
+          await cl.customer_addresses.create({
+            customer_email: customerEmail,
+            customer: cl.customers.relationship(customerId),
+            address: cl.addresses.relationship(createResult.data.id),
+          })
+        }
+
         // Step 3: Attach the address to the order
         const attachResult = await attachBillingAddressToOrderUtil({
           cl,
@@ -1159,13 +1182,13 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         }
 
         // If successful, refresh the order state using setAddresses
-        const currentOrder = await getOrderFromRef()
-        const mergedOrder = {
-          ...currentOrder, // Keep existing order data
-          ...attachResult.data, // Overlay address data
-          // Ensure we preserve specific fields that might be newer in currentOrder
-          id: currentOrder.id,
-        }
+        const mergedOrder = saveToCustomerAddressBook
+          ? await fetchOrder(cl, orderId)
+          : {
+              ...currentOrder,
+              ...attachResult.data,
+              id: currentOrder.id,
+            }
 
         // Step 4: Update the checkout provider state with the updated order
         await setAddresses(mergedOrder)

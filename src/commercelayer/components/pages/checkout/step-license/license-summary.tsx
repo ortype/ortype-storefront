@@ -5,15 +5,6 @@ import {
 } from '@/commercelayer/utils/country-utils'
 import { CloseButton } from '@/components/ui/close-button'
 import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import {
   Box,
   Button,
   Drawer,
@@ -158,68 +149,6 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
               </Drawer.Positioner>
             </Portal>
           </Drawer.Root>
-          {/*
-          <DialogRoot
-            lazyMount
-            open={editing}
-            onOpenChange={(e) => setEditing(e.open)}
-            size={'full'}
-            motionPreset={'slide-in-bottom-custom'}
-          >
-            <DialogTrigger asChild>
-              <Button variant='text' size='sm'>
-                {t('stepLicense.editButton', 'Edit address')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent
-              backdrop
-              blurred
-              borderRadius={0}
-              bg={'transparent'}
-              h={'100vh'}
-            >
-              <DialogBody>
-                <DialogTitle
-                  textAlign={'center'}
-                  fontSize={'2rem'}
-                  fontWeight={'normal'}
-                  textTransform={'uppercase'}
-
-                  pb={8}
-                  my={4}
-                  lineHeight={1}
-                >
-                  {'Edit license owner'}
-                </DialogTitle>
-                <Container maxW={'30rem'}>
-                  <LicenseOwnerForm
-                    projectType={projectType}
-                    onProjectTypeChange={onProjectTypeChange}
-                    form={form}
-                    onSubmit={onSubmit}
-                    handleProceed={handleProceed}
-                    isLocalLoader={isLocalLoader}
-                    error={error}
-                    isDialog={true}
-                    showProjectTypeSelection={false}
-                    submitButtonText={String(
-                      t('stepLicense.saveChanges', 'Save Changes')
-                    )}
-                    onCancel={() => setEditing(false)}
-                  />
-                </Container>
-              </DialogBody>
-              <Box position={'absolute'} top={3} left={3}>
-                <DialogCloseTrigger
-                  position={'relative'}
-                  top={'auto'}
-                  right={'auto'}
-                >
-                  <CloseButton size='2xl' />
-                </DialogCloseTrigger>
-              </Box>
-            </DialogContent>
-          </DialogRoot>*/}
         </VStack>
       </Box>
       <Button

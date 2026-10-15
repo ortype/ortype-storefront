@@ -1,4 +1,7 @@
-import { getStateName } from '@/commercelayer/utils/country-utils'
+import {
+  getCountryName,
+  getStateName,
+} from '@/commercelayer/utils/country-utils'
 import { Box, Text, VStack, type BoxProps } from '@chakra-ui/react'
 import type { Address } from '@commercelayer/sdk'
 import type { ReactNode } from 'react'
@@ -9,8 +12,15 @@ interface Props extends BoxProps {
 }
 
 export const AddressCard = ({ address, actions, ...props }: Props) => (
-  <Box bg={'brand.50'} p={4} pos={'relative'} {...props}>
-    <VStack align='start' gap={2}>
+  <Box
+    bg={'brand.50'}
+    p={4}
+    fontSize={'md'}
+    lineHeight={1.2}
+    pos={'relative'}
+    {...props}
+  >
+    <VStack align='start' gap={0}>
       {address.company && <Text>{address.company}</Text>}
       <Text>
         {address.full_name ||
@@ -21,11 +31,12 @@ export const AddressCard = ({ address, actions, ...props }: Props) => (
         {address.line_2 && `, ${address.line_2}`}
       </Text>
       <Text>
-        {address.zip_code} {address.city}
+        {address.zip_code}
+        {`, ${address.city}`}
       </Text>
       <Text>
-        {getStateName(address.country_code, address.state_code)} (
-        {address.country_code})
+        {getStateName(address.country_code, address.state_code)}
+        {`, ${getCountryName(address.country_code)}`}
       </Text>
       {address.billing_info && <Text mt={1}>{address.billing_info}</Text>}
     </VStack>

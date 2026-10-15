@@ -1,34 +1,31 @@
 import { Address } from '@commercelayer/sdk'
 import { useContext, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
-import {
-  evaluateShippingToggle,
-  ShippingToggleProps,
-} from '@/commercelayer/components/pages/checkout/step-address'
+import type { ShippingToggleProps } from '@/commercelayer/components/pages/checkout/step-address'
 import { AddressInputGroup } from '@/commercelayer/components/ui/address/address-input-group'
 import {
   useAddressActions,
   useAddressState,
 } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { Box, Grid, Stack } from '@chakra-ui/react'
+import { Grid, Stack } from '@chakra-ui/react'
 
 interface Props {
   billingAddress?: Address
   openShippingAddress: (props: ShippingToggleProps) => void
+  variant?: string
 }
 
 export const BillingAddressForm: React.FC<Props> = ({
   billingAddress,
   openShippingAddress,
+  variant = 'subtle',
 }: Props) => {
-  const { t } = useTranslation()
-  const { billing, errors } = useAddressState()
+  const { billing } = useAddressState()
   const { updateBillingAddressData } = useAddressActions()
   const checkoutCtx = useContext(CheckoutContext)
 
-  const { requiresBillingInfo, shippingCountryCodeLock } = checkoutCtx
+  const requiresBillingInfo = checkoutCtx?.requiresBillingInfo
 
   // Initialize billing address data from props
   useEffect(() => {
@@ -36,6 +33,7 @@ export const BillingAddressForm: React.FC<Props> = ({
       updateBillingAddressData({
         first_name: billingAddress.first_name || '',
         last_name: billingAddress.last_name || '',
+        company: billingAddress.company || '',
         line_1: billingAddress.line_1 || '',
         line_2: billingAddress.line_2 || '',
         city: billingAddress.city || '',
@@ -99,7 +97,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             fieldName='billing_address_first_name'
             resource='billing_address'
             type='text'
-            value={billing.first_name || billingAddress?.first_name || ''}
+            variant={variant}
+            value={billing.first_name ?? ''}
             onChange={handleAddressInputChange}
             required
           />
@@ -108,7 +107,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             fieldName='billing_address_last_name'
             resource='billing_address'
             type='text'
-            value={billing.last_name || billingAddress?.last_name || ''}
+            variant={variant}
+            value={billing.last_name ?? ''}
             onChange={handleAddressInputChange}
             required
           />
@@ -118,6 +118,7 @@ export const BillingAddressForm: React.FC<Props> = ({
           fieldName='billing_address_company'
           resource='billing_address'
           type='text'
+          variant={variant}
           value={billing.company || ''}
           onChange={handleAddressInputChange}
           required
@@ -127,7 +128,8 @@ export const BillingAddressForm: React.FC<Props> = ({
           fieldName='billing_address_line_1'
           resource='billing_address'
           type='text'
-          value={billing.line_1 || billingAddress?.line_1 || ''}
+          variant={variant}
+          value={billing.line_1 ?? ''}
           onChange={handleAddressInputChange}
           required
         />
@@ -136,7 +138,8 @@ export const BillingAddressForm: React.FC<Props> = ({
           fieldName='billing_address_line_2'
           resource='billing_address'
           type='text'
-          value={billing.line_2 || billingAddress?.line_2 || ''}
+          variant={variant}
+          value={billing.line_2 ?? ''}
           onChange={handleAddressInputChange}
         />
 
@@ -145,7 +148,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             fieldName='billing_address_country_code'
             resource='billing_address'
             type='text'
-            value={billing.country_code || billingAddress?.country_code || ''}
+            variant={variant}
+            value={billing.country_code ?? ''}
             onChange={handleAddressInputChange}
             openShippingAddress={openShippingAddress}
             required
@@ -155,11 +159,10 @@ export const BillingAddressForm: React.FC<Props> = ({
             fieldName='billing_address_state_code'
             resource='billing_address'
             type='text'
-            value={billing.state_code || billingAddress?.state_code || ''}
+            variant={variant}
+            value={billing.state_code ?? ''}
             onChange={handleAddressInputChange}
-            countryCode={
-              billing.country_code || billingAddress?.country_code || ''
-            }
+            countryCode={billing.country_code ?? ''}
             required
           />
         </Grid>
@@ -169,7 +172,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             fieldName='billing_address_city'
             resource='billing_address'
             type='text'
-            value={billing.city || billingAddress?.city || ''}
+            variant={variant}
+            value={billing.city ?? ''}
             onChange={handleAddressInputChange}
             required
           />
@@ -178,7 +182,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             fieldName='billing_address_zip_code'
             resource='billing_address'
             type='text'
-            value={billing.zip_code || billingAddress?.zip_code || ''}
+            variant={variant}
+            value={billing.zip_code ?? ''}
             onChange={handleAddressInputChange}
             required
           />
@@ -188,7 +193,8 @@ export const BillingAddressForm: React.FC<Props> = ({
           fieldName='billing_address_phone'
           resource='billing_address'
           type='tel'
-          value={billing.phone || billingAddress?.phone || ''}
+          variant={variant}
+          value={billing.phone ?? ''}
           onChange={handleAddressInputChange}
         />
 
@@ -197,7 +203,8 @@ export const BillingAddressForm: React.FC<Props> = ({
             fieldName='billing_address_billing_info'
             resource='billing_address'
             type='text'
-            value={billing.billing_info || billingAddress?.billing_info || ''}
+            variant={variant}
+            value={billing.billing_info ?? ''}
             onChange={handleAddressInputChange}
           />
         )}

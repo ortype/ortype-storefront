@@ -1,19 +1,32 @@
+import { AddressRadioCard } from '@/commercelayer/components/ui/address/address-radio-card'
 import {
   AddressProvider,
   useAddressState,
 } from '@/commercelayer/providers/address'
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Alert } from '@/components/ui/alert'
-import { Box, Button, Flex, useStepsContext, VStack } from '@chakra-ui/react'
+import { RadioCardRoot } from '@/components/ui/radio-card'
+import { setCustomerOrderParam } from '@/utils/localStorage'
+import {
+  Box,
+  Button,
+  Flex,
+  Grid,
+  GridItem,
+  useStepsContext,
+  VStack,
+} from '@chakra-ui/react'
+import type { Address } from '@commercelayer/sdk'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CheckoutSummary } from '../checkout-summary'
 import { AddressFormBottom } from './address-form-bottom'
+import { BillingAddressDrawer } from './billing-address-drawer'
 import { BillingAddressForm } from './billing-address-form'
 
 interface Props {
   className?: string
-  step: number
+  step?: number
 }
 
 export interface ShippingToggleProps {
@@ -24,7 +37,7 @@ export interface ShippingToggleProps {
 // Container component that manages address submission with Proceed button
 const StepAddressContainer: React.FC<{
   isShipmentRequired: boolean
-  billingAddress: any
+  billingAddress?: Address
   openShippingAddress: (props: ShippingToggleProps) => void
 }> = ({ isShipmentRequired, billingAddress, openShippingAddress }) => {
   const { billing } = useAddressState()
@@ -33,49 +46,79 @@ const StepAddressContainer: React.FC<{
   const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedAddressId, setSelectedAddressId] = useState<string>()
+  const [drawer, setDrawer] = useState<{
+    address?: Address
+    isAddressBook: boolean
+  } | null>(null)
+
+  const savedAddresses = (checkoutCtx?.customerAddresses ?? []).flatMap(
+    ({ address }) => (address ? [address] : [])
+  )
+  const currentSavedAddress =
+    billingAddress &&
+    savedAddresses.find(
+      (address) =>
+        address.id === billingAddress.id ||
+        address.id === billingAddress.reference ||
+        (!!address.reference &&
+          address.reference === billingAddress.reference)
+    )
+  const currentAddressId = currentSavedAddress?.id ?? billingAddress?.id
+  const addresses =
+    billingAddress && !currentSavedAddress
+      ? [...savedAddresses, billingAddress]
+      : savedAddresses
+
+  useEffect(() => {
+    setSelectedAddressId(currentAddressId)
+  }, [currentAddressId])
 
   if (!checkoutCtx) {
     return null
   }
-
-  // @TODO: when checkoutCtx.customerAddresses is populated we should show a Address Book style UI
 
   const handleProceed = async () => {
     setIsLoading(true)
     setError(null)
 
     try {
-      console.log('Address Proceed button clicked - saving address')
-      const result = await checkoutCtx.saveAddress(billing, false) // useAsShipping = false by default
-
-      if (result.success) {
-        console.log('✅ Address saved successfully - checking context state:')
-        console.log('hasBillingAddress:', checkoutCtx.hasBillingAddress)
-        console.log('hasEmailAddress:', checkoutCtx.hasEmailAddress)
-        console.log('isShipmentRequired:', checkoutCtx.isShipmentRequired)
-        console.log('hasShippingAddress:', checkoutCtx.hasShippingAddress)
-
-        // Advance to next step using Chakra UI Steps context
-        if (stepsContext && stepsContext.goToNextStep) {
-          console.log(
-            '🚀 Advancing to next step after successful address save'
+      if (billingAddress) {
+        if (!selectedAddressId) return
+        if (selectedAddressId !== currentAddressId) {
+          const result =
+            await checkoutCtx.attachBillingAddressToOrder(selectedAddressId)
+          if (!result.success) {
+            setError('Failed to select billing address')
+            return
+          }
+          setCustomerOrderParam(
+            '_save_billing_address_to_customer_address_book',
+            'false'
           )
-          stepsContext.goToNextStep()
-        } else {
-          console.warn('⚠️ Steps context not available for step advancement')
         }
       } else {
-        setError(result.error || 'Failed to save address')
+        const result = await checkoutCtx.saveAddress(billing, false)
+        if (!result.success) {
+          setError(result.error || 'Failed to save address')
+          return
+        }
       }
-    } catch (error: any) {
-      console.error('Error saving address:', error)
-      setError(error?.message || 'Failed to save address')
+      stepsContext.goToNextStep()
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : 'Failed to save address'
+      )
     } finally {
       setIsLoading(false)
     }
   }
 
-  const canProceed = billing && Object.keys(billing).length > 0
+  const canProceed = billingAddress
+    ? !!selectedAddressId
+    : Object.keys(billing).length > 0
+
+  const colSpan = addresses ? (addresses?.length % 2 === 1 ? 1 : 2) : 2
 
   return (
     <VStack gap={2} mb={4} align={'start'} w={'full'}>
@@ -91,14 +134,100 @@ const StepAddressContainer: React.FC<{
           {'Billing address'}
         </Flex>
       </Box>
-      <BillingAddressForm
-        billingAddress={billingAddress}
-        openShippingAddress={openShippingAddress}
-      />
-      <AddressFormBottom
-        addressType={'billing'}
-        hasCustomerAddresses={false}
-      />
+      {billingAddress ? (
+        <>
+          <Grid
+            templateColumns={'1fr 1fr'}
+            gridGap={2}
+            w={'full'}
+            mb={2}
+            asChild
+          >
+            <RadioCardRoot
+              aria-label='Billing address'
+              value={selectedAddressId}
+              onValueChange={({ value }) => {
+                setSelectedAddressId(value || undefined)
+                setError(null)
+              }}
+              variant='solid'
+              size='md'
+              disabled={isLoading}
+            >
+              {addresses.map((address) => (
+                <AddressRadioCard
+                  key={address.id}
+                  address={address}
+                  selected={selectedAddressId === address.id}
+                  disabled={isLoading}
+                  onEdit={() => {
+                    setError(null)
+                    setDrawer({
+                      address,
+                      isAddressBook: savedAddresses.some(
+                        (saved) => saved.id === address.id
+                      ),
+                    })
+                  }}
+                />
+              ))}
+              <GridItem
+                bg={'brand.50'}
+                p={4}
+                minH={24}
+                h={'full'}
+                pos={'relative'}
+                justifyContent={'center'}
+                alignItems={'center'}
+                colSpan={colSpan}
+                asChild
+              >
+                <Button
+                  type='button'
+                  variant={'subtle'}
+                  borderColor={'transparent'}
+                  borderWidth={'2px'}
+                  bg={'brand.50'}
+                  _hover={{ bg: '#e3e3e3', borderRadius: '0px' }}
+                  borderRadius={'100px'}
+                  transition={
+                    'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
+                  }
+                  size={'sm'}
+                  fontSize={'lg'}
+                  disabled={isLoading}
+                  onClick={() => {
+                    setError(null)
+                    setDrawer({ isAddressBook: false })
+                  }}
+                >
+                  {'New billing address'}
+                </Button>
+              </GridItem>
+            </RadioCardRoot>
+          </Grid>
+
+          {drawer && (
+            <BillingAddressDrawer
+              {...drawer}
+              openShippingAddress={openShippingAddress}
+              onClose={() => setDrawer(null)}
+              onSaved={(addressId) => {
+                setSelectedAddressId(addressId)
+                setDrawer(null)
+              }}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <BillingAddressForm openShippingAddress={openShippingAddress} />
+          <AddressFormBottom
+            addressType={'billing'}
+            hasCustomerAddresses={false}
+          />
+        </>
+      )}
       {/* TODO: Replace with shipping address form when implementing shipping flow
        * See SHIPPING_MIGRATION_TODO.md for complete implementation plan
        * Components needed:
@@ -125,6 +254,7 @@ const StepAddressContainer: React.FC<{
           </Alert>
         )}
         <Button
+          type='button'
           onClick={handleProceed}
           loading={isLoading}
           disabled={!canProceed || isLoading}
@@ -154,21 +284,12 @@ export const StepAddress: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const { t } = useTranslation()
 
-  // Removed isLocalLoader - no longer needed since SaveBillingAddressButton manages its own loading state
-
   const {
-    isShipmentRequired,
+    isShipmentRequired = false,
     billingAddress,
-    shippingAddress,
-    emailAddress,
     hasSameAddresses,
-    isUsingNewBillingAddress,
-    isUsingNewShippingAddress,
-    hasCustomerAddresses,
     shippingCountryCodeLock,
-    setAddresses,
-    setCustomerEmail,
-  } = checkoutCtx
+  } = checkoutCtx ?? {}
 
   const [shipToDifferentAddress, setShipToDifferentAddress] =
     useState(!hasSameAddresses)
@@ -196,9 +317,6 @@ export const StepAddress: React.FC<Props> = () => {
     setDisabledShipToDifferentAddress(disableToggle)
   }
 
-  // Removed handleSave - SaveBillingAddressButton now handles this directly
-
-  // @TODO: test re-integrating AddresssesContainer into this step
   if (!checkoutCtx) {
     return null
   }
@@ -211,14 +329,6 @@ export const StepAddress: React.FC<Props> = () => {
         showLicenseOwner={false}
         heading={t('stepPayment.summaryHeading', 'Your Details')}
       />
-      {/*<Heading
-        as={'h5'}
-        fontSize={'xl'}
-        textTransform={'uppercase'}
-        fontWeight={'normal'}
-      >
-        {'Billing address'}
-      </Heading>*/}
       <AddressProvider>
         <StepAddressContainer
           isShipmentRequired={isShipmentRequired}

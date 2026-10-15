@@ -215,6 +215,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
           },
         },
         itemControl: {
+          alignItems: 'center',
           _checked: {
             opacity: 1,
             bg: 'blackAlpha.300',
@@ -261,6 +262,7 @@ export const radioCardSlotRecipe = defineSlotRecipe({
           },
         },
         itemControl: {
+          alignItems: 'center',
           _checked: {
             opacity: 1,
             boxShadow: 'inset 0 0 0 2px #000',
@@ -286,21 +288,53 @@ export const radioCardSlotRecipe = defineSlotRecipe({
       },
       solid: {
         item: {
-          borderWidth: '1px',
+          rounded: 0,
+          borderWidth: '0px',
+          bg: 'brand.50',
           _checked: {
-            bg: 'colorPalette.solid',
-            color: 'colorPalette.contrast',
-            borderColor: 'colorPalette.solid',
+            bg: '#e3e3e3',
+            color: 'colorPalette.fg',
+            borderColor: 'transparent',
+            _hover: {
+              '& .dot': {
+                borderWidth: 0,
+              },
+            },
+          },
+          _hover: {
+            bg: '#e3e3e3',
+            '& .dot': {
+              borderWidth: '3px',
+            },
           },
         },
+        itemControl: {
+          gap: 4,
+          pb: 0,
+        },
         itemIndicator: {
-          bg: 'bg',
-          borderWidth: '1px',
-          borderColor: 'inherit',
-          _checked: {
-            color: 'colorPalette.solid',
-            borderColor: 'currentcolor',
+          borderWidth: '2px',
+          borderColor: 'colorPalette.fg',
+          bg: 'colorPalette.bg',
+          _focusVisible: {
+            outlineColor: 'transparent',
           },
+          _checked: {
+            color: 'colorPalette.fg',
+            borderColor: 'colorPalette.fg',
+          },
+          '& .dot': {
+            scale: '1',
+          },
+        },
+        itemAddon: {
+          display: 'flex',
+          flexDirection: 'row',
+          borderColor: 'transparent',
+          px: 4,
+          pt: 2,
+          pb: 2,
+          justifyContent: 'flex-end',
         },
       },
     },

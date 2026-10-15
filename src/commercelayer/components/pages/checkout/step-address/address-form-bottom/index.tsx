@@ -10,6 +10,7 @@ interface Props {
   hasCustomerAddresses: boolean
   onClick?: () => void
   className?: string
+  variant?: string
 }
 
 export const AddressFormBottom: React.FC<Props> = ({
@@ -17,12 +18,16 @@ export const AddressFormBottom: React.FC<Props> = ({
   hasCustomerAddresses,
   onClick,
   className,
+  variant = 'subtle',
 }) => {
   const { t } = useTranslation()
 
   return (
     <Box mt={'-0.25rem'} w={'full'} className={className}>
-      <AddressSectionSaveOnAddressBook addressType={addressType} />
+      <AddressSectionSaveOnAddressBook
+        variant={variant}
+        addressType={addressType}
+      />
       {hasCustomerAddresses && (
         <Button
           variant='ghost'

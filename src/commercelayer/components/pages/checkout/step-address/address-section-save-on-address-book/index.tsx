@@ -11,10 +11,12 @@ import { useTranslation } from 'react-i18next'
 
 interface Props {
   addressType: 'billing' | 'shipping'
+  variant?: string
 }
 
 export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
   addressType,
+  variant,
 }) => {
   const { t } = useTranslation()
 
@@ -52,9 +54,9 @@ export const AddressSectionSaveOnAddressBook: React.FC<Props> = ({
     <Card.Root w={'full'}>
       <Card.Body
         p={3}
-        bg={'brand.50'}
+        bg={variant === 'white' ? 'colorPalette.bg' : 'brand.50'}
         _hover={{
-          bg: '#e4e4e4',
+          bg: variant === 'white' ? '#f4f4f4' : '#e3e3e3',
         }}
       >
         <Checkbox

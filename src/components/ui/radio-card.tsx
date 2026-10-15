@@ -34,7 +34,7 @@ export const RadioCardItem = React.forwardRef<
   return (
     <RadioCard.Item {...rest}>
       <RadioCard.ItemHiddenInput ref={ref} {...inputProps} />
-      <RadioCard.ItemControl alignItems={'center'}>
+      <RadioCard.ItemControl>
         {indicatorPlacement === 'start' && indicator}
         {hasContent && (
           <ContentWrapper>
