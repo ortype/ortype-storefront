@@ -297,7 +297,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                     Changing size after commit requires repricing the line
                     items: update the order's licenseSize, then call
                     repriceAll() (OrderProvider) to recommit each font at the
-                    new size. Until then, show the current size as read-only. */}
+                    new size. Until then, show the current size as read-only. 
                 <Text
                   fontSize={'xs'}
                   textTransform={'uppercase'}
@@ -316,7 +316,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   <Text fontSize={'md'} lineHeight={1.2}>
                     {licenseSize?.label}
                   </Text>
-                </Box>
+                </Box>*/}
               </>
             ) : (
               <>
@@ -339,7 +339,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   licenseSize={licenseSize}
                   label={'Your company size'}
                 />
-                */}
+                
                 <Text
                   fontSize={'xs'}
                   lineHeight={1}
@@ -359,7 +359,7 @@ export const LicenseOwnerForm: React.FC<LicenseOwnerFormProps> = ({
                   <Text fontSize={'md'} lineHeight={1.2}>
                     {licenseSize?.label}
                   </Text>
-                </Box>
+                </Box>*/}
               </>
             )}
 

@@ -200,6 +200,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                     }}
                   >
                     <Tag
+                      bg={'colorPalette.bg'}
                       size={'md'}
                       variant={'solid'}
                       borderRadius={'100px'}

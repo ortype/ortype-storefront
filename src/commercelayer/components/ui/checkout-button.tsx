@@ -66,7 +66,6 @@ export const CheckoutButton: React.FC<Props> = ({
       css={{
         _hover: {
           bg: 'red',
-          color: 'colorPalette.fg',
         },
       }}
       gap={1}

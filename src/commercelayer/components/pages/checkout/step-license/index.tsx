@@ -1,5 +1,5 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { VStack, useStepsContext } from '@chakra-ui/react'
+import { VStack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -21,7 +21,6 @@ export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
   const { t } = useTranslation()
 
-  const stepsContext = useStepsContext()
   const [isLocalLoader, setIsLocalLoader] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editing, setEditing] = useState(false)
@@ -143,7 +142,16 @@ export const StepLicense: React.FC<Props> = () => {
       <CheckoutSummary
         heading={String(t('stepLicense.summaryHeading', 'Your details'))}
       />
-      {hasLicenseOwner && licenseOwner ? (
+      <LicenseOwnerForm
+        projectType={projectType}
+        onProjectTypeChange={setProjectType}
+        form={form}
+        onSubmit={onSubmit}
+        handleProceed={handleProceed}
+        isLocalLoader={isLocalLoader}
+        error={error}
+      />
+      {/*{hasLicenseOwner && licenseOwner ? (
         <LicenseSummary
           licenseOwner={licenseOwner}
           editing={editing}
@@ -166,7 +174,7 @@ export const StepLicense: React.FC<Props> = () => {
           isLocalLoader={isLocalLoader}
           error={error}
         />
-      )}
+      )}*/}
     </VStack>
   )
 }
