@@ -8,19 +8,23 @@ import {
   validateAddress,
 } from '@/commercelayer/utils/address'
 import { Alert } from '@/components/ui/alert'
-import { CloseButton } from '@/components/ui/close-button'
+import {
+  DrawerBackdrop,
+  DrawerBody,
+  DrawerCancel,
+  DrawerCloseTrigger,
+  DrawerConfirm,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import {
   getSaveBillingAddressToAddressBook,
   setCustomerOrderParam,
 } from '@/utils/localStorage'
-import {
-  Button,
-  Drawer,
-  Fieldset,
-  Flex,
-  HStack,
-  Portal,
-} from '@chakra-ui/react'
+import { Fieldset, HStack } from '@chakra-ui/react'
 import type { Address } from '@commercelayer/sdk'
 import { useState } from 'react'
 import type { ShippingToggleProps } from '.'
@@ -127,103 +131,58 @@ const BillingAddressDrawerContent = ({
   }
 
   return (
-    <Drawer.Root
+    <DrawerRoot
       open
-      size={'md'}
       closeOnEscape={!isLoading}
       closeOnInteractOutside={!isLoading}
       onOpenChange={({ open }) => {
         if (!open && !isLoading) handleCancel()
       }}
     >
-      <Portal>
-        <Drawer.Backdrop css={{ backdropFilter: 'blur(5px)' }} />
-        <Drawer.Positioner>
-          <Drawer.Content rounded={0} p={4} bg={'#e7e7e7'}>
-            <Drawer.CloseTrigger
-              position={'absolute'}
-              top={'1rem'}
-              left={'-4rem'}
-              asChild
-            >
-              <CloseButton size='2xl' disabled={isLoading} />
-            </Drawer.CloseTrigger>
-            <Drawer.Header pt={2} pb={3}>
-              <Drawer.Title
-                fontSize={'2rem'}
-                fontWeight={'normal'}
-                textTransform={'uppercase'}
-                lineHeight={1}
-                pb={3}
-                borderBottom={'1px solid #919191'}
-              >
-                {address ? 'Edit billing address' : 'New billing address'}
-              </Drawer.Title>
-            </Drawer.Header>
-            <Drawer.Body>
-              <Fieldset.Root
-                disabled={isLoading}
-                alignItems='stretch'
-                gap={2}
-                border={0}
-                p={0}
-                m={0}
-                minW={0}
-              >
-                <BillingAddressForm
-                  billingAddress={address}
-                  openShippingAddress={openShippingAddress}
-                  variant={'white'}
-                />
-                {address && !isAddressBook && (
-                  <AddressFormBottom
-                    variant={'white'}
-                    addressType='billing'
-                    hasCustomerAddresses={false}
-                  />
-                )}
-                {error && <Alert status='error'>{error}</Alert>}
-                <HStack mt={2} gap={2} w='full' justify={'flex-end'}>
-                  <Button
-                    type='button'
-                    variant='text'
-                    size='xs'
-                    fontSize='xs'
-                    px={2}
-                    py={1}
-                    h='auto'
-                    minH='auto'
-                    disabled={isLoading}
-                    onClick={handleCancel}
-                  >
-                    {'Cancel'}
-                  </Button>
-                  <Button
-                    alignSelf='flex-end'
-                    variant={'solid'}
-                    bg={'black'}
-                    color={'white'}
-                    borderRadius={'5rem'}
-                    border={'2px solid #000'}
-                    size={'sm'}
-                    fontSize={'md'}
-                    gap={1}
-                    _hover={{
-                      bg: 'transparent',
-                      color: 'colorPalette.fg',
-                    }}
-                    loading={isLoading}
-                    onClick={handleSave}
-                  >
-                    {'Save address'}
-                  </Button>
-                </HStack>
-              </Fieldset.Root>
-            </Drawer.Body>
-          </Drawer.Content>
-        </Drawer.Positioner>
-      </Portal>
-    </Drawer.Root>
+      <DrawerBackdrop />
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>
+            {address ? 'Edit billing address' : 'New billing address'}
+          </DrawerTitle>
+          <DrawerCloseTrigger />
+        </DrawerHeader>
+        <DrawerBody>
+          <Fieldset.Root
+            disabled={isLoading}
+            alignItems='stretch'
+            gap={2}
+            border={0}
+            p={0}
+            m={0}
+            minW={0}
+          >
+            <BillingAddressForm
+              billingAddress={address}
+              openShippingAddress={openShippingAddress}
+              variant={'white'}
+            />
+            {address && !isAddressBook && (
+              <AddressFormBottom
+                variant={'white'}
+                addressType='billing'
+                hasCustomerAddresses={false}
+              />
+            )}
+            {error && <Alert status='error'>{error}</Alert>}
+            <HStack mt={2} gap={2} w='full' justify={'flex-end'}>
+              <DrawerCancel disabled={isLoading} onClick={handleCancel}>
+                {'Cancel'}
+              </DrawerCancel>
+              <DrawerConfirm loading={isLoading} onClick={handleSave}>
+                {'Save address'}
+              </DrawerConfirm>
+            </HStack>
+          </Fieldset.Root>
+        </DrawerBody>
+        <DrawerFooter></DrawerFooter>
+      </DrawerContent>
+    </DrawerRoot>
   )
 }
 

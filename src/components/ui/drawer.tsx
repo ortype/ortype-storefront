@@ -1,6 +1,7 @@
-import { Drawer as ChakraDrawer, Portal } from '@chakra-ui/react'
-import { CloseButton } from './close-button'
+import { Button, Drawer as ChakraDrawer, Portal } from '@chakra-ui/react'
+import { Icon } from '@sanity/icons'
 import * as React from 'react'
+// import { CloseButton } from './close-button'
 
 interface DrawerContentProps extends ChakraDrawer.ContentProps {
   portalled?: boolean
@@ -8,11 +9,58 @@ interface DrawerContentProps extends ChakraDrawer.ContentProps {
   offset?: ChakraDrawer.ContentProps['padding']
 }
 
+export const DrawerCancel = function DrawerCancel({ children, ...rest }) {
+  return (
+    <Button
+      type='button'
+      variant='text'
+      size='xs'
+      fontSize='xs'
+      px={2}
+      py={1}
+      h='auto'
+      minH='auto'
+      {...rest}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export const DrawerConfirm = function DrawerConfirm({ children, ...rest }) {
+  return (
+    <Button
+      alignSelf='flex-end'
+      variant={'solid'}
+      bg={'black'}
+      color={'white'}
+      borderRadius={'5rem'}
+      border={'2px solid #000'}
+      size={'sm'}
+      fontSize={'md'}
+      gap={1}
+      _hover={{
+        bg: 'transparent',
+        color: 'colorPalette.fg',
+      }}
+      {...rest}
+    >
+      {children}
+    </Button>
+  )
+}
+
 export const DrawerContent = React.forwardRef<
   HTMLDivElement,
   DrawerContentProps
 >(function DrawerContent(props, ref) {
-  const { children, portalled = true, portalRef, offset, ...rest } = props
+  const {
+    children,
+    portalled = true,
+    portalRef,
+    offset = 10,
+    ...rest
+  } = props
   return (
     <Portal disabled={!portalled} container={portalRef}>
       <ChakraDrawer.Positioner padding={offset}>
@@ -31,12 +79,18 @@ export const DrawerCloseTrigger = React.forwardRef<
   return (
     <ChakraDrawer.CloseTrigger
       position='absolute'
-      top='2'
-      insetEnd='2'
+      insetEnd={5}
+      top={5}
+      rounded={'full'}
+      cursor={'pointer'}
+      _hover={{
+        bg: 'colorPalette.bg',
+      }}
       {...props}
+      ref={ref}
       asChild
     >
-      <CloseButton size='sm' ref={ref} />
+      <Icon symbol='close' style={{ fontSize: '2.5rem' }} />
     </ChakraDrawer.CloseTrigger>
   )
 })

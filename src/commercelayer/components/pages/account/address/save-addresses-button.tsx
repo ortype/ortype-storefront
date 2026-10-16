@@ -63,20 +63,6 @@ export function SaveAddressesButton(props: Props): JSX.Element {
 
   return (
     <Button
-      type='button'
-      alignSelf='flex-end'
-      variant={'solid'}
-      bg={'black'}
-      color={'white'}
-      borderRadius={'5rem'}
-      border={'2px solid #000'}
-      size={'sm'}
-      fontSize={'md'}
-      gap={1}
-      _hover={{
-        bg: 'transparent',
-        color: 'colorPalette.fg',
-      }}
       disabled={disable || forceDisable}
       onClick={() => {
         handleClick()

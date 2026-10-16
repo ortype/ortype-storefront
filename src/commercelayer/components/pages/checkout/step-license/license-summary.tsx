@@ -3,13 +3,23 @@ import {
   getCountryName,
   getStateName,
 } from '@/commercelayer/utils/country-utils'
-import { CloseButton } from '@/components/ui/close-button'
+import {
+  DrawerBackdrop,
+  DrawerBody,
+  DrawerCancel,
+  DrawerCloseTrigger,
+  DrawerConfirm,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
 import {
   Box,
   Button,
-  Drawer,
   Flex,
-  Portal,
   Text,
   useStepsContext,
   VStack,
@@ -85,70 +95,41 @@ export const LicenseSummary: React.FC<LicenseSummaryProps> = ({
 
           <Text>{location}</Text>
           <Text>{country}</Text>
-          <Drawer.Root
+          <DrawerRoot
             lazyMount
             open={editing}
             onOpenChange={(e) => setEditing(e.open)}
-            size={'md'}
-            // initialFocusEl={() => ref.current}
           >
-            <Drawer.Trigger asChild>
+            <DrawerTrigger asChild>
               <Button variant='text' size='sm'>
                 {t('stepLicense.editButton', 'Edit address')}
               </Button>
-            </Drawer.Trigger>
-            <Portal>
-              <Drawer.Backdrop css={{ backdropFilter: 'blur(5px)' }} />
-              <Drawer.Positioner
-              // p={10}
-              >
-                <Drawer.Content
-                  rounded={0}
-                  // rounded={40}
-                  p={4}
-                  bg={'#e7e7e7'}
-                >
-                  <Drawer.CloseTrigger
-                    position={'absolute'}
-                    top={'1rem'}
-                    left={'-4rem'}
-                    asChild
-                  >
-                    <CloseButton size='2xl' />
-                  </Drawer.CloseTrigger>
-                  <Drawer.Header pt={2} pb={3}>
-                    <Drawer.Title
-                      fontSize={'2rem'}
-                      fontWeight={'normal'}
-                      textTransform={'uppercase'}
-                      lineHeight={1}
-                      pb={3}
-                      borderBottom={'1px solid #919191'}
-                    >
-                      {'Edit license owner'}
-                    </Drawer.Title>
-                  </Drawer.Header>
-                  <Drawer.Body>
-                    <LicenseOwnerForm
-                      projectType={projectType}
-                      onProjectTypeChange={onProjectTypeChange}
-                      form={form}
-                      onSubmit={onSubmit}
-                      handleProceed={handleProceed}
-                      isLocalLoader={isLocalLoader}
-                      error={error}
-                      isDialog={true}
-                      showProjectTypeSelection={true}
-                      submitButtonText={String(
-                        t('stepLicense.saveChanges', 'Save Changes')
-                      )}
-                      onCancel={() => setEditing(false)}
-                    />
-                  </Drawer.Body>
-                </Drawer.Content>
-              </Drawer.Positioner>
-            </Portal>
-          </Drawer.Root>
+            </DrawerTrigger>
+            <DrawerBackdrop />
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>{'Edit license owner'}</DrawerTitle>
+                <DrawerCloseTrigger />
+              </DrawerHeader>
+              <DrawerBody>
+                <LicenseOwnerForm
+                  projectType={projectType}
+                  onProjectTypeChange={onProjectTypeChange}
+                  form={form}
+                  onSubmit={onSubmit}
+                  handleProceed={handleProceed}
+                  isLocalLoader={isLocalLoader}
+                  error={error}
+                  isDialog={true}
+                  showProjectTypeSelection={true}
+                  submitButtonText={String(
+                    t('stepLicense.saveChanges', 'Save Changes')
+                  )}
+                  onCancel={() => setEditing(false)}
+                />
+              </DrawerBody>
+            </DrawerContent>
+          </DrawerRoot>
         </VStack>
       </Box>
       <Button

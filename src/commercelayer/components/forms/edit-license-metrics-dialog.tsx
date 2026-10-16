@@ -1,21 +1,23 @@
 import { useOrderContext } from '@/commercelayer/providers/order'
 import type { LicenseOwnerInput as LicenseOwnerValue } from '@/commercelayer/providers/order/types'
-import { CloseButton } from '@/components/ui/close-button'
 import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  DrawerBackdrop,
+  DrawerBody,
+  DrawerCancel,
+  DrawerCloseTrigger,
+  DrawerConfirm,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerRoot,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import {
   Box,
   Button,
-  Container,
   Drawer,
+  DrawerTrigger,
   HStack,
-  Portal,
   Text,
   VStack,
 } from '@chakra-ui/react'
@@ -99,9 +101,8 @@ export default function EditLicenseMetricsDialog({
   }
 
   return (
-    <Drawer.Root
+    <DrawerRoot
       lazyMount
-      size={'md'}
       open={open}
       onOpenChange={(e) => {
         // Escape / backdrop / the X all behave like Cancel.
@@ -111,9 +112,8 @@ export default function EditLicenseMetricsDialog({
         }
         onOpenChange(e.open)
       }}
-      // initialFocusEl={() => ref.current}
     >
-      <Drawer.Trigger asChild>
+      <DrawerTrigger asChild>
         <Button
           variant='text'
           size='xs'
@@ -125,133 +125,81 @@ export default function EditLicenseMetricsDialog({
         >
           {'Edit'}
         </Button>
-      </Drawer.Trigger>
-      <Portal>
-        <Drawer.Backdrop css={{ backdropFilter: 'blur(5px)' }} />
-        <Drawer.Positioner
-        // p={10}
-        >
-          <Drawer.Content
-            rounded={0}
-            // rounded={40}
-            p={4}
-            bg={'#e7e7e7'}
-          >
-            <Drawer.CloseTrigger
-              position={'absolute'}
-              top={'1rem'}
-              left={'-4rem'}
-              asChild
-            >
-              <CloseButton size='2xl' />
-            </Drawer.CloseTrigger>
-            <Drawer.Header pt={2} pb={3}>
-              <Drawer.Title
-                fontSize={'2rem'}
-                fontWeight={'normal'}
-                textTransform={'uppercase'}
-                lineHeight={1}
-                pb={3}
-                borderBottom={'1px solid #919191'}
-              >
-                {`Update license metrics`}
-              </Drawer.Title>
-            </Drawer.Header>
-            <Drawer.Body>
-              <VStack gap={4}>
-                <Box w={'full'}>
-                  <LicenseOwnerRadio
-                    label={'License holder'}
-                    info={'The license owner is the business entity...'}
-                    variant={'outline'}
+      </DrawerTrigger>
+      <DrawerBackdrop />
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>{`Update license metrics`}</DrawerTitle>
+          <DrawerCloseTrigger />
+        </DrawerHeader>
+        <DrawerBody>
+          <VStack gap={4}>
+            <Box w={'full'}>
+              <LicenseOwnerRadio
+                label={'License holder'}
+                info={'The license owner is the business entity...'}
+                variant={'outline'}
+              />
+              {isLicenseForClient && (
+                <Box my={2}>
+                  <LicenseOwnerInput
+                    label={'Company info'}
+                    info={
+                      'Please let us know the company name of your client, the typeface license owner.'
+                    }
                   />
-                  {isLicenseForClient && (
-                    <Box my={2}>
-                      <LicenseOwnerInput
-                        label={'Company info'}
-                        info={
-                          'Please let us know the company name of your client, the typeface license owner.'
-                        }
-                      />
-                    </Box>
-                  )}
                 </Box>
-                <LicenseSizeRadioList
-                  label={label}
-                  info={info}
-                  value={displayValue?.value}
-                  onSelect={requestSizeChange}
-                >
-                  {/* Inline stand-in for the former confirm dialog: shown while a
+              )}
+            </Box>
+            <LicenseSizeRadioList
+              label={label}
+              info={info}
+              value={displayValue?.value}
+              onSelect={requestSizeChange}
+            >
+              {/* Inline stand-in for the former confirm dialog: shown while a
                     different size is selected but not yet applied. */}
-                  {confirmOpen && (
-                    <Box
-                      w={'full'}
-                      mt={2}
-                      bg={'orange.300'}
-                      borderRadius={20}
-                      px={4}
-                      py={3}
-                      role={'alert'}
-                    >
-                      <Text
-                        textStyle={'sm'}
-                        // fontWeight={500}
-                        textTransform={'uppercase'}
-                      >
-                        {'Update cart pricing?'}
-                      </Text>
-                      <Text textStyle={'sm'}>
-                        {
-                          'Changing the company size updates pricing for every item in your cart. Press Ok to continue.'
-                        }
-                      </Text>
-                    </Box>
-                  )}
-                </LicenseSizeRadioList>
-                {!isOwnerComplete && (
-                  <Text textStyle={'sm'} textAlign={'center'} role='alert'>
-                    {needsCompanyName
-                      ? "Enter your client's company name to save these license metrics."
-                      : 'Choose a license holder to save these license metrics.'}
+              {confirmOpen && (
+                <Box
+                  w={'full'}
+                  mt={2}
+                  bg={'orange.300'}
+                  borderRadius={20}
+                  px={4}
+                  py={3}
+                  role={'alert'}
+                >
+                  <Text
+                    textStyle={'sm'}
+                    // fontWeight={500}
+                    textTransform={'uppercase'}
+                  >
+                    {'Update cart pricing?'}
                   </Text>
-                )}
-                <HStack gap={2} justifyContent={'center'}>
-                  <Button
-                    onClick={dismiss}
-                    variant='text'
-                    size='xs'
-                    fontSize='xs'
-                    px={2}
-                    py={1}
-                    h='auto'
-                    minH='auto'
-                  >
-                    {'Cancel'}
-                  </Button>
-                  <Button
-                    onClick={handleOk}
-                    disabled={!isOwnerComplete}
-                    variant={'solid'}
-                    bg={'black'}
-                    color={'white'}
-                    borderRadius={'5rem'}
-                    border={'2px solid #000'}
-                    size={'sm'}
-                    fontSize={'md'}
-                    _hover={{
-                      bg: 'transparent',
-                      color: 'colorPalette.fg',
-                    }}
-                  >
-                    {'Ok'}
-                  </Button>
-                </HStack>
-              </VStack>
-            </Drawer.Body>
-          </Drawer.Content>
-        </Drawer.Positioner>
-      </Portal>
-    </Drawer.Root>
+                  <Text textStyle={'sm'}>
+                    {
+                      'Changing the company size updates pricing for every item in your cart. Press Ok to continue.'
+                    }
+                  </Text>
+                </Box>
+              )}
+            </LicenseSizeRadioList>
+            {!isOwnerComplete && (
+              <Text textStyle={'sm'} textAlign={'center'} role='alert'>
+                {needsCompanyName
+                  ? "Enter your client's company name to save these license metrics."
+                  : 'Choose a license holder to save these license metrics.'}
+              </Text>
+            )}
+            <HStack mt={2} gap={2} w='full' justify={'flex-end'}>
+              <DrawerCancel onClick={dismiss}>{'Cancel'}</DrawerCancel>
+              <DrawerConfirm onClick={handleOk} disabled={!isOwnerComplete}>
+                {'Ok'}
+              </DrawerConfirm>
+            </HStack>
+          </VStack>
+        </DrawerBody>
+      </DrawerContent>
+    </DrawerRoot>
   )
 }
