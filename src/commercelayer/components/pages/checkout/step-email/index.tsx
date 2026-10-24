@@ -7,6 +7,7 @@ import {
   Center,
   Link as ChakraLink,
   Container,
+  Heading,
   Spinner,
   Text,
   VStack,
@@ -74,7 +75,7 @@ export const StepEmail: React.FC<Props> = () => {
   }
 
   return (
-    <Container centerContent my={4} maxW={'30rem'} position={'relative'}>
+    <Container centerContent my={4} position={'relative'}>
       {hasEmailAddress ? (
         <>
           {customer.isCheckingEmail ? (
@@ -84,7 +85,20 @@ export const StepEmail: React.FC<Props> = () => {
           ) : requiresLogin ? (
             <>
               <VStack gap={2}>
-                <LoginForm emailAddress={email} />
+                <Heading
+                  textAlign={'center'}
+                  fontSize={'4rem'}
+                  lineHeight={1}
+                  fontWeight={'normal'}
+                  textTransform={'uppercase'}
+                  mx={'auto'}
+                  pb={4}
+                >
+                  {'Welcome back 😘'}
+                </Heading>
+                <Container maxW={'30rem'}>
+                  <LoginForm emailAddress={email} />
+                </Container>
                 {resetPasswordUrl.length > 0 && (
                   <Button
                     asChild
@@ -108,11 +122,41 @@ export const StepEmail: React.FC<Props> = () => {
               </VStack>
             </>
           ) : (
-            <SignUpForm emailAddress={email} />
+            <VStack gap={2}>
+              <Heading
+                textAlign={'center'}
+                fontSize={'4rem'}
+                lineHeight={1}
+                fontWeight={'normal'}
+                textTransform={'uppercase'}
+                mx={'auto'}
+                pb={4}
+              >
+                {'Register'}
+              </Heading>
+              <Container maxW={'30rem'}>
+                <SignUpForm emailAddress={email} />
+              </Container>
+            </VStack>
           )}
         </>
       ) : (
-        <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
+        <VStack gap={2}>
+          <Heading
+            textAlign={'center'}
+            fontSize={'4rem'}
+            lineHeight={1}
+            fontWeight={'normal'}
+            textTransform={'uppercase'}
+            mx={'auto'}
+            pb={4}
+          >
+            {'Enter your email to get started'}
+          </Heading>
+          <Container maxW={'30rem'}>
+            <Email emailAddress={email} setCustomerEmail={setCustomerEmail} />
+          </Container>
+        </VStack>
       )}
     </Container>
   )
