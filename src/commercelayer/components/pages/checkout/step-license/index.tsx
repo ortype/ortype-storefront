@@ -1,5 +1,5 @@
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
-import { VStack } from '@chakra-ui/react'
+import { useStepsContext, VStack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -10,7 +10,8 @@ import {
   LicenseOwnerFormData,
   licenseOwnerSchema,
 } from './license-owner-form'
-import { LicenseSummary } from './license-summary'
+// @NOTE: keeping around for later feature expansion
+// import { LicenseSummary } from './license-summary'
 
 interface Props {
   className?: string
@@ -19,6 +20,7 @@ interface Props {
 
 export const StepLicense: React.FC<Props> = () => {
   const checkoutCtx = useContext(CheckoutContext)
+  const stepsContext = useStepsContext()
   const { t } = useTranslation()
 
   const [isLocalLoader, setIsLocalLoader] = useState(false)
@@ -92,6 +94,8 @@ export const StepLicense: React.FC<Props> = () => {
 
       if (editing) {
         setEditing(false)
+      } else {
+        stepsContext.goToNextStep()
       }
     } catch (e) {
       setError('An unexpected error occurred')
@@ -123,6 +127,8 @@ export const StepLicense: React.FC<Props> = () => {
       // Close dialog if editing
       if (editing) {
         setEditing(false)
+      } else {
+        stepsContext.goToNextStep()
       }
     } catch (e) {
       console.log('License save error: ', e)
@@ -152,7 +158,8 @@ export const StepLicense: React.FC<Props> = () => {
         error={error}
       />
       {/*{hasLicenseOwner && licenseOwner ? (
-        <LicenseSummary
+      // @NOTE: keeping around for later feature expansion
+        // <LicenseSummary
           licenseOwner={licenseOwner}
           editing={editing}
           setEditing={setEditing}
