@@ -6,7 +6,10 @@ import {
 import { CheckoutContext } from '@/commercelayer/providers/checkout'
 import { Alert } from '@/components/ui/alert'
 import { RadioCardRoot } from '@/components/ui/radio-card'
-import { setCustomerOrderParam } from '@/utils/localStorage'
+import {
+  getSaveBillingAddressToAddressBook,
+  setCustomerOrderParam,
+} from '@/utils/localStorage'
 import {
   Box,
   Button,
@@ -69,6 +72,7 @@ const StepAddressContainer: React.FC<{
     billingAddress && !currentSavedAddress
       ? [...savedAddresses, billingAddress]
       : savedAddresses
+  const showAddressSelection = addresses.length > 0
 
   useEffect(() => {
     setSelectedAddressId(currentAddressId)
@@ -83,7 +87,7 @@ const StepAddressContainer: React.FC<{
     setError(null)
 
     try {
-      if (billingAddress) {
+      if (showAddressSelection) {
         if (!selectedAddressId) return
         if (selectedAddressId !== currentAddressId) {
           const result =
@@ -98,7 +102,11 @@ const StepAddressContainer: React.FC<{
           )
         }
       } else {
-        const result = await checkoutCtx.saveAddress(billing, false)
+        const result = await checkoutCtx.saveAddress(
+          billing,
+          false,
+          getSaveBillingAddressToAddressBook()
+        )
         if (!result.success) {
           setError(result.error || 'Failed to save address')
           return
@@ -114,7 +122,7 @@ const StepAddressContainer: React.FC<{
     }
   }
 
-  const canProceed = billingAddress
+  const canProceed = showAddressSelection
     ? !!selectedAddressId
     : Object.keys(billing).length > 0
 
@@ -134,7 +142,7 @@ const StepAddressContainer: React.FC<{
           {'Billing address'}
         </Flex>
       </Box>
-      {billingAddress ? (
+      {showAddressSelection ? (
         <>
           <Grid
             templateColumns={'1fr 1fr'}

@@ -81,8 +81,10 @@ const BillingAddressDrawerContent = ({
         return
       }
 
+      const saveToAddressBook =
+        !isAddressBook && getSaveBillingAddressToAddressBook()
       let selectedAddressId: string
-      if (address) {
+      if (address && !saveToAddressBook) {
         const updated = await checkoutCtx.updateBillingAddress(address.id, {
           ...billing,
           id: address.id,
@@ -104,22 +106,27 @@ const BillingAddressDrawerContent = ({
           ? address.id
           : attached.data.billing_address.id
       } else {
-        const result = await checkoutCtx.saveAddress(billing, false, true)
+        // Create a separate source address before replacing the order clone.
+        // This also promotes an order-only address into the customer's book.
+        const result = await checkoutCtx.saveAddress(
+          billing,
+          false,
+          saveToAddressBook
+        )
         if (!result.success || !result.order?.billing_address) {
           setError(result.error || 'Failed to save address')
           return
         }
-        selectedAddressId =
-          result.order.billing_address.reference ||
-          result.order.billing_address.id
+        selectedAddressId = saveToAddressBook
+          ? result.order.billing_address.reference ||
+            result.order.billing_address.id
+          : result.order.billing_address.id
       }
 
-      if (isAddressBook || !address) {
-        setCustomerOrderParam(
-          '_save_billing_address_to_customer_address_book',
-          'false'
-        )
-      }
+      setCustomerOrderParam(
+        '_save_billing_address_to_customer_address_book',
+        'false'
+      )
       onSaved(selectedAddressId)
     } catch (error) {
       setError(
@@ -162,7 +169,7 @@ const BillingAddressDrawerContent = ({
               openShippingAddress={openShippingAddress}
               variant={'white'}
             />
-            {address && !isAddressBook && (
+            {!isAddressBook && (
               <AddressFormBottom
                 variant={'white'}
                 addressType='billing'

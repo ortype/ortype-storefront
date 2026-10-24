@@ -35,6 +35,7 @@ import getCommerceLayer, {
 import {
   getSaveBillingAddressToAddressBook,
   getSavePaymentSourceToCustomerWallet,
+  setCustomerOrderParam,
 } from '@/utils/localStorage'
 import { ActionType, reducer } from './reducer'
 import {
@@ -1192,6 +1193,12 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
 
         // Step 4: Update the checkout provider state with the updated order
         await setAddresses(mergedOrder)
+        if (saveToCustomerAddressBook) {
+          setCustomerOrderParam(
+            '_save_billing_address_to_customer_address_book',
+            'false'
+          )
+        }
         return { success: true, order: mergedOrder }
       } catch (error: any) {
         const errorMessage = error?.message || 'Failed to save address'
