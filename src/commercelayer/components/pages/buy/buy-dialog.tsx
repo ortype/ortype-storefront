@@ -4,6 +4,7 @@ import {
   DraftGuardProvider,
   useDraftGuard,
 } from '@/commercelayer/components/pages/buy/use-draft-guard'
+import { useBuyDialogVisibility } from '@/components/global/buy-dialog-visibility'
 import {
   DialogBody,
   DialogContent,
@@ -11,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { useLayoutEffect, useRef, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
 export interface BuyDialogProps {
   children: ReactNode
@@ -36,6 +37,34 @@ function BuyDialogShell({ children }: BuyDialogProps) {
   const isOpen = /\/buy(\/|$)/.test(pathname)
   const isCartContext = pathname.includes('/cart/')
   const bodyRef = useRef<HTMLDivElement | null>(null)
+  const [content, setContent] = useState<HTMLDivElement | null>(null)
+  const { setHasFinishedEntering } = useBuyDialogVisibility()
+
+  useLayoutEffect(() => {
+    setHasFinishedEntering(false)
+    if (!isOpen || !content) return
+
+    let cancelled = false
+    // Wait for the portalled content to mount and its entry styles to apply.
+    const frame = requestAnimationFrame(() => {
+      // No subtree option: font animations and the draft prompt must not
+      // control page visibility. No animations also covers disabled motion.
+      const animations = content.getAnimations()
+      void Promise.allSettled(
+        animations.map((animation) => animation.finished)
+      ).then(() => {
+        if (!cancelled && content.dataset.state === 'open') {
+          setHasFinishedEntering(true)
+        }
+      })
+    })
+
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(frame)
+      setHasFinishedEntering(false)
+    }
+  }, [content, isOpen, setHasFinishedEntering])
 
   // Reset only the dialog's scroll position, not the underlying page.
   useLayoutEffect(() => {
@@ -71,6 +100,7 @@ function BuyDialogShell({ children }: BuyDialogProps) {
       motionPreset={'slide-in-bottom-custom'}
     >
       <DialogContent
+        ref={setContent}
         backdrop={false}
         borderRadius={0}
         // bg={'colorPalette.bg'}

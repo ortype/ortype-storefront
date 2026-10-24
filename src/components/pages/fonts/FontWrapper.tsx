@@ -36,7 +36,7 @@ const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
         zIndex={'docked'}
         asChild
       >
-        <Link href={`/fonts/${font.slug}/buy`}>{`Buy`}</Link>
+        <Link href={`/fonts/${font.slug}/buy`} scroll={false}>{`Buy`}</Link>
       </Button>
 
       <FontContainer font={font} moreFonts={moreFonts}>

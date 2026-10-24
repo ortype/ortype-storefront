@@ -331,7 +331,7 @@ export const Tester: React.FC<Props> = (props) => {
               }}
               asChild
             >
-              <Link href={`/fonts/${slug}/buy`}>{`Buy`}</Link>
+              <Link href={`/fonts/${slug}/buy`} scroll={false}>{`Buy`}</Link>
             </Button>
             <Text
               as={'div'}

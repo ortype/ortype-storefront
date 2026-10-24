@@ -1,6 +1,7 @@
 'use client'
+import { useBuyDialogVisibility } from '@/components/global/buy-dialog-visibility'
 import { usePathname } from 'next/navigation'
-import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 
 // Matches the same `/buy` route shape BuyDialog itself checks for
 // (e.g. `/cart/buy`, `/fonts/[slug]/buy`, with or without a locale
@@ -33,37 +34,50 @@ interface PageContentProps {
 export function PageContent({ children }: PageContentProps) {
   const pathname = usePathname()
   const isBuyDialogOpen = BUY_ROUTE_PATTERN.test(pathname)
+  const { hasFinishedEntering } = useBuyDialogVisibility()
+  // Keep the page painted during entry, and restore it before exit starts.
+  const hidePage = isBuyDialogOpen && hasFinishedEntering
 
   // `display: none` collapses this subtree's height to 0, which clamps
   // `window.scrollY` to the page's new (usually 0) scrollable range - so
   // the underlying page's scroll position is lost the moment it's
-  // hidden, before we'd get a chance to read it. Instead, track the
-  // latest scroll position continuously while visible, so a value is
-  // always ready before that clamp happens.
+  // hidden, before we'd get a chance to read it. Track scroll only while
+  // the buy route is closed, not merely while the page is visible: entry
+  // focus/scroll-lock changes must not overwrite the pre-dialog offset.
   const savedScrollY = useRef(0)
-  useEffect(() => {
+
+  // Restore it synchronously (before paint) the instant the page becomes
+  // visible again, including a close that interrupts the entry animation.
+  // This must run before scroll tracking resumes.
+  const wasHiddenRef = useRef(hidePage)
+  const wasOpenRef = useRef(isBuyDialogOpen)
+  useLayoutEffect(() => {
+    if (
+      (wasHiddenRef.current && !hidePage) ||
+      (wasOpenRef.current && !isBuyDialogOpen)
+    ) {
+      window.scrollTo({
+        top: savedScrollY.current,
+        left: 0,
+        behavior: 'instant',
+      })
+    }
+    wasHiddenRef.current = hidePage
+    wasOpenRef.current = isBuyDialogOpen
+  }, [hidePage, isBuyDialogOpen])
+
+  useLayoutEffect(() => {
     if (isBuyDialogOpen) return
     const handleScroll = () => {
       savedScrollY.current = window.scrollY
     }
+    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [isBuyDialogOpen])
 
-  // Restore it synchronously (before paint) the instant the page becomes
-  // visible again, so there's no visible jump back to the top.
-  const wasOpenRef = useRef(isBuyDialogOpen)
-  useLayoutEffect(() => {
-    if (wasOpenRef.current && !isBuyDialogOpen) {
-      window.scrollTo(0, savedScrollY.current)
-    }
-    wasOpenRef.current = isBuyDialogOpen
-  }, [isBuyDialogOpen])
-
   return (
-    <div style={{ display: isBuyDialogOpen ? 'none' : 'contents' }}>
-      {children}
-    </div>
+    <div style={{ display: hidePage ? 'none' : 'contents' }}>{children}</div>
   )
 }
 

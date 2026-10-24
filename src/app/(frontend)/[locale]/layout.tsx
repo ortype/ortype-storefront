@@ -1,5 +1,6 @@
 import initTranslations from '@/app/i18n'
 import TranslationsProvider from '@/components/data/TranslationsProvider'
+import { BuyDialogVisibilityProvider } from '@/components/global/buy-dialog-visibility'
 import { GlobalHeader } from '@/components/global/GlobalHeader'
 import { PageContent } from '@/components/global/page-content'
 import { Toaster } from '@/components/ui/toaster'
@@ -85,18 +86,20 @@ export default async function LocaleRoute({
         resources={resources}
       >
         <GlobalHeader fonts={fonts} />
-        <PageContent>
-          <Suspense
-            fallback={
-              <Box display='flex' justifyContent='center' p={8}>
-                <Spinner size='xl' />
-              </Box>
-            }
-          >
-            {children}
-          </Suspense>
-        </PageContent>
-        {buy}
+        <BuyDialogVisibilityProvider>
+          <PageContent>
+            <Suspense
+              fallback={
+                <Box display='flex' justifyContent='center' p={8}>
+                  <Spinner size='xl' />
+                </Box>
+              }
+            >
+              {children}
+            </Suspense>
+          </PageContent>
+          {buy}
+        </BuyDialogVisibilityProvider>
         <Toaster />
       </TranslationsProvider>
     </>

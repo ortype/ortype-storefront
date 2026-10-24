@@ -56,7 +56,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
           window.location.origin
         ).toString()
       } else {
-        router.push(href)
+        router.push(href, { scroll: false })
       }
     } finally {
       setIsLeaving(false)
@@ -86,6 +86,7 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
         >
           <Link
             href={href}
+            scroll={false}
             onClick={handleClick}
             onAuxClick={(e) => {
               // Middle click does not fire `onClick`
