@@ -1,43 +1,20 @@
 'use client'
 
-import BuyNav from '@/commercelayer/components/pages/buy/buy-nav'
 import {
-  DraftGuardDialog,
   DraftGuardProvider,
   useDraftGuard,
 } from '@/commercelayer/components/pages/buy/use-draft-guard'
 import {
   DialogBody,
-  DialogCloseTrigger,
   DialogContent,
   DialogRoot,
   DialogTitle,
 } from '@/components/ui/dialog'
-import type { BuyFontsQueryResult } from '@/types'
-import { HStack } from '@chakra-ui/react'
-import dynamic from 'next/dynamic'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-
-const DynamicBuyContainer: any = dynamic(
-  () => import('@/commercelayer/components/pages/buy/container'),
-  {
-    loading: function LoadingSkeleton() {
-      return <div />
-    },
-  }
-)
-
-const DynamicBuy: any = dynamic(
-  () => import('@/commercelayer/components/pages/buy/index'),
-  {
-    loading: function LoadingSkeleton() {
-      return <div />
-    },
-  }
-)
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 
 export interface BuyDialogProps {
-  data: BuyFontsQueryResult | null
+  children: ReactNode
 }
 
 // The guard provider must wrap everything that navigates (close handler,
@@ -46,20 +23,24 @@ export interface BuyDialogProps {
 export function BuyDialog(props: BuyDialogProps) {
   return (
     <DraftGuardProvider>
-      <BuyDialogContent {...props} />
+      <BuyDialogShell {...props} />
     </DraftGuardProvider>
   )
 }
 
-function BuyDialogContent({ data }: BuyDialogProps) {
+function BuyDialogShell({ children }: BuyDialogProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { slug, locale } = useParams()
   const { guard } = useDraftGuard()
   const isOpen = /\/buy(\/|$)/.test(pathname)
   const isCartContext = pathname.includes('/cart/')
+  const bodyRef = useRef<HTMLDivElement | null>(null)
 
-  const { font, moreFonts } = data ?? {}
+  // Reset only the dialog's scroll position, not the underlying page.
+  useLayoutEffect(() => {
+    if (isOpen && bodyRef.current) bodyRef.current.scrollTop = 0
+  }, [isOpen, pathname])
 
   const handleClose = () => {
     const prefix = locale && locale !== 'en' ? `/${locale}` : ''
@@ -97,7 +78,7 @@ function BuyDialogContent({ data }: BuyDialogProps) {
         bg={'#e7e7e7'}
         h={'100vh'}
       >
-        <DialogBody overflow={'auto'}>
+        <DialogBody ref={bodyRef} overflow={'auto'}>
           <DialogTitle
             textAlign={'center'}
             fontSize={'2rem'}
@@ -121,20 +102,8 @@ function BuyDialogContent({ data }: BuyDialogProps) {
           >
             {`buy or shop or purchase`}
           </DialogTitle>
-          <DynamicBuyContainer font={font}>
-            <DynamicBuy />
-          </DynamicBuyContainer>
+          {children}
         </DialogBody>
-        <HStack gap={0} position={'absolute'} top={3} left={3}>
-          <DialogCloseTrigger
-            position={'relative'}
-            top={'auto'}
-            right={'auto'}
-          />
-          <BuyNav font={font} moreFonts={moreFonts} />
-        </HStack>
-        {/* Inside DialogContent so its portalled={false} nesting works */}
-        <DraftGuardDialog font={font} />
       </DialogContent>
     </DialogRoot>
   )

@@ -1,4 +1,4 @@
-import { BuyDialog } from '@/commercelayer/components/pages/buy/buy-dialog'
+import { BuyDialogContent } from '@/commercelayer/components/pages/buy/buy-dialog-content'
 import { getAllFontsSlugs } from '@/sanity/lib/client'
 import { sanityFetch } from '@/sanity/lib/live'
 import { buyFontsQuery } from '@/sanity/lib/queries'
@@ -24,5 +24,5 @@ export default async function CartBuySlot({
     return notFound()
   }
 
-  return <BuyDialog data={data} />
+  return <BuyDialogContent data={data} />
 }

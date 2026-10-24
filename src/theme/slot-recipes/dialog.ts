@@ -200,7 +200,7 @@ export const dialogSlotRecipe = defineSlotRecipe({
     motionPreset: {
       'slide-in-bottom-custom': {
         content: {
-          animationDuration: 'slow',
+          animationDuration: 'slowest',
           animationTimingFunction: 'ease-out',
           _open: {
             animationName: 'slide-from-bottom-full',

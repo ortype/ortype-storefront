@@ -24,7 +24,7 @@ import {
  *
  * Layout:
  *
- *   BuyDialog
+ *   BuyDialog (shared @buy layout)
  *   └─ DraftGuardProvider        owns the pending action + dialog state
  *      ├─ BuyNav, close handler  call `guard` / `guardedLinkClick`
  *      ├─ <DraftGuardDialog />   the single dialog instance
@@ -271,7 +271,11 @@ export function useDraftGuard() {
    * in this tab and nothing is lost.
    */
   const guardedLinkClick = useCallback(
-    (e: MouseEvent<HTMLElement>, href: string) => {
+    (
+      e: MouseEvent<HTMLElement>,
+      href: string,
+      options?: { scroll?: boolean }
+    ) => {
       if (
         e.defaultPrevented ||
         e.button !== 0 ||
@@ -284,7 +288,7 @@ export function useDraftGuard() {
       }
       if (!needsGuard()) return
       e.preventDefault()
-      guard(() => router.push(href))
+      guard(() => router.push(href, options))
     },
     [guard, needsGuard, router]
   )
