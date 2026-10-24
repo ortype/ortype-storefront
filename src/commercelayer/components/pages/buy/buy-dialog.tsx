@@ -38,7 +38,12 @@ function BuyDialogShell({ children }: BuyDialogProps) {
   const isCartContext = pathname.includes('/cart/')
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const [content, setContent] = useState<HTMLDivElement | null>(null)
+  const [hasExited, setHasExited] = useState(!isOpen)
   const { setHasFinishedEntering } = useBuyDialogVisibility()
+  // Keep the draft through the exit animation, but never between sessions.
+  useLayoutEffect(() => {
+    if (isOpen) setHasExited(false)
+  }, [isOpen])
 
   useLayoutEffect(() => {
     setHasFinishedEntering(false)
@@ -90,9 +95,14 @@ function BuyDialogShell({ children }: BuyDialogProps) {
 
   return (
     <DialogRoot
-      lazyMount
-      unmountOnExit
+      // Zag registers dismissal against the content DOM on open. Retaining
+      // that node avoids racing presence remounts on subsequent opens.
+      lazyMount={false}
+      unmountOnExit={false}
       open={isOpen}
+      onExitComplete={() => {
+        if (!isOpen) setHasExited(true)
+      }}
       onOpenChange={({ open }) => {
         if (!open) handleClose()
       }}
@@ -132,7 +142,7 @@ function BuyDialogShell({ children }: BuyDialogProps) {
           >
             {`buy or shop or purchase`}
           </DialogTitle>
-          {children}
+          {(isOpen || !hasExited) && children}
         </DialogBody>
       </DialogContent>
     </DialogRoot>
