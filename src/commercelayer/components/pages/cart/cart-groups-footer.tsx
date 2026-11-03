@@ -66,23 +66,27 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
   return (
     <HStack
       justifyContent={'space-between'}
-      alignItems={'flex-start'}
-      mb={4}
+      alignItems={'stretch'}
+      mb={20}
       pt={2}
       mt={-0.5}
     >
-      <HStack alignItems={'center'}>
+      <HStack alignItems={'center'} flexGrow={1}>
         <Button
           asChild
-          variant={'outline'}
-          bg={'white'}
-          borderRadius={'5rem'}
-          size={'xs'}
+          variant={'subtle'}
+          borderColor={'transparent'}
+          borderWidth={'2px'}
+          bg={'brand.50'}
+          _hover={{ bg: '#e3e3e3', borderRadius: '0px' }}
+          borderRadius={'100px'}
+          h={'full'}
+          w={'full'}
+          transition={
+            'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
+          }
+          size={'sm'}
           fontSize={'md'}
-          _hover={{
-            bg: 'black',
-            color: 'white',
-          }}
         >
           <Link
             href={href}

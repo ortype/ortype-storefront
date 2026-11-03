@@ -197,6 +197,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               />
               <Button
                 variant={variant === 'white' ? 'solid' : 'subtle'}
+                _hover={{ bg: 'colorPalette.fg', color: 'colorPalette.bg' }}
                 w={'full'}
                 size={'sm'}
                 py={5}

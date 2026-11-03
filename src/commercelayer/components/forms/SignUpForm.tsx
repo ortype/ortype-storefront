@@ -226,6 +226,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
 
               <Button
                 variant={variant === 'white' ? 'solid' : 'subtle'}
+                _hover={{ bg: 'colorPalette.fg', color: 'colorPalette.bg' }}
                 w={'full'}
                 size={'sm'}
                 py={5}

@@ -231,6 +231,7 @@ export const SignUpForm = ({ emailAddress }): JSX.Element => {
                 disabled={isSubmitting}
                 loading={isSubmitting}
                 variant={'subtle'}
+                _hover={{ bg: 'colorPalette.fg', color: 'colorPalette.bg' }}
                 w={'full'}
                 size={'sm'}
                 py={5}
