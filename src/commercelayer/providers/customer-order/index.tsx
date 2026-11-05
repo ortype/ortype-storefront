@@ -1,26 +1,14 @@
 import CommerceLayer, { Order } from '@commercelayer/sdk'
-import { createContext, useEffect, useState } from 'react'
+import { createContext } from 'react'
+import useSWR from 'swr'
 
 import { getInfoFromJwt } from '@/utils/getInfoFromJwt'
-// import { getOrder } from '@/utils/getOrder'
 import { getOrder } from '@/commercelayer/providers/order/utils/get-order'
 
 type CustomerOrderProviderData = {
   order?: Order
   isLoading: boolean
   isInvalid: boolean
-}
-
-type OrderStateData = {
-  order?: Order
-  isLoading: boolean
-  isInvalid: boolean
-}
-
-const initialState: OrderStateData = {
-  order: undefined,
-  isLoading: true,
-  isInvalid: false,
 }
 
 export const CustomerOrderContext =
@@ -30,6 +18,7 @@ type CustomerOrderProviderProps = {
   orderId: string
   accessToken: string
   domain: string
+  slug?: string
   children:
     ((props: CustomerOrderProviderData) => React.ReactNode) | React.ReactNode
 }
@@ -37,57 +26,50 @@ type CustomerOrderProviderProps = {
 export function CustomerOrderProvider({
   children,
   orderId,
-  slug,
   accessToken,
   domain,
-}: CustomerOrderProviderProps): JSX.Element {
-  const [state, setState] = useState(initialState)
+}: CustomerOrderProviderProps): React.JSX.Element {
+  const canFetch = Boolean(orderId && accessToken)
+  const {
+    data: order,
+    error,
+    isLoading,
+  } = useSWR(
+    canFetch
+      ? (['customer-order', orderId, accessToken, domain] as const)
+      : null,
+    async ([, orderId, accessToken, domain]) => {
+      const { slug } = getInfoFromJwt(accessToken)
+      if (!slug) {
+        throw new Error('Invalid customer order access token')
+      }
 
-  const fetchInitialOrder = async (
-    orderId?: string,
-    accessToken?: string
-  ) => {
-    if (!orderId || !accessToken) {
-      return
+      const client = CommerceLayer({
+        organization: slug,
+        accessToken,
+        domain,
+      })
+      const response = await getOrder({ client, orderId })
+
+      if (!response?.success || !response.object) {
+        throw new Error('Unable to load customer order')
+      }
+
+      return response.object
+    },
+    {
+      dedupingInterval: 60_000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      // getOrder already retries; do not start another retry cycle in SWR.
+      shouldRetryOnError: false,
     }
+  )
 
-    // const cl = config != null ? getCommerceLayer(config) : undefined
-
-    const { slug } = getInfoFromJwt(accessToken)
-    if (!slug) {
-      return
-    }
-
-    const cl = CommerceLayer({
-      organization: slug,
-      accessToken,
-      domain,
-    })
-
-    const orderResponse = await getOrder({
-      client: cl,
-      orderId,
-    })
-    const order = orderResponse?.object
-
-    setState({
-      ...state,
-      order,
-      isLoading: false,
-      isInvalid: !order,
-    })
-  }
-
-  useEffect(() => {
-    setState({ ...state, isLoading: true })
-    fetchInitialOrder(orderId, accessToken)
-  }, [orderId, accessToken])
-
-  const value = {
-    ...state,
-    order: state.order,
-    isLoading: state.isLoading,
-    isInvalid: state.isInvalid,
+  const value: CustomerOrderProviderData = {
+    order,
+    isLoading: !canFetch || isLoading,
+    isInvalid: Boolean(error) && !order,
   }
 
   return (
