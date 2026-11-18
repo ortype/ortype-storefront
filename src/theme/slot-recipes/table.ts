@@ -47,10 +47,9 @@ export const tableSlotRecipe = defineSlotRecipe({
       true: {
         body: {
           '& tr': {
+            bg: 'brand.50',
             _hover: {
-              // bg: 'colorPalette.subtle',
-              bg: 'colorPalette.fg',
-              color: 'colorPalette.bg',
+              bg: '#e3e3e3',
             },
           },
         },

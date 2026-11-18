@@ -1,7 +1,7 @@
 'use client'
 import { CustomerOrderProvider } from '@/commercelayer/providers/customer-order'
 import { useIdentityContext } from '@/commercelayer/providers/identity'
-import { Box, VStack } from '@chakra-ui/react'
+import { Button, HStack, VStack } from '@chakra-ui/react'
 import { FontLicenses } from './font-licenses'
 import { LicenseSummary } from './license-summary'
 import { OrderSummary } from './summary'
@@ -32,6 +32,32 @@ function OrderPage({ orderId }: OrderPageProps): JSX.Element {
             <>
               <VStack gap={6} w={'full'} alignItems={'flex-start'}>
                 <OrderSummary order={order} />
+                <HStack w={'full'} gap={2} justifyContent={'center'}>
+                  <Button
+                    variant={'solid'}
+                    bg={'red'}
+                    borderRadius={'5rem'}
+                    size={'sm'}
+                    fontSize={'md'}
+                    color={'white'}
+                    gap={1}
+                    _hover={{ bg: 'black' }}
+                  >
+                    {'Download Fonts'}
+                  </Button>
+                  <Button
+                    variant={'solid'}
+                    bg={'red'}
+                    borderRadius={'5rem'}
+                    size={'sm'}
+                    fontSize={'md'}
+                    color={'white'}
+                    gap={1}
+                    _hover={{ bg: 'black' }}
+                  >
+                    {'Download Invoice'}
+                  </Button>
+                </HStack>
                 <FontLicenses order={order} />
                 <LicenseSummary
                   owner={order?.metadata?.license?.owner}

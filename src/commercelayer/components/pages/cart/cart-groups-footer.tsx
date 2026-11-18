@@ -3,7 +3,7 @@
 import { useCartContext } from '@/commercelayer/providers/cart'
 import { usePriceLocaleContext } from '@/commercelayer/providers/price-locale'
 import { formatPrice } from '@/commercelayer/utils/prices'
-import { Box, Button, HStack, Text, VStack } from '@chakra-ui/react'
+import { Box, Button, Flex, HStack, Text, VStack } from '@chakra-ui/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
@@ -82,11 +82,14 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
           borderRadius={'100px'}
           h={'full'}
           w={'full'}
+          size={'md'}
+          fontSize={'md'}
+          flexDir={'column'}
+          gap={0}
+          py={3}
           transition={
             'border-radius 200ms ease-in-out, box-shadow 200ms ease-in-out, background 200ms ease-in-out'
           }
-          size={'sm'}
-          fontSize={'md'}
         >
           <Link
             href={href}
@@ -97,20 +100,29 @@ const CartGroupsFooter: React.FC<CartGroupsFooterProps> = ({
               if (e.button === 1) void handleClick(e)
             }}
           >
-            {isLeaving ? 'Updating…' : 'Add more styles'}
+            <Text textAlign={'center'}>
+              {isLeaving ? 'Updating…' : 'Add more styles'}
+            </Text>
+            {percentageDiscount === 0 && (
+              <Text textAlign={'center'} textStyle={'xs'} opacity={0.8}>
+                Choose more styles to unlock bundle discounts.
+              </Text>
+            )}
           </Link>
         </Button>
-        {percentageDiscount === 0 && (
-          <Text as={Box} textAlign={'center'} textStyle={'xs'} opacity={0.8}>
-            {`Choose more styles to unlock bundle discounts.`}
-          </Text>
-        )}
       </HStack>
 
       {percentageDiscount === 0 ? (
-        <Box bg={'#FFF8D3'} borderRadius={30} py={4} px={6} fontSize={'xl'}>
+        <Flex
+          alignItems={'center'}
+          bg={'#FFF8D3'}
+          borderRadius={30}
+          py={4}
+          px={6}
+          fontSize={'xl'}
+        >
           {formatPrice(fullUnitPriceTotalCents, priceLocale)} EUR
-        </Box>
+        </Flex>
       ) : (
         // DISCOUNT
         <HStack gap={0.5} alignItems={'stretch'}>

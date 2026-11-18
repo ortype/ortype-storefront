@@ -13,12 +13,12 @@ import {
   Flex,
   GridItem,
   Heading,
-  IconButton,
+  HStack,
   Menu,
   Portal,
   SimpleGrid,
+  Text,
 } from '@chakra-ui/react'
-import { Icon } from '@sanity/icons'
 import { format, parseISO } from 'date-fns'
 import { useMemo } from 'react'
 
@@ -60,12 +60,17 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
     (order?.placed_at && format(parseISO(order?.placed_at), 'yyyy-MM-dd')) ||
     ''
 
+  const placedAtLong =
+    (order?.placed_at &&
+      format(parseISO(order?.placed_at), 'MMMM d, yyyy')) ||
+    ''
+
   if (!order) {
     return null
   }
 
   return (
-    <Box bg={'#FFF8D3'} px={4} py={3} borderRadius={20} w={'full'}>
+    <Box bg={'#FFF8D3'} px={10} pt={4} pb={8} borderRadius={'4xl'} w={'full'}>
       <SimpleGrid columns={2} fontSize={'sm'} minH={'2rem'}>
         <Heading
           as={'h5'}
@@ -79,7 +84,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
         </Heading>
 
         <GridItem textAlign={'right'}>
-          <Menu.Root
+          {/*<Menu.Root
             variant={'outline'}
             size={'xs'}
             // positioning={{ placement: 'bottom-end' }}
@@ -88,7 +93,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
               asChild
               // mt={'-0.25rem'}
             >
-              {/*<Button
+              <Button
                 variant={'solid'}
                 borderRadius={'full'}
                 variant="outline"
@@ -100,7 +105,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
               >
                 {'Download'}
               </Button>*/}
-              {/*<IconButton
+          {/*<IconButton
                 borderRadius={'full'}
                 variant="outline"
                 _hover={{
@@ -109,7 +114,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
                 }}
                 size="sm"
               >*/}
-              {/*<IconButton
+          {/*<IconButton
                 borderRadius={'full'}
                 variant="ghost"
                 bg={'white'}
@@ -120,7 +125,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
                 size="sm"
               >
                 <Icon symbol={'ellipsis-horizontal'} />
-              </IconButton>*/}
+              </IconButton>
               <Button
                 variant='text'
                 size='xs'
@@ -137,16 +142,12 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             <Portal>
               <Menu.Positioner>
                 <Menu.Content>
-                  <Menu.Item asChild value={'invoice'}>
-                    <Button variant={'plain'}>{'Invoice'}</Button>
-                  </Menu.Item>
-                  <Menu.Item value={'fonts'} asChild>
-                    <Button variant={'plain'}>{'Fonts'}</Button>
-                  </Menu.Item>
+                  <Menu.Item value={'invoice'}>{'Invoice'}</Menu.Item>
+                  <Menu.Item value={'fonts'}>{'Fonts'}</Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
             </Portal>
-          </Menu.Root>
+          </Menu.Root>*/}
         </GridItem>
 
         {/*<Flex justifyContent={'flex-end'}>
@@ -179,9 +180,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
       <Box>
         <SimpleGrid
           columns={3}
-          py={3}
+          py={2}
           borderTop={'1px solid #E7E0BF'}
           fontSize={'sm'}
+          textTransform={'uppercase'}
         >
           <Box>{'Status'}</Box>
           <Box>{'Date'}</Box>
@@ -189,7 +191,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
         </SimpleGrid>
         <SimpleGrid
           columns={3}
-          py={3}
+          py={2}
           borderTop={'1px solid #E7E0BF'}
           fontSize={'sm'}
           borderBottom={'1px solid #E7E0BF'}
@@ -199,7 +201,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
           <Box>{placedAt}</Box>
           <Box>{fontCount}</Box>
         </SimpleGrid>
-        <SimpleGrid
+        {/*<SimpleGrid
           columns={2}
           pt={3}
           pb={2}
@@ -210,7 +212,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             {'Subtotal (excl. discounts)'}
           </Box>
           <Box fontSize={'lg'} textAlign={'right'}>
-            {formatPrice(subtotalCents, priceLocale)} EUR
+            {formatPrice(subtotalCents, priceLocale)}
           </Box>
         </SimpleGrid>
         {totalDiscountCents > 0 && (
@@ -226,22 +228,52 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
             </Box>
             <Box fontSize={'lg'} textAlign={'right'}>
               {'-'}
-              {formatPrice(totalDiscountCents, priceLocale)} EUR
+              {formatPrice(totalDiscountCents, priceLocale)}
             </Box>
           </SimpleGrid>
-        )}
-        <SimpleGrid columns={2} py={3}>
-          <Box
-            fontSize={'xl'}
+        )}*/}
+        <HStack
+          pt={4}
+          mt={1}
+          pb={2}
+          gap={8}
+          w={'full'}
+          alignItems={'flex-end'}
+          justifyContent={'flex-end'}
+          borderTop={'1px solid #E7E0BF'}
+        >
+          <Text
+            as={'span'}
+            fontSize={'sm'}
+            lineHeight={0.6}
             textTransform={'uppercase'}
-            fontWeight={'normal'}
           >
-            {'Total'}
-          </Box>
-          <Box fontSize={'xl'} textAlign={'right'}>
-            {`${order?.total_amount_with_taxes_float} EUR`}
-          </Box>
-        </SimpleGrid>
+            {'Total amount'}
+          </Text>
+          <Text
+            as={'span'}
+            fontSize={'xl'}
+            fontWeight={500}
+            textAlign={'right'}
+          >
+            {order && (
+              <>
+                {formatPrice(
+                  order.total_amount_with_taxes_cents,
+                  priceLocale
+                )}
+                {' EUR'}
+              </>
+            )}
+          </Text>
+        </HStack>
+        <Flex w={'full'} justifyContent={'flex-end'}>
+          <Text
+            as={'span'}
+            fontSize={'xs'}
+            color={'#737373'}
+          >{`Paid at ${placedAtLong} with VISA -4898`}</Text>
+        </Flex>
       </Box>
     </Box>
   )

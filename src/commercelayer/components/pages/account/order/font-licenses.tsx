@@ -3,7 +3,17 @@ import {
   filterShoppableItems,
   type ExpandedStyle,
 } from '@/commercelayer/utils/expand-group-projections'
-import { Box, Flex, SimpleGrid, Stack, Text, VStack } from '@chakra-ui/react'
+import { Tag } from '@/components/ui/tag'
+import {
+  Box,
+  Flex,
+  GridItem,
+  HStack,
+  SimpleGrid,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 
 interface FontLicensesProps {
@@ -12,19 +22,28 @@ interface FontLicensesProps {
 
 const StyleRow: React.FC<{ style: ExpandedStyle }> = ({ style }) => {
   return (
-    <SimpleGrid columns={[1, null, 2]} gap={3} bg={'brand.50'} p={3}>
-      <Stack direction={'row'} gap={2} alignItems={'center'}>
-        <Text fontSize={'2xl'} as={'span'} className={style.skuCode}>
-          {style.name}
-        </Text>
-      </Stack>
-      <Flex direction={'row'} px={3} alignItems={'center'} gap={2}>
-        {style.licenseTypeLabels.map((label, i) => (
-          <Box key={`${style.id}-lt-${i}`} bg={'#fff'} p={2} fontSize={'lg'}>
+    <SimpleGrid columns={[1, null, 3]} gap={4} bg={'brand.50'} p={3}>
+      <GridItem colSpan={2}>
+        <Stack direction={'row'} gap={2} alignItems={'center'}>
+          <Text fontSize={'2xl'} as={'span'} className={style.skuCode}>
+            {style.name}
+          </Text>
+        </Stack>
+      </GridItem>
+      <HStack gap={1} flexWrap={'wrap'} alignItems={'center'}>
+        {style.licenseTypeLabels.map((label) => (
+          <Tag
+            key={label}
+            bg={'colorPalette.bg'}
+            size={'md'}
+            variant={'solid'}
+            borderRadius={'100px'}
+            _hover={{ boxShadow: 'none' }}
+          >
             {label}
-          </Box>
+          </Tag>
         ))}
-      </Flex>
+      </HStack>
     </SimpleGrid>
   )
 }
@@ -38,20 +57,21 @@ export const FontLicenses: React.FC<FontLicensesProps> = ({ order }) => {
 
   return (
     <VStack gap={2} w={'full'} alignItems={'flex-start'}>
-      <SimpleGrid columns={2} gap={4} w={'full'}>
-        <Box
+      <SimpleGrid columns={3} gap={4} w={'full'}>
+        <GridItem
           px={3}
           fontSize={'xs'}
           textTransform={'uppercase'}
           color={'#737373'}
+          colSpan={2}
           asChild
         >
           <Flex gap={1} alignItems={'center'}>
-            {'Fonts'}
+            {'Typefaces'}
           </Flex>
-        </Box>
+        </GridItem>
         <Box
-          px={3}
+          px={0}
           fontSize={'xs'}
           textTransform={'uppercase'}
           color={'#737373'}

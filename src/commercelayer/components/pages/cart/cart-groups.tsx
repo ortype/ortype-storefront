@@ -83,8 +83,8 @@ const CartGroups: React.FC<CartGroupsProps> = ({ groupedLineItems }) => {
                     <Icon symbol={'close'} width={'2rem'} height={'2rem'} />
                   </ChakraIconButton>
                   <Text
-                    fontSize={'2xl'}
-                    lineHeight={1}
+                    fontSize={{ base: '3xl', '2xl': '3xl' }}
+                    lineHeight={1.5}
                     ml={1}
                     as={'div'}
                     className={defaultVariantId}

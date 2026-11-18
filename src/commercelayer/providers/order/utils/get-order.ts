@@ -44,7 +44,7 @@ const getAsyncOrder = async (
         'currency_code',
         'customer_email',
         'status',
-        'total_amount_with_taxes_float',
+        'total_amount_with_taxes_cents',
         'payment_method',
         'payment_source',
         'customer',
