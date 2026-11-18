@@ -1,4 +1,9 @@
 import { ReactNode } from 'react'
+import type { FontModule } from '../font-sections'
+
+export type SpreadModule = Pick<FontModule, '_key' | '_type'> & {
+  overflowCol?: boolean
+}
 
 // Size type definition used for dimension measurements
 export interface Size {
@@ -9,7 +14,7 @@ export interface Size {
 // Item definition for spread layout
 export interface Item {
   _key: string
-  _type: string
+  _type: FontModule['_type']
   overflowCol: boolean
   index: number
   isOverflowing: boolean
@@ -60,7 +65,7 @@ export interface SpreadStateContextValue {
 
 // Provider Props - Used for component function signatures
 export interface SpreadContainerProviderProps {
-  initialItems: Item[]
+  initialItems: SpreadModule[]
   children: ReactNode
 }
 
@@ -71,6 +76,6 @@ export interface DimensionsProviderProps {
 }
 
 export interface SpreadStateProviderProps {
-  initialItems: Item[]
+  initialItems: SpreadModule[]
   children: ReactNode
 }

@@ -1,8 +1,13 @@
-import { UpdateItemPayload, UpdateItemsPayload } from '../contexts/types'
+import {
+  UpdateItemPayload,
+  UpdateItemsPayload,
+  SpreadModule,
+} from '../contexts/types'
 
 // Action types as constants
 export const UPDATE_ITEMS = 'UPDATE_ITEMS'
 export const UPDATE_ITEM = 'UPDATE_ITEM'
+export const RECONCILE_ITEMS = 'RECONCILE_ITEMS'
 
 // Action types
 export interface UpdateItemsAction {
@@ -16,7 +21,13 @@ export interface UpdateItemAction {
 }
 
 // Union type for all actions
-export type SpreadAction = UpdateItemsAction | UpdateItemAction
+export type SpreadAction =
+  | UpdateItemsAction
+  | UpdateItemAction
+  | {
+      type: typeof RECONCILE_ITEMS
+      payload: SpreadModule[]
+    }
 
 // Action creators
 export const createUpdateItemsAction = (

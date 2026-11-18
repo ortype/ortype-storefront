@@ -2,22 +2,29 @@
 import { useFont } from '@/components/pages/fonts/FontContainer'
 import { useDimensions } from '@/components/pages/fonts/contexts/dimensionsContext'
 import { useSpreadState } from '@/components/pages/fonts/contexts/spreadStateContext'
-import { MIN_DEFAULT_MQ } from '@/utils/presets'
+import type {
+  FontSection,
+  FontModule,
+} from '@/components/pages/fonts/font-sections'
+import { dataset, projectId, studioUrl } from '@/sanity/env'
 import { Box, Flex } from '@chakra-ui/react'
-import { PortableText } from '@portabletext/react'
+import {
+  PortableText,
+  type PortableTextTypeComponentProps,
+} from '@portabletext/react'
 import {
   createDataAttribute,
   type PortableTextBlock,
   type PortableTextComponents,
 } from 'next-sanity'
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
-import config from 'sanity.config'
+import React, { useMemo } from 'react'
 import BookModule from './Book'
 import ContentModule from './Content'
 import FeaturesModule from './Features'
 import InfoModule from './Info'
 import StylesModule from './Styles'
 import TesterModule from './Tester'
+import SectionLink from './section-link'
 
 // Type definitions for better TypeScript support
 interface PageDividerProps {
@@ -59,9 +66,10 @@ interface DoublePageProps {
   children: React.ReactNode
   value: any
   font: any
-  index: number
   spreadMode?: boolean
   overflowCol: boolean
+  section?: FontSection
+  isDraftMode?: boolean
   textAlign?: string
   [key: string]: any // For additional props
 }
@@ -70,9 +78,10 @@ const DoublePage: React.FC<DoublePageProps> = ({
   children,
   value,
   font,
-  index,
   spreadMode = false,
   overflowCol,
+  section,
+  isDraftMode,
   ...props
 }) => {
   const { _key } = value
@@ -96,6 +105,9 @@ const DoublePage: React.FC<DoublePageProps> = ({
         id: font?._id,
         type: 'font',
         path: 'modules',
+        projectId,
+        dataset,
+        baseUrl: studioUrl,
       }),
     [font?._id]
   )
@@ -107,7 +119,13 @@ const DoublePage: React.FC<DoublePageProps> = ({
         base: '0 0 100%',
         lg: isSpread ? '0 0 100%' : '0 0 50%',
       }} // responsive values
-      data-sanity={attr(`[${index}]`).toString()}
+      data-sanity={attr([{ _key }]).toString()}
+      id={section?.id}
+      role={section ? 'region' : undefined}
+      tabIndex={section ? -1 : undefined}
+      aria-label={section?.marker.label}
+      scrollMarginTop={{ base: '8rem', xl: '5rem' }}
+      _focusVisible={{ outline: '2px solid', outlineOffset: '2px' }}
       mb={marginBottom}
       position='relative'
       // the before creates the height
@@ -133,6 +151,9 @@ const DoublePage: React.FC<DoublePageProps> = ({
       }}
       {...props}
     >
+      {section && isDraftMode && (
+        <SectionLink section={section} fontId={font._id} />
+      )}
       <Flex
         // @TODO: how to best make the w, h, top, left, bottom, right, etc. media query conditional
         w={{ base: 'auto', lg: '100%' }}
@@ -170,8 +191,9 @@ interface SinglePageProps {
   children: React.ReactNode
   _key?: string
   font: any
-  index: number
   value: any
+  section?: FontSection
+  isDraftMode?: boolean
   [key: string]: any // For additional props
 }
 
@@ -179,8 +201,9 @@ const SinglePage: React.FC<SinglePageProps> = ({
   children,
   _key,
   font,
-  index,
   value,
+  section,
+  isDraftMode,
   ...props
 }) => {
   // Use _key from value if not directly provided
@@ -201,6 +224,9 @@ const SinglePage: React.FC<SinglePageProps> = ({
         id: font?._id,
         type: 'font',
         path: 'modules',
+        projectId,
+        dataset,
+        baseUrl: studioUrl,
       }),
     [font?._id]
   )
@@ -208,7 +234,13 @@ const SinglePage: React.FC<SinglePageProps> = ({
   return (
     <Box
       className={'single-page'}
-      data-sanity={attr(`[${index}]`).toString()}
+      data-sanity={attr([{ _key: itemKey }]).toString()}
+      id={section?.id}
+      role={section ? 'region' : undefined}
+      tabIndex={section ? -1 : undefined}
+      aria-label={section?.marker.label}
+      scrollMarginTop={{ base: '8rem', xl: '5rem' }}
+      _focusVisible={{ outline: '2px solid', outlineOffset: '2px' }}
       flex={{ base: '0 0 100%', lg: '0 0 50%' }} // responsive values
       mb={marginBottom}
       position='relative'
@@ -229,6 +261,9 @@ const SinglePage: React.FC<SinglePageProps> = ({
       }}
       {...props}
     >
+      {section && isDraftMode && (
+        <SectionLink section={section} fontId={font._id} />
+      )}
       <Flex
         className={`page-${itemState?.index}`}
         w={'100%'}
@@ -260,72 +295,110 @@ const SinglePage: React.FC<SinglePageProps> = ({
 
 // Type definitions for better TypeScript support
 interface ModulesProps {
-  value: any[]
+  value: FontModule[]
+  sections?: FontSection[]
+  isDraftMode?: boolean
 }
 
-// Helper type for error handling
-interface ErrorEventHandler {
-  (event: ErrorEvent): void
-}
-
-const Modules: React.FC<ModulesProps> = React.memo(({ value }) => {
+const Modules = React.memo(function Modules({
+  value,
+  sections,
+  isDraftMode = false,
+}: ModulesProps) {
   // Validate input data
   const isValidData = useMemo(() => {
     return Array.isArray(value) && value.length > 0
   }, [value])
 
   const font = useFont()
+  const renderValue = useMemo(
+    () =>
+      value.map((module) => ({
+        ...module,
+        _type:
+          module._type === 'module.features'
+            ? 'feature'
+            : module._type.replace(/^module\./, ''),
+      })),
+    [value]
+  )
+  const sectionProps = useMemo(() => {
+    const byTarget = new Map(
+      sections?.map((section) => [section.targetKey, section])
+    )
+    return (key: string) => ({ section: byTarget.get(key), isDraftMode })
+  }, [sections, isDraftMode])
 
   // Memoize the components object to prevent recreation on each render
   const components: PortableTextComponents = useMemo(
     () => ({
       types: {
-        styles: (props) => (
-          <SinglePage font={font} value={props.value} index={props.index}>
+        styles: (props: PortableTextTypeComponentProps<FontModule>) => (
+          <SinglePage
+            font={font}
+            value={props.value}
+            {...sectionProps(props.value._key)}
+          >
             <StylesModule {...props} />
           </SinglePage>
         ),
-        info: (props) => (
-          <SinglePage font={font} value={props.value} index={props.index}>
+        info: (props: PortableTextTypeComponentProps<FontModule>) => (
+          <SinglePage
+            font={font}
+            value={props.value}
+            {...sectionProps(props.value._key)}
+          >
             <InfoModule {...props} />
           </SinglePage>
         ),
-        content: (props) => (
+        content: (
+          props: PortableTextTypeComponentProps<
+            Extract<FontModule, { _type: 'content' | 'module.content' }>
+          >
+        ) => (
           <DoublePage
             value={props.value}
             font={font}
-            index={props.index}
             textAlign={props.value.centered ? 'center' : 'left'}
-            overflowCol={props.value.overflowCol}
+            overflowCol={props.value.overflowCol ?? false}
+            {...sectionProps(props.value._key)}
           >
             <ContentModule {...props} />
           </DoublePage>
         ),
-        book: (props) => (
-          <SinglePage font={font} value={props.value} index={props.index}>
+        book: (props: PortableTextTypeComponentProps<FontModule>) => (
+          <SinglePage
+            font={font}
+            value={props.value}
+            {...sectionProps(props.value._key)}
+          >
             <BookModule {...props} />
           </SinglePage>
         ),
         // Renamed from 'feature' for clarity
-        feature: (props) => (
-          <SinglePage font={font} value={props.value} index={props.index}>
+        feature: (props: PortableTextTypeComponentProps<FontModule>) => (
+          <SinglePage
+            font={font}
+            value={props.value}
+            {...sectionProps(props.value._key)}
+          >
             <FeaturesModule {...props} />
           </SinglePage>
         ),
-        tester: (props) => (
+        tester: (props: PortableTextTypeComponentProps<FontModule>) => (
           <DoublePage
             value={props.value}
             font={font}
-            index={props.index}
             spreadMode={true}
             overflowCol={true}
+            {...sectionProps(props.value._key)}
           >
             <TesterModule {...props} />
           </DoublePage>
         ),
       },
     }),
-    [font, isValidData]
+    [font, sectionProps]
   ) // Only recreate when font or data validation changes
 
   // If data is invalid, return empty component or fallback
@@ -336,10 +409,9 @@ const Modules: React.FC<ModulesProps> = React.memo(({ value }) => {
   // Return memoized PortableText component with valid data
   return (
     <PortableText
-      value={value as PortableTextBlock[]}
+      value={renderValue as PortableTextBlock[]}
       components={components}
       onMissingComponent={false}
-      {...config}
     />
   )
 })

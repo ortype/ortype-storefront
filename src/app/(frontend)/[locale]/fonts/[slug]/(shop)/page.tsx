@@ -6,6 +6,7 @@ import { fontQuery } from '@/sanity/lib/queries'
 import { Metadata, ResolvingMetadata } from 'next'
 import { QueryParams, stegaClean } from 'next-sanity'
 import { notFound } from 'next/navigation'
+import { draftMode } from 'next/headers'
 import { FontQueryResult } from 'sanity.types'
 
 type Props = {
@@ -57,5 +58,10 @@ export default async function FontSlugRoute({
     return notFound()
   }
 
-  return <FontPage data={{ font, moreFonts: [] }} />
+  return (
+    <FontPage
+      data={{ font, moreFonts: [] }}
+      isDraftMode={(await draftMode()).isEnabled}
+    />
+  )
 }

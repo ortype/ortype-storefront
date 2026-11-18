@@ -1,69 +1,67 @@
 'use client'
 import Modules from '@/components/modules'
-import { Box, Button, Flex } from '@chakra-ui/react'
-import Link from 'next/link'
+import { Box, Flex } from '@chakra-ui/react'
+import type { Font } from '@/types'
 import React, { useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
 import { DimensionsProvider } from './contexts/dimensionsContext'
 import FontContainer from './FontContainer'
 import FontHeader from './FontHeader'
+import FontSubNav from './font-sub-nav'
+import { getFontSections, isFontPageModule } from './font-sections'
 
 // Type definitions for better TypeScript support
 interface FontWrapperProps {
-  moreFonts?: any[]
-  font: any
+  moreFonts?: Font[]
+  font: Font
+  isDraftMode?: boolean
 }
 
-const FontWrapper = React.memo(({ moreFonts, font }: FontWrapperProps) => {
-  // Memoize modules to prevent unnecessary rerenders
-  const modules = useMemo(() => font?.modules || [], [font?.modules])
-  const targetRef = useRef<HTMLDivElement>(null)
+const FontWrapper = React.memo(
+  ({ moreFonts, font, isDraftMode = false }: FontWrapperProps) => {
+    // Memoize modules to prevent unnecessary rerenders
+    const modules = useMemo(() => font?.modules || [], [font?.modules])
+    const pageModules = useMemo(
+      () => modules.filter(isFontPageModule),
+      [modules]
+    )
+    const sections = useMemo(() => getFontSections(modules), [modules])
+    const targetRef = useRef<HTMLDivElement>(null)
 
-  return (
-    <Box bg={'brand.900'}>
-      <Button
-        // @TODO: look into how to set this up in button.ts
-        bg={'blue'}
-        color={'white'}
-        pos={'fixed'}
-        size={'md'}
-        top={4}
-        left={'50%'}
-        fontSize={'lg'}
-        px={'0.75rem'}
-        minW={'auto'}
-        borderRadius={'3rem'}
-        zIndex={'docked'}
-        asChild
-      >
-        <Link href={`/fonts/${font.slug}/buy`} scroll={false}>{`Buy`}</Link>
-      </Button>
+    return (
+      <Box bg={'brand.900'}>
+        <FontSubNav font={font} sections={sections} contentRef={targetRef} />
 
-      <FontContainer font={font} moreFonts={moreFonts}>
-        <DimensionsProvider targetRef={targetRef}>
-          <Flex
-            mx={'auto'}
-            py={'10vh'}
-            pos={'relative'}
-            wrap={'wrap'}
-            ref={targetRef}
-          >
-            {font?.headerVideo && (
-              <FontHeader
-                title={font.title || font.shortName || 'Untitled'}
-                variantId={font.defaultVariant?._id}
-                video={font.headerVideo}
-              />
-            )}
-            <SpreadContainerProvider initialItems={modules}>
-              <Modules value={modules} />
-            </SpreadContainerProvider>
-          </Flex>
-        </DimensionsProvider>
-      </FontContainer>
-    </Box>
-  )
-})
+        <FontContainer font={font} moreFonts={moreFonts}>
+          <DimensionsProvider targetRef={targetRef}>
+            <Flex
+              mx={'auto'}
+              py={'10vh'}
+              pos={'relative'}
+              wrap={'wrap'}
+              ref={targetRef}
+            >
+              {font?.headerVideo && (
+                <FontHeader
+                  title={font.title || font.shortName || 'Untitled'}
+                  variantId={font.defaultVariant?._id ?? ''}
+                  video={font.headerVideo}
+                />
+              )}
+              <SpreadContainerProvider initialItems={pageModules}>
+                <Modules
+                  value={pageModules}
+                  sections={sections}
+                  isDraftMode={isDraftMode}
+                />
+              </SpreadContainerProvider>
+            </Flex>
+          </DimensionsProvider>
+        </FontContainer>
+      </Box>
+    )
+  }
+)
 
 // Add display name for better debugging
 FontWrapper.displayName = 'FontWrapper'

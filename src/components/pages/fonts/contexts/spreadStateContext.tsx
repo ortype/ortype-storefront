@@ -2,21 +2,21 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
-  useRef,
 } from 'react'
 import {
   createUpdateItemAction,
   createUpdateItemsAction,
+  RECONCILE_ITEMS,
 } from '../reducers/actions'
-import { spreadContainerReducer } from '../reducers/spreadReducer'
 import {
-  Item,
+  spreadContainerReducer,
+  reconcileSpreadItems,
+} from '../reducers/spreadReducer'
+import {
   SpreadStateContextValue,
   SpreadStateProviderProps,
-  State,
   UpdateItemPayload,
   UpdateItemsPayload,
 } from './types'
@@ -32,29 +32,21 @@ const SpreadStateContext = createContext<SpreadStateContextValue | undefined>(
  */
 export const SpreadStateProvider: React.FC<SpreadStateProviderProps> =
   React.memo(({ initialItems, children }) => {
-    // Create initial state from items with memoization
-    const initialState = useMemo<State>(
-      () => ({
-        items: initialItems.reduce(
-          (acc, item, index) => {
-            acc[item._key] = {
-              index,
-              _key: item._key,
-              _type: item._type,
-              overflowCol: item.overflowCol,
-              isOverflowing: false,
-            }
-            return acc
-          },
-          {} as { [key: string]: Item }
-        ),
-        order: initialItems.map((item) => item._key),
-      }),
-      [initialItems]
+    const [storedState, dispatch] = useReducer(
+      spreadContainerReducer,
+      initialItems,
+      (items) => reconcileSpreadItems({ items: {}, order: [] }, items)
     )
 
-    // Use the reducer with our optimized initial state
-    const [state, dispatch] = useReducer(spreadContainerReducer, initialState)
+    // Reconcile before children render: a newly inserted module must already
+    // have state when its overflow detector reads it.
+    const state = useMemo(
+      () => reconcileSpreadItems(storedState, initialItems),
+      [storedState, initialItems]
+    )
+    if (state !== storedState) {
+      dispatch({ type: RECONCILE_ITEMS, payload: initialItems })
+    }
 
     // Memoize action creators to prevent unnecessary rerenders
     const updateItemsAction = useCallback((payload: UpdateItemsPayload) => {

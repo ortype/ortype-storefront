@@ -4,9 +4,10 @@ import type { FontPagePayload } from '@/types'
 
 export interface FontPageProps {
   data: FontPagePayload | null
+  isDraftMode?: boolean
 }
 
-export function FontPage({ data }: FontPageProps) {
+export function FontPage({ data, isDraftMode = false }: FontPageProps) {
   // Default to an empty object to allow previews on non-existent documents
   const { font, moreFonts } = data ?? {}
 
@@ -20,7 +21,13 @@ export function FontPage({ data }: FontPageProps) {
     metrics: getMetrics(font.metafields),
   }
 
-  return <FontWrapper font={fontWithMetrics} moreFonts={moreFonts ?? []} />
+  return (
+    <FontWrapper
+      font={fontWithMetrics}
+      moreFonts={moreFonts ?? []}
+      isDraftMode={isDraftMode}
+    />
+  )
 }
 
 export default FontPage

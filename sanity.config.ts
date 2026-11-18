@@ -24,6 +24,7 @@ import fontModuleContent from './src/sanity/schemas/font/modules/content'
 import fontModuleFeatures from './src/sanity/schemas/font/modules/features'
 import fontModuleInfo from './src/sanity/schemas/font/modules/info'
 import fontModuleStyles from './src/sanity/schemas/font/modules/styles'
+import fontModuleSectionLink from './src/sanity/schemas/font/modules/section-link'
 import fontModuleTester from './src/sanity/schemas/font/modules/tester'
 import fontModuleVideo from './src/sanity/schemas/font/modules/video'
 import pageType from './src/sanity/schemas/page'
@@ -56,6 +57,7 @@ export default defineConfig({
       fontModuleFeatures,
       fontModuleInfo,
       fontModuleStyles,
+      fontModuleSectionLink,
       fontModuleTester,
       fontModuleContent,
       fontModuleVideo,

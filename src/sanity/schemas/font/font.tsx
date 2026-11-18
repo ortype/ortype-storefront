@@ -3,6 +3,7 @@ import moduleContent from '@/sanity/schemas/font/modules/content'
 import moduleFeatures from '@/sanity/schemas/font/modules/features'
 import moduleInfo from '@/sanity/schemas/font/modules/info'
 import moduleStyles from '@/sanity/schemas/font/modules/styles'
+import moduleSectionLink from '@/sanity/schemas/font/modules/section-link'
 import moduleTester from '@/sanity/schemas/font/modules/tester'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 // import productImage from '../productImage'
@@ -132,6 +133,10 @@ export default defineType({
       title: 'Modules',
       type: 'array',
       of: [
+        defineArrayMember({
+          type: moduleSectionLink.name,
+          name: 'sectionLink',
+        }),
         // Item of type 'object' not valid for this list, must be type array
         defineArrayMember({
           type: moduleContent.name,
