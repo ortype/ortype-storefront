@@ -1,6 +1,5 @@
 import {
   BlockParams,
-  Update,
   type BlockStyle,
   type BlockStyleOptions,
   type BlockStyleParams,
@@ -61,7 +60,7 @@ type ColumnProps = {
   colWidth: number
   conversion: number
   blocks: BlockParams[]
-  update: Update
+  reveal?: boolean
 }
 
 const Column = ({
@@ -70,6 +69,7 @@ const Column = ({
   blocks,
   defaultVariantId,
   colWidth,
+  reveal = true,
 }: ColumnProps) => {
   const font = useFont()
   if (width !== 100) {
@@ -118,7 +118,7 @@ const Column = ({
           return (
             <Block
               key={blockId}
-              delay={randomDelays[idx]}
+              delay={reveal ? randomDelays[idx] : 0}
               line={{
                 blockId: blockId,
                 colWidth: queryWidth,
@@ -127,7 +127,8 @@ const Column = ({
               }}
               layout={layout} // BlockStyle
               entry={block.entry}
-              inView={inView}
+              inView={!reveal || inView}
+              reveal={reveal}
             />
           )
         }

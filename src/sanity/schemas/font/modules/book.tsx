@@ -58,7 +58,9 @@ export default {
       const { moduleTitle, config } = selection
       return {
         media: <BookIcon />,
-        subtitle: `Display as '${config.display}'`,
+        subtitle: config?.display
+          ? `Display as '${config?.display}'`
+          : 'Choose recto or verso',
         title: `Book: '${moduleTitle}'`,
       }
     },

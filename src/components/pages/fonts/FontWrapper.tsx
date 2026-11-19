@@ -1,14 +1,21 @@
 'use client'
 import Modules from '@/components/modules'
-import { Box, Flex } from '@chakra-ui/react'
 import type { Font } from '@/types'
+import { Box, Flex } from '@chakra-ui/react'
 import React, { useMemo, useRef } from 'react'
 import { SpreadContainerProvider } from './components/SpreadContainer'
 import { DimensionsProvider } from './contexts/dimensionsContext'
+import { getFontSections, isFontPageModule } from './font-sections'
+import FontSubNav from './font-sub-nav'
 import FontContainer from './FontContainer'
 import FontHeader from './FontHeader'
-import FontSubNav from './font-sub-nav'
-import { getFontSections, isFontPageModule } from './font-sections'
+import {
+  hasSpecimenContent,
+  resolveSpecimenPages,
+} from './specimens/specimen-data'
+import SpecimensSection from './specimens/specimens-section'
+import { useFontSectionNavigation } from './use-font-section-navigation'
+import { SPECIMENS_ID } from './specimens/specimen-sizing'
 
 // Type definitions for better TypeScript support
 interface FontWrapperProps {
@@ -26,11 +33,27 @@ const FontWrapper = React.memo(
       [modules]
     )
     const sections = useMemo(() => getFontSections(modules), [modules])
+    const specimenPages = useMemo(
+      () => resolveSpecimenPages(font.specimens),
+      [font.specimens]
+    )
+    const hasSpecimens = hasSpecimenContent(specimenPages)
     const targetRef = useRef<HTMLDivElement>(null)
 
+    const { activeId, navigate } = useFontSectionNavigation(
+      hasSpecimens ? [{ id: SPECIMENS_ID }, ...sections] : sections,
+      targetRef
+    )
+
     return (
-      <Box bg={'brand.900'}>
-        <FontSubNav font={font} sections={sections} contentRef={targetRef} />
+      <Box bg={'colorPalette.fg'}>
+        <FontSubNav
+          font={font}
+          activeId={activeId}
+          navigate={navigate}
+          sections={sections}
+          hasSpecimens={hasSpecimens}
+        />
 
         <FontContainer font={font} moreFonts={moreFonts}>
           <DimensionsProvider targetRef={targetRef}>
@@ -46,6 +69,15 @@ const FontWrapper = React.memo(
                   title={font.title || font.shortName || 'Untitled'}
                   variantId={font.defaultVariant?._id ?? ''}
                   video={font.headerVideo}
+                />
+              )}
+              {/* Specimens share the font data, but must not depend on the
+                  legacy module loading gate or spread-overflow state below. */}
+              {hasSpecimens && (
+                <SpecimensSection
+                  inView={activeId === SPECIMENS_ID}
+                  pages={specimenPages}
+                  fontId={font._id}
                 />
               )}
               <SpreadContainerProvider initialItems={pageModules}>

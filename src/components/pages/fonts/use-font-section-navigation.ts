@@ -10,7 +10,7 @@ import {
 import type { FontSection } from './font-sections'
 
 export function useFontSectionNavigation(
-  sections: FontSection[],
+  sections: readonly Pick<FontSection, 'id'>[],
   contentRef: RefObject<HTMLDivElement | null>
 ) {
   const [activeId, setActiveId] = useState<string>()

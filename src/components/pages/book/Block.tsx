@@ -38,16 +38,17 @@ const EntrySpans = ({ entry, line, layout }) => {
 }
 
 const Block: React.FC<{
-  entry: string
+  entry?: string
   delay: number
   line: LineParams
   layout: BlockStyle
   inView?: boolean
-}> = ({ delay, entry, line, layout, inView = false }) => {
+  reveal?: boolean
+}> = ({ delay, entry, line, layout, inView = false, reveal = true }) => {
   const font = useFont()
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={reveal ? { opacity: 0 } : false}
       animate={inView ? { opacity: 1 } : { opacity: 0 }}
       transition={{
         duration: 0,

@@ -350,6 +350,12 @@ export const fontQuery = defineQuery(`{
     defaultVariant->{_id, optionName},
     title,
     headerVideo,
+    specimens[]{
+      _key,
+      _type,
+      config,
+      book->{_id, variantId, snapshots}
+    },
     modules[]{
       ..., 
       _type == "content" => {

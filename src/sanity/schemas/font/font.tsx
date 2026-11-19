@@ -127,6 +127,28 @@ export default defineType({
       title: 'Header Video',
       group: 'presentation',
     }),
+    // Specimens
+    {
+      name: 'specimens',
+      title: 'Specimens',
+      type: 'array',
+      description:
+        'Consecutive pages form a spread (left, then right). Add an even number of book modules.',
+      validation: (rule) =>
+        rule.custom(
+          (value) =>
+            value == null ||
+            (Array.isArray(value) && value.length % 2 === 0) ||
+            'Add an even number of book modules to compose full spreads.'
+        ),
+      of: [
+        defineArrayMember({
+          type: moduleBook.name,
+          name: 'book',
+        }),
+      ],
+      group: 'presentation',
+    },
     // Modules
     {
       name: 'modules',

@@ -4,29 +4,32 @@ import { sectionLinkEditAttribute } from '@/components/modules/section-link'
 import type { Font } from '@/types'
 import { Box, Button, ButtonGroup, HStack } from '@chakra-ui/react'
 import Link from 'next/link'
-import type { RefObject } from 'react'
+import type { MouseEvent } from 'react'
 import type { FontSection } from './font-sections'
-import { useFontSectionNavigation } from './use-font-section-navigation'
+import { specimenEditAttribute } from './specimens/specimen-page'
+import { SPECIMENS_ID } from './specimens/specimen-sizing'
 
 export default function FontSubNav({
   font,
+  activeId,
+  navigate,
   sections,
-  contentRef,
+  hasSpecimens = false,
 }: {
+  activeId: string | undefined
+  navigate: (event: MouseEvent<HTMLAnchorElement>, id: string) => void
   font: Font
   sections: FontSection[]
-  contentRef: RefObject<HTMLDivElement | null>
+  hasSpecimens?: boolean
 }) {
-  const { activeId, navigate } = useFontSectionNavigation(
-    sections,
-    contentRef
-  )
   return (
     <Box
       as='nav'
       aria-label='Font sections'
       position='fixed'
-      top={{ base: '2rem', xl: 4 }}
+      // top={{ base: 0, xl: 4 }}
+      top={0}
+      py={4}
       left='50%'
       transform='translateX(-50%)'
       maxW={{ base: 'calc(100% - 2rem)', xl: 'calc(100% - 40rem)' }}
@@ -36,6 +39,49 @@ export default function FontSubNav({
       <ButtonGroup size='sm' gap={2} maxW='100%' my={2}>
         {sections.length > 0 && (
           <HStack gap={1} overflowX='auto' minW={0} py={1} px={1}>
+            {hasSpecimens && (
+              <Button
+                key={'specimens'}
+                asChild
+                variant='outline'
+                bg={
+                  activeId === SPECIMENS_ID
+                    ? 'colorPalette.fg'
+                    : 'colorPalette.bg'
+                }
+                color={
+                  activeId === SPECIMENS_ID
+                    ? 'colorPalette.bg'
+                    : 'colorPalette.fg'
+                }
+                borderColor={
+                  activeId === SPECIMENS_ID
+                    ? 'colorPalette.bg'
+                    : 'colorPalette.fg'
+                }
+                borderRadius='full'
+                size='xs'
+                textStyle='sm'
+                flexShrink={0}
+                _hover={{
+                  bg: 'colorPalette.fg',
+                  color: 'colorPalette.bg',
+                  borderColor: 'colorPalette.bg',
+                }}
+                _focusVisible={{ outline: '2px solid', outlineOffset: '2px' }}
+              >
+                <a
+                  href={`#${SPECIMENS_ID}`}
+                  aria-current={
+                    activeId === SPECIMENS_ID ? 'location' : undefined
+                  }
+                  onClick={(event) => navigate(event, SPECIMENS_ID)}
+                  data-sanity={specimenEditAttribute(font._id)}
+                >
+                  {'Specimens'}
+                </a>
+              </Button>
+            )}
             {sections.map((section) => (
               <Button
                 key={section.id}
@@ -51,11 +97,21 @@ export default function FontSubNav({
                     ? 'colorPalette.bg'
                     : 'colorPalette.fg'
                 }
+                borderColor={
+                  activeId === section.id
+                    ? 'colorPalette.bg'
+                    : 'colorPalette.fg'
+                }
+
                 borderRadius='full'
                 size='xs'
                 textStyle='sm'
                 flexShrink={0}
-                _hover={{ bg: 'colorPalette.fg', color: 'colorPalette.bg' }}
+                _hover={{
+                  bg: 'colorPalette.fg',
+                  color: 'colorPalette.bg',
+                  borderColor: 'colorPalette.bg',
+                }}
                 _focusVisible={{ outline: '2px solid', outlineOffset: '2px' }}
               >
                 <a

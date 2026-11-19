@@ -15,7 +15,7 @@ export function DisableDraftMode() {
       href='/api/draft-mode/disable'
       style={{
         position: 'fixed',
-        top: 0,
+        bottom: 0,
         width: '100%',
         padding: '0.5rem',
         background: '#eee',
