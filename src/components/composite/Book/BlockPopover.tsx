@@ -245,9 +245,8 @@ const BlockPopover: React.FC<{
                 <Button
                   width={'50%'}
                   size={'sm'}
-                  onClick={
-                    () => bookLayoutStore.addBlock(page, col, 'after', block)
-                    // bookLayoutStore.addColumn(page, 30, 'before', col)
+                  onClick={() =>
+                    bookLayoutStore.addBlock(page, col, 'after', block)
                   }
                 >
                   <Text fontSize={'xs'}>Below</Text>{' '}
@@ -256,6 +255,21 @@ const BlockPopover: React.FC<{
                     width={'1.5rem'}
                     height={'1.5rem'}
                   />
+                </Button>
+              </ButtonGroup>
+              <ButtonGroup mt={2} variant={'outline'} gap='2' width={'100%'}>
+                <Button
+                  width={'100%'}
+                  fontSize={'2xl'}
+                  size={'sm'}
+                  onClick={() =>
+                    bookLayoutStore.duplicateBlock(page, col, 'after', block)
+                  }
+                >
+                  <Icon symbol='copy' />{' '}
+                  <Text as={'span'} fontSize={'xs'}>
+                    Duplicate
+                  </Text>
                 </Button>
               </ButtonGroup>
             </Box>

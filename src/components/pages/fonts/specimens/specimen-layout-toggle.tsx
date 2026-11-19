@@ -24,7 +24,7 @@ const layoutToggleRecipe = defineSlotRecipe({
     positioner: {
       display: { base: 'none', md: 'block' },
       position: 'fixed',
-      bottom: 4,
+      bottom: 8,
       left: '50%',
       transform: 'translateX(-50%)',
       zIndex: 'docked',

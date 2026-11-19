@@ -37,11 +37,11 @@ export const BookLayoutProvider = ({ data, children }) => {
     bookLayoutData: {},
     isTemplate: initialBookLayout.isTemplate,
     fontFamily: {
-      label: font.name,
+      label: font.shortName,
       value: font._id,
     },
     fontFamilyOptions: fonts.map((item) => ({
-      label: item.name,
+      label: item.shortName,
       value: item._id,
     })),
     variantOption: {
@@ -163,7 +163,6 @@ export const BookLayoutProvider = ({ data, children }) => {
       store.spread = newSpread
     }),
     updateBlock: action((key, value, page, col, block) => {
-      // eslint-disable-next-line no-console
       // console.log('Store: updateBlock: ', key, value, page, col, block)
       if (
         // this conditional is needed in some cases when deleting layouts
@@ -173,7 +172,6 @@ export const BookLayoutProvider = ({ data, children }) => {
       ) {
         store.spread[page][col].blocks[block][key] = value
       } else {
-        // eslint-disable-next-line no-console
         console.log(
           'store.spread is missing a block or something... ',
           store.spread
@@ -193,6 +191,18 @@ export const BookLayoutProvider = ({ data, children }) => {
         default:
           store.spread[page][col].blocks.push(defaultBlock())
           break
+      }
+    }),
+    duplicateBlock: action((page, col, location = 'after', index = 0) => {
+      // duplicateColumn: action((page, width, blocks, index = 0) => {
+      // console.log('duplicateColumn: ', page, width, blocks, index)
+      // colId: 'col_xg4qvh7wi', width: 100, blocks: Array(6)
+      const block = store.spread[page][col].blocks[index]
+      if (block && location === 'after') {
+        store.spread[page][col].blocks.splice(index + 1, 0, {
+          ...block,
+          blockId: `block_${uuid()}`,
+        })
       }
     }),
     addColumn: action((page, width, location = 'end', index = 0) => {
