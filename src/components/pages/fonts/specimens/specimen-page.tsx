@@ -38,7 +38,7 @@ export default memo(function SpecimenPage({
     <Box
       position='relative'
       bg='white'
-      color='#1a202c'
+      color='black'
       flexShrink={0}
       overflow='hidden'
       data-specimen-page={page.key}
