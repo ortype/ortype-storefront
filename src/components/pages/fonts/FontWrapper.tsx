@@ -1,14 +1,13 @@
 'use client'
-import Modules from '@/components/modules'
 import type { Font } from '@/types'
 import { Box, Flex } from '@chakra-ui/react'
 import React, { useMemo, useRef } from 'react'
-import { SpreadContainerProvider } from './components/SpreadContainer'
 import { DimensionsProvider } from './contexts/dimensionsContext'
 import { getFontSections, isFontPageModule } from './font-sections'
 import FontSubNav from './font-sub-nav'
 import FontContainer from './FontContainer'
 import FontHeader from './FontHeader'
+import LegacyModulesContainer from './legacy-modules-container'
 import {
   hasSpecimenContent,
   resolveSpecimenPages,
@@ -80,13 +79,13 @@ const FontWrapper = React.memo(
                   fontId={font._id}
                 />
               )}
-              <SpreadContainerProvider initialItems={pageModules}>
-                <Modules
-                  value={pageModules}
+              {pageModules.length > 0 && (
+                <LegacyModulesContainer
+                  modules={pageModules}
                   sections={sections}
                   isDraftMode={isDraftMode}
                 />
-              </SpreadContainerProvider>
+              )}
             </Flex>
           </DimensionsProvider>
         </FontContainer>

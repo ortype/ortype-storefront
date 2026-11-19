@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import type { FontModule } from '../font-sections'
 
 export type SpreadModule = Pick<FontModule, '_key' | '_type'> & {
@@ -50,9 +50,11 @@ export interface Action {
 export interface DimensionsContextValue {
   conversion: number
   colWidth: number
+  spreadAspectValue: string
   spreadAspect: string
   pageAspect: string
   padding: string
+  marginBottom: string
   isLoading: boolean
   size: Size
 }
@@ -71,7 +73,9 @@ export interface SpreadContainerProviderProps {
 
 // Individual Context Provider Props
 export interface DimensionsProviderProps {
-  targetRef: React.RefObject<any>
+  targetRef: RefObject<HTMLDivElement | null>
+  // Exact two-page geometry for scoped module layouts; leave header defaults.
+  spreadLayout?: boolean
   children: ReactNode
 }
 

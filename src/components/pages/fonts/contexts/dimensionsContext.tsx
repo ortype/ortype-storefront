@@ -1,47 +1,8 @@
 import useDimensionsHook from '@/components/hooks/useDimensions' // Original hook renamed to avoid naming conflict
 import { useBreakpointValue } from '@chakra-ui/react'
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
-import { DimensionsContextValue, DimensionsProviderProps } from './types'
-
-// Helper functions for responsive calculations
-function isObject(value: any): value is Record<string, any> {
-  const type = typeof value
-  return (
-    value != null &&
-    (type === 'object' || type === 'function') &&
-    !Array.isArray(value)
-  )
-}
-
-function isArray<T>(value: any): value is Array<T> {
-  return Array.isArray(value)
-}
-
-function mapResponsive(prop: any, mapper: (val: any) => any) {
-  if (isArray(prop)) {
-    return prop.map((item) => (item === null ? null : mapper(item)))
-  }
-
-  if (isObject(prop)) {
-    return Object.keys(prop).reduce((result: Record<string, any>, key) => {
-      result[key] = mapper(prop[key])
-      return result
-    }, {})
-  }
-
-  if (prop != null) {
-    return mapper(prop)
-  }
-
-  return null
-}
+import React, { createContext, useContext, useMemo } from 'react'
+import { BOOK_PAGE } from '../specimens/specimen-sizing'
+import type { DimensionsContextValue, DimensionsProviderProps } from './types'
 
 // Create context with undefined default value for type safety
 const DimensionsContext = createContext<DimensionsContextValue | undefined>(
@@ -52,51 +13,47 @@ const DimensionsContext = createContext<DimensionsContextValue | undefined>(
  * DimensionsProvider - Provides layout-related values and responsive calculations
  * Optimized with memoization to prevent unnecessary rerenders
  */
-export const DimensionsProvider: React.FC<DimensionsProviderProps> =
-  React.memo(({ targetRef, children }) => {
+export const DimensionsProvider = React.memo(
+  ({
+    targetRef,
+    children,
+    spreadLayout = false,
+  }: DimensionsProviderProps) => {
     // Get container dimensions
     const size = useDimensionsHook(targetRef)
 
     // Fixed layout values
-    const pageWidth = 680
-    const pageHeight = 930
-    const pageMargin = 46
-    const colWidth = 558
+    const {
+      width: pageWidth,
+      height: pageHeight,
+      margin: pageMargin,
+      columnWidth: colWidth,
+    } = BOOK_PAGE
     const ratio = pageWidth / pageHeight
+    const measuredWidth = size.width ?? 0
 
     // Calculate responsive conversion factor
-    const conversion = useBreakpointValue(
-      {
-        base: size?.width / pageWidth,
-        lg: size?.width / 2 / pageWidth,
-      },
-      // Note: useBreakpointValue renders the fallback first
-      { ssr: true } // `ssr: false` would produce "window is not defined" in nextjs
-    )
+    const conversion =
+      useBreakpointValue(
+        {
+          base: measuredWidth / pageWidth,
+          lg: measuredWidth / 2 / pageWidth,
+        },
+        // Note: useBreakpointValue renders the fallback first
+        { ssr: true }
+      ) ?? 0
 
     // Loading state when conversion is not yet calculated
-    const isLoading = isNaN(conversion)
+    const isLoading = !Number.isFinite(conversion) || conversion <= 0
 
-    // Calculate derived values only when inputs change
-    const spreadAspectValue = useMemo(
-      () => mapResponsive(ratio, (r) => `${(r / 1) * 100}`),
-      [ratio]
+    // Only the inner module provider opts into the exact height/width of two
+    // pages. The outer header provider retains its historical spread geometry.
+    const spreadAspectValue = String(
+      (spreadLayout ? pageHeight / (pageWidth * 2) : ratio) * 100
     )
-
-    const pageAspectValue = useMemo(
-      () => mapResponsive(ratio, (r) => `${(1 / r) * 100}%`),
-      [ratio]
-    )
-
-    const paddingValue = useMemo(
-      () => `${pageMargin * conversion}px`,
-      [pageMargin, conversion]
-    )
-
-    const marginBottom = useMemo(
-      () => `${pageMargin * 2 * conversion}px`,
-      [pageMargin, conversion]
-    )
+    const pageAspectValue = `${(1 / ratio) * 100}%`
+    const paddingValue = `${pageMargin * conversion}px`
+    const marginBottom = `${pageMargin * 2 * conversion}px`
 
     // Memoize the context value to prevent unnecessary rerenders
     const dimensionsValue = useMemo(
@@ -128,7 +85,8 @@ export const DimensionsProvider: React.FC<DimensionsProviderProps> =
         {children}
       </DimensionsContext.Provider>
     )
-  })
+  }
+)
 
 DimensionsProvider.displayName = 'DimensionsProvider'
 
