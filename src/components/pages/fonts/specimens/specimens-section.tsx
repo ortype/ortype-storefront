@@ -21,11 +21,11 @@ import { useSpecimenLayout } from './use-specimen-layout'
 import { useSpecimenTransition } from './use-specimen-transition'
 
 export default function SpecimensSection({
-  inView,
+  isActive,
   pages,
   fontId,
 }: {
-  inView: boolean
+  isActive: boolean
   pages: Page[]
   fontId: string
 }) {
@@ -41,6 +41,12 @@ export default function SpecimensSection({
     gridRef,
     `${width}-${viewportHeight}-${desktop}`
   )
+  const sectionInView = useInView(sectionRef, {
+    amount: 'some',
+    margin: '-50% 0px 0px 0px',
+  })
+
+  const toggleVisible = desktop && isActive && sectionInView && width > 0
 
   return (
     <Box
@@ -53,7 +59,10 @@ export default function SpecimensSection({
       width='100%'
       bg='black'
       px={{ base: 4, md: '6.7vw' }}
-      py={{ base: 6, md: 10 }}
+      py={0}
+      pt={{ base: 6, md: 24 }}
+      pb={0}
+      mb={{ base: 6, md: 24 }}
       scrollMarginTop={{ base: '8rem', xl: '5rem' }}
       _focusVisible={{ outline: '2px solid white', outlineOffset: '-2px' }}
       data-sanity={specimenEditAttribute(fontId)}
@@ -128,7 +137,7 @@ export default function SpecimensSection({
       </Box>
       <SpecimenLayoutToggle
         value={mode}
-        visible={desktop && inView && width > 0}
+        visible={toggleVisible}
         onValueChange={(value) => transition(() => setMode(value))}
       />
     </Box>

@@ -24,7 +24,7 @@ const layoutToggleRecipe = defineSlotRecipe({
     positioner: {
       display: { base: 'none', md: 'block' },
       position: 'fixed',
-      top: 16,
+      bottom: 4,
       left: '50%',
       transform: 'translateX(-50%)',
       zIndex: 'docked',
@@ -35,43 +35,53 @@ const layoutToggleRecipe = defineSlotRecipe({
       alignItems: 'center',
       gap: 1,
       width: 'max-content',
-      bg: 'white',
-      color: 'black',
-      border: '2px solid black',
+      bg: 'black',
+      color: 'white',
+      // border: '2px solid white',
+      shadow: '0 0 0 2px white',
       borderRadius: 'full',
-      padding: '6px',
+      py: 1.5,
+      px: 2,
     },
     trigger: {
       position: 'relative',
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      height: 7,
+      height: '33px',
       px: 2,
       bg: 'transparent',
-      color: 'black',
-      border: 0,
+      color: 'white',
+      shadow: 'inset 0 0 0 2px white',
       borderRadius: 'full',
       fontSize: 'sm',
       fontWeight: 'normal',
       lineHeight: '1.25rem',
       whiteSpace: 'nowrap',
       cursor: 'pointer',
-      _hover: { bg: 'blackAlpha.50' },
+      _hover: {
+        bg: 'white',
+        color: 'black',
+      },
       _focusVisible: {
-        outline: '2px solid black',
+        outline: '2px solid white',
         outlineOffset: '2px',
       },
     },
     indicator: {
       position: 'absolute',
       inset: 0,
-      border: '2px solid black',
+      bg: 'white',
+      shadow: 'inset 0 0 0 2px white',
       borderRadius: 'full',
       pointerEvents: 'none',
     },
     label: {
       position: 'relative',
+      color: 'inherit',
+      '&[data-active=true]': {
+        color: 'black',
+      },
     },
   },
 })
@@ -150,7 +160,12 @@ export default function SpecimenLayoutToggle({
                       />
                     </Box>
                   )}
-                  <Box as='span' css={styles.label}>
+                  <Box
+                    as='span'
+                    className={'label'}
+                    css={styles.label}
+                    data-active={value === mode.value}
+                  >
                     {mode.label}
                   </Box>
                 </chakra.button>

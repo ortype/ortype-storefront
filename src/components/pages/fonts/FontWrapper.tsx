@@ -74,7 +74,7 @@ const FontWrapper = React.memo(
                   legacy module loading gate or spread-overflow state below. */}
               {hasSpecimens && (
                 <SpecimensSection
-                  inView={activeId === SPECIMENS_ID}
+                  isActive={activeId === SPECIMENS_ID}
                   pages={specimenPages}
                   fontId={font._id}
                 />
