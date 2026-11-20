@@ -423,9 +423,10 @@ export const fontQuery = defineQuery(`{
       _type in ["book", "module.book"] => {
         book->{variantId, snapshots},
       },
-      _type == "tester" => {
-        tester->{defaultVariant->{_id, optionName}, defaultText},
-  
+      _type in ["tester", "module.tester"] => {
+        defaultText,
+        enableLongParagraph,
+        defaultVariant,
       }
     },
     modifiedAt,

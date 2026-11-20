@@ -79,20 +79,28 @@ const DoublePage: React.FC<DoublePageProps> = ({ ...props }) => {
 }
 
 export const SpreadContainerProvider: React.FC<SpreadContainerProviderProps> =
-  React.memo(({ initialItems, children }) => {
-    // Create ref for dimensions measuring
-    const { isLoading } = useDimensions()
-    if (isLoading) {
-      return <DoublePage />
-    }
+  React.memo(
+    ({
+      initialItems,
+      children,
+      sharedSpreadState = false,
+    }: SpreadContainerProviderProps) => {
+      // Create ref for dimensions measuring
+      const { isLoading } = useDimensions()
+      if (isLoading) {
+        return <DoublePage />
+      }
 
-    return (
-      initialItems.length > 0 && (
-        <SpreadStateProvider initialItems={initialItems}>
-          {children}
-        </SpreadStateProvider>
+      if (sharedSpreadState) return <>{children}</>
+
+      return (
+        initialItems.length > 0 && (
+          <SpreadStateProvider initialItems={initialItems}>
+            {children}
+          </SpreadStateProvider>
+        )
       )
-    )
-  })
+    }
+  )
 
 SpreadContainerProvider.displayName = 'SpreadContainerProvider'

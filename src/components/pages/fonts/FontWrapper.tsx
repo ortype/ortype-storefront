@@ -7,7 +7,8 @@ import { getFontSections, isFontPageModule } from './font-sections'
 import FontSubNav from './font-sub-nav'
 import FontContainer from './FontContainer'
 import FontHeader from './FontHeader'
-import LegacyModulesContainer from './legacy-modules-container'
+import FontModulesLayout from './font-modules-layout'
+import { FontToolbarProvider } from './font-toolbar-context'
 import {
   hasSpecimenContent,
   resolveSpecimenPages,
@@ -55,39 +56,41 @@ const FontWrapper = React.memo(
         />
 
         <FontContainer font={font} moreFonts={moreFonts}>
-          <DimensionsProvider targetRef={targetRef}>
-            <Flex
-              mx={'auto'}
-              py={'10vh'}
-              pos={'relative'}
-              wrap={'wrap'}
-              ref={targetRef}
-            >
-              {font?.headerVideo && (
-                <FontHeader
-                  title={font.title || font.shortName || 'Untitled'}
-                  variantId={font.defaultVariant?._id ?? ''}
-                  video={font.headerVideo}
-                />
-              )}
-              {/* Specimens share the font data, but must not depend on the
+          <FontToolbarProvider>
+            <DimensionsProvider targetRef={targetRef}>
+              <Flex
+                mx={'auto'}
+                py={'10vh'}
+                pos={'relative'}
+                wrap={'wrap'}
+                ref={targetRef}
+              >
+                {font?.headerVideo && (
+                  <FontHeader
+                    title={font.title || font.shortName || 'Untitled'}
+                    variantId={font.defaultVariant?._id ?? ''}
+                    video={font.headerVideo}
+                  />
+                )}
+                {/* Specimens share the font data, but must not depend on the
                   legacy module loading gate or spread-overflow state below. */}
-              {hasSpecimens && (
-                <SpecimensSection
-                  isActive={activeId === SPECIMENS_ID}
-                  pages={specimenPages}
-                  fontId={font._id}
-                />
-              )}
-              {pageModules.length > 0 && (
-                <LegacyModulesContainer
-                  modules={pageModules}
-                  sections={sections}
-                  isDraftMode={isDraftMode}
-                />
-              )}
-            </Flex>
-          </DimensionsProvider>
+                {hasSpecimens && (
+                  <SpecimensSection
+                    isActive={activeId === SPECIMENS_ID}
+                    pages={specimenPages}
+                    fontId={font._id}
+                  />
+                )}
+                {pageModules.length > 0 && (
+                  <FontModulesLayout
+                    modules={pageModules}
+                    sections={sections}
+                    isDraftMode={isDraftMode}
+                  />
+                )}
+              </Flex>
+            </DimensionsProvider>
+          </FontToolbarProvider>
         </FontContainer>
       </Box>
     )

@@ -23,7 +23,6 @@ import ContentModule from './Content'
 import FeaturesModule from './Features'
 import InfoModule from './Info'
 import StylesModule from './Styles'
-import TesterModule from './Tester'
 import SectionLink from './section-link'
 
 // Type definitions for better TypeScript support
@@ -388,17 +387,6 @@ const Modules = React.memo(function Modules({
           >
             <FeaturesModule {...props} />
           </SinglePage>
-        ),
-        tester: (props: PortableTextTypeComponentProps<FontModule>) => (
-          <DoublePage
-            value={props.value}
-            font={font}
-            spreadMode={true}
-            overflowCol={true}
-            {...sectionProps(props.value._key)}
-          >
-            <TesterModule {...props} />
-          </DoublePage>
         ),
       },
     }),

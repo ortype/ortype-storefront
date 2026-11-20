@@ -19,6 +19,7 @@ import {
 } from './specimen-sizing'
 import { useSpecimenLayout } from './use-specimen-layout'
 import { useSpecimenTransition } from './use-specimen-transition'
+import { useFontToolbarOwner } from '../font-toolbar-context'
 
 export default function SpecimensSection({
   isActive,
@@ -30,6 +31,7 @@ export default function SpecimensSection({
   fontId: string
 }) {
   const sectionRef = useRef<HTMLDivElement>(null)
+  const ownsToolbar = useFontToolbarOwner(sectionRef)
   const { gridRef, width, desktop, viewportHeight } = useSpecimenLayout()
   // Desktop mode never controls the mobile presentation, which is always pages.
   const [mode, setMode] = useState<SpecimenMode>('overview')
@@ -46,7 +48,8 @@ export default function SpecimensSection({
     margin: '-50% 0px 0px 0px',
   })
 
-  const toggleVisible = desktop && isActive && sectionInView && width > 0
+  const toggleVisible =
+    desktop && isActive && ownsToolbar && sectionInView && width > 0
 
   return (
     <Box

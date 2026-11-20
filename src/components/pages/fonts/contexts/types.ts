@@ -69,6 +69,7 @@ export interface SpreadStateContextValue {
 export interface SpreadContainerProviderProps {
   initialItems: SpreadModule[]
   children: ReactNode
+  sharedSpreadState?: boolean
 }
 
 // Individual Context Provider Props

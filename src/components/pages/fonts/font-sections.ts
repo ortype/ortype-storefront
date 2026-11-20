@@ -7,6 +7,10 @@ type WithMemberAlias<T> = T extends { _type: `module.${infer Name}` }
   ? Omit<T, '_type'> & { _type: Name extends 'features' ? 'feature' : Name }
   : never
 export type FontModule = QueryFontModule | WithMemberAlias<QueryFontModule>
+export type TesterModuleValue = Extract<
+  FontModule,
+  { _type: 'tester' | 'module.tester' }
+>
 export type SectionLinkModule = Extract<
   FontModule,
   { _type: 'sectionLink' | 'module.sectionLink' }

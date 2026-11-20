@@ -1,7 +1,6 @@
-import { BookIcon } from '@sanity/icons'
-import { defineArrayMember, defineField, defineType } from 'sanity'
+import { defineField, defineType } from 'sanity'
 
-export default {
+export default defineType({
   name: 'module.tester',
   title: 'Tester',
   type: 'object',
@@ -14,9 +13,19 @@ export default {
     defineField({
       name: 'defaultText',
       title: 'Default text',
-      type: 'string',
+      type: 'text',
+      rows: 8,
+      description:
+        'Initial editable specimen text. Line breaks are preserved.',
     }),
-    {
+    defineField({
+      name: 'enableLongParagraph',
+      title: 'Enable long paragraph',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Allow the long-paragraph preset and smallest text sizes.',
+    }),
+    defineField({
       name: 'defaultVariant',
       title: 'Default variant',
       type: 'reference',
@@ -28,26 +37,20 @@ export default {
           filter: 'parentUid == $parentUid',
           params: {
             // fontId: document._id.replace('drafts.', ''),
-            parentUid: document.uid,
+            parentUid: document?.uid,
           },
         }),
       },
-      preview: {
-        title: 'name',
-      },
-    },
+    }),
   ],
   preview: {
     select: {
       moduleTitle: 'title',
     },
-    prepare(selection) {
-      const { moduleTitle, config } = selection
+    prepare({ moduleTitle }) {
       return {
-        // media: <BookIcon />,
-        // subtitle: `Display as '${config.display}'`,
         title: moduleTitle || 'Type Tester',
       }
     },
   },
-}
+})

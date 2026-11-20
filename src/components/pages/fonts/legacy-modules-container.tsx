@@ -13,10 +13,12 @@ export default function LegacyModulesContainer({
   modules,
   sections,
   isDraftMode,
+  sharedSpreadState = false,
 }: {
   modules: FontModule[]
   sections: FontSection[]
   isDraftMode: boolean
+  sharedSpreadState?: boolean
 }) {
   const modulesRef = useRef<HTMLDivElement>(null)
   const { gridRef: availableRef, width, viewportHeight } = useSpecimenLayout()
@@ -49,7 +51,10 @@ export default function LegacyModulesContainer({
             } as CSSProperties
           }
         >
-          <SpreadContainerProvider initialItems={modules}>
+          <SpreadContainerProvider
+            initialItems={modules}
+            sharedSpreadState={sharedSpreadState}
+          >
             <Modules
               value={modules}
               sections={sections}
