@@ -425,7 +425,8 @@ export const fontQuery = defineQuery(`{
       },
       _type in ["tester", "module.tester"] => {
         defaultText,
-        enableLongParagraph,
+        initialPreset,
+        enableLongText,
         defaultVariant,
       }
     },

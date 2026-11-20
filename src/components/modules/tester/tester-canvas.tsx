@@ -95,6 +95,7 @@ export default function TesterCanvas({
         <chakra.div
           ref={editorRef}
           role='textbox'
+          transition={'font-variation-settings 0.2s ease-in-out'}
           aria-label='Editable font specimen'
           aria-multiline='true'
           contentEditable='plaintext-only'

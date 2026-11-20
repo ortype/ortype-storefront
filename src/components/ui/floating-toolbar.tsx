@@ -43,7 +43,7 @@ const floatingToolbarRecipe = defineSlotRecipe({
       lineHeight: '1.25rem',
       whiteSpace: 'nowrap',
       cursor: 'pointer',
-      _hover: { bg: 'white', color: 'black' },
+      _hover: { bg: '#292929' },
       _focusVisible: { outline: '2px solid white', outlineOffset: '2px' },
       _disabled: { opacity: 0.4, cursor: 'not-allowed' },
     },

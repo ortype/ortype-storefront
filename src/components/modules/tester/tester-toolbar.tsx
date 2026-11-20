@@ -1,27 +1,28 @@
 'use client'
 
-import { Box, Flex, Portal, chakra } from '@chakra-ui/react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useId, useState } from 'react'
 import {
   ToolbarPresence,
   useFloatingToolbarStyles,
 } from '@/components/ui/floating-toolbar'
-import { testerPresets } from './tester-layout'
+import {
+  getAvailableTesterPresets,
+  getMinimumTesterZoom,
+} from '@/lib/tester-presets'
+import { Box, Flex, Portal, chakra } from '@chakra-ui/react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useId, useState } from 'react'
 
 export default function TesterToolbar({
   visible,
   zoom,
-  fontSize,
-  enableLongParagraph,
+  enableLongText,
   onZoomChange,
   onReset,
   label,
 }: {
   visible: boolean
   zoom: number
-  fontSize: number
-  enableLongParagraph: boolean
+  enableLongText: boolean
   onZoomChange: (zoom: number) => void
   onReset: () => void
   label: string
@@ -45,10 +46,8 @@ export default function TesterToolbar({
       viewport.removeEventListener('scroll', update)
     }
   }, [])
-  const minimum = enableLongParagraph ? 0 : 0.32
-  const presets = testerPresets.filter(
-    (preset) => preset.value !== 'long' || enableLongParagraph
-  )
+  const minimum = getMinimumTesterZoom(enableLongText)
+  const presets = getAvailableTesterPresets(enableLongText)
 
   return (
     <Portal>
@@ -113,7 +112,7 @@ export default function TesterToolbar({
                     )
                   })}
                 </Flex>
-                <Flex align='center' gap={2} px={2}>
+                <Flex align='center' gap={1} pl={6} pr={2}>
                   <chakra.label
                     htmlFor={`${id}-zoom`}
                     fontSize='sm'
@@ -121,38 +120,73 @@ export default function TesterToolbar({
                   >
                     Zoom
                   </chakra.label>
+                  <chakra.output
+                    htmlFor={`${id}-zoom`}
+                    fontSize='2xs'
+                    minW='5ch'
+                    textAlign='right'
+                    fontVariantNumeric='tabular-nums'
+                  >
+                    {Math.round(zoom * 100)}%
+                  </chakra.output>
                   <chakra.input
                     id={`${id}-zoom`}
                     type='range'
-                    min={minimum}
-                    max={1}
-                    step={0.001}
-                    value={zoom}
+                    min={minimum * 100}
+                    max={100}
+                    step={0.1}
+                    value={zoom * 100}
                     aria-label='Text zoom'
-                    aria-valuetext={`${Math.round(fontSize)} pixels`}
+                    aria-valuetext={`${Math.round(zoom * 100)}%`}
                     onChange={(event) =>
-                      onZoomChange(Number(event.target.value))
+                      onZoomChange(Number(event.target.value) / 100)
                     }
                     width={{ base: '80px', md: '100px' }}
                     minW={0}
                     css={{
-                      accentColor: 'white',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      background: 'transparent',
+                      border: 0,
+                      padding: 0,
+                      height: '24px',
                       cursor: 'pointer',
+
+                      '&::-webkit-slider-runnable-track': {
+                        height: '1px',
+                        background: 'white',
+                      },
+                      '&::-webkit-slider-thumb': {
+                        appearance: 'none',
+                        WebkitAppearance: 'none',
+                        boxSizing: 'border-box',
+                        width: '16px',
+                        height: '16px',
+                        marginTop: '-7.5px',
+                        border: '1px solid white',
+                        borderRadius: '50%',
+                        background: 'black',
+                      },
+
+                      '&::-moz-range-track': {
+                        height: '1px',
+                        background: 'white',
+                      },
+                      '&::-moz-range-thumb': {
+                        boxSizing: 'border-box',
+                        width: '16px',
+                        height: '16px',
+                        border: '1px solid white',
+                        borderRadius: '50%',
+                        background: 'black',
+                      },
+
                       _focusVisible: {
                         outline: '2px solid white',
                         outlineOffset: '3px',
                       },
                     }}
                   />
-                  <chakra.output
-                    htmlFor={`${id}-zoom`}
-                    fontSize='xs'
-                    minW='5ch'
-                    textAlign='right'
-                    fontVariantNumeric='tabular-nums'
-                  >
-                    {Math.round(fontSize)}px
-                  </chakra.output>
                 </Flex>
                 <Flex gap={1}>
                   <chakra.button
@@ -160,7 +194,7 @@ export default function TesterToolbar({
                     css={styles.trigger}
                     aria-label='Decrease text size'
                     disabled={zoom <= minimum}
-                    onClick={() => onZoomChange(zoom - 0.04)}
+                    onClick={() => onZoomChange(zoom - 0.08)}
                   >
                     −
                   </chakra.button>
@@ -169,7 +203,7 @@ export default function TesterToolbar({
                     css={styles.trigger}
                     aria-label='Increase text size'
                     disabled={zoom >= 1}
-                    onClick={() => onZoomChange(zoom + 0.04)}
+                    onClick={() => onZoomChange(zoom + 0.08)}
                   >
                     +
                   </chakra.button>

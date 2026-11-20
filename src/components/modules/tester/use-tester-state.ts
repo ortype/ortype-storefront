@@ -3,6 +3,7 @@
 import { useReducer } from 'react'
 import type { Font } from '@/types'
 import type { TesterModuleValue } from '@/components/pages/fonts/font-sections'
+import { resolveInitialTesterPreset } from '@/lib/tester-presets'
 import { clampTesterZoom } from './tester-layout'
 
 type TesterState = {
@@ -14,7 +15,7 @@ type TesterState = {
 type TesterAction =
   | { type: 'variant'; value: string }
   | { type: 'zoom'; value: number }
-  | { type: 'reset'; variantId: string }
+  | { type: 'reset'; variantId: string; zoom: number }
 
 function reducer(state: TesterState, action: TesterAction): TesterState {
   switch (action.type) {
@@ -25,7 +26,7 @@ function reducer(state: TesterState, action: TesterAction): TesterState {
     case 'reset':
       return {
         variantId: action.variantId,
-        zoom: 1,
+        zoom: action.zoom,
         revision: state.revision + 1,
       }
   }
@@ -47,12 +48,16 @@ export function useTesterState(value: TesterModuleValue, font: Font) {
     ) ??
     variants[0]?._id ??
     ''
+  const enableLongText = value.enableLongText === true
+  const initialPreset = resolveInitialTesterPreset(
+    value.initialPreset,
+    enableLongText
+  )
   const [state, dispatch] = useReducer(reducer, {
     variantId: defaultVariantId,
-    zoom: 1,
+    zoom: initialPreset.zoom,
     revision: 0,
   })
-  const enableLongParagraph = value.enableLongParagraph === true
   const variantId = variants.some(
     (variant) => variant._id === state.variantId
   )
@@ -61,16 +66,21 @@ export function useTesterState(value: TesterModuleValue, font: Font) {
 
   return {
     variantId,
-    zoom: clampTesterZoom(state.zoom, enableLongParagraph),
+    zoom: clampTesterZoom(state.zoom, enableLongText),
     revision: state.revision,
-    enableLongParagraph,
+    enableLongText,
     initialText: value.defaultText ?? 'Type is a space you can move through.',
     setVariant: (id: string) => dispatch({ type: 'variant', value: id }),
     setZoom: (zoom: number) =>
       dispatch({
         type: 'zoom',
-        value: clampTesterZoom(zoom, enableLongParagraph),
+        value: clampTesterZoom(zoom, enableLongText),
       }),
-    reset: () => dispatch({ type: 'reset', variantId: defaultVariantId }),
+    reset: () =>
+      dispatch({
+        type: 'reset',
+        variantId: defaultVariantId,
+        zoom: initialPreset.zoom,
+      }),
   }
 }

@@ -63,7 +63,7 @@ function TesterSession({
       data-font-tester={value._key}
       width='100%'
       minW={0}
-      px={{ base: 3, md: 5 }}
+      px={{ base: 3, md: '6.7vw' }}
       my={{ base: 32, md: 48 }}
       position='relative'
       scrollMarginTop={{ base: '8rem', xl: '5rem' }}
@@ -100,8 +100,7 @@ function TesterSession({
       <TesterToolbar
         visible={ownsToolbar && width > 0}
         zoom={state.zoom}
-        fontSize={layout.fontSize}
-        enableLongParagraph={state.enableLongParagraph}
+        enableLongText={state.enableLongText}
         onZoomChange={state.setZoom}
         onReset={state.reset}
         label={label}
