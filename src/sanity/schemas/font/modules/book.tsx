@@ -1,5 +1,5 @@
-import { BookIcon } from '@sanity/icons'
 import BookReferenceInput from '@/sanity/components/book-reference-input'
+import BookModulePreview from '@/sanity/components/book-module-preview'
 import BookSnapshotInput from '@/sanity/components/book-snapshot-input'
 import { defineField } from 'sanity'
 
@@ -7,10 +7,11 @@ export default {
   name: 'module.book',
   title: 'Book',
   type: 'object',
+  components: { preview: BookModulePreview },
   fields: [
     {
       name: 'book',
-      title: 'Book',
+      title: 'Book Layout',
       type: 'reference',
       weak: true,
       to: [{ type: 'book' }],
@@ -31,7 +32,7 @@ export default {
     },
     defineField({
       name: 'config',
-      title: 'Config',
+      title: 'Snapshot config',
       type: 'object',
       components: { input: BookSnapshotInput },
       fields: [
@@ -62,18 +63,11 @@ export default {
   ],
   preview: {
     select: {
-      moduleTitle: 'book.name',
+      title: 'book.name',
+      bookId: 'book._id',
+      fontId: 'book.fontId',
+      variantId: 'book.variantId',
       config: 'config',
-    },
-    prepare(selection) {
-      const { moduleTitle, config } = selection
-      return {
-        media: <BookIcon />,
-        subtitle: config?.display
-          ? `Display as '${config?.display}'${config.snapshotKey ? ' · Selected snapshot' : ''}`
-          : 'Choose recto or verso',
-        title: `Book: '${moduleTitle}'`,
-      }
     },
   },
 }

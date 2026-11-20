@@ -14,10 +14,12 @@ export default function BookSpreadThumbnail({
   spread,
   font,
   defaultVariantId,
+  side,
 }: {
   spread?: string | null
   font: BookRenderFont | null
   defaultVariantId: string
+  side?: 'verso' | 'recto'
 }) {
   const container = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
@@ -56,12 +58,16 @@ export default function BookSpreadThumbnail({
     metrics.unitsPerEm > 0 &&
     metrics.contentArea > 0 &&
     Object.values(metrics).every(Number.isFinite)
-  const hasPages = content?.verso || content?.recto
-  const conversion = width / 2 / BOOK_PAGE.width
+  const hasPages = side ? content?.[side] : content?.verso || content?.recto
+  const conversion = width / (side ? 1 : 2) / BOOK_PAGE.width
   const padding = `${BOOK_PAGE.margin * conversion}px`
 
   return (
-    <div ref={container} className={styles.spread} aria-hidden='true'>
+    <div
+      ref={container}
+      className={`${styles.spread} ${side ? styles.singlePage : ''}`}
+      aria-hidden='true'
+    >
       {!hasPages || !hasMetrics || !font ? (
         <span className={styles.placeholder}>
           {!hasPages ? 'No preview available' : 'Font metrics unavailable'}
@@ -69,8 +75,8 @@ export default function BookSpreadThumbnail({
       ) : (
         visible &&
         width > 0 &&
-        (['verso', 'recto'] as const).map((side) => (
-          <div key={side} className={styles.page}>
+        (side ? [side] : (['verso', 'recto'] as const)).map((pageSide) => (
+          <div key={pageSide} className={styles.page}>
             <div
               className={styles.content}
               style={{
@@ -80,7 +86,7 @@ export default function BookSpreadThumbnail({
               }}
             >
               <BookPageContent
-                page={content[side] ?? null}
+                page={content?.[pageSide] ?? null}
                 font={font}
                 defaultVariantId={defaultVariantId}
                 layout={{

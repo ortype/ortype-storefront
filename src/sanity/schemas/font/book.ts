@@ -1,5 +1,7 @@
 import { BookIcon } from '@sanity/icons'
 import { defineField, defineType } from 'sanity'
+import BookSnapshotsInput from '@/sanity/components/book-snapshots-input'
+import BookSnapshotPreview from '@/sanity/components/book-snapshot-preview'
 
 /*
   - fontId
@@ -63,14 +65,23 @@ export default defineType({
       name: 'snapshots',
       title: 'Snapshots',
       type: 'array',
+      components: { input: BookSnapshotsInput },
       options: {
-        disableActions: ['add', 'remove', 'duplicate'],
+        layout: 'grid',
+        disableActions: ['add', 'copy', 'duplicate'],
       },
       of: [
         {
           name: 'snapshot',
           title: 'Snapshot',
           type: 'object',
+          components: { preview: BookSnapshotPreview },
+          preview: {
+            select: {
+              spread: 'spread',
+              createdAt: 'createdAt',
+            },
+          },
           fields: [
             defineField({
               type: 'datetime',

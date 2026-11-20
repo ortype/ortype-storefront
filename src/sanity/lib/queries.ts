@@ -242,6 +242,24 @@ export const bookReferenceOptionsQuery = defineQuery(`{
   }
 }`)
 
+// Preview rows share this small font payload through SWR rather than fetching
+// metrics once per historical snapshot or importing the storefront providers.
+export const bookPreviewFontQuery = defineQuery(`
+*[_type == "font" && _id == $fontId][0] {
+  shortName,
+  metafields[]{key, value},
+  defaultVariant->{_id},
+  variants[]->{_id, optionName}
+}`)
+
+export const bookModulePreviewQuery = defineQuery(`
+*[_type == "book" && _id == $bookId][0] {
+  "snapshot": select(
+    $snapshotKey != "" => snapshots[_key == $snapshotKey][0]{spread},
+    snapshots[0]{spread}
+  )
+}`)
+
 export const fontSlugsQuery = defineQuery(`
 *[_type == "font" && defined(slug.current)][].slug.current
 `)

@@ -21,6 +21,14 @@
   box-shadow: inset 1px 0 #ddd;
 }
 
+.singlePage {
+  aspect-ratio: 680 / 930;
+}
+
+.singlePage .page {
+  flex-basis: 100%;
+}
+
 .content {
   position: absolute;
   inset: 0;
