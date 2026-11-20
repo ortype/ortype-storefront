@@ -78,7 +78,7 @@ function TesterSession({
         direction='column'
         height={{
           base: 'clamp(260px, calc(100dvh - 16rem), 900px)',
-          md: 'clamp(360px, calc(100dvh - 12rem), 1100px)',
+          md: 'clamp(360px, calc(100dvh - 10rem), 1100px)',
         }}
         minW={0}
       >

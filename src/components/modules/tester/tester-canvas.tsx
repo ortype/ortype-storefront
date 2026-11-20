@@ -86,7 +86,8 @@ export default function TesterCanvas({
       flexDirection='column'
       overflow='clip'
       px={{ base: 4, md: 8, lg: 12 }}
-      py={{ base: 5, md: 7 }}
+      pt={{ base: 2, md: 3 }}
+      pb={{ base: 5, md: 10 }}
       css={{ overscrollBehavior: 'none' }}
     >
       {/* Clip at the content box, not at the outside edge of its padding.

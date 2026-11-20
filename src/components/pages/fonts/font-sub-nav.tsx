@@ -38,7 +38,7 @@ export default function FontSubNav({
     >
       <ButtonGroup size='sm' gap={2} maxW='100%' my={2}>
         {sections.length > 0 && (
-          <HStack gap={1} overflowX='auto' minW={0} py={1} px={1}>
+          <HStack gap={1} overflowX='auto' minW={0} py={0} px={1}>
             {hasSpecimens && (
               <Button
                 key={'specimens'}

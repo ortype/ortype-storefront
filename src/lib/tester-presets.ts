@@ -1,6 +1,6 @@
 // React-free configuration shared by Studio inputs and the frontend tester.
 export const testerPresets = [
-  { value: 'headline', label: 'Headline', zoom: 0.7 },
+  { value: 'headline', label: 'Headline', zoom: 0.9 },
   { value: 'short', label: 'Short text', zoom: 0.28 },
   { value: 'medium', label: 'Medium text', zoom: 0.12 },
   { value: 'long', label: 'Long text', zoom: 0 },
