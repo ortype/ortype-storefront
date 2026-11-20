@@ -52,7 +52,7 @@ const layoutToggleRecipe = defineSlotRecipe({
       px: 2,
       bg: 'transparent',
       color: 'white',
-      shadow: 'inset 0 0 0 2px white',
+      // shadow: 'inset 0 0 0 2px white',
       borderRadius: 'full',
       fontSize: 'sm',
       fontWeight: 'normal',
@@ -71,7 +71,7 @@ const layoutToggleRecipe = defineSlotRecipe({
     indicator: {
       position: 'absolute',
       inset: 0,
-      bg: 'white',
+      // bg: 'white',
       shadow: 'inset 0 0 0 2px white',
       borderRadius: 'full',
       pointerEvents: 'none',
@@ -79,9 +79,9 @@ const layoutToggleRecipe = defineSlotRecipe({
     label: {
       position: 'relative',
       color: 'inherit',
-      '&[data-active=true]': {
-        color: 'black',
-      },
+      // '&[data-active=true]': {
+      //   color: 'black',
+      // },
     },
   },
 })
