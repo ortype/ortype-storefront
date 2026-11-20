@@ -54,6 +54,22 @@ export const PAGES_SLUGS_QUERY = defineQuery(`
 }
 `)
 
+// Fetch history only after a book is chosen; the reference browser continues
+// loading just snapshots[0] so its payload does not grow with every saved edit.
+export const bookSnapshotsQuery = defineQuery(`{
+  "book": *[_type == "book" && _id == $bookId && fontId == $fontId][0] {
+    _id,
+    variantId,
+    snapshots[]{_key, createdAt, spread}
+  },
+  "font": *[_type == "font" && _id == $fontId][0] {
+    shortName,
+    metafields[]{key, value},
+    defaultVariant->{_id},
+    variants[]->{_id, optionName}
+  }
+}`)
+
 export const PAGES_QUERY = defineQuery(`
 *[_type == 'page' && slug.current == $page][0]{
     _id,
@@ -208,6 +224,23 @@ const fontVariantFields = `
   version,
   metafields[]{key, value}
 `
+
+// The chooser needs one representative spread, not every historical snapshot.
+// Stored references still point to the book document, never to a copied layout.
+export const bookReferenceOptionsQuery = defineQuery(`{
+  "books": *[_type == "book" && fontId == $fontId] | order(name asc) {
+    _id,
+    name,
+    variantId,
+    "snapshot": snapshots[0]{spread, createdAt}
+  },
+  "font": *[_type == "font" && _id == $fontId][0] {
+    shortName,
+    metafields[]{key, value},
+    defaultVariant->{_id},
+    variants[]->{_id, optionName}
+  }
+}`)
 
 export const fontSlugsQuery = defineQuery(`
 *[_type == "font" && defined(slug.current)][].slug.current
@@ -369,7 +402,7 @@ export const fontQuery = defineQuery(`{
           }
         }         
       },
-      _type == "book" => {
+      _type in ["book", "module.book"] => {
         book->{variantId, snapshots},
       },
       _type == "tester" => {

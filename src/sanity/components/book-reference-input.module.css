@@ -1,0 +1,52 @@
+.selected {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 32rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+}
+
+/* These are selection controls, not artwork: inherit Studio's text styling and
+   retain an explicit keyboard focus outline instead of resetting focus away. */
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.5rem;
+  border: 2px solid transparent;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option:hover {
+  border-color: currentColor;
+}
+
+.option[aria-pressed='true'] {
+  border-color: #2276fc;
+}
+
+.option:focus-visible {
+  outline: 2px solid #2276fc;
+  outline-offset: 3px;
+}
+
+.option:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.caption {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}

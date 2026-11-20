@@ -1,4 +1,4 @@
-import { Metafield, Metrics } from '@/sanity/lib/queries'
+import type { Metafield, Metrics } from '@/types'
 
 export default function getMetrics(metafields?: Metafield[]): Metrics {
   let metrics: Metrics = {

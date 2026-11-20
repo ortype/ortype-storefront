@@ -1,0 +1,59 @@
+/* Explicit artwork styles must not inherit Studio's dark theme or rely on
+   Chakra's resets. Geometry remains inline because it scales with page width. */
+.header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+
+.heading {
+  margin: 0;
+  border-bottom: 1px solid #000;
+  color: #000;
+  text-align: center;
+  font-weight: normal;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  min-width: 0;
+  box-sizing: border-box;
+  color: #000;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.block {
+  position: relative;
+}
+
+.label {
+  position: absolute;
+}
+
+.text {
+  position: relative;
+  width: 100%;
+}
+
+.offset {
+  position: absolute;
+  inset: auto 0 0;
+}
+
+.entry {
+  white-space: pre-wrap;
+}
+
+.entryLine {
+  display: block;
+}

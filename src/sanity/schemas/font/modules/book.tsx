@@ -1,5 +1,7 @@
 import { BookIcon } from '@sanity/icons'
-import { defineArrayMember, defineField, defineType } from 'sanity'
+import BookReferenceInput from '@/sanity/components/book-reference-input'
+import BookSnapshotInput from '@/sanity/components/book-snapshot-input'
+import { defineField } from 'sanity'
 
 export default {
   name: 'module.book',
@@ -12,6 +14,7 @@ export default {
       type: 'reference',
       weak: true,
       to: [{ type: 'book' }],
+      components: { input: BookReferenceInput },
       validation: (Rule) => Rule.required(),
       options: {
         disableNew: true,
@@ -26,12 +29,20 @@ export default {
         title: 'name',
       },
     },
-    // @TODO: is it possible to select from bookRef.snapshots here?
     defineField({
       name: 'config',
       title: 'Config',
       type: 'object',
+      components: { input: BookSnapshotInput },
       fields: [
+        defineField({
+          name: 'snapshotKey',
+          title: 'Snapshot',
+          type: 'string',
+          // The visual picker owns this stable identity; an array index would
+          // silently select different content when snapshots are reordered.
+          hidden: true,
+        }),
         defineField({
           type: 'string',
           name: 'display',
@@ -59,7 +70,7 @@ export default {
       return {
         media: <BookIcon />,
         subtitle: config?.display
-          ? `Display as '${config?.display}'`
+          ? `Display as '${config?.display}'${config.snapshotKey ? ' · Selected snapshot' : ''}`
           : 'Choose recto or verso',
         title: `Book: '${moduleTitle}'`,
       }

@@ -2,50 +2,62 @@ import {
   type BlockStyle,
   type LineParams,
 } from '@/components/composite/Book/bookTypes'
-import { useFont } from '@/components/pages/fonts/FontContainer'
-import { Box, Container, Flex, Text } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import React from 'react'
+import type { BookRenderFont } from './book-page-content'
+import styles from './book-page.module.css'
 
-const EntrySpans = ({ entry, line, layout }) => {
+const EntrySpans = ({
+  entry,
+  line,
+  layout,
+}: {
+  entry?: string
+  line: LineParams
+  layout: BlockStyle
+}) => {
   // Split the string by the closing tag of the span
   const elements = entry?.split(/<\/span>/).map((item, index) => {
     // Trim the item and check if it's not empty
     const trimmedItem = item.trim()
     if (trimmedItem) {
       return (
-        <Box
-          as={'span'}
+        <span
           key={index}
-          display={'block'}
+          className={styles.entryLine}
           style={{
             marginTop:
               index === 0 ? 0 : `${line.lineGap * layout.conversion}px`,
           }}
         >
           {trimmedItem.replace(/<span>/, '')}
-        </Box>
+        </span>
       )
     }
     return null
   })
 
-  return (
-    <Box as={'div'} whiteSpace={'pre-wrap'}>
-      {elements}
-    </Box>
-  )
+  return <div className={styles.entry}>{elements}</div>
 }
 
-const Block: React.FC<{
+// Entry strings are rendered as text, not injected HTML. The thumbnail must
+// share the frontend's span handling without trusting snapshot markup.
+const Block = ({
+  font,
+  delay,
+  entry,
+  line,
+  layout,
+  inView = false,
+  reveal = true,
+}: {
+  font: BookRenderFont
   entry?: string
   delay: number
   line: LineParams
   layout: BlockStyle
   inView?: boolean
   reveal?: boolean
-}> = ({ delay, entry, line, layout, inView = false, reveal = true }) => {
-  const font = useFont()
+}) => {
   return (
     <motion.div
       initial={reveal ? { opacity: 0 } : false}
@@ -55,47 +67,39 @@ const Block: React.FC<{
         delay: delay,
         ease: 'linear',
       }}
-      className={'block'}
+      className={styles.block}
       style={{
         position: 'relative',
         marginTop: layout.outerWrapperMarginTop,
         marginBottom: layout.outerWrapperMarginBottom,
       }}
     >
-      <Text
-        as={'span'}
+      <span
+        className={styles.label}
         style={{
           fontSize: `${12 * layout.conversion}px`,
           top: `${7 * layout.conversion}px`,
           lineHeight: `1.25`,
         }}
-        position={'absolute'}
       >
         {font?.variants.find(({ _id }) => line.variantId === _id)?.optionName}
-      </Text>
-      <Box
-        className={line.variantId || ''}
-        position={'relative'}
-        w={'100%'}
+      </span>
+      <div
+        className={`${styles.text} ${line.variantId || ''}`}
         style={{
           marginTop: `${32.4 * layout.conversion}px`, // account for height of the "label"
           ...layout.innerWrapperStyle,
         }}
       >
-        <Box
+        <div
+          className={styles.offset}
           style={{
             top: `${layout.offsetValue}`,
           }}
-          css={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
         >
           <EntrySpans entry={entry} line={line} layout={layout} />
-        </Box>
-      </Box>
+        </div>
+      </div>
     </motion.div>
   )
 }

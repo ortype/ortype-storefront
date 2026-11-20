@@ -1,0 +1,43 @@
+/* Scope the artwork, not the Studio: no Chakra provider or global reset is
+   needed, and the root layout already supplies the variant webfont classes. */
+.spread {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 1360 / 930;
+  overflow: hidden;
+  background: #fff;
+  color: #000;
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  flex: 0 0 50%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.page + .page {
+  box-shadow: inset 1px 0 #ddd;
+}
+
+.content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.placeholder {
+  margin: auto;
+  padding: 1rem;
+  color: #666;
+  font: normal 12px / 1.5 sans-serif;
+  text-align: center;
+}

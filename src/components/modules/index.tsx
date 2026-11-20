@@ -366,7 +366,11 @@ const Modules = React.memo(function Modules({
             <ContentModule {...props} />
           </DoublePage>
         ),
-        book: (props: PortableTextTypeComponentProps<FontModule>) => (
+        book: (
+          props: PortableTextTypeComponentProps<
+            Extract<FontModule, { _type: 'book' | 'module.book' }>
+          >
+        ) => (
           <SinglePage
             font={font}
             value={props.value}
